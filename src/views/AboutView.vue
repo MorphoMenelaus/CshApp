@@ -4,6 +4,19 @@
   </div>
 </template>
 
+<script>
+export default {
+  mounted() {
+    this.consoleTest();
+  },
+  methods: {
+    consoleTest() {
+      console.log(`Current version: ${this.appCurrentVersion}`);
+    },
+  },
+};
+</script>
+
 <style>
 @media (min-width: 1024px) {
   .about {
@@ -13,3 +26,4 @@
   }
 }
 </style>
+``
