@@ -2,6 +2,8 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+// import sessionMethods from "./sessionMethods";
+// import sharedScripts from "./sharedScripts";
 
 // createApp(App).use(store).use(router).mount('#app')
 
@@ -17,11 +19,5 @@ app.mount('#app')
 
 const appCurrentVersion = APP_VERSION;
 
-const object = {
-    something: "word",
-    somethingelse: "Silence"
-};
-
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
-app.config.globalProperties.testingGlobals = object;

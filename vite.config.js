@@ -10,17 +10,18 @@ const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'))
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
-  define: {
-    // Wrap the string value in JSON.stringify so it compiles as a raw string literal
-    APP_VERSION: JSON.stringify(packageJson.version)
-  },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
-  },
+	plugins: [
+		vue(),
+		vueDevTools(),
+	],
+	base: './',
+	define: {
+		// Wrap the string value in JSON.stringify so it compiles as a raw string literal
+		APP_VERSION: JSON.stringify(packageJson.version)
+	},
+	resolve: {
+		alias: {
+			'@': fileURLToPath(new URL('./src', import.meta.url))
+		},
+	},
 })
