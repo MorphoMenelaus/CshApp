@@ -15,6 +15,16 @@ const router = createRouter({
 			component: () => import('../views/TicTacToe.vue'),
 		},
 		{
+			path: '/registerser',
+			name: 'RegisterUser',
+			component: () => import('../views/RegisterUser.vue'),
+		},
+		{
+			path: '/nodeservertest',
+			name: 'NodeServerTest',
+			component: () => import('../views/NodeServerTest.vue'),
+		},
+		{
 			path: '/about',
 			name: 'about',
 			// route level code-splitting

@@ -15,7 +15,9 @@ import HelloWorld from "./components/HelloWorld.vue";
 
 			<nav>
 				<RouterLink to="/">Home</RouterLink>
-				<RouterLink to="/tic-tac-toe">TicTacToe</RouterLink>
+				<RouterLink to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
+				<RouterLink to="/registerser">Register User</RouterLink>
+				<RouterLink to="/nodeservertest">Node Server Test</RouterLink>
 				<RouterLink to="/about">About</RouterLink>
 			</nav>
 		</div>
@@ -23,6 +25,51 @@ import HelloWorld from "./components/HelloWorld.vue";
 
 	<RouterView />
 </template>
+
+<script>
+// @ is an alias to /src
+import { ref, reactive } from "vue";
+// import Header from "@/components/Header";
+// import Footer from "@/components/Footer";
+// import sessionMethods from "@/dependencies/sessionMethods";
+// import sharedScripts from "@/dependencies/sharedScripts";
+
+export default {
+	components: {
+		// Header,
+		// Footer,
+	},
+	data() {
+		return {
+		};
+	},
+	watch: {
+	},
+	methods: {
+		setLoadingIcon() {
+			let loadingIcon = document.getElementById("loading-icon");
+			if (this.casinoList.length === 0) {
+				loadingIcon.classList.add("loading");
+			} else {
+				loadingIcon.classList.remove("loading");
+			}
+		},
+	},
+	created() {
+		this.eventBus.on("eventTest", (data) => {
+			console.log(data);
+		});
+		this.eventBus.on("userRegistered", (data) => {
+			console.log(data);
+		});
+		this.eventBus.emit("getUsers", (data) => {
+			console.log(data);
+		});
+	},
+	mounted() {
+	},
+};
+</script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
