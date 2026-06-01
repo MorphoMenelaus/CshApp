@@ -1,34 +1,104 @@
 <template>
+
 	<header>
-		<h1>Welcome</h1>
+		<div id="serverInfo">
+			<small class="version" v-if="serverVersion">Server Version: {{ serverVersion }}</small>
+			<small class="appVersion" v-if="this.appCurrentVersion">App Version: {{ this.appCurrentVersion }}</small>
+		</div>
+		<!-- <div class="status-message" v-if="appStatus.code != null || appStatus.message != null"
+			:class="!appStatus.ok ? 'error' : 'ok'">
+			<span v-if="appStatus.code != null">{{ appStatus.code }}</span>
+			<span v-if="appStatus.message != null">{{ appStatus.message }}</span>
+			<span v-if="appStatus.userMustDismiss == true" id="dismiss-error">x</span>
+		</div> -->
+
+		<MainNavbar :appState="appState" />
+
+		<!-- <h1>Welcome</h1> -->
+
+		<div id="clock">
+			<div id="time-container">
+				<span id="time">{{ timeLocal }}</span>
+			</div>
+			<div id="date-container">
+				<span id="dayLong">{{ dayLocal }}</span><br />
+				<span id="dateLong">{{ dateLocal }}</span>
+			</div>
+		</div>
 	</header>
-	<div class="status-message" v-if="status.code != null || status.message != null"
-		:class="!status.ok ? 'error' : 'ok'">
-		<span v-if="status.code != null">{{ status.code }}</span>
-		<span v-if="status.message != null">{{ status.message }}</span>
-		<!-- <span v-if="status.userMustDismiss == true" id="dismiss-error">x</span> -->
-	</div>
+
 </template>
 
 <script>
+import MainNavbar from "@/components/MainNavbar.vue";
+
 export default {
 	name: "Header",
+	components: {
+		MainNavbar
+	},
 	props: {
-		status: Object,
+		appState: {
+			type: Object,
+		},
+		serverVersion: {
+			type: String,
+		},
+	},
+	data() {
+		return {
+			dateOptions: this.dateOptions,
+			timeOptions: this.timeOptions,
+			dayLocal: "",
+			dateLocal: "",
+			timeLocal: "",
+		};
 	},
 	watch: {
 	},
-	methods: {
-	},
 	created() {
+		this.updateDateTime();
+	},
+	mounted() {
+		setInterval(() => {
+			this.updateDateTime();
+		}, 1000);
+	},
+	methods: {
+		updateDateTime() {
+			let date = new Date();
+			this.dayLocal = date.toLocaleDateString('en-US', { weekday: 'long' });
+			this.dateLocal = date.toLocaleDateString("en-US", this.dateOptions);
+			this.timeLocal = date.toLocaleTimeString();
+		},
 	},
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#serverInfo {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	top: 0;
+	left: 0;
+	padding: 5px 15px;
+	z-index: 500;
+}
+
+#clock {
+	position: absolute;
+	top: 10px;
+	right: 15px;
+	min-width: 6em;
+}
+
 h1 {
+	width: 100%;
+	margin-top: 30px;
 	text-align: center;
+	font-size: 3em;
 }
 
 .status-message {

@@ -4,48 +4,47 @@ import HelloWorld from "./components/HelloWorld.vue";
 </script>
 
 <template>
-	<header>
-		<img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
-		<div class="wrapper">
-			<HelloWorld msg="You did it!" />
-			<p>
-				Data from backend: <strong>{{ serverMessage }}</strong>
-			</p>
+	<Header :appState="appState" :serverVersion="serverVersion" />
 
-			<nav>
-				<RouterLink to="/">Home</RouterLink>
-				<RouterLink to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
-				<RouterLink to="/registerser">Register User</RouterLink>
-				<RouterLink to="/nodeservertest">Node Server Test</RouterLink>
-				<RouterLink to="/about">About</RouterLink>
-			</nav>
-		</div>
-	</header>
+	<RouterView id="view" />
 
-	<RouterView />
+	<Footer />
+
 </template>
 
 <script>
 // @ is an alias to /src
 import { ref, reactive } from "vue";
-// import Header from "@/components/Header";
-// import Footer from "@/components/Footer";
+import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
 // import sessionMethods from "@/dependencies/sessionMethods";
 // import sharedScripts from "@/dependencies/sharedScripts";
 
 export default {
 	components: {
-		// Header,
-		// Footer,
+		Header,
+		Footer,
 	},
 	data() {
 		return {
+			serverVersion: "",
+			// serverMessage: "",
+			appState: {}
 		};
 	},
 	watch: {
 	},
 	methods: {
+		async getServrVersion() {
+			try {
+				const response = await fetch('/api/serverInfo');
+				const data = await response.json();
+				this.serverVersion = data?.version || "";
+			} catch (error) {
+				console.error('Error fetching data:', error);
+			}
+		},
 		setLoadingIcon() {
 			let loadingIcon = document.getElementById("loading-icon");
 			if (this.casinoList.length === 0) {
@@ -56,6 +55,7 @@ export default {
 		},
 	},
 	created() {
+		this.getServrVersion();
 		this.eventBus.on("eventTest", (data) => {
 			console.log(data);
 		});
@@ -73,6 +73,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#view {
+	margin-top: 15px;
+	padding: 15px;
+}
+
 header {
 	line-height: 1.5;
 	max-height: 100vh;
@@ -112,7 +117,7 @@ nav a:first-of-type {
 	header {
 		display: flex;
 		place-items: center;
-		padding-right: calc(var(--section-gap) / 2);
+		/* padding-right: calc(var(--section-gap) / 2); */
 	}
 
 	.logo {

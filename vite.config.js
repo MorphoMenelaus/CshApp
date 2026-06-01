@@ -27,7 +27,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'http://localhost:3000', // Your Node server port
+				target: 'http://localhost:3000', // Node server port
 				changeOrigin: true,
 				secure: false,
 			}
