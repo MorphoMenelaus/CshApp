@@ -15,14 +15,19 @@ const router = createRouter({
 			component: () => import('../views/TicTacToe.vue'),
 		},
 		{
-			path: '/registerser',
+			path: '/getuser',
+			name: 'GetUser',
+			component: () => import('../views/GetUser.vue'),
+		},
+		{
+			path: '/registeruser',
 			name: 'RegisterUser',
 			component: () => import('../views/RegisterUser.vue'),
 		},
 		{
-			path: '/nodeservertest',
-			name: 'NodeServerTest',
-			component: () => import('../views/NodeServerTest.vue'),
+			path: '/displayusers',
+			name: 'DisplayUsers',
+			component: () => import('../views/DisplayUsers.vue'),
 		},
 		{
 			path: '/about',

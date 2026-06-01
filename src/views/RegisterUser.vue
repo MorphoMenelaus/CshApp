@@ -8,23 +8,14 @@
 			<div class="form-group">
 				<label>Username</label>
 				<input v-model.trim="userName" type="text" name="userName" class="form-control">
-				<span class="invalid-feedback">
-					{{ feedback }}
-				</span>
 			</div>
 			<div class="form-group">
 				<label>Password</label>
 				<input v-model.trim="password" type="password" name="password" class="form-control">
-				<span class="invalid-feedback">
-					{{ feedback }}
-				</span>
 			</div>
 			<div class="form-group">
 				<label>Confirm Password</label>
 				<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
-				<span class="invalid-feedback">
-					{{ feedback }}
-				</span>
 			</div>
 			<button @click="registerUser">Register</button>
 			<p>Already have an account? <a href="/">Login here</a>.</p>

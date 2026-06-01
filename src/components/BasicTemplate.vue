@@ -30,9 +30,6 @@ export default {
 		},
 	},
 	methods: {
-		consoleTest() {
-			console.log("consoleTest");
-		},
 	},
 	mounted() {
 		this.eventBus.emit("eventTest", "Component Mounted");

@@ -5,6 +5,38 @@
 		<p><strong>GET Response:</strong> {{ serverMessage }}</p>
 	</div>
 
+	<table v-if="bankList && bankList.length > 0" class="cashier-banks">
+		<tr class="header-row">
+			<th>Id</th>
+			<th>Bank Owner</th>
+			<th>Casino Id</th>
+			<th>Shift Number</th>
+			<th>Open Date</th>
+			<th>Close Date</th>
+			<th>Regular AU</th>
+			<th>Promo AU</th>
+			<th v-if="bankHasAction">Actions</th>
+		</tr>
+		<tr class="data-row" v-for="(item, index) in bankList" :key="index" :class="item.bankOpen ? 'open' : 'closed'"
+			:title="item.bankOpen ? 'Bank is open. Click an action on the right.' : 'closed'">
+			<td style="overflow-wrap: normal">{{ item.id }}</td>
+			<td>{{ item.cashierUserId }}</td>
+			<td>{{ item.casinoId }}</td>
+			<td>{{ item.shiftNumber }}</td>
+			<td>{{ item.openDate }}</td>
+			<td v-if="item.bankOpen" class="open-text">OPEN</td>
+			<td v-else>{{ item.closeDate }}</td>
+			<td>{{ item.currentBalance.regularAU }}</td>
+			<td>{{ item.currentBalance.promoAU }}</td>
+			<td v-if="item.bankOpen">
+				<span v-if="item.currentUsersOpenBank" class="btn" @click="showCashierBank(item.id)">View</span>
+				<span v-if="isSiteAdmin || item.currentUsersOpenBank" class="btn"
+					@click="requestCloseCashierBank(item.id)">Close</span>
+			</td>
+		</tr>
+	</table>
+
+
 </template>
 
 <!-- App.vue -->

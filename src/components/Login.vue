@@ -35,17 +35,12 @@ export default {
 	},
 	data() {
 		return {
+			appStatus: Object.assign({}, this.appStatus),
 			isLoggedOn: false,
 			activeSession: null, //sessionMethods.session.get(),
 			accessToken: "",
 			accessTokenExpiration: "",
 			refreshToken: "",
-			status: {
-				code: null,
-				message: null,
-				ok: true,
-				userMustDismiss: false,
-			},
 			userPermissions: {
 				userId: "",
 				globalPermissions: "",
@@ -75,11 +70,11 @@ export default {
 				};
 
 				if (!this.userName || !this.password) {
-					this.status.message =
+					this.appStatus.message =
 						"Please provide a valid phone number and password.";
-					this.status.ok = false;
-					this.eventBus.emit("updateStatus", this.status);
-					return this.status;
+					this.appStatus.ok = false;
+					this.eventBus.emit("updateStatus", this.appStatus);
+					return this.appStatus;
 				}
 
 				let requestUrl = new URL(
