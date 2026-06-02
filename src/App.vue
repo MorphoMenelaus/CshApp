@@ -7,7 +7,7 @@ import HelloWorld from "./components/HelloWorld.vue";
 
 	<Header :appState="appState" :serverVersion="serverVersion" />
 
-	<RouterView id="view" />
+	<RouterView id="view" :appState="appState" />
 
 	<Footer />
 
@@ -28,6 +28,7 @@ export default {
 	},
 	data() {
 		return {
+			appStatus: Object.assign({}, this.appStatus),
 			serverVersion: "",
 			// serverMessage: "",
 			appState: {}
@@ -56,10 +57,10 @@ export default {
 	},
 	created() {
 		this.getServrVersion();
-		this.eventBus.on("eventTest", (data) => {
-			console.log(data);
+		this.eventBus.on("updateAppState", (newState) => {
+			this.appState = newState;
 		});
-		this.eventBus.on("userRegistered", (data) => {
+		this.eventBus.on("eventTest", (data) => {
 			console.log(data);
 		});
 		this.eventBus.emit("getUsers", (data) => {
@@ -114,10 +115,17 @@ nav a:first-of-type {
 }
 
 @media (min-width: 1024px) {
-	header {
+	/* header {
 		display: flex;
 		place-items: center;
-		/* padding-right: calc(var(--section-gap) / 2); */
+		padding-right: calc(var(--section-gap) / 2);
+	} */
+
+	header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
 	}
 
 	.logo {

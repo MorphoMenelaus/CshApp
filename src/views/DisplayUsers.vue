@@ -2,7 +2,7 @@
 
 	<div id="listUsers" class="input-heading">
 
-		<h2>List Users</h2>
+		<h1>List Users</h1>
 
 		<div id="paging">
 			<label for="limitOptions">Limit List</label>
@@ -14,11 +14,11 @@
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
-		<div class="bank-lists-container">
+		<div class="user-lists-container">
 			<table v-if="usersList && usersList.length > 0">
 				<thead>
 					<tr class="header-row">
-						<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{ toTitleCase(label) }}
+						<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{ this.toTitleCase(label) }}
 						</th>
 					</tr>
 				</thead>
@@ -118,13 +118,9 @@ export default {
 		},
 	},
 	methods: {
-		toTitleCase(str) {
-			let spaced = str.replace(/([a-z])([A-Z])/g, '$1 $2');
-			return `${spaced.charAt(0).toUpperCase()}${spaced.slice(1)}`;
-		},
 		async getUsers() {
 			try {
-				let response = await fetch('/api/contacts')
+				let response = await fetch('/api/users')
 				let data = await response.json()
 				this.usersList = Array.isArray(data) && data.length > 0 ? data : this.bogusData;
 				// this.serverMessage = data.message
@@ -166,7 +162,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h2 {
+h1 {
+	font-weight: bold;
 	text-align: center;
 }
 
@@ -193,10 +190,10 @@ h2 {
 	margin: 15px auto;
 }
 
-.bank-lists-container {
+/* .user-lists-container {
 	height: calc(100vh - 18em);
 	overflow: hidden auto;
-}
+} */
 
 table {
 	width: 100%;
@@ -213,25 +210,14 @@ tr {
 	transition: background-color 0.3s;
 }
 
-tr.data-row:hover,
-tr:nth-child(2n):not(.open):hover {
-	background-color: #dfdfdf;
-	color: #000;
-}
-
-tr:nth-child(2n):not(.open) {
+tr:nth-child(2n) {
 	background-color: #414650;
 }
 
-.debug {
-	display: none;
-}
-
-.open-text {
-	padding: 1px 5px;
-	background-color: #0f0;
+tr.data-row:hover,
+tr:nth-child(2n):hover {
+	background-color: #dfdfdf;
 	color: #000;
-	font-weight: 700;
 }
 
 @media (max-width: 767px) {}

@@ -17,6 +17,8 @@ app.use(router)
 app.config.globalProperties.eventBus = eventBus
 app.mount('#app')
 
+const appCurrentVersion = APP_VERSION;
+
 const appStatus = {
 	code: null,
 	message: null,
@@ -41,10 +43,14 @@ const timeOptions = {
 	second: "2-digit"
 }
 
-const appCurrentVersion = APP_VERSION;
+const toTitleCase = (str) => {
+	let spaced = str.replace(/([a-z])([A-Z])/g, '$1 $2');
+	return `${spaced.charAt(0).toUpperCase()}${spaced.slice(1)}`;
+}
 
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.appStatus = appStatus;
 app.config.globalProperties.dateOptions = dateOptions;
 app.config.globalProperties.timeOptions = timeOptions;
+app.config.globalProperties.toTitleCase = toTitleCase;

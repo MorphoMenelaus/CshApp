@@ -19,15 +19,25 @@ const router = createRouter({
 			name: 'GetUser',
 			component: () => import('../views/GetUser.vue'),
 		},
-		{
-			path: '/registeruser',
-			name: 'RegisterUser',
-			component: () => import('../views/RegisterUser.vue'),
-		},
+		// {
+		// 	path: '/registeruser',
+		// 	name: 'RegisterUser',
+		// 	component: () => import('../views/RegisterUser.vue'),
+		// },
 		{
 			path: '/displayusers',
 			name: 'DisplayUsers',
 			component: () => import('../views/DisplayUsers.vue'),
+		},
+		{
+			path: '/register',
+			name: 'Register',
+			component: () => import('../views/Register.vue'),
+		},
+		{
+			path: '/login',
+			name: 'Login',
+			component: () => import('../views/Login.vue'),
 		},
 		{
 			path: '/about',

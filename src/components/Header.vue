@@ -5,12 +5,15 @@
 			<small class="version" v-if="serverVersion">Server Version: {{ serverVersion }}</small>
 			<small class="appVersion" v-if="this.appCurrentVersion">App Version: {{ this.appCurrentVersion }}</small>
 		</div>
-		<!-- <div class="status-message" v-if="appStatus.code != null || appStatus.message != null"
-			:class="!appStatus.ok ? 'error' : 'ok'">
-			<span v-if="appStatus.code != null">{{ appStatus.code }}</span>
-			<span v-if="appStatus.message != null">{{ appStatus.message }}</span>
-			<span v-if="appStatus.userMustDismiss == true" id="dismiss-error">x</span>
-		</div> -->
+		<div v-if="statusArray.length > 0" id="notifications">
+			<div class="status-message" v-for="(item, index) in statusArray" :key="index"
+				:class="item.success ? 'ok' : 'error'">
+				<button @click="closeNotification(item)" class="close-notification" title="Close This Notification">❌</button>
+				<span v-if="item.code != null">{{ item.code }}</span>
+				<span v-if="item.message != null">{{ item.message }}</span>
+				<span v-if="item.eventTimeDisplay != null">{{ item.eventTimeDisplay }}</span>
+			</div>
+		</div>
 
 		<MainNavbar :appState="appState" />
 
@@ -25,6 +28,7 @@
 				<span id="dateLong">{{ dateLocal }}</span>
 			</div>
 		</div>
+
 	</header>
 
 </template>
@@ -47,17 +51,28 @@ export default {
 	},
 	data() {
 		return {
-			dateOptions: this.dateOptions,
-			timeOptions: this.timeOptions,
+			appStatus: Object.assign({}, this.appStatus),
+			statusArray: [],
 			dayLocal: "",
 			dateLocal: "",
 			timeLocal: "",
+			messageTimeout: 0
 		};
 	},
 	watch: {
 	},
 	created() {
 		this.updateDateTime();
+		this.eventBus.on("updateStatus", (message) => {
+			let notification = Object.assign({}, this.appStatus);
+			notification.code = message?.code;
+			notification.message = message?.message;
+			notification.success = message?.success;
+			let date = new Date();
+			notification.expireTime = date.getTime() + 15000;
+			notification.eventTimeDisplay = date.toLocaleTimeString();
+			this.statusArray.push(notification);
+		});
 	},
 	mounted() {
 		setInterval(() => {
@@ -68,9 +83,19 @@ export default {
 		updateDateTime() {
 			let date = new Date();
 			this.dayLocal = date.toLocaleDateString('en-US', { weekday: 'long' });
-			this.dateLocal = date.toLocaleDateString("en-US", this.dateOptions);
+			this.dateLocal = date.toLocaleDateString("en-US");
 			this.timeLocal = date.toLocaleTimeString();
+			if (this.statusArray.length > 0) this.removeStaleEvents();
 		},
+		removeStaleEvents() {
+			let currentTime = new Date().getTime();
+			let newArray = this.statusArray.filter(item => item.expireTime > currentTime);
+			this.statusArray = newArray;
+		},
+		closeNotification(timeCode) {
+			let newArray = this.statusArray.filter(item => item.expireTime !== timeCode.expireTime);
+			this.statusArray = newArray;
+		}
 	},
 };
 </script>
@@ -101,36 +126,48 @@ h1 {
 	font-size: 3em;
 }
 
+#notifications {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	top: 15px;
+	left: 15px;
+	z-index: 5000;
+}
+
 .status-message {
 	position: relative;
 	display: flex;
 	flex-flow: column nowrap;
-	justify-content: center;
-}
-
-.bank-status,
-.status-message {
-	position: absolute;
-	top: 15px;
-	left: 15px;
-	padding: 10px 15px;
+	margin: 5px;
+	padding: 10px 30px 10px 15px;
 	border-radius: 6px;
+	border: 1px #a1a1a1 solid;
 	font-weight: 700;
-	transition: background-color 0.3s ease, color 0.3s ease;
-	z-index: 500;
 }
 
 .status-message.ok {
-	background-color: #0f0;
-	color: #000;
+	background-color: #008000;
+	color: #fff;
 }
 
 .status-message.error {
-	background-color: #f00;
+	background-color: #b02c2c;
 	color: #fff;
 }
 
 .status-message span {
 	display: block;
+}
+
+.close-notification {
+	position: absolute;
+	top: -10px;
+	right: -10px;
+	margin: 0;
+	padding: 0 0 2px 1px;
+	font-size: 1.1em;
+	border-radius: 6px;
+	cursor: pointer;
 }
 </style>
