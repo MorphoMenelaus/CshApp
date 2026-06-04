@@ -1,24 +1,30 @@
 <template>
-	<div id="login" class="input-heading">
-		<div class="login-status" v-if="isLoggedOn">
-			<span>{{ displayName }}</span>
-			<button type="button" @click="logout()">Logout</button>
-		</div>
-		<form class="input-section" v-if="!isLoggedOn">
+
+	<div class="login-status" v-if="appState.isLoggedOn">
+		<span>{{ appState.userName }}</span>
+		<button type="button" @click="logout()">Logout</button>
+	</div>
+
+	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''" v-if="!appState.isLoggedOn">
+		<form class="input-section">
+			<h1>Welcome</h1>
 			<!-- <span class="loader"></span> -->
-			<label for="userName">Please type user name and password: </label>
+			<label for="userName">Login to continue</label>
 			<input type="text" name="userName" v-model="userName" placeholder="Username" autocomplete="userName" />
 			<input type="password" name="password" v-model="password" placeholder="Password"
 				autocomplete="current-password" />
 			<button class="btn" type="button" @click="login()">Login</button>
+			<span class="link" @click="showRegisterUserComponent()">New User? Click to register.</span>
 		</form>
 	</div>
+
 </template>
 
 <script>
 // @ is an alias to /src
 import sessionMethods from "@/dependencies/sessionMethods";
 import sharedScripts from "@/dependencies/sharedScripts";
+import router from "@/router";
 
 export default {
 	name: "Login",
@@ -36,9 +42,7 @@ export default {
 	},
 	data() {
 		return {
-			appStatus: Object.assign({}, this.appStatus),
-			messageResetTimer: null,
-			isLoggedOn: false,
+			appNotify: Object.assign({}, this.appNotify),
 			activeSession: null, //sessionMethods.session.get(),
 			accessToken: "",
 			accessTokenExpiration: "",
@@ -49,19 +53,19 @@ export default {
 				sitePermissions: {},
 			},
 			sitePermissions: {},
-			isCashier: false,
-			isReporter: false,
 			isSiteAdmin: false,
 			userName: "",
 			displayName: "",
 			password: "",
 			userId: "",
 			activeSession: {},
-			userPermissions: "",
 			usersList: [],
 		};
 	},
 	methods: {
+		showRegisterUserComponent() {
+			this.eventBus.emit("registerUser", true);
+		},
 		async login() {
 			try {
 				let body = {
@@ -70,11 +74,11 @@ export default {
 				};
 
 				if (!this.userName || !this.password) {
-					this.appStatus.message =
+					this.appNotify.message =
 						"Please provide a valid phone number and password.";
-					this.appStatus.success = false;
-					this.eventBus.emit("updateStatus", this.appStatus);
-					return this.appStatus;
+					this.appNotify.success = false;
+					this.eventBus.emit("updateStatus", this.appNotify);
+					return this.appNotify;
 				}
 
 				const response = await fetch('/api/auth/login', {
@@ -87,33 +91,60 @@ export default {
 
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
-					updateAppState.authenticationToken = dataObj.authenticationToken;
-					updateAppState.tokenExpiration = dataObj.tokenExpiration;
+					updateAppState.accessToken = dataObj.accessToken;
+					updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
+					updateAppState.refreshToken = dataObj.refreshToken;
+					updateAppState.isLoggedOn = true;
+					updateAppState.userName = this.userName;
 					this.eventBus.emit("updateAppState", updateAppState);
 
-					this.appStatus.code = 200;
-					this.appStatus.message = "Access Token acquired: Login Success";
-					this.appStatus.success = true;
+					this.appNotify.code = 200;
+					this.appNotify.message = "Access Token acquired: Login Success";
+					this.appNotify.success = true;
 				} else {
-					this.appStatus.code = 400;
-					this.appStatus.message = "Invalid credentials";
-					this.appStatus.success = false;
+					this.appNotify.code = 400;
+					this.appNotify.message = "Invalid credentials";
+					this.appNotify.success = false;
 				}
 
-				console.log(this.appStatus);
+				console.log(this.appNotify);
 
-				this.eventBus.emit("updateStatus", this.appStatus);
+				this.eventBus.emit("updateStatus", this.appNotify);
 
 			} catch (e) {
 				console.error(e);
 			}
 		},
-		logout() {
-			let confirmLogout = confirm(
-				`Are you sure you want to logout, ${this.displayName}`
-			);
-			if (!confirmLogout) return false;
-			// this.$forceUpdate();
+		async logout() {
+			
+			let body = {
+				userName: this.appState.userName,
+			};
+
+			try {
+				let confirmLogout = confirm(
+					`Are you sure you want to logout, ${this.displayName}`
+				);
+				if (!confirmLogout) return false;
+
+				const response = await fetch('/api/auth/logout', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				});
+
+				let dataObj = await response.json();
+
+				console.log(dataObj);
+
+				let updateAppState = {};
+				this.eventBus.emit("updateAppState", updateAppState);
+
+				router.push("/");
+
+			} catch {
+				console.error(e);
+			}
 		},
 	},
 	mounted() {
@@ -132,26 +163,46 @@ export default {
 
 #login {
 	position: absolute;
-	top: 230px;
+	display: grid;
+	align-items: center;
+	width: 100%;
+	height: calc(100% - 139px);
+	top: 94px;
 	right: 0;
-	width: 80%;
+	bottom: 0;
+	left: 0;
+	background-color: rgb(0 0 0 / 80%);
+	z-index: 5000;
+}
+
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+	#login {
+		background-color: unset;
+		-webkit-backdrop-filter: blur(12px) saturate(140%);
+		backdrop-filter: blur(12px) saturate(140%);
+	}
+}
+
+#login.logged-on {
+	background-color: unset;
+	-webkit-backdrop-filter: unset;
+	backdrop-filter: unset;
 }
 
 .input-section {
-	margin: 30px auto;
-	background: rgb(71 68 196 / 40%);
-	padding: 30px;
 	position: relative;
-	backdrop-filter: blur(8px);
-	border-radius: 12px;
-	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
-	max-width: 30em;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	max-width: 30em;
+	padding: 30px;
+	margin: 30px auto;
+	background: rgb(49 59 100 / 70%);
+	border-radius: 8px;
+	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
 }
 
-.input-section > * {
+.input-section>* {
 	margin: 5px;
 }
 
@@ -167,6 +218,7 @@ export default {
 	background-color: #32373f;
 	border-radius: 0 0 0 0.4em;
 	border: 1px #5b88c0 solid;
+	z-index: 100000;
 }
 
 .login-status button {
@@ -180,6 +232,16 @@ label[for="casinoId"] {
 	text-transform: uppercase;
 	text-shadow: -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000,
 		1px 1px 0px #000;
+}
+
+.link {
+	text-decoration: underline;
+	color: #3366cc;
+	cursor: pointer;
+}
+
+.link:hover {
+	color: #ff6600;
 }
 
 /* .loader {

@@ -77,10 +77,8 @@ export default {
 		},
 	},
 	mounted() {
-		this.eventBus.emit("eventTest", "Component Mounted");
 	},
 	created() {
-		this.eventBus.emit("eventTest", "Component Created");
 	},
 };
 </script>

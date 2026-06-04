@@ -1,23 +1,16 @@
 <template>
 
 	<header>
-		<div id="serverInfo">
-			<small class="version" v-if="serverVersion">Server Version: {{ serverVersion }}</small>
-			<small class="appVersion" v-if="this.appCurrentVersion">App Version: {{ this.appCurrentVersion }}</small>
-		</div>
 		<div v-if="statusArray.length > 0" id="notifications">
 			<div class="status-message" v-for="(item, index) in statusArray" :key="index"
 				:class="item.success ? 'ok' : 'error'">
-				<button @click="closeNotification(item)" class="close-notification" title="Close This Notification">❌</button>
+				<button @click="closeNotification(item)" class="close-notification"
+					title="Close This Notification">❌</button>
 				<span v-if="item.code != null">{{ item.code }}</span>
 				<span v-if="item.message != null">{{ item.message }}</span>
 				<span v-if="item.eventTimeDisplay != null">{{ item.eventTimeDisplay }}</span>
 			</div>
 		</div>
-
-		<MainNavbar :appState="appState" />
-
-		<!-- <h1>Welcome</h1> -->
 
 		<div id="clock">
 			<div id="time-container">
@@ -28,6 +21,10 @@
 				<span id="dateLong">{{ dateLocal }}</span>
 			</div>
 		</div>
+
+		<MainNavbar :appState="appState" />
+
+		<!-- <h1>Welcome</h1> -->
 
 	</header>
 
@@ -51,7 +48,7 @@ export default {
 	},
 	data() {
 		return {
-			appStatus: Object.assign({}, this.appStatus),
+			appNotify: Object.assign({}, this.appNotify),
 			statusArray: [],
 			dayLocal: "",
 			dateLocal: "",
@@ -63,11 +60,11 @@ export default {
 	},
 	created() {
 		this.updateDateTime();
-		this.eventBus.on("updateStatus", (message) => {
-			let notification = Object.assign({}, this.appStatus);
-			notification.code = message?.code;
-			notification.message = message?.message;
-			notification.success = message?.success;
+		this.eventBus.on("updateStatus", (payload) => {
+			let notification = Object.assign({}, this.appNotify);
+			notification.code = payload?.code;
+			notification.message = payload?.message;
+			notification.success = payload?.success;
 			let date = new Date();
 			notification.expireTime = date.getTime() + 15000;
 			notification.eventTimeDisplay = date.toLocaleTimeString();
@@ -102,20 +99,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#serverInfo {
-	position: absolute;
-	display: flex;
-	flex-direction: column;
-	top: 0;
-	left: 0;
-	padding: 5px 15px;
-	z-index: 500;
-}
-
 #clock {
 	position: absolute;
 	top: 10px;
-	right: 15px;
+	left: 15px;
 	min-width: 6em;
 }
 
@@ -130,9 +117,11 @@ h1 {
 	display: flex;
 	flex-direction: column;
 	position: absolute;
+	max-height: 90vh;
 	top: 15px;
 	left: 15px;
-	z-index: 5000;
+	overflow: hidden auto;
+	z-index: 10000;
 }
 
 .status-message {

@@ -18,7 +18,8 @@
 			<table v-if="usersList && usersList.length > 0">
 				<thead>
 					<tr class="header-row">
-						<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{ this.toTitleCase(label) }}
+						<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{ this.toTitleCase(label)
+							}}
 						</th>
 					</tr>
 				</thead>
@@ -148,13 +149,8 @@ export default {
 	},
 	mounted() {
 		this.getUsers();
-		this.eventBus.emit("eventTest", "Component Mounted");
 	},
 	created() {
-		this.eventBus.emit("eventTest", "Component Created");
-		// onBeforeUnmount(() => {
-		// 	this.eventBus.off("eventTest");
-		// });
 	},
 };
 </script>

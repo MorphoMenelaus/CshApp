@@ -1,26 +1,29 @@
 <template>
 
-	<div class="wrapper">
-		<h2>Sign Up</h2>
-		<p>Please fill this form to create an account.</p>
-		<!-- @submit.prevent blocks page reloads and executes your logic -->
-		<form @submit.prevent="handleSubmit" method="post">
-			<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
-				<label>Username</label>
-				<input v-model.trim="userName" type="text" name="userName" class="form-control">
-			</div>
-			<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
-				<label>Password</label>
-				<input v-model.trim="password" type="password" name="password" class="form-control">
-			</div>
-			<div class="form-group">
-				<label>Confirm Password</label>
-				<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
-			</div>
-			<button class="btn" @click="register()">Register</button>
-			<p>Already have an account? <RouterLink to="/login" title="Register here">Login here.</RouterLink>
-			</p>
-		</form>
+	<div id="register">
+		<div class="wrapper">
+			<h2>Sign Up</h2>
+			<p>Please fill this form to create an account.</p>
+			<!-- @submit.prevent blocks page reloads and executes your logic -->
+			<form @submit.prevent="handleSubmit" method="post">
+				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
+					<label>Username</label>
+					<input v-model.trim="userName" type="text" name="userName" class="form-control">
+				</div>
+				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
+					<label>Password</label>
+					<input v-model.trim="password" type="password" name="password" class="form-control">
+				</div>
+				<div class="form-group">
+					<label>Confirm Password</label>
+					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
+				</div>
+				<button class="btn" @click="register()">Register</button>
+				<p>Already have an account? <span class="link" title="Login here"
+						@click="removeRegisterUserComponent()">Login here.</span>
+				</p>
+			</form>
+		</div>
 	</div>
 
 </template>
@@ -37,7 +40,7 @@ export default {
 	},
 	data() {
 		return {
-			postStatus: Object.assign({}, this.appStatus),
+			postStatus: Object.assign({}, this.appNotify),
 			userName: "",
 			password: "",
 			confirmPassword: "",
@@ -54,6 +57,9 @@ export default {
 		},
 	},
 	methods: {
+		removeRegisterUserComponent() {
+			this.eventBus.emit("registerUser", false);
+		},
 		async register() {
 			try {
 				let body = {
@@ -82,6 +88,7 @@ export default {
 					this.postStatus.message = data?.message;
 					this.postStatus.success = data?.success;
 					this.eventBus.emit("updateStatus", (this.postStatus));
+					this.eventBus.emit("registerUser", false);
 				}
 
 				this.errState = false;
@@ -104,21 +111,29 @@ export default {
 
 <!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
+h2 {
+	text-align: center;
+}
+
 .err {
 	border: 2px #f00 solid;
 }
 
 #view {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
 	margin: 30px auto;
-	padding: 15px;
+	padding: 15px 30px;
+	height: fit-content;
 	background-color: rgb(71 68 196 / 40%);
+	border-radius: 8px;
 }
 
-#login {
-	position: absolute;
-	top: 230px;
-	right: 0;
-	width: 80%;
+form {
+	display: flex;
+	flex-direction: column;
 }
 
 .input-section {
@@ -184,4 +199,49 @@ label[for="casinoId"] {
 		transform: rotate(359deg);
 	}
 } */
+
+#register {
+	position: absolute;
+	z-index: 10000;
+	display: grid;
+	width: 100%;
+	height: calc(100vh - 140px);
+	justify-content: center;
+	background-color: rgb(0 0 0 / 30%);
+	left: 0;
+	top: 95px;
+	align-items: center;
+}
+
+.wrapper {
+	max-width: 30em;
+	align-content: center;
+	background-color: #313b64;
+	height: fit-content;
+	padding: 15px 30px;
+	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+}
+
+.wrapper .form-group {
+	display: flex;
+	align-content: center;
+	flex-direction: column;
+}
+
+#register button {
+	display: block;
+	margin: 15px auto;
+}
+
+.link {
+	text-decoration: underline;
+	color: #3366cc;
+	cursor: pointer;
+}
+
+.link:hover {
+	color: #ff6600;
+}
 </style>

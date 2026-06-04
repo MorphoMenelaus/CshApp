@@ -95,9 +95,9 @@ export default {
 
 				// this.serverMessage.value = data.message
 				this.eventBus.emit("getUsers", data);
-				
+
 				this.getUserPreferences();
-				
+
 			} catch (error) {
 				console.error('Error fetching data:', error)
 				// this.serverMessage.value = 'Failed to load server data.'
@@ -126,10 +126,8 @@ export default {
 		},
 	},
 	mounted() {
-		this.eventBus.emit("eventTest", "Component Mounted");
 	},
 	created() {
-		this.eventBus.emit("eventTest", "Component Created");
 	},
 };
 </script>

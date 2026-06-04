@@ -32,10 +32,12 @@ export default {
 	methods: {
 	},
 	mounted() {
-		this.eventBus.emit("eventTest", "Component Mounted");
 	},
 	created() {
-		this.eventBus.emit("eventTest", "Component Created");
+		// this.eventBus.emit("eventTest", "Component Created");
+		// onBeforeUnmount(() => {
+		// 	this.eventBus.off("eventTest");
+		// });
 	},
 };
 </script>

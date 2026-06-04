@@ -8,36 +8,25 @@ const router = createRouter({
 			path: '/',
 			name: 'home',
 			component: HomeView,
+			meta: { requiresAuth: false }
 		},
 		{
 			path: '/tic-tac-toe',
 			name: 'TicTacToe',
 			component: () => import('../views/TicTacToe.vue'),
+			meta: { requiresAuth: true }
 		},
 		{
 			path: '/getuser',
 			name: 'GetUser',
 			component: () => import('../views/GetUser.vue'),
+			meta: { requiresAuth: true }
 		},
-		// {
-		// 	path: '/registeruser',
-		// 	name: 'RegisterUser',
-		// 	component: () => import('../views/RegisterUser.vue'),
-		// },
 		{
 			path: '/displayusers',
 			name: 'DisplayUsers',
 			component: () => import('../views/DisplayUsers.vue'),
-		},
-		{
-			path: '/register',
-			name: 'Register',
-			component: () => import('../views/Register.vue'),
-		},
-		{
-			path: '/login',
-			name: 'Login',
-			component: () => import('../views/Login.vue'),
+			meta: { requiresAuth: true }
 		},
 		{
 			path: '/about',
@@ -46,8 +35,18 @@ const router = createRouter({
 			// this generates a separate chunk (About.[hash].js) for this route
 			// which is lazy-loaded when the route is visited.
 			component: () => import('../views/AboutView.vue'),
+			meta: { requiresAuth: false }
 		},
 	],
-})
+});
+
+// router.beforeEach((to, from) => {
+// 	let hide = false;
+// 	if (to.meta.requiresAuth) {
+// 		hide = false;
+// 	} else {
+// 		hide = true;
+// 	}
+// })
 
 export default router

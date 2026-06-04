@@ -1,18 +1,19 @@
 <template>
+
 	<div id="nav-container">
 		<nav aria-label="main menu">
 			<RouterLink to="/" title="Home" class="home-icon"><img src="/favicon.ico" alt="CSH App"></RouterLink>
 			<RouterLink to="/">Home</RouterLink>
-			<RouterLink to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
-			<RouterLink to="/getuser">Get User</RouterLink>
-			<!-- <RouterLink to="/registeruser">Register User</RouterLink> -->
-			<RouterLink to="/displayusers">Display Users</RouterLink>
-			<RouterLink to="/register">Register</RouterLink>
-			<RouterLink to="/login">Login</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/getuser">Get User</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers">Display Users</RouterLink>
+			<!-- <RouterLink to="/register">Register</RouterLink> -->
+			<!-- <RouterLink to="/login">Login</RouterLink> -->
 			<RouterLink to="/about">About</RouterLink>
 			<span id="loading-icon"></span>
 		</nav>
 	</div>
+
 </template>
 
 <script>

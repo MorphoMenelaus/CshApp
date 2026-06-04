@@ -19,7 +19,7 @@ app.mount('#app')
 
 const appCurrentVersion = APP_VERSION;
 
-const appStatus = {
+const appNotify = {
 	code: null,
 	message: null,
 	ok: true,
@@ -50,7 +50,7 @@ const toTitleCase = (str) => {
 
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
-app.config.globalProperties.appStatus = appStatus;
+app.config.globalProperties.appNotify = appNotify;
 app.config.globalProperties.dateOptions = dateOptions;
 app.config.globalProperties.timeOptions = timeOptions;
 app.config.globalProperties.toTitleCase = toTitleCase;
