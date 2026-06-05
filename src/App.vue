@@ -5,19 +5,26 @@ import HelloWorld from "./components/HelloWorld.vue";
 
 <template>
 
-	<Header :appState="appState" :serverVersion="serverVersion" />
+	<Header :appState="appState" />
 
-	<RouterView id="view" />
+	<Login :appState="appState" />
 
-	<Footer />
+	<RouterView :appState="appState" id="view" />
+
+	<Footer :serverVersion="serverVersion" />
+
+	<component :is="currentComponent" :appState="appState" />
 
 </template>
 
 <script>
 // @ is an alias to /src
-import { ref, reactive } from "vue";
+// import { ref, reactive } from "vue";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
+import Login from "@/components/Login.vue";
+import Register from "@/components/Register.vue";
+
 // import sessionMethods from "@/dependencies/sessionMethods";
 // import sharedScripts from "@/dependencies/sharedScripts";
 
@@ -25,17 +32,100 @@ export default {
 	components: {
 		Header,
 		Footer,
+		Login,
+		Register
 	},
 	data() {
 		return {
+			appNotify: Object.assign({}, this.appNotify),
 			serverVersion: "",
-			// serverMessage: "",
-			appState: {}
+			appState: {},
+			currentComponent: null
 		};
 	},
 	watch: {
+		currentComponent() {
+		},
 	},
 	methods: {
+		// async refreshSessionData() {
+		// 	this.appNotify = this.appNotify || sessionMethods.session.get();
+		// 	try {
+		// 		let sessionRefreshedStatus = await this.checkAndRefreshSession();
+
+		// 		if (sessionRefreshedStatus?.ok) {
+		// 			let mergedSession = {
+		// 				...this.appNotify,
+		// 				...sessionMethods.session.get(),
+		// 			};
+		// 			let updateState = await mergedSession;
+		// 			this.appNotify = await updateState;
+
+		// 			sessionMethods.session.save(await updateState);
+
+		// 			if (await this.checkAndRefreshSession()) this.sessionRefreshCheck = new Date().getTime();
+
+		// 			await this.eventBus.emit("updateStatus", await sessionRefreshedStatus);
+		// 			return sessionRefreshedStatus;
+		// 		} else {
+		// 			await this.eventBus.emit("updateStatus", sessionRefreshedStatus);
+		// 			return sessionRefreshedStatus;
+		// 		}
+		// 	} catch (e) {
+		// 		console.error(e);
+		// 		return false;
+		// 	}
+		// },
+		async checkTokenExpireAndRefresh() {
+			// accessTokenExpiration in milliseconds
+			let accessTokenExpiration = this.appState.accessTokenExpiration;
+			let currentTime = new Date().getTime();
+			let minute = 60000; // refresh a minute early to prevent expiration overlap
+
+			if (currentTime - minute > accessTokenExpiration)
+				this.refreshToken();
+		},
+		async refreshToken() {
+
+			try {
+				let body = {
+					accessToken: this.appState.accessToken,
+					refreshToken: this.appState.refreshToken,
+				};
+
+				const response = await fetch('/api/auth/refresh', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				});
+
+				let dataObj = await response.json();
+
+				console.log(dataObj);
+
+				let updateAppState = this.appState;
+				if (dataObj?.success) {
+					updateAppState.accessToken = dataObj.accessToken;
+					updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
+					updateAppState.refreshToken = dataObj.refreshToken;
+					this.eventBus.emit("updateAppState", updateAppState);
+
+					this.appNotify.code = 200;
+					this.appNotify.message = "New Access Token acquired: Refresh Success";
+					this.appNotify.success = true;
+				} else {
+					this.appNotify.code = 400;
+					this.appNotify.message = "Refresh Failed. Please, log in again.";
+					this.appNotify.success = false;
+					this.eventBus.emit("updateAppState", {});
+				}
+
+				this.eventBus.emit("updateStatus", this.appNotify);
+
+			} catch (e) {
+				console.error(e);
+			}
+		},
 		async getServrVersion() {
 			try {
 				const response = await fetch('/api/serverInfo');
@@ -56,14 +146,15 @@ export default {
 	},
 	created() {
 		this.getServrVersion();
-		this.eventBus.on("eventTest", (data) => {
-			console.log(data);
+		this.eventBus.on("updateAppState", (payload) => {
+			this.appState = payload;
+			console.log(this.appState);
 		});
-		this.eventBus.on("userRegistered", (data) => {
-			console.log(data);
+		this.eventBus.on("registerUser", (payload) => {
+			this.currentComponent = payload ? "Register" : null;
 		});
-		this.eventBus.emit("getUsers", (data) => {
-			console.log(data);
+		this.eventBus.emit("getUsers", (payload) => {
+			console.log(payload);
 		});
 	},
 	mounted() {
@@ -114,10 +205,18 @@ nav a:first-of-type {
 }
 
 @media (min-width: 1024px) {
-	header {
+	/* header {
 		display: flex;
 		place-items: center;
-		/* padding-right: calc(var(--section-gap) / 2); */
+		padding-right: calc(var(--section-gap) / 2);
+	} */
+
+	header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 100000;
 	}
 
 	.logo {

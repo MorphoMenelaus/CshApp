@@ -1,24 +1,30 @@
 <template>
-	<div id="login" class="input-heading">
-		<div class="login-status" v-if="isLoggedOn">
-			<span>{{ displayName }}</span>
-			<button type="button" @click="logout()">Logout</button>
-		</div>
-		<form class="input-section" v-if="!isLoggedOn">
+
+	<div class="login-status" v-if="appState.isLoggedOn">
+		<span>{{ appState.userName }}</span>
+		<button class="btn" type="button" @click="logout()">Logout</button>
+	</div>
+
+	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''" v-if="!appState.isLoggedOn">
+		<form class="input-section">
+			<h1>Welcome</h1>
 			<!-- <span class="loader"></span> -->
-			<label for="casinoId">Please select a casino: </label>
+			<label for="userName">Login to continue</label>
 			<input type="text" name="userName" v-model="userName" placeholder="Username" autocomplete="userName" />
 			<input type="password" name="password" v-model="password" placeholder="Password"
 				autocomplete="current-password" />
-			<button type="button" @click="login()">Login</button>
+			<button class="btn" type="button" @click="login()">Login</button>
+			<span @click="showRegisterUserComponent()">New User? <span class="link">Click to register</span>.</span>
 		</form>
 	</div>
+
 </template>
 
 <script>
 // @ is an alias to /src
 import sessionMethods from "@/dependencies/sessionMethods";
 import sharedScripts from "@/dependencies/sharedScripts";
+import router from "@/router";
 
 export default {
 	name: "Login",
@@ -26,17 +32,17 @@ export default {
 		appState: Object,
 	},
 	watch: {
-		appState: {
-			handler(val, oldVal) {
-				this.updateUserInfo();
-			},
-			deep: true,
-		},
+		// appState: {
+		// 	handler(val, oldVal) {
+		// 		console.log("appState Changed");
+		// 		console.log(this.appState);
+		// 	},
+		// 	deep: true,
+		// },
 	},
 	data() {
 		return {
-			appStatus: Object.assign({}, this.appStatus),
-			isLoggedOn: false,
+			appNotify: Object.assign({}, this.appNotify),
 			activeSession: null, //sessionMethods.session.get(),
 			accessToken: "",
 			accessTokenExpiration: "",
@@ -47,155 +53,103 @@ export default {
 				sitePermissions: {},
 			},
 			sitePermissions: {},
-			isCashier: false,
-			isReporter: false,
 			isSiteAdmin: false,
 			userName: "",
 			displayName: "",
 			password: "",
 			userId: "",
 			activeSession: {},
-			userPermissions: "",
 			usersList: [],
 		};
 	},
 	methods: {
-		updateUserInfo() { },
+		showRegisterUserComponent() {
+			this.eventBus.emit("registerUser", true);
+		},
 		async login() {
-			let globalState = this.$store.state;
 			try {
 				let body = {
-					phoneNumber: this.userName,
+					userName: this.userName,
 					password: this.password,
 				};
 
 				if (!this.userName || !this.password) {
-					this.appStatus.message =
-						"Please provide a valid phone number and password.";
-					this.appStatus.ok = false;
-					this.eventBus.emit("updateStatus", this.appStatus);
-					return this.appStatus;
+					this.appNotify.message =
+						"Please provide a user name and password.";
+					this.appNotify.success = false;
+					this.eventBus.emit("updateStatus", this.appNotify);
+					return this.appNotify;
 				}
 
-				let requestUrl = new URL(
-					"/api/v1/authentication/login",
-					sessionMethods.baseUrl
-				);
-				let headerObj = new Headers();
-				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let request = new Request(requestUrl.toString(), {
-					method: "POST",
-					body: JSON.stringify(body),
-					headers: headerObj,
+				const response = await fetch('/api/auth/login', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
 				});
-				const response = await fetch(request);
 
-				let fetchStatus = sharedScripts.checkFetchErrors(response);
-
-				if (fetchStatus && !fetchStatus.ok) {
-					this.eventBus.emit("updateStatus", fetchStatus);
-					return;
-				}
 				let dataObj = await response.json();
 
-				globalState.casinoName = this.casinoName =
-					this.casinoList[this.casinoId - 1].name; // casino id is not zero indexed
-				globalState.casinoId = this.casinoId;
-				globalState.accessToken = dataObj.accessToken;
-				globalState.accessTokenExpiration = dataObj.accessTokenExpiration;
-				globalState.refreshToken = dataObj.refreshToken;
-				globalState.userId = dataObj.userId;
-				globalState.userName = this.userName;
-				globalState.displayName = this.displayName = dataObj.displayName;
-				globalState.isLoggedOn = this.isLoggedOn = true;
-				this.userPermissions = await sessionMethods.getUserPermissions(
-					globalState.userId,
-					globalState.accessToken
-				);
-				this.userPermissions =
-					this.userPermissions.ok && !this.userPermissions.ok
-						? {}
-						: this.userPermissions;
-				this.sitePermissions = this.userPermissions.sitePermissions;
-				globalState.userPermissions = this.userPermissions;
-				this.isSiteAdmin =
-					this.sitePermissions?.[globalState.casinoId]?.includes("SiteAdmin");
-				this.isCashier =
-					this.sitePermissions?.[globalState.casinoId]?.includes("Cashier");
-				this.isReporter =
-					this.sitePermissions?.[globalState.casinoId]?.includes("Reporter");
-				globalState.isSiteAdmin = this.isSiteAdmin;
-				globalState.isCashier = this.isCashier;
-				globalState.isReporter = this.isReporter;
+				if (dataObj?.success) {
+					let updateAppState = this.appState;
+					updateAppState.accessToken = dataObj.accessToken;
+					updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
+					updateAppState.refreshToken = dataObj.refreshToken;
+					updateAppState.userName = this.userName;
+					updateAppState.user = dataObj.user
+					updateAppState.permissions = dataObj.user.permissions;
+					this.eventBus.emit("updateAppState", updateAppState);
+					updateAppState.isLoggedOn = true;
 
-				sessionMethods.session.save({
-					accessToken: globalState.accessToken,
-					refreshToken: globalState.refreshToken,
-					accessTokenExpiration: globalState.accessTokenExpiration,
-					casinoList: globalState.casinoList,
-					casinoId: globalState.casinoId, // casino id is not zero indexed
-					casinoName: globalState.casinoName,
-					userId: globalState.userId,
-					userName: globalState.userName,
-					displayName: globalState.displayName,
-					userPermissions: globalState.userPermissions,
-					isSiteAdmin: globalState.isSiteAdmin,
-					isCashier: globalState.isCashier,
-					isReporter: globalState.isReporter,
-					isLoggedOn: globalState.isLoggedOn,
-				});
+					this.appNotify.code = 200;
+					this.appNotify.message = "Access Token acquired: Login Success";
+					this.appNotify.success = true;
+				} else {
+					this.appNotify.code = 400;
+					this.appNotify.message = "Invalid credentials";
+					this.appNotify.success = false;
+				}
 
-				this.activeSession = globalState;
+				console.log(this.appNotify);
 
-				this.eventBus.emit("updateStatus", fetchStatus);
-				this.eventSync.time = new Date().getTime();
-				this.eventBus.emit("checkAndRefreshSession");
-				if (this.userPermissions)
-					this.eventBus.emit("updateSession", globalState);
+				this.eventBus.emit("updateStatus", this.appNotify);
 
-				this.eventBus.emit("updateCashierState", globalState);
 			} catch (e) {
 				console.error(e);
 			}
 		},
-		logout() {
-			let confirmLogout = confirm(
-				`Are you sure you want to logout, ${this.displayName}`
-			);
-			if (!confirmLogout) return false;
-			sharedScripts.logout(this);
-			this.isLoggedOn =
-				this.isCashier =
-				this.isReporter =
-				this.isSiteAdmin =
-				false;
-			this.displayName = this.userName = "";
-			this.userPermissions = this.activeSession = {};
-			this.$store.replaceState({
-				casinoList: this.casinoList,
-			});
-			this.$forceUpdate();
-			this.eventBus.emit("updateSession", this.$store.state);
+		async logout() {
+
+			let body = {
+				userName: this.appState.userName,
+			};
+
+			try {
+				let confirmLogout = confirm(
+					`Are you sure you want to logout, ${this.displayName}`
+				);
+				if (!confirmLogout) return false;
+
+				const response = await fetch('/api/auth/logout', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				});
+
+				let dataObj = await response.json();
+
+				console.log(dataObj);
+
+				let updateAppState = {};
+				this.eventBus.emit("updateAppState", updateAppState);
+
+				router.push("/");
+
+			} catch {
+				console.error(e);
+			}
 		},
 	},
-	async mounted() {
-		// this.isLoggedOn = this.cashierState?.isLoggedOn || false;
-		// this.userId = this.cashierState?.userId || "";
-		// this.userName = this.cashierState?.userName || "";
-		// this.displayName = this.cashierState?.displayName || "";
-		// this.userPermissions = this.cashierState?.userPermissions || {};
-		// this.sitePermissions =
-		//   this.cashierState?.userPermissions?.sitePermissions || {};
-		// if (Object.keys(this.sitePermissions).length > 0) {
-		//   this.isSiteAdmin =
-		//     this.sitePermissions[this.cashierState.casinoId]?.includes("SiteAdmin");
-		//   this.isCashier =
-		//     this.sitePermissions[this.cashierState.casinoId]?.includes("Cashier");
-		//   this.isReporter =
-		//     this.sitePermissions[this.cashierState.casinoId]?.includes("Reporter");
-		// }
-		// this.eventBus.emit("updateSession", this.cashierState);
-		// this.eventBus.emit("checkAndRefreshSession");
+	mounted() {
 	},
 	created() {
 		// this.$store.replaceState(sessionMethods.session.get());
@@ -205,23 +159,53 @@ export default {
 
 <!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
-#login {
-	position: absolute;
-	top: 230px;
-	right: 0;
-	width: 80%;
+.err {
+	border: 2px #f00 solid;
 }
 
-#login .input-section {
-	background: rgb(71 68 196 / 40%);
-	padding: 30px;
+#login {
+	position: absolute;
+	display: grid;
+	align-items: center;
+	width: 100%;
+	height: calc(100% - 139px);
+	top: 94px;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: rgb(0 0 0 / 80%);
+	z-index: 5000;
+}
+
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+	#login {
+		background-color: unset;
+		-webkit-backdrop-filter: blur(12px) saturate(140%);
+		backdrop-filter: blur(12px) saturate(140%);
+	}
+}
+
+#login.logged-on {
+	background-color: unset;
+	-webkit-backdrop-filter: unset;
+	backdrop-filter: unset;
+}
+
+.input-section {
 	position: relative;
-	top: 0;
-	/* left: 10vw; */
-	backdrop-filter: blur(8px);
-	border-radius: 12px;
-	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 	max-width: 30em;
+	padding: 30px;
+	margin: 30px auto;
+	background: rgb(49 59 100 / 70%);
+	border-radius: 8px;
+	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
+}
+
+.input-section>* {
+	margin: 5px;
 }
 
 .login-status {
@@ -236,6 +220,7 @@ export default {
 	background-color: #32373f;
 	border-radius: 0 0 0 0.4em;
 	border: 1px #5b88c0 solid;
+	z-index: 100000;
 }
 
 .login-status button {
@@ -249,6 +234,16 @@ label[for="casinoId"] {
 	text-transform: uppercase;
 	text-shadow: -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000,
 		1px 1px 0px #000;
+}
+
+.link {
+	text-decoration: underline;
+	color: #4c88ff;
+	cursor: pointer;
+}
+
+.link:hover {
+	color: #ff6600;
 }
 
 /* .loader {

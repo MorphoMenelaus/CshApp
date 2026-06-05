@@ -1,5 +1,9 @@
 <template>
 	<footer>
+		<div id="serverInfo">
+			<small class="version" v-if="serverVersion">Server Version: {{ serverVersion }}</small>
+			<small class="appVersion" v-if="this.appCurrentVersion">App Version: {{ this.appCurrentVersion }}</small>
+		</div>
 		<h3>Csh App</h3>
 	</footer>
 </template>
@@ -8,6 +12,7 @@
 export default {
 	name: 'Footer',
 	props: {
+		serverVersion: String
 	}
 }
 </script>
@@ -28,5 +33,15 @@ footer {
 h3 {
 	text-align: center;
 	color: #fff;
+}
+
+#serverInfo {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	top: 0;
+	left: 0;
+	padding: 5px 15px;
+	z-index: 500;
 }
 </style>

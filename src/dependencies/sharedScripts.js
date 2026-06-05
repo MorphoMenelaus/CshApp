@@ -20,11 +20,11 @@ function checkFetchErrors(fetchResponse) {
 	let status = {
 		code: fetchResponse?.status?.code ? fetchResponse.status.code : fetchResponse.status,
 		message: "",
-		ok: true,
+		success: true,
 		userMustDismiss: false
 	};
-	if ((!fetchResponse.length > 0 && !fetchResponse.ok) || fetchResponse.status >= 400) {
-		status.ok = false;
+	if ((!fetchResponse.length > 0 && !fetchResponse.success) || fetchResponse.status >= 400) {
+		status.success = false;
 		switch (fetchResponse.status) {
 			case 400:
 				status.message = "Bad Request";

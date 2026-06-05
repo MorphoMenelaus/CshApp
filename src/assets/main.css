@@ -31,7 +31,8 @@ a,
 		display: grid;
 		/* grid-template-columns: 1fr 1fr; */
 		padding: 0 2rem;
-		height: 100vh;
+		/* height: 100vh; */
+		height: calc(100vh - 190px);
 		width: 100%;
 
 	}

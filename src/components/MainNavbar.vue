@@ -1,15 +1,18 @@
 <template>
+
 	<div id="nav-container">
 		<nav aria-label="main menu">
+			<RouterLink to="/" title="Home" class="home-icon"><img src="/favicon.ico" alt="CSH App"></RouterLink>
 			<RouterLink to="/">Home</RouterLink>
-			<RouterLink to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
-			<RouterLink to="/getuser">Get User</RouterLink>
-			<RouterLink to="/registeruser">Register User</RouterLink>
-			<RouterLink to="/displayusers">Display Users</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/getuser">Get User</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers">Display Users</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock">Simple Clock</RouterLink>
 			<RouterLink to="/about">About</RouterLink>
 			<span id="loading-icon"></span>
 		</nav>
 	</div>
+
 </template>
 
 <script>
@@ -25,6 +28,17 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+a.home-icon {
+	display: contents;
+}
+
+.home-icon img {
+	margin-right: 15px;
+	height: 56px;
+	width: 56px;
+	cursor: pointer;
+}
+
 #nav-container {
 	position: absolute;
 	top: 0;
