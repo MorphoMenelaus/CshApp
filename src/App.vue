@@ -39,10 +39,7 @@ export default {
 		return {
 			appNotify: Object.assign({}, this.appNotify),
 			serverVersion: "",
-			// serverMessage: "",
 			appState: {},
-			// isLoggedOn: false,
-			loginHidden: false,
 			currentComponent: null
 		};
 	},

@@ -2,7 +2,7 @@
 
 	<div class="login-status" v-if="appState.isLoggedOn">
 		<span>{{ appState.userName }}</span>
-		<button type="button" @click="logout()">Logout</button>
+		<button class="btn" type="button" @click="logout()">Logout</button>
 	</div>
 
 	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''" v-if="!appState.isLoggedOn">
@@ -14,7 +14,7 @@
 			<input type="password" name="password" v-model="password" placeholder="Password"
 				autocomplete="current-password" />
 			<button class="btn" type="button" @click="login()">Login</button>
-			<span class="link" @click="showRegisterUserComponent()">New User? Click to register.</span>
+			<span @click="showRegisterUserComponent()">New User? <span class="link">Click to register</span>.</span>
 		</form>
 	</div>
 
@@ -75,7 +75,7 @@ export default {
 
 				if (!this.userName || !this.password) {
 					this.appNotify.message =
-						"Please provide a valid phone number and password.";
+						"Please provide a user name and password.";
 					this.appNotify.success = false;
 					this.eventBus.emit("updateStatus", this.appNotify);
 					return this.appNotify;
@@ -94,9 +94,11 @@ export default {
 					updateAppState.accessToken = dataObj.accessToken;
 					updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
 					updateAppState.refreshToken = dataObj.refreshToken;
-					updateAppState.isLoggedOn = true;
 					updateAppState.userName = this.userName;
+					updateAppState.user = dataObj.user
+					updateAppState.permissions = dataObj.user.permissions;
 					this.eventBus.emit("updateAppState", updateAppState);
+					updateAppState.isLoggedOn = true;
 
 					this.appNotify.code = 200;
 					this.appNotify.message = "Access Token acquired: Login Success";
@@ -116,7 +118,7 @@ export default {
 			}
 		},
 		async logout() {
-			
+
 			let body = {
 				userName: this.appState.userName,
 			};
@@ -236,7 +238,7 @@ label[for="casinoId"] {
 
 .link {
 	text-decoration: underline;
-	color: #3366cc;
+	color: #4c88ff;
 	cursor: pointer;
 }
 

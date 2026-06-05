@@ -2,7 +2,7 @@
 
 	<div id="register">
 		<div class="wrapper">
-			<h2>Sign Up</h2>
+			<h2>Register</h2>
 			<p>Please fill this form to create an account.</p>
 			<!-- @submit.prevent blocks page reloads and executes your logic -->
 			<form @submit.prevent="handleSubmit" method="post">
@@ -68,14 +68,14 @@ export default {
 				};
 
 				if (!this.userName || !this.password) {
-					this.postStatus.message = "Please provide a valid phone number and password.";
+					this.postStatus.message = "Please provide a user name and password.";
 					this.postStatus.success = false;
 					this.eventBus.emit("updateStatus", this.postStatus);
 					this.errState = true;
 					return this.postStatus;
 				}
 
-				const response = await fetch('/api/auth/register', {
+				const response = await fetch('/api/users/register', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(body)
@@ -237,7 +237,7 @@ label[for="casinoId"] {
 
 .link {
 	text-decoration: underline;
-	color: #3366cc;
+	color: #4c88ff;
 	cursor: pointer;
 }
 

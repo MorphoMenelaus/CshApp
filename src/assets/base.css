@@ -95,3 +95,14 @@ button {
 	padding: 5px 15px;
 	border-radius: 6px;
 }
+
+.btn:hover {
+	background-color: #426794;
+	color: #8dd19a;
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}

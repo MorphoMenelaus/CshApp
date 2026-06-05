@@ -83,6 +83,11 @@ export default {
 			this.dateLocal = date.toLocaleDateString("en-US");
 			this.timeLocal = date.toLocaleTimeString();
 			if (this.statusArray.length > 0) this.removeStaleEvents();
+			this.eventBus.emit("updateDateTime", {
+				dayLocal: this.dayLocal,
+				dateLocal: this.dateLocal,
+				timeLocal: this.timeLocal
+			});
 		},
 		removeStaleEvents() {
 			let currentTime = new Date().getTime();
@@ -104,6 +109,7 @@ export default {
 	top: 10px;
 	left: 15px;
 	min-width: 6em;
+	z-index: 10;
 }
 
 h1 {
@@ -154,7 +160,7 @@ h1 {
 	top: -10px;
 	right: -10px;
 	margin: 0;
-	padding: 0 0 2px 1px;
+	padding: 1px 2px 1px;
 	font-size: 1.1em;
 	border-radius: 6px;
 	cursor: pointer;

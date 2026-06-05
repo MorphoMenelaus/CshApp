@@ -9,7 +9,7 @@
 				<label>User ID</label>
 				<input v-model="userId" type="text" name="userName" class="form-control" placeholder="User ID">
 			</div>
-			<button @click="getUser">Get User</button>
+			<button @click="getUser" class="btn">Get User</button>
 		</form>
 
 		<div class="user-lists-container">

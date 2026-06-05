@@ -29,6 +29,12 @@ const router = createRouter({
 			meta: { requiresAuth: true }
 		},
 		{
+			path: '/simpleclock',
+			name: 'SimpleClock',
+			component: () => import('../views/SimpleClock.vue'),
+			meta: { requiresAuth: true }
+		},
+		{
 			path: '/about',
 			name: 'about',
 			// route level code-splitting
