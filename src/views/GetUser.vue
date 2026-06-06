@@ -1,75 +1,52 @@
 <template>
 
 	<div class="wrapper">
+
 		<h1>Show User</h1>
 		<p>Please enter user ID.</p>
 		<!-- @submit.prevent blocks page reloads and executes your logic -->
 		<form @submit.prevent="handleSubmit" method="get">
 			<div class="form-group">
-				<label>User ID</label>
-				<input v-model="userId" type="text" name="userName" class="form-control" placeholder="User ID">
+				<label for="userId">User ID</label>
+				<input v-model="userId" id="userId" type="text" name="userId" class="form-control"
+					placeholder="User ID" />
 			</div>
 			<button @click="getUser" class="btn">Get User</button>
 		</form>
 
 		<div class="user-lists-container">
-			<table v-if="usersList && usersList.length > 0">
+			<table v-if="user && Object.keys(user).length > 0">
 				<thead>
 					<tr class="header-row">
-						<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{ this.toTitleCase(label)
+						<th v-for="(label, index) in Object.keys(user)" :key="index">{{ this.toTitleCase(label)
 						}}
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr class="data-row" v-for="(user, index) in usersList" :key="index">
-						<td v-for="(column, index) in user" :key="index">{{ column }}</td>
+					<tr class="data-row" v-for="(item, index) in user" :key="index">
+						<td v-for="(column, idx) in item" :key="idx">{{ column }}</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-
-		<div class="user-lists-container">
-			<table v-if="userPreferences && Object.keys(userPreferences).length > 0">
-				<thead>
-					<tr class="header-row">
-						<th v-for="(label, index) in Object.keys(userPreferences[0])" :key="index">{{
-							this.toTitleCase(label)
-						}}
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr class="data-row" v-for="(user, index) in userPreferences" :key="index">
-						<td v-for="(column, index) in user" :key="index">{{ column }}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-
 
 	</div>
 
 </template>
 
 <script>
-// @ is an alias to /src
-// import { ref } from "vue";
-// import sessionMethods from "@/dependencies/sessionMethods";
-// import router from "@/router";
-// import { onBeforeUnmount } from "vue";
-
 export default {
 	name: "GetUser",
-	props: {},
+	props: {
+		appState: Object
+	},
 	components: {},
 	data() {
 		return {
+			notify: Object.assign({}, this.appNotify),
 			userId: "",
-			responseStatus: Object,
-			// serverMessage: Object,
-			usersList: [],
-			userPreferences: {}
+			user: {},
 		};
 	},
 	watch: {
@@ -77,47 +54,29 @@ export default {
 	methods: {
 		async getUser() {
 
-			console.log("getUser");
-
-			// let requestUrl = new URL("/api/users", "https://cshapp.hardwick.design/");
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL(`/api/users/${this.userId}`, this.baseUrl);
 			// let params = requestUrl.searchParams;
 
-			// if (this.userId)
-			// 	params.set("userId", this.userId);
-
-			// requestUrl.search = params.toString();
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'GET',
+				headers: headerObj,
+			});
 
 			try {
-				const response = await fetch(`/api/users/${this.userId}`)
-				const data = await response.json()
+				let response = await fetch(request);
 
-				this.usersList = data;
+				const data = await response.json();
+
+				if (data?.success)
+					this.user = data.user;
 
 				// this.serverMessage.value = data.message
 				this.eventBus.emit("getUsers", data);
 
-				this.getUserPreferences();
-
-			} catch (error) {
-				console.error('Error fetching data:', error)
-				// this.serverMessage.value = 'Failed to load server data.'
-				this.eventBus.emit("getUsers", error);
-			}
-		},
-		async getUserPreferences() {
-
-			console.log("getUsegetUserPreferences");
-
-			try {
-				const response = await fetch(`/api/users/prefs/${this.userId}`)
-				const data = await response.json()
-
-				console.log(data);
-
-				this.userPreferences = data;
-
-				// this.serverMessage.value = data.message
-				this.eventBus.emit("getUsers", data);
 			} catch (error) {
 				console.error('Error fetching data:', error)
 				// this.serverMessage.value = 'Failed to load server data.'

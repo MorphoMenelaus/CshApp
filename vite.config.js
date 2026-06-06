@@ -18,7 +18,7 @@ export default defineConfig({
 	define: {
 		// Wrap the string value in JSON.stringify so it compiles as a raw string literal
 		APP_VERSION: JSON.stringify(packageJson.version),
-		__VUE_PROD_DEVTOOLS__: JSON.stringify(true) // or false
+		__VUE_PROD_DEVTOOLS__: JSON.stringify(false) // true or false
 	},
 	resolve: {
 		alias: {

@@ -1,6 +1,3 @@
-// Site Variables
-const baseUrl = "";
-
 // sessionStorage persistence
 const storageKey = "cshApp";
 const session = {
@@ -23,7 +20,6 @@ const session = {
 
 const sessionMethods = {
 	session,
-	baseUrl,
 }
 
 export default sessionMethods;

@@ -19,13 +19,14 @@
 				<thead>
 					<tr class="header-row">
 						<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{ this.toTitleCase(label)
-							}}
+						}}
 						</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr class="data-row" v-for="(user, index) in usersList" :key="index">
-						<td v-for="(column, index) in user" :key="index">{{ column }}</td>
+						<td v-for="(column, index) in user" :key="index">{{ isUTCtime(column) ? new
+							Date(column).toLocaleString() : column }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -44,7 +45,9 @@ import { onBeforeUnmount } from "vue";
 
 export default {
 	name: "DisplayUsers",
-	props: {},
+	props: {
+		appState: Object
+	},
 	components: {},
 	data() {
 		return {
@@ -120,11 +123,25 @@ export default {
 	},
 	methods: {
 		async getUsers() {
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL("/api/users/", this.baseUrl);
+			// let params = requestUrl.searchParams;
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'GET',
+				headers: headerObj,
+			});
+
 			try {
-				let response = await fetch('/api/users')
-				let data = await response.json()
+				let response = await fetch(request);
+
+				const data = await response.json();
+
 				this.usersList = Array.isArray(data) && data.length > 0 ? data : this.bogusData;
-				// this.serverMessage = data.message
+
 				this.eventBus.emit("getUsers", data);
 			} catch (error) {
 				this.usersList = this.bogusData;
@@ -132,7 +149,6 @@ export default {
 				// serverMessage.value = 'Failed to load server data.'
 				this.eventBus.emit("getUsers", error);
 			}
-
 		},
 		async previousPage(e) {
 			if (this.currentPage == 1) return;

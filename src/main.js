@@ -18,11 +18,12 @@ app.config.globalProperties.eventBus = eventBus
 app.mount('#app')
 
 const appCurrentVersion = APP_VERSION;
+const baseUrl = "https://cshapp.hardwick.design";
 
 const appNotify = {
 	code: null,
 	message: null,
-	ok: true,
+	success: true,
 	userMustDismiss: false,
 }
 
@@ -48,9 +49,21 @@ const toTitleCase = (str) => {
 	return `${spaced.charAt(0).toUpperCase()}${spaced.slice(1)}`;
 }
 
+const isUTCtime = (str) => {
+	// Regex strictly enforces a trailing Z or +00:00/ -00:00 offset
+	let utcRegex = /^(?:.+)(Z|[+-]00:?00)$/;
+	if (!utcRegex.test(str)) return false;
+
+	// Ensure the string can be successfully parsed into a real date
+	let date = new Date(str);
+	return !isNaN(date.getTime());
+}
+
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
+app.config.globalProperties.baseUrl = baseUrl;
 app.config.globalProperties.appNotify = appNotify;
 app.config.globalProperties.dateOptions = dateOptions;
 app.config.globalProperties.timeOptions = timeOptions;
 app.config.globalProperties.toTitleCase = toTitleCase;
+app.config.globalProperties.isUTCtime = isUTCtime;

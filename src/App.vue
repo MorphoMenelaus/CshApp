@@ -53,7 +53,7 @@ export default {
 		// 	try {
 		// 		let sessionRefreshedStatus = await this.checkAndRefreshSession();
 
-		// 		if (sessionRefreshedStatus?.ok) {
+		// 		if (sessionRefreshedStatus?.success) {
 		// 			let mergedSession = {
 		// 				...this.appNotify,
 		// 				...sessionMethods.session.get(),
@@ -148,7 +148,6 @@ export default {
 		this.getServrVersion();
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
-			console.log(this.appState);
 		});
 		this.eventBus.on("registerUser", (payload) => {
 			this.currentComponent = payload ? "Register" : null;

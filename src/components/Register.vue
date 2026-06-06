@@ -49,12 +49,6 @@ export default {
 		};
 	},
 	watch: {
-		appState: {
-			handler(val, oldVal) {
-				console.log("appState Changed")
-			},
-			deep: true,
-		},
 	},
 	methods: {
 		removeRegisterUserComponent() {
@@ -83,15 +77,15 @@ export default {
 
 				const data = await response.json();
 
-				if (data?.success) {
-					this.postStatus.code = data?.code;
-					this.postStatus.message = data?.message;
-					this.postStatus.success = data?.success;
-					this.eventBus.emit("updateStatus", (this.postStatus));
-					this.eventBus.emit("registerUser", false);
-				}
+				this.postStatus.code = data?.code;
+				this.postStatus.message = data?.message;
+				this.postStatus.success = data?.success;
+				this.eventBus.emit("updateStatus", (this.postStatus));
 
-				this.errState = false;
+				if (data?.success)
+					this.eventBus.emit("registerUser", false);
+
+				this.errState = data?.success;
 
 			} catch (error) {
 				console.error('Error posting data:', error);

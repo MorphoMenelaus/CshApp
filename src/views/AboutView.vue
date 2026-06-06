@@ -18,12 +18,8 @@ export default {
 		NumInputPad,
 	},
 	mounted() {
-		this.consoleTest();
 	},
 	methods: {
-		consoleTest() {
-			console.log(`Current version: ${this.appCurrentVersion}`);
-		},
 	},
 };
 </script>

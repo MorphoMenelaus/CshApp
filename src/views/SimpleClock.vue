@@ -3,11 +3,11 @@
 	<div id="clocklog-container">
 		<div id="clock">
 			<div id="time-container">
-				<span id="time">{{ dateTimeStrings.timeLocal }}</span>
+				<span id="time">{{ timeLocal }}</span>
 			</div>
 			<div id="date-container">
-				<span id="dayLong">{{ dateTimeStrings.dayLocal }},&nbsp;</span><br />
-				<span id="dateLong">{{ dateTimeStrings.dateLocal }}</span>
+				<span id="dayLong">{{ dayLocal }},&nbsp;</span><br />
+				<span id="dateLong">{{ dateLocal }}</span>
 			</div>
 		</div>
 
@@ -41,7 +41,8 @@
 				</thead>
 				<tbody>
 					<tr class="data-row" v-for="(event, index) in eventLogList" :key="index">
-						<td v-for="(column, index) in event" :key="index">{{ column }}</td>
+						<td v-for="(column, index) in event" :key="index">{{ this.isUTCtime(column) ? new
+							Date(column).toLocaleString() : column }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -63,7 +64,10 @@ export default {
 	components: {},
 	data() {
 		return {
-			dateTimeStrings: {},
+			postStatus: Object.assign({}, this.appNotify),
+			dayLocal: "",
+			dateLocal: "",
+			timeLocal: "",
 			eventLogList: [],
 			maxlength: 512,
 			charRemaining: 512,
@@ -74,13 +78,13 @@ export default {
 	watch: {
 	},
 	methods: {
+		// convertUTCtoLocale() { },
 		charCounter() {
 			let currCount = this.notes.length;
 			if (this.charRemaining <= this.maxlength)
 				this.charRemaining = this.maxlength - currCount;
 		},
 		async getClockLog() {
-
 			try {
 
 				let response = await fetch('/api/users/clock/log', {
@@ -133,21 +137,21 @@ export default {
 				this.eventBus.emit("updateStatus", (this.postStatus));
 			}
 		},
+		updateDateTime() {
+			let date = new Date();
+			this.dayLocal = date.toLocaleDateString('en-US', { weekday: 'long' });
+			this.dateLocal = date.toLocaleDateString("en-US");
+			this.timeLocal = date.toLocaleTimeString();
+		},
 	},
 	mounted() {
+		setInterval(() => {
+			this.updateDateTime();
+		}, 1000);
 	},
 	created() {
+		this.updateDateTime();
 		this.getClockLog();
-		this.eventBus.on("updateDateTime", (payload => {
-			this.dateTimeStrings = {
-				dayLocal: payload.dayLocal,
-				dateLocal: payload.dateLocal,
-				timeLocal: payload.timeLocal
-			}
-		}));
-		onBeforeUnmount(() => {
-			this.eventBus.off("updateDateTime");
-		});
 	},
 };
 </script>
