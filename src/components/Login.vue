@@ -109,8 +109,6 @@ export default {
 					this.appNotify.success = false;
 				}
 
-				console.log(this.appNotify);
-
 				this.eventBus.emit("updateStatus", this.appNotify);
 
 			} catch (e) {
@@ -136,8 +134,6 @@ export default {
 				});
 
 				let dataObj = await response.json();
-
-				console.log(dataObj);
 
 				let updateAppState = {};
 				this.eventBus.emit("updateAppState", updateAppState);
