@@ -66,7 +66,7 @@ export default {
 			notification.message = payload?.message;
 			notification.success = payload?.success;
 			let date = new Date();
-			notification.expireTime = date.getTime() + 15000;
+			notification.expireTime = date.getTime() + 10000;
 			notification.eventTimeDisplay = date.toLocaleTimeString();
 			this.statusArray.push(notification);
 		});

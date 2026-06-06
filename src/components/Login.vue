@@ -1,8 +1,9 @@
 <template>
 
-	<div class="login-status" v-if="appState.isLoggedOn">
+	<div class="login-status" v-if="appState?.isLoggedOn">
 		<span>{{ appState.userName }}</span>
 		<button class="btn" type="button" @click="logout()">Logout</button>
+		<span id="delete-button" class="link" @click="currentComponent = 'DeleteUser'">Delete Account</span>
 	</div>
 
 	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''" v-if="!appState.isLoggedOn">
@@ -18,27 +19,25 @@
 		</form>
 	</div>
 
+	<component :is="currentComponent" :appState="appState" />
+
 </template>
 
 <script>
 // @ is an alias to /src
 import sessionMethods from "@/dependencies/sessionMethods";
 import sharedScripts from "@/dependencies/sharedScripts";
+import { onBeforeUnmount } from "vue";
 import router from "@/router";
+import DeleteUser from "@/components/DeleteUser.vue";
 
 export default {
 	name: "Login",
 	props: {
 		appState: Object,
 	},
-	watch: {
-		// appState: {
-		// 	handler(val, oldVal) {
-		// 		console.log("appState Changed");
-		// 		console.log(this.appState);
-		// 	},
-		// 	deep: true,
-		// },
+	components: {
+		DeleteUser
 	},
 	data() {
 		return {
@@ -60,6 +59,7 @@ export default {
 			userId: "",
 			activeSession: {},
 			usersList: [],
+			currentComponent: null
 		};
 	},
 	methods: {
@@ -115,17 +115,19 @@ export default {
 				console.error(e);
 			}
 		},
-		async logout() {
+		async logout(forcedLogout = false) {
 
 			let body = {
 				userName: this.appState.userName,
 			};
 
 			try {
-				let confirmLogout = confirm(
-					`Are you sure you want to logout, ${this.displayName}`
-				);
-				if (!confirmLogout) return false;
+				if (!forcedLogout) {
+					let confirmLogout = confirm(
+						`Are you sure you want to logout, ${this.displayName}`
+					);
+					if (!confirmLogout) return false;
+				}
 
 				const response = await fetch('/api/auth/logout', {
 					method: 'POST',
@@ -148,7 +150,17 @@ export default {
 	mounted() {
 	},
 	created() {
-		// this.$store.replaceState(sessionMethods.session.get());
+		this.eventBus.on("cancelDeleteUser", () => {
+			this.currentComponent = null;
+		});
+		this.eventBus.on("UserDeleted", () => {
+			this.currentComponent = null;
+			this.logout(true);
+		});
+		onBeforeUnmount(() => {
+			this.eventBus.off("cancelDeleteUser");
+			this.eventBus.off("UserDeleted");
+		});
 	},
 };
 </script>
@@ -240,6 +252,10 @@ label[for="casinoId"] {
 
 .link:hover {
 	color: #ff6600;
+}
+
+#delete-button {
+	font-size: 1.25em;
 }
 
 /* .loader {
