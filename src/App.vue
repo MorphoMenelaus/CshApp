@@ -25,7 +25,7 @@ import Footer from "@/components/Footer.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 
-// import sessionMethods from "@/dependencies/sessionMethods";
+import session from "@/dependencies/sessionMethods.js";
 // import sharedScripts from "@/dependencies/sharedScripts";
 
 export default {
@@ -48,29 +48,37 @@ export default {
 		},
 	},
 	methods: {
+		recallAppState(){
+			this.appState = session.recall.get();
+		},
 		// async refreshSessionData() {
-		// 	this.appNotify = this.appNotify || sessionMethods.session.get();
+
+		// 	// this.appState = this.appState || session.recall.get();
+		// 	this.appState = session.recall.get();
+		// 	console.log(this.appState)
+
+
 		// 	try {
-		// 		let sessionRefreshedStatus = await this.checkAndRefreshSession();
+		// 		// let sessionRefreshedStatus = await this.checkAndRefreshSession();
 
-		// 		if (sessionRefreshedStatus?.success) {
-		// 			let mergedSession = {
-		// 				...this.appNotify,
-		// 				...sessionMethods.session.get(),
-		// 			};
-		// 			let updateState = await mergedSession;
-		// 			this.appNotify = await updateState;
+		// 		// if (sessionRefreshedStatus?.success) {
+		// 		let mergedSession = {
+		// 			...this.appState,
+		// 			...session.recall.get(),
+		// 		};
+		// 		let updateState = mergedSession;
+		// 		this.appState = updateState;
 
-		// 			sessionMethods.session.save(await updateState);
+		// 		session.recall.save(updateState);
 
-		// 			if (await this.checkAndRefreshSession()) this.sessionRefreshCheck = new Date().getTime();
+		// 		// if (await this.checkAndRefreshSession()) this.sessionRefreshCheck = new Date().getTime();
 
-		// 			await this.eventBus.emit("updateStatus", await sessionRefreshedStatus);
-		// 			return sessionRefreshedStatus;
-		// 		} else {
-		// 			await this.eventBus.emit("updateStatus", sessionRefreshedStatus);
-		// 			return sessionRefreshedStatus;
-		// 		}
+		// 		await this.eventBus.emit("updateStatus", await sessionRefreshedStatus);
+		// 		// return sessionRefreshedStatus;
+		// 		// } else {
+		// 		// 	await this.eventBus.emit("updateStatus", sessionRefreshedStatus);
+		// 		// 	return sessionRefreshedStatus;
+		// 		// }
 		// 	} catch (e) {
 		// 		console.error(e);
 		// 		return false;
@@ -146,13 +154,16 @@ export default {
 	},
 	created() {
 		this.getServrVersion();
+		this.recallAppState();
+		// this.refreshSessionData();
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
+			session.recall.save(this.appState);
 		});
 		this.eventBus.on("registerUser", (payload) => {
 			this.currentComponent = payload ? "Register" : null;
 		});
-		this.eventBus.emit("getUsers", (payload) => {
+		this.eventBus.on("getUsers", (payload) => {
 			console.log(payload);
 		});
 	},

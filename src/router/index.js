@@ -17,9 +17,9 @@ const router = createRouter({
 			meta: { requiresAuth: true }
 		},
 		{
-			path: '/getuser',
-			name: 'GetUser',
-			component: () => import('../views/GetUser.vue'),
+			path: '/userpreferences',
+			name: 'User Preferences',
+			component: () => import('../views/UserPreferences.vue'),
 			meta: { requiresAuth: true }
 		},
 		{
@@ -43,6 +43,11 @@ const router = createRouter({
 			component: () => import('../views/AboutView.vue'),
 			meta: { requiresAuth: false }
 		},
+		{
+			path: '/:pathMatch(.*)*',
+			name: 'NotFound',
+			component: () => import('@/views/NotFound.vue')
+		}
 	],
 });
 

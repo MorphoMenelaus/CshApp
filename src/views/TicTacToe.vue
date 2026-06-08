@@ -17,7 +17,7 @@
 <script>
 // @ is an alias to /src
 import { ref } from "vue";
-// import sessionMethods from "@/dependencies/sessionMethods";
+// import session from "@/dependencies/sessionMethods";
 import router from "@/router";
 import { onBeforeUnmount } from "vue";
 

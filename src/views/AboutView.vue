@@ -35,7 +35,7 @@ h1 {
 	right: 0;
 	bottom: 0;
 	left: 0;
-	height: calc(100vh - 140px);
+	height: calc(100vh - 154px);
 	width: 100%;
 	margin: 15px auto;
 	padding: 15px 30px;
