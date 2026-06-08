@@ -1,25 +1,25 @@
-// sessionStorage persistence
+// AppState session persistence
 const storageKey = "cshApp";
-const session = {
-	get() {
-		const storage = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+const recall = {
+	get(key = storageKey) {
+		const storage = JSON.parse(sessionStorage.getItem(key) || "{}");
 		return storage;
 	},
-	add(key, value) {
-		let storage = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+	add(value, key = storageKey) {
+		let storage = JSON.parse(sessionStorage.getItem(key) || "{}");
 		storage[key] = value;
-		sessionStorage.setItem(storageKey, JSON.stringify(storage));
+		sessionStorage.setItem(key, JSON.stringify(storage));
 	},
-	save(storage) {
-		sessionStorage.setItem(storageKey, JSON.stringify(storage));
+	save(storage, key = storageKey) {
+		sessionStorage.setItem(key, JSON.stringify(storage));
 	},
-	deleteAll() {
-		sessionStorage.removeItem(storageKey);
+	deleteAll(key = storageKey) {
+		sessionStorage.removeItem(key);
 	}
 }
 
-const sessionMethods = {
-	session,
+const session = {
+	recall,
 }
 
-export default sessionMethods;
+export default session;

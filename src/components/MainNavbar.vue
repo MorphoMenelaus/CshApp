@@ -5,7 +5,7 @@
 			<RouterLink to="/" title="Home" class="home-icon"><img src="/favicon.ico" alt="CSH App"></RouterLink>
 			<RouterLink to="/">Home</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn" to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/getuser">Get User</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences">UserPreferences</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers">Display Users</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock">Simple Clock</RouterLink>
 			<RouterLink to="/about">About</RouterLink>

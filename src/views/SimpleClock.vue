@@ -41,8 +41,8 @@
 				</thead>
 				<tbody>
 					<tr class="data-row" v-for="(event, index) in eventLogList" :key="index">
-						<td v-for="(column, index) in event" :key="index">{{ this.isUTCtime(column) ? new
-							Date(column).toLocaleString() : column }}</td>
+						<td v-for="(column, index) in event" :key="index">{{ this.handleLogStringFormat(column,
+							event[index]) }}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -78,6 +78,11 @@ export default {
 	watch: {
 	},
 	methods: {
+		handleLogStringFormat(str, event = "") {
+			if (this.isUTCtime(str)) str = new Date(str).toLocaleString();
+			if (event === "isWakeupEvent") str = str === 1 ? true : false;
+			return str;
+		},
 		// convertUTCtoLocale() { },
 		charCounter() {
 			let currCount = this.notes.length;
@@ -94,8 +99,6 @@ export default {
 
 				let data = await response.json();
 
-				console.log(data);
-
 				this.eventLogList = data;
 
 			} catch (error) {
@@ -107,6 +110,7 @@ export default {
 			}
 		},
 		async logSimpleClock() {
+			let data;
 			try {
 
 				let body = {
@@ -117,13 +121,25 @@ export default {
 
 				};
 
-				let response = await fetch('/api/users/clock', {
+				let headerObj = new Headers();
+				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL("/api/users/clock", this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: headerObj,
 					body: JSON.stringify(body)
 				});
 
-				let data = await response.json();
+				const response = await fetch(request);
+				data = await response.json();
+
+				this.postStatus.code = data?.code;
+				this.postStatus.message = data?.message;
+				this.postStatus.success = data?.success;
+				this.eventBus.emit("updateStatus", this.postStatus);
 
 				this.isWakeupEvent = false;
 				this.notes = "";
@@ -253,6 +269,7 @@ table {
 }
 
 th {
+	padding: 5px 15px;
 	background-color: #fff;
 	color: #000;
 	font-weight: bold;

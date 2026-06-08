@@ -2,7 +2,7 @@
 
 	<div class="login-status" v-if="appState?.isLoggedOn">
 		<span>{{ appState.userName }}</span>
-		<button class="btn" type="button" @click="logout()">Logout</button>
+		<button class="btn" type="button" @click="openConfirmDialog()">Logout</button>
 		<span id="delete-button" class="link" @click="currentComponent = 'DeleteUser'">Delete Account</span>
 	</div>
 
@@ -14,9 +14,23 @@
 			<input type="text" name="userName" v-model="userName" placeholder="Username" autocomplete="userName" />
 			<input type="password" name="password" v-model="password" placeholder="Password"
 				autocomplete="current-password" />
-			<button class="btn" type="button" @click="login()">Login</button>
+			<button class="btn login-btn" type="button" @click="login()">Login</button>
 			<span @click="showRegisterUserComponent()">New User? <span class="link">Click to register</span>.</span>
 		</form>
+	</div>
+
+	<div id="dialog-container">
+		<dialog id="confirmDialog">
+			<div>
+				<h2>
+					Are you sure you want to logout, {{ userName }}?
+				</h2>
+				<div class="dialog-buttons">
+					<button class="btn" @click="logout()">Confirm</button>
+					<button class="btn cancel" @click="dialog.close()">Cancel</button>
+				</div>
+			</div>
+		</dialog>
 	</div>
 
 	<component :is="currentComponent" :appState="appState" />
@@ -25,8 +39,8 @@
 
 <script>
 // @ is an alias to /src
-import sessionMethods from "@/dependencies/sessionMethods";
-import sharedScripts from "@/dependencies/sharedScripts";
+import session from "@/dependencies/sessionMethods.js";
+// import sharedScripts from "@/dependencies/sharedScripts";
 import { onBeforeUnmount } from "vue";
 import router from "@/router";
 import DeleteUser from "@/components/DeleteUser.vue";
@@ -42,7 +56,7 @@ export default {
 	data() {
 		return {
 			appNotify: Object.assign({}, this.appNotify),
-			activeSession: null, //sessionMethods.session.get(),
+			activeSession: null,
 			accessToken: "",
 			accessTokenExpiration: "",
 			refreshToken: "",
@@ -59,7 +73,8 @@ export default {
 			userId: "",
 			activeSession: {},
 			usersList: [],
-			currentComponent: null
+			currentComponent: null,
+			dialog: null
 		};
 	},
 	methods: {
@@ -97,8 +112,8 @@ export default {
 					updateAppState.userName = this.userName;
 					updateAppState.user = dataObj.user
 					updateAppState.permissions = dataObj.user.permissions;
-					this.eventBus.emit("updateAppState", updateAppState);
 					updateAppState.isLoggedOn = true;
+					this.eventBus.emit("updateAppState", updateAppState);
 
 					this.appNotify.code = 200;
 					this.appNotify.message = "Access Token acquired: Login Success";
@@ -115,6 +130,9 @@ export default {
 				console.error(e);
 			}
 		},
+		openConfirmDialog() {
+			this.dialog.showModal()
+		},
 		async logout(forcedLogout = false) {
 
 			let body = {
@@ -122,12 +140,15 @@ export default {
 			};
 
 			try {
-				if (!forcedLogout) {
-					let confirmLogout = confirm(
-						`Are you sure you want to logout, ${this.displayName}`
-					);
-					if (!confirmLogout) return false;
-				}
+
+				this.dialog.close();
+
+				// if (!forcedLogout) {
+				// 	let confirmLogout = confirm(
+				// 		`Are you sure you want to logout, ${this.displayName}`
+				// 	);
+				// 	if (!confirmLogout) return false;
+				// }
 
 				const response = await fetch('/api/auth/logout', {
 					method: 'POST',
@@ -139,6 +160,7 @@ export default {
 
 				let updateAppState = {};
 				this.eventBus.emit("updateAppState", updateAppState);
+				session.recall.deleteAll();
 
 				router.push("/");
 
@@ -148,6 +170,7 @@ export default {
 		},
 	},
 	mounted() {
+		this.dialog = document.getElementById("confirmDialog");
 	},
 	created() {
 		this.eventBus.on("cancelDeleteUser", () => {
@@ -167,6 +190,30 @@ export default {
 
 <!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
+#dialog-container dialog {
+	margin: auto;
+	padding: 30px;
+	color: #bda5af;
+	background-color: #313b64;
+	border-radius: 12px;
+	border-width: 1px;
+}
+
+::backdrop {
+	background-color: rgb(0 0 0 / 60%);
+	backdrop-filter: blur(8px);
+}
+
+.dialog-buttons {
+	display: flex;
+	justify-content: space-evenly;
+	margin: 30px auto 0;
+}
+
+.cancel {
+	background-color: #3f445f;
+}
+
 .err {
 	border: 2px #f00 solid;
 }
@@ -183,6 +230,10 @@ export default {
 	left: 0;
 	background-color: rgb(0 0 0 / 80%);
 	z-index: 5000;
+}
+
+.login-btn {
+	margin-top: 15px !important;
 }
 
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
@@ -205,7 +256,7 @@ export default {
 	flex-direction: column;
 	align-items: center;
 	max-width: 30em;
-	padding: 30px;
+	padding: 30px 30px 45px;
 	margin: 30px auto;
 	background: rgb(49 59 100 / 70%);
 	border-radius: 8px;
@@ -213,7 +264,7 @@ export default {
 }
 
 .input-section>* {
-	margin: 5px;
+	margin: 15px 15px 0;
 }
 
 .login-status {
@@ -248,6 +299,7 @@ label[for="casinoId"] {
 	text-decoration: underline;
 	color: #4c88ff;
 	cursor: pointer;
+	user-select: none;
 }
 
 .link:hover {

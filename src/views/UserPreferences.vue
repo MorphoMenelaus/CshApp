@@ -2,67 +2,87 @@
 
 	<div class="wrapper">
 
-		<h1>Display User</h1>
-		<p style="text-align: center;">Please enter user ID.</p>
-		<!-- @submit.prevent blocks page reloads and executes your logic -->
-		<form @submit.prevent="handleSubmit" method="get">
-			<div class="form-group">
-				<label for="userId">User ID</label>
-				<input v-model="userId" id="userId" type="text" name="userId" class="form-control"
-					placeholder="User ID" />
-			</div>
-			<button @click="getUser" class="btn">Get User</button>
-		</form>
+		<h1>User Preferences</h1>
+		<div v-if="isAdmin">
+			<p style="text-align: center;">Please enter user ID.</p>
+			<!-- @submit.prevent blocks page reloads and executes your logic -->
+			<form id="userid-input" @submit.prevent="handleSubmit" method="get">
+				<div class="form-group">
+					<label for="userId">User ID</label>
+					<input v-model="userId" id="userId" type="text" name="userId" class="form-control"
+						placeholder="User ID" />
+				</div>
+				<button @click="getUser" class="btn">Get User</button>
+			</form>
+		</div>
 
 		<div id="get-set-user-prefs">
 
-			<div class="user-lists-container" v-if="user && Object.keys(user).length > 0">
-				<table v-for="(item, index) in Object.keys(user)" :key="index">
-					<tr>
-						<th class="header-row">{{ this.toTitleCase(item) }}</th>
-						<td>{{ user[item] }}</td>
-					</tr>
-				</table>
-			</div>
-
 			<div class="form-container" v-if="user && Object.keys(user).length > 0">
 				<form @submit.prevent="handleSubmit" method="put">
-					<div class="form-group">
-						<label for="email">Email</label>
-						<input id="email" v-model="email" maxlength="256" />
+
+					<div class="fields">
+						<div class="form-group">
+							<label for="email">Email</label>
+							<input id="email" v-model="email" maxlength="256" />
+						</div>
+						<div class="form-group">
+							<label for="lastName">Last Name</label>
+							<input id="lastName" v-model="lastName" maxlength="64" />
+						</div>
+						<div class="form-group">
+							<label for="firstName">First Name</label>
+							<input id="firstName" v-model="firstName" maxlength="64" />
+						</div>
+						<div class="form-group">
+							<label for="userNotes">User Notes</label>
+							<textarea id="userNotes" v-model="userNotes" maxlength="1024"></textarea>
+						</div>
 					</div>
-					<div class="form-group">
-						<label for="lastName">Last Name</label>
-						<input id="lastName" v-model="lastName" maxlength="64" />
+
+					<div class="drop-downs">
+						<div class="form-group" v-if="isAdmin">
+							<label for="admin">Admin</label>
+							<select v-model="admin">
+								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+									{{ item.text }}
+								</option>
+							</select>
+						</div>
+						<div class="form-group" v-if="isAdmin">
+							<label for="siteAdmin">Site Admin</label>
+							<select v-model="siteAdmin">
+								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+									{{ item.text }}
+								</option>
+							</select>
+						</div>
+						<div class="form-group" v-if="isAdmin">
+							<label for="siteEditor">Site Editor</label>
+							<select v-model="siteEditor">
+								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+									{{ item.text }}
+								</option>
+							</select>
+						</div>
+						<div class="form-group" v-if="isAdmin">
+							<label for="contributor">Contributor</label>
+							<select v-model="contributor">
+								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+									{{ item.text }}
+								</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="uiDarkMode">UI DarkMode</label>
+							<select v-model="uiDarkMode">
+								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+									{{ item.text }}
+								</option>
+							</select>
+						</div>
 					</div>
-					<div class="form-group">
-						<label for="firstName">First Name</label>
-						<input id="firstName" v-model="firstName" maxlength="64" />
-					</div>
-					<div class="form-group">
-						<label for="admin">Admin</label>
-						<input id="admin" v-model="admin" maxlength="1" />
-					</div>
-					<div class="form-group">
-						<label for="siteAdmin">Site Admin</label>
-						<input id="siteAdmin" v-model="siteAdmin" maxlength="1" />
-					</div>
-					<div class="form-group">
-						<label for="siteEditor">Site Editor</label>
-						<input id="" v-model="siteEditor" maxlength="1" />
-					</div>
-					<div class="form-group">
-						<label for="contributor">Contributor</label>
-						<input id="contributor" v-model="contributor" maxlength="1" />
-					</div>
-					<div class="form-group">
-						<label for="uiDarkMode">UI DarkMode</label>
-						<input id="uiDarkMode" v-model="uiDarkMode" maxlength="1" />
-					</div>
-					<div class="form-group">
-						<label for="userNotes">User Notes</label>
-						<textarea id="userNotes" v-model="userNotes" maxlength="1024"></textarea>
-					</div>
+
 				</form>
 				<button @click="updateUser()" class="btn">Upate User Prefernces</button>
 			</div>
@@ -75,7 +95,7 @@
 
 <script>
 export default {
-	name: "GetUser",
+	name: "UserPreferences",
 	props: {
 		appState: Object
 	},
@@ -83,7 +103,12 @@ export default {
 	data() {
 		return {
 			notify: Object.assign({}, this.appNotify),
-			userId: "",
+			isAdmin: this.appState.user.permissions.admin,
+			userId: this.appState.user.userId,
+			boolOptions: [
+				{ text: "true", value: "1" },
+				{ text: "false", value: "0" },
+			],
 			user: {},
 			"email": "",
 			"lastName": "",
@@ -97,6 +122,12 @@ export default {
 		};
 	},
 	watch: {
+		appState: {
+			handler(val, oldVal) {
+				this.isAdmin = this.appState.user.permissions.admin;
+			},
+			deep: true,
+		},
 	},
 	methods: {
 		async getUser() {
@@ -105,7 +136,6 @@ export default {
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL(`/api/users/${this.userId}`, this.baseUrl);
-			// let params = requestUrl.searchParams;
 
 			let request = new Request(
 				requestUrl.toString(), {
@@ -131,7 +161,6 @@ export default {
 				this.uiDarkMode = this.user.uiDarkMode;
 				this.userNotes = this.user.userNotes;
 
-				// this.serverMessage.value = data.message
 				this.eventBus.emit("getUsers", data);
 
 			} catch (error) {
@@ -152,8 +181,6 @@ export default {
 				uiDarkMode: this.uiDarkMode,
 				userNotes: this.userNotes
 			};
-
-			console.log("updateUser");
 
 			let hasEmpty = Object.values(body).some(val => !val);
 
@@ -180,12 +207,13 @@ export default {
 				const data = await response.json();
 
 				if (data.success) {
-					this.notify.code = data.code;
-					this.notify.message = data.message;
-					this.notify.success = data.success;
-					this.eventBus.emit("updateStatus", (this.notify));
 					this.getUser();
 				}
+
+				this.notify.code = data.code;
+				this.notify.message = data.message;
+				this.notify.success = data.success;
+				this.eventBus.emit("updateStatus", (this.notify));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
@@ -197,6 +225,7 @@ export default {
 	mounted() {
 	},
 	created() {
+		this.getUser();
 	},
 };
 </script>
@@ -204,6 +233,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#userid-input {
+	margin: auto;
+	width: 25em;
+}
+
 #view.wrapper {
 	height: fit-content;
 	margin: 15px auto;
@@ -212,16 +246,14 @@ export default {
 	width: 100%;
 }
 
-h1 {
+h1,
+h2 {
 	font-weight: bold;
 	text-align: center;
 }
 
 #listUsers {
-	/* margin-left: 20%; */
 	padding: 15px 15px 60px;
-	/* height: calc(100vh - 10em);*/
-	/* overflow: hidden; */
 }
 
 #get-set-user-prefs {
@@ -229,49 +261,17 @@ h1 {
 	justify-content: center;
 }
 
-.header-row {
-	padding: 0 15px;
-	font-weight: bold;
-	background-color: #666;
-	color: #fff;
+#get-set-user-prefs form {
+	display: flex;
+	justify-content: space-evenly;
 }
 
-.user-lists-container {
-	max-height: calc(100vh - 190px);
-	/* overflow: auto; */
-	margin-top: 20px;
-}
-
-table {
-	display: contents;
-	width: 100%;
-	margin: 30px auto;
-	border-collapse: collapse;
-	border: 1px #666 solid;
-}
-
-td {
-	padding: 10px 15px;
-}
-
-tr {
-	transition: background-color 0.3s;
-}
-
-tr:nth-child(2n) {
-	background-color: #414650;
-}
-
-tr.data-row:hover,
-tr:nth-child(2n):hover {
-	background-color: #dfdfdf;
-	color: #000;
+.fields,
+.drop-downs {
+	margin: 15px;
 }
 
 .form-group {
-	display: flex;
-	width: 30%;
-	margin: 0 auto 15px;
 	display: grid;
 }
 
@@ -279,26 +279,17 @@ tr:nth-child(2n):hover {
 	margin: 5px 0 0;
 }
 
+input {
+	font-weight: bold;
+	font-size: 1.25em;
+}
+
 textarea {
-	min-height: 4em;
-	min-width: 13em;
+	min-height: 4.75em;
 }
 
 button.btn {
 	display: block;
-	/* width: 10em; */
 	margin: 15px auto;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

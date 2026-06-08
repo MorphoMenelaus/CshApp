@@ -1,4 +1,13 @@
 <template>
+
+	<div>
+		<h1 class="not-found">404</h1>
+		<h2 class="centered">The page that was requested was not found.</h2>
+		<h3 class="centered">
+			<RouterLink to="/" title="Home" >Take Me Home!</RouterLink>
+		</h3>
+	</div>
+
 </template>
 
 <script>
@@ -9,7 +18,7 @@ import router from "@/router";
 import { onBeforeUnmount } from "vue";
 
 export default {
-	name: "SomeView",
+	name: "NotFound",
 	props: {},
 	components: {},
 	data() {
@@ -45,6 +54,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+h1.not-found {
+	font-size: 3em;
+	text-align: center;
+}
+
+.centered {
+	text-align: center;
+}
+
 @media (max-width: 767px) {}
 
 @media (min-width: 768px) and (max-width: 991px) {}

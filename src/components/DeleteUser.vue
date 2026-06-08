@@ -16,8 +16,8 @@
 
 <script>
 // @ is an alias to /src
-import sessionMethods from "@/dependencies/sessionMethods";
-import sharedScripts from "@/dependencies/sharedScripts";
+// import session from "@/dependencies/sessionMethods";
+// import sharedScripts from "@/dependencies/sharedScripts";
 import router from "@/router";
 
 export default {
@@ -127,6 +127,7 @@ h2 {
 	text-decoration: underline;
 	color: #4c88ff;
 	cursor: pointer;
+	user-select: none;
 }
 
 .link:hover {

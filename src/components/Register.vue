@@ -30,8 +30,8 @@
 
 <script>
 // @ is an alias to /src
-import sessionMethods from "@/dependencies/sessionMethods";
-import sharedScripts from "@/dependencies/sharedScripts";
+import session from "@/dependencies/sessionMethods";
+// import sharedScripts from "@/dependencies/sharedScripts";
 
 export default {
 	name: "RegisterUser",
@@ -233,6 +233,7 @@ label[for="casinoId"] {
 	text-decoration: underline;
 	color: #4c88ff;
 	cursor: pointer;
+	user-select: none;
 }
 
 .link:hover {

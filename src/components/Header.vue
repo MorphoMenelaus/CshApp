@@ -8,7 +8,7 @@
 					title="Close This Notification">❌</button>
 				<span v-if="item.code != null">{{ item.code }}</span>
 				<span v-if="item.message != null">{{ item.message }}</span>
-				<span v-if="item.eventTimeDisplay != null">{{ item.eventTimeDisplay }}</span>
+				<!-- <span v-if="item.eventTimeDisplay != null">{{ item.eventTimeDisplay }}</span> -->
 			</div>
 		</div>
 
@@ -110,6 +110,7 @@ export default {
 	left: 15px;
 	min-width: 6em;
 	z-index: 10;
+	user-select: none;
 }
 
 h1 {

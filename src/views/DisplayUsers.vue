@@ -39,7 +39,7 @@
 <script>
 // @ is an alias to /src
 // import { ref } from "vue";
-// import sessionMethods from "@/dependencies/sessionMethods";
+// import session from "@/dependencies/sessionMethods";
 // import router from "@/router";
 import { onBeforeUnmount } from "vue";
 
@@ -118,7 +118,7 @@ export default {
 			this.offset = null;
 			this.limit = parseInt(this.limit);
 			this.action = "openCashierBank";
-			this.eventBus.emit("checkAndRefreshSession");
+			// this.eventBus.emit("checkAndRefreshSession");
 		},
 	},
 	methods: {
@@ -139,14 +139,15 @@ export default {
 				let response = await fetch(request);
 
 				const data = await response.json();
+				if (data.success) {
+					let users = data.users;
+					this.usersList = Array.isArray(users) && users.length > 0 ? users : this.bogusData;
+				}
 
-				this.usersList = Array.isArray(data) && data.length > 0 ? data : this.bogusData;
-
-				this.eventBus.emit("getUsers", data);
+				this.eventBus.emit("getUsers", this.usersList);
 			} catch (error) {
 				this.usersList = this.bogusData;
 				console.error('Error fetching data:', error)
-				// serverMessage.value = 'Failed to load server data.'
 				this.eventBus.emit("getUsers", error);
 			}
 		},
