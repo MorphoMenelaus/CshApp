@@ -82,6 +82,7 @@ export default {
 			this.eventBus.emit("registerUser", true);
 		},
 		async login() {
+			this.eventBus.emit("showHideLoader", true);
 			try {
 				let body = {
 					userName: this.userName,
@@ -128,12 +129,15 @@ export default {
 
 			} catch (e) {
 				console.error(e);
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		openConfirmDialog() {
 			this.dialog.showModal()
 		},
 		async logout(forcedLogout = false) {
+			this.eventBus.emit("showHideLoader", true);
 
 			let body = {
 				userName: this.appState.userName,
@@ -166,6 +170,8 @@ export default {
 
 			} catch {
 				console.error(e);
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
@@ -309,29 +315,4 @@ label[for="casinoId"] {
 #delete-button {
 	font-size: 1.25em;
 }
-
-/* .loader {
-	display: none;
-	content: "";
-	position: absolute;
-	top: 15px;
-	right: 15px;
-	height: 32px;
-	width: 32px;
-	border: 2px solid;
-	border-radius: 100%;
-	border-color: red white blue black;
-	animation: loader 0.5s linear infinite;
-}
-.loader.loading {
-	display: block;
-}
-@keyframes loader {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(359deg);
-	}
-} */
 </style>

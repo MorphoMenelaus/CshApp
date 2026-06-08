@@ -18,7 +18,8 @@ app.config.globalProperties.eventBus = eventBus
 app.mount('#app')
 
 const appCurrentVersion = APP_VERSION;
-const baseUrl = "https://cshapp.hardwick.design";
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const reCaptchaSiteKey = import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY;
 
 const appNotify = {
 	code: null,
@@ -62,6 +63,7 @@ const isUTCtime = (str) => {
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.baseUrl = baseUrl;
+app.config.globalProperties.reCaptchaSiteKey = reCaptchaSiteKey;
 app.config.globalProperties.appNotify = appNotify;
 app.config.globalProperties.dateOptions = dateOptions;
 app.config.globalProperties.timeOptions = timeOptions;

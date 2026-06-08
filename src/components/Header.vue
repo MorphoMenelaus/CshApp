@@ -12,6 +12,11 @@
 			</div>
 		</div>
 
+		<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
+			<div class="loader-icon"></div>
+			<!-- <RouterLink to="/" @click="showHideLoader = false">Click if page fails to load</RouterLink> -->
+		</div>
+
 		<div id="clock">
 			<div id="time-container">
 				<span id="time">{{ timeLocal }}</span>
@@ -53,7 +58,8 @@ export default {
 			dayLocal: "",
 			dateLocal: "",
 			timeLocal: "",
-			messageTimeout: 0
+			messageTimeout: 0,
+			showHideLoader: false
 		};
 	},
 	watch: {
@@ -69,6 +75,9 @@ export default {
 			notification.expireTime = date.getTime() + 10000;
 			notification.eventTimeDisplay = date.toLocaleTimeString();
 			this.statusArray.push(notification);
+		});
+		this.eventBus.on("showHideLoader", payload => {
+			this.showHideLoader = payload;
 		});
 	},
 	mounted() {
@@ -165,5 +174,40 @@ h1 {
 	font-size: 1.1em;
 	border-radius: 6px;
 	cursor: pointer;
+}
+
+#loading-icon {
+	display: none;
+	align-content: center;
+	justify-content: center;
+	position: fixed;
+	top: 94px;
+	width: 100vw;
+	height: calc(100vh - 140px);
+	background: rgb(0 0 0 / 75%);
+	z-index: 10000;
+}
+
+.loader-icon {
+	height: 48px;
+	width: 48px;
+	border: 3px solid;
+	border-radius: 100%;
+	border-color: red white blue black;
+	animation: loader 0.5s linear infinite;
+}
+
+#loading-icon.loading {
+	display: grid;
+}
+
+@keyframes loader {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(359deg);
+	}
 }
 </style>

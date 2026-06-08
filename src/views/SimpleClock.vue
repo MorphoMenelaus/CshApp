@@ -90,6 +90,8 @@ export default {
 				this.charRemaining = this.maxlength - currCount;
 		},
 		async getClockLog() {
+			this.eventBus.emit("showHideLoader", true);
+
 			try {
 
 				let response = await fetch('/api/users/clock/log', {
@@ -107,9 +109,13 @@ export default {
 				this.postStatus.message = `Error getting data: ${error}`;
 				this.postStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.postStatus));
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async logSimpleClock() {
+			this.eventBus.emit("showHideLoader", true);
+
 			let data;
 			try {
 
@@ -151,6 +157,8 @@ export default {
 				this.postStatus.message = `Error posting data: ${error}`;
 				this.postStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.postStatus));
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		updateDateTime() {
