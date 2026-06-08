@@ -131,6 +131,7 @@ export default {
 	},
 	methods: {
 		async getUser() {
+			this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -167,9 +168,13 @@ export default {
 				console.error('Error fetching data:', error)
 				// this.serverMessage.value = 'Failed to load server data.'
 				this.eventBus.emit("getUsers", error);
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async updateUser() {
+			this.eventBus.emit("showHideLoader", true);
+
 			let body = {
 				email: this.email,
 				lastName: this.lastName,
@@ -219,6 +224,8 @@ export default {
 				console.error('Error fetching data:', error)
 				// this.serverMessage.value = 'Failed to load server data.'
 				this.eventBus.emit("getUsers", error);
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		}
 	},

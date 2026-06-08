@@ -39,6 +39,8 @@ export default {
 			);
 			if (!confirmDelete) return false;
 
+			this.eventBus.emit("showHideLoader", true);
+
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -69,6 +71,8 @@ export default {
 				this.deleteStatus.message = `Error deleting user: ${error}`;
 				this.deleteStatus.success = true;
 				this.eventBus.emit("updateStatus", this.deleteStatus);
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},

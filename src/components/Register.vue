@@ -55,6 +55,8 @@ export default {
 			this.eventBus.emit("registerUser", false);
 		},
 		async register() {
+			this.eventBus.emit("showHideLoader", true);
+
 			try {
 				let body = {
 					userName: this.userName,
@@ -93,6 +95,8 @@ export default {
 				this.postStatus.message = `Error posting data: ${error}`;
 				this.postStatus.success = true;
 				this.eventBus.emit("updateStatus", (this.postStatus));
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
@@ -168,31 +172,6 @@ label[for="casinoId"] {
 	text-shadow: -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000,
 		1px 1px 0px #000;
 }
-
-/* .loader {
-	display: none;
-	content: "";
-	position: absolute;
-	top: 15px;
-	right: 15px;
-	height: 32px;
-	width: 32px;
-	border: 2px solid;
-	border-radius: 100%;
-	border-color: red white blue black;
-	animation: loader 0.5s linear infinite;
-}
-.loader.loading {
-	display: block;
-}
-@keyframes loader {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(359deg);
-	}
-} */
 
 #register {
 	position: absolute;

@@ -143,14 +143,6 @@ export default {
 				console.error('Error fetching data:', error);
 			}
 		},
-		setLoadingIcon() {
-			let loadingIcon = document.getElementById("loading-icon");
-			if (this.casinoList.length === 0) {
-				loadingIcon.classList.add("loading");
-			} else {
-				loadingIcon.classList.remove("loading");
-			}
-		},
 	},
 	created() {
 		this.getServrVersion();

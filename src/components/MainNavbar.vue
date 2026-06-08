@@ -9,7 +9,6 @@
 			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers">Display Users</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock">Simple Clock</RouterLink>
 			<RouterLink to="/about">About</RouterLink>
-			<span id="loading-icon"></span>
 		</nav>
 	</div>
 

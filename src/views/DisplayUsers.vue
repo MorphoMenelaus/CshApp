@@ -123,6 +123,8 @@ export default {
 	},
 	methods: {
 		async getUsers() {
+			this.eventBus.emit("showHideLoader", true);
+
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -149,6 +151,8 @@ export default {
 				this.usersList = this.bogusData;
 				console.error('Error fetching data:', error)
 				this.eventBus.emit("getUsers", error);
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async previousPage(e) {
