@@ -124,6 +124,7 @@ export default {
 	methods: {
 		async getUsers() {
 			this.eventBus.emit("showHideLoader", true);
+			this.eventBus.emit("checkIfRefreshNeeded");
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);

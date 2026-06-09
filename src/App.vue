@@ -48,7 +48,7 @@ export default {
 		},
 	},
 	methods: {
-		recallAppState(){
+		recallAppState() {
 			this.appState = session.recall.get();
 		},
 		// async refreshSessionData() {
@@ -93,47 +93,47 @@ export default {
 			if (currentTime - minute > accessTokenExpiration)
 				this.refreshToken();
 		},
-		async refreshToken() {
+		// async refreshToken() {
 
-			try {
-				let body = {
-					accessToken: this.appState.accessToken,
-					refreshToken: this.appState.refreshToken,
-				};
+		// 	try {
+		// 		let body = {
+		// 			accessToken: this.appState.accessToken,
+		// 			refreshToken: this.appState.refreshToken,
+		// 		};
 
-				const response = await fetch('/api/auth/refresh', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify(body)
-				});
+		// 		const response = await fetch('/api/auth/refresh', {
+		// 			method: 'POST',
+		// 			headers: { 'Content-Type': 'application/json' },
+		// 			body: JSON.stringify(body)
+		// 		});
 
-				let dataObj = await response.json();
+		// 		let dataObj = await response.json();
 
-				console.log(dataObj);
+		// 		console.log(dataObj);
 
-				let updateAppState = this.appState;
-				if (dataObj?.success) {
-					updateAppState.accessToken = dataObj.accessToken;
-					updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
-					updateAppState.refreshToken = dataObj.refreshToken;
-					this.eventBus.emit("updateAppState", updateAppState);
+		// 		let updateAppState = this.appState;
+		// 		if (dataObj?.success) {
+		// 			updateAppState.accessToken = dataObj.accessToken;
+		// 			updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
+		// 			updateAppState.refreshToken = dataObj.refreshToken;
+		// 			this.eventBus.emit("updateAppState", updateAppState);
 
-					this.appNotify.code = 200;
-					this.appNotify.message = "New Access Token acquired: Refresh Success";
-					this.appNotify.success = true;
-				} else {
-					this.appNotify.code = 400;
-					this.appNotify.message = "Refresh Failed. Please, log in again.";
-					this.appNotify.success = false;
-					this.eventBus.emit("updateAppState", {});
-				}
+		// 			this.appNotify.code = 200;
+		// 			this.appNotify.message = "New Access Token acquired: Refresh Success";
+		// 			this.appNotify.success = true;
+		// 		} else {
+		// 			this.appNotify.code = 400;
+		// 			this.appNotify.message = "Refresh Failed. Please, log in again.";
+		// 			this.appNotify.success = false;
+		// 			this.eventBus.emit("updateAppState", {});
+		// 		}
 
-				this.eventBus.emit("updateStatus", this.appNotify);
+		// 		this.eventBus.emit("updateStatus", this.appNotify);
 
-			} catch (e) {
-				console.error(e);
-			}
-		},
+		// 	} catch (e) {
+		// 		console.error(e);
+		// 	}
+		// },
 		async getServrVersion() {
 			try {
 				const response = await fetch('/api/serverInfo');
@@ -148,6 +148,8 @@ export default {
 		this.getServrVersion();
 		this.recallAppState();
 		// this.refreshSessionData();
+		// if (this.appState?.isLoggedOn) this.eventBus.emit("checkIfRefreshNeeded");
+		this.eventBus.emit("checkIfRefreshNeeded");
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
 			session.recall.save(this.appState);

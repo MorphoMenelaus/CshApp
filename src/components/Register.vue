@@ -93,7 +93,7 @@ export default {
 				console.error('Error posting data:', error);
 				this.postStatus.code = 400;
 				this.postStatus.message = `Error posting data: ${error}`;
-				this.postStatus.success = true;
+				this.postStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.postStatus));
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
