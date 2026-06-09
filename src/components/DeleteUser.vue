@@ -34,6 +34,8 @@ export default {
 	},
 	methods: {
 		async deleteUser() {
+			this.eventBus.emit("checkIfRefreshNeeded");
+			
 			let confirmDelete = confirm(
 				`Are you sure you want to DELETE, ${this.appState.user.userName}`
 			);

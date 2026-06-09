@@ -124,7 +124,7 @@ export default {
 	watch: {
 		appState: {
 			handler(val, oldVal) {
-				this.isAdmin = this.appState.user.permissions.admin;
+				this.isAdmin = this.appState?.user?.permissions?.admin;
 			},
 			deep: true,
 		},
@@ -132,6 +132,7 @@ export default {
 	methods: {
 		async getUser() {
 			this.eventBus.emit("showHideLoader", true);
+			this.eventBus.emit("checkIfRefreshNeeded");
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -174,6 +175,7 @@ export default {
 		},
 		async updateUser() {
 			this.eventBus.emit("showHideLoader", true);
+			this.eventBus.emit("checkIfRefreshNeeded");
 
 			let body = {
 				email: this.email,

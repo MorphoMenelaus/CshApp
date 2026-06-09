@@ -133,10 +133,58 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
+		checkIfRefreshNeeded() {
+			// Give it 1 minute of wiggle room on expire time (60000ms)
+			// Better to refresh a minute early than to cause a race condition error
+			let expireMS = this.appState?.accessTokenExpiration - 60000;
+			let currTime = new Date().getTime();
+			if (currTime >= expireMS) this.refreshAuthentication();
+			console.log(currTime);
+		},
+		async refreshAuthentication() {
+
+			let body = {
+				accessToken: this.appState?.accessToken,
+				refreshToken: this.appState?.refreshToken,
+			};
+
+			try {
+
+				const response = await fetch('/api/auth/refresh', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(body)
+				});
+
+				let dataObj = await response.json();
+
+				if (dataObj?.success) {
+					let updateAppState = this.appState;
+					updateAppState.accessToken = dataObj.accessToken;
+					updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
+					updateAppState.refreshToken = dataObj.refreshToken;
+					updateAppState.isLoggedOn = true;
+					this.eventBus.emit("updateAppState", updateAppState);
+
+					this.appNotify.code = 200;
+					this.appNotify.message = "Access Token refeshed";
+					this.appNotify.success = true;
+				} else {
+					this.appNotify.code = 400;
+					this.appNotify.message = "Invalid credentials";
+					this.appNotify.success = false;
+				}
+
+				this.eventBus.emit("updateStatus", this.appNotify);
+
+			} catch (e) {
+				console.error(e);
+			}
+		},
 		openConfirmDialog() {
 			this.dialog.showModal()
 		},
-		async logout(forcedLogout = false) {
+		async logout() {
 			this.eventBus.emit("showHideLoader", true);
 
 			let body = {
@@ -146,13 +194,6 @@ export default {
 			try {
 
 				this.dialog.close();
-
-				// if (!forcedLogout) {
-				// 	let confirmLogout = confirm(
-				// 		`Are you sure you want to logout, ${this.displayName}`
-				// 	);
-				// 	if (!confirmLogout) return false;
-				// }
 
 				const response = await fetch('/api/auth/logout', {
 					method: 'POST',
@@ -179,14 +220,18 @@ export default {
 		this.dialog = document.getElementById("confirmDialog");
 	},
 	created() {
+		this.eventBus.on("checkIfRefreshNeeded", () => {
+			this.checkIfRefreshNeeded();
+		});
 		this.eventBus.on("cancelDeleteUser", () => {
 			this.currentComponent = null;
 		});
 		this.eventBus.on("UserDeleted", () => {
 			this.currentComponent = null;
-			this.logout(true);
+			this.logout();
 		});
 		onBeforeUnmount(() => {
+			this.eventBus.off("checkIfRefreshNeeded");
 			this.eventBus.off("cancelDeleteUser");
 			this.eventBus.off("UserDeleted");
 		});

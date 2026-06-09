@@ -91,6 +91,7 @@ export default {
 		},
 		async getClockLog() {
 			this.eventBus.emit("showHideLoader", true);
+			this.eventBus.emit("checkIfRefreshNeeded");
 
 			try {
 
@@ -115,6 +116,7 @@ export default {
 		},
 		async logSimpleClock() {
 			this.eventBus.emit("showHideLoader", true);
+			this.eventBus.emit("checkIfRefreshNeeded");
 
 			let data;
 			try {
