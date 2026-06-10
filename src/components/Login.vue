@@ -230,10 +230,14 @@ export default {
 			this.currentComponent = null;
 			this.logout();
 		});
+		this.eventBus.on("forceLogout", () => {
+			this.logout();
+		});
 		onBeforeUnmount(() => {
 			this.eventBus.off("checkIfRefreshNeeded");
 			this.eventBus.off("cancelDeleteUser");
 			this.eventBus.off("UserDeleted");
+			this.eventBus.off("forceLogout");
 		});
 	},
 };
