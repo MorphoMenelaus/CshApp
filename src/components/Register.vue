@@ -5,7 +5,7 @@
 			<h2>Register</h2>
 			<p>Please fill this form to create an account.</p>
 			<!-- @submit.prevent blocks page reloads and executes your logic -->
-			<form @submit.prevent="handleSubmit" method="post">
+			<form @submit.prevent="register" method="post">
 				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
 					<label>Username</label>
 					<input v-model.trim="userName" type="text" name="userName" class="form-control">
@@ -18,7 +18,7 @@
 					<label>Confirm Password</label>
 					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
 				</div>
-				<button class="btn" @click="register()">Register</button>
+				<button class="btn" type='submit'>Register</button>
 				<p>Already have an account? <span class="link" title="Login here"
 						@click="removeRegisterUserComponent()">Login here.</span>
 				</p>
@@ -46,6 +46,7 @@ export default {
 			confirmPassword: "",
 			errState: false,
 			isLoggedOn: false,
+			siteKey: this.reCaptchaSiteKey
 		};
 	},
 	watch: {

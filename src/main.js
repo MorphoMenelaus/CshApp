@@ -60,6 +60,41 @@ const isUTCtime = (str) => {
 	return !isNaN(date.getTime());
 }
 
+const addUserLog = async (appState, actionPerformed = "") => {
+	try {
+		let body = {
+			userId: appState.user.userId,
+			userName: appState.user.userName,
+			actionPerformed: actionPerformed,
+		};
+
+		let headerObj = new Headers();
+		headerObj.append("Authorization", `Bearer ${appState.accessToken}`);
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL("/api/userlogs", baseUrl);
+
+		let request = new Request(
+			requestUrl.toString(), {
+			method: 'POST',
+			headers: headerObj,
+			body: JSON.stringify(body)
+		});
+
+		const response = await fetch(request);
+		data = await response.json();
+
+		console.log(data);
+
+	} catch (error) {
+		let postStatus = {};
+		console.error('Error posting data:', error);
+		postStatus.code = 400;
+		postStatus.message = `Error posting data: ${error}`;
+		postStatus.success = false;
+		console.log(postStatus);
+	}
+}
+
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.baseUrl = baseUrl;
@@ -69,3 +104,4 @@ app.config.globalProperties.dateOptions = dateOptions;
 app.config.globalProperties.timeOptions = timeOptions;
 app.config.globalProperties.toTitleCase = toTitleCase;
 app.config.globalProperties.isUTCtime = isUTCtime;
+app.config.globalProperties.addUserLog = addUserLog;

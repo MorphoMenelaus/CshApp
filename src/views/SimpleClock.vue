@@ -13,9 +13,14 @@
 
 		<form method="post" @submit.prevent="handleSubmit">
 			<div class="checkbox-container">
-				<input v-model="isWakeupEvent" id="wakeup-event" type="checkbox" name="iswakeupevent"
-					title="Wakeup Event" />
+				<!-- <input v-model="isWakeupEvent" id="wakeup-event" type="checkbox" name="iswakeupevent"
+					title="Wakeup Event" /> -->
 				<label for="iswakeupevent" title="Wakeup Event">Wakeup Event</label>
+				<select v-model="isWakeupEvent">
+					<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+						{{ item.text }}
+					</option>
+				</select>
 			</div>
 			<div class="notes-container">
 				<label for="notes">
@@ -65,13 +70,17 @@ export default {
 	data() {
 		return {
 			postStatus: Object.assign({}, this.appNotify),
+			boolOptions: [
+				{ text: "true", value: "1" },
+				{ text: "false", value: "0" },
+			],
 			dayLocal: "",
 			dateLocal: "",
 			timeLocal: "",
 			eventLogList: [],
 			maxlength: 512,
 			charRemaining: 512,
-			isWakeupEvent: false,
+			isWakeupEvent: 0,
 			notes: ""
 		};
 	},
@@ -160,6 +169,7 @@ export default {
 				this.postStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.postStatus));
 			} finally {
+				this.addUserLog(this.appState, "Add Entry to Simple Clock Log");
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
@@ -246,6 +256,10 @@ export default {
 	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
+}
+
+select {
+	margin-left: 15px;
 }
 
 #notes {

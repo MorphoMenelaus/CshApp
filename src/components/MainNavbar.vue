@@ -7,7 +7,9 @@
 			<RouterLink v-if="appState?.isLoggedOn" to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences">UserPreferences</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers">Display Users</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock">Simple Clock</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayuserlogs">Display User Logs</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock">Simple Clock
+			</RouterLink>
 			<RouterLink to="/about">About</RouterLink>
 		</nav>
 	</div>
