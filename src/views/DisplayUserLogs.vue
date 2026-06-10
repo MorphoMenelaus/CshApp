@@ -1,8 +1,8 @@
 <template>
 
-	<div id="listUsers" class="input-heading">
+	<div id="listUsersLogs" class="input-heading">
 
-		<h1>List Users</h1>
+		<h1>User Logs</h1>
 
 		<div id="paging">
 			<label for="limitOptions">Limit List</label>
@@ -15,16 +15,16 @@
 		</div>
 
 		<div class="user-lists-container">
-			<table v-if="usersList && usersList.length > 0">
+			<table v-if="logs && logs.length > 0">
 				<thead>
 					<tr class="header-row">
-						<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{ this.toTitleCase(label)
+						<th v-for="(label, index) in Object.keys(logs[0])" :key="index">{{ this.toTitleCase(label)
 						}}
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr class="data-row" v-for="(user, index) in usersList" :key="index">
+					<tr class="data-row" v-for="(user, index) in logs" :key="index">
 						<td v-for="(column, index) in user" :key="index">{{ isUTCtime(column) ? new
 							Date(column).toLocaleString() : column }}</td>
 					</tr>
@@ -44,7 +44,7 @@
 import { onBeforeUnmount } from "vue";
 
 export default {
-	name: "DisplayUsers",
+	name: "DisplayUserLogs",
 	props: {
 		appState: Object
 	},
@@ -62,52 +62,34 @@ export default {
 				{ text: "20", value: "20" },
 				{ text: "50", value: "50" },
 			],
-			// serverMessage: "Loading...",
 			responseStatus: "",
-			usersList: [],
-			usersLabels: [
+			logs: [],
+			labels: [
+				"entryId",
 				"userId",
-				"userCreated",
 				"userName",
-				"isAdmin",
-				"siteAdmin",
-				"siteEditor",
-				"isContributor",
-				"userNotes",
+				"actionPerformed",
+				"dateTime",
 			],
 			bogusData: [
 				{
-					"userId": "b59cda6d-5870-11f1-8c64-ea0526f21063",
-					"userCreated": "2026-05-25T19:34:08.000Z",
-					"userName": "Chris3",
-					"password": "bogusData",
-					"isAdmin": 0,
-					"siteAdmin": 0,
-					"siteEditor": 0,
-					"isContributor": 1,
-					"userNotes": ""
-				},
-				{
-					"userId": "86731354-5847-11f1-8c64-ea0526f21063",
-					"userCreated": "2026-05-25T14:39:20.000Z",
-					"userName": "Chris2",
-					"password": "bogusData",
-					"isAdmin": 0,
-					"siteAdmin": 0,
-					"siteEditor": 1,
-					"isContributor": 0,
-					"userNotes": ""
-				},
-				{
-					"userId": "e85e2ac1-563b-11f1-8c64-ea0526f21063",
-					"userCreated": "2026-05-23T00:11:09.000Z",
-					"userName": "Chris",
-					"password": "bogusData",
-					"isAdmin": 1,
-					"siteAdmin": 1,
-					"siteEditor": 0,
-					"isContributor": 0,
-					"userNotes": "Some user notes for testing."
+					"entryId": 1,
+					"userId": "0b91a221-6059-11f1-ab03-ea0526f21063",
+					"userName": "chrish",
+					"actionPerformed": "Password Changed",
+					"dateTime": "2026-06-10T12:07:07.000Z"
+				}, {
+					"entryId": 1,
+					"userId": "0b91a221-6059-11f1-ab03-ea0526f21063",
+					"userName": "chrish",
+					"actionPerformed": "Password Changed",
+					"dateTime": "2026-06-10T12:07:07.000Z"
+				}, {
+					"entryId": 1,
+					"userId": "0b91a221-6059-11f1-ab03-ea0526f21063",
+					"userName": "chrish",
+					"actionPerformed": "Password Changed",
+					"dateTime": "2026-06-10T12:07:07.000Z"
 				}
 			]
 		};
@@ -120,14 +102,14 @@ export default {
 		},
 	},
 	methods: {
-		async getUsers() {
+		async getUserLogs() {
 			this.eventBus.emit("showHideLoader", true);
 			this.eventBus.emit("checkIfRefreshNeeded");
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/users/", this.baseUrl);
+			let requestUrl = new URL("/api/userlogs/", this.baseUrl);
 			// let params = requestUrl.searchParams;
 
 			let request = new Request(
@@ -141,15 +123,15 @@ export default {
 
 				const data = await response.json();
 				if (data.success) {
-					let users = data.users;
-					this.usersList = Array.isArray(users) && users.length > 0 ? users : this.bogusData;
+					let logs = data.logs;
+					this.logs = Array.isArray(logs) && logs.length > 0 ? logs : this.bogusData;
 				}
 
-				this.eventBus.emit("getUsers", this.usersList);
+				this.eventBus.emit("getUserLogs", this.logs);
 			} catch (error) {
-				this.usersList = this.bogusData;
+				this.logs = this.bogusData;
 				console.error('Error fetching data:', error)
-				this.eventBus.emit("getUsers", error);
+				this.eventBus.emit("getUserLogs", error);
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
 			}
@@ -168,7 +150,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.getUsers();
+		this.getUserLogs();
 	},
 	created() {
 	},
@@ -183,7 +165,7 @@ h1 {
 	text-align: center;
 }
 
-#listUsers {
+#listUsersLogs {
 	/* margin-left: 20%; */
 	padding: 15px 15px 60px;
 	/* height: calc(100vh - 10em);*/

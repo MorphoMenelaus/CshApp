@@ -29,6 +29,12 @@ const router = createRouter({
 			meta: { requiresAuth: true }
 		},
 		{
+			path: '/displayuserlogs',
+			name: 'DisplayUserLogs',
+			component: () => import('../views/DisplayUserLogs.vue'),
+			meta: { requiresAuth: true }
+		},
+		{
 			path: '/simpleclock',
 			name: 'SimpleClock',
 			component: () => import('../views/SimpleClock.vue'),

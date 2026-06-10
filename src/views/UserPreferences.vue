@@ -227,6 +227,7 @@ export default {
 				// this.serverMessage.value = 'Failed to load server data.'
 				this.eventBus.emit("getUsers", error);
 			} finally {
+				this.addUserLog(this.appState, "Update User Preferences");
 				this.eventBus.emit("showHideLoader", false);
 			}
 		}
