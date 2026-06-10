@@ -90,16 +90,23 @@
 
 	</div>
 
+	<component :is="currentComponent" :appState="appState" />
+	<button @click="currentComponent = 'ChangePassword'" class="btn">Change Password</button>
 
 </template>
 
 <script>
+import { onBeforeUnmount } from "vue";
+import ChangePassword from "@/components/ChangePassword.vue";
+
 export default {
 	name: "UserPreferences",
 	props: {
 		appState: Object
 	},
-	components: {},
+	components: {
+		ChangePassword
+	},
 	data() {
 		return {
 			notify: Object.assign({}, this.appNotify),
@@ -118,7 +125,8 @@ export default {
 			"siteEditor": 0,
 			"contributor": 0,
 			"uiDarkMode": 0,
-			"userNotes": ""
+			"userNotes": "",
+			currentComponent: null
 		};
 	},
 	watch: {
@@ -236,6 +244,12 @@ export default {
 	},
 	created() {
 		this.getUser();
+		this.eventBus.on("closeChangePassword", () => {
+			this.currentComponent = null;
+		});
+		onBeforeUnmount(() => {
+			this.eventBus.off("closeChangePassword")
+		});
 	},
 };
 </script>
