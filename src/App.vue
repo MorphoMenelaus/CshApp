@@ -140,7 +140,7 @@ export default {
 				const data = await response.json();
 				this.serverVersion = data?.version || "";
 			} catch (error) {
-				console.error('Error fetching data:', error);
+				console.error('Error fetching server version:', error);
 			}
 		},
 	},
@@ -168,10 +168,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#view {
+/* #view {
 	margin-top: 15px;
-	padding: 15px;
-}
+	padding: 15px 30px;
+} */
 
 header {
 	line-height: 1.5;

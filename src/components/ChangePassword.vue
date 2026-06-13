@@ -21,7 +21,10 @@
 					<label>Confirm New Password</label>
 					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
 				</div>
-				<button class="btn" type='submit'>Submit</button>
+				<div class="button-container">
+					<button class="btn" type='submit' title="Change password">Submit</button>
+					<button @click="closePopup()" class="btn cancel" title="Cancel">Cancel</button>
+				</div>
 			</form>
 		</div>
 	</div>
@@ -232,20 +235,13 @@ button.close-notification {
 	border-radius: 8px;
 }
 
+.button-container {
+	display: flex;
+}
+
 .wrapper .form-group {
 	display: flex;
 	align-content: center;
 	flex-direction: column;
-}
-
-.link {
-	text-decoration: underline;
-	color: #4c88ff;
-	cursor: pointer;
-	user-select: none;
-}
-
-.link:hover {
-	color: #ff6600;
 }
 </style>

@@ -22,6 +22,7 @@
 					</option>
 				</select>
 			</div>
+
 			<div class="notes-container">
 				<label for="notes">
 					<small>(characters remaining: {{ charRemaining }})</small>
@@ -33,6 +34,17 @@
 				title='Submit Time Log'>Submit Time
 				Log</button>
 		</form>
+
+		<div id="paging">
+			<label for="limitOptions">Limit List</label>
+			<select v-model="limit">
+				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}
+				</option>
+			</select>
+			<button class="prev-button" type="button" @click="previousPage()">previous</button>
+			<button class="next-button" type="button" @click="nextPage()">next</button>
+			<span :currentPage="currentPage">page {{ currentPage }}</span>
+		</div>
 
 		<div class="user-lists-container">
 			<table v-if="eventLogList && eventLogList.length > 0">
@@ -46,8 +58,10 @@
 				</thead>
 				<tbody>
 					<tr class="data-row" v-for="(event, index) in eventLogList" :key="index">
-						<td v-for="(column, index) in event" :key="index">{{ this.handleLogStringFormat(column,
-							event[index]) }}</td>
+						<td v-for="(column, index) in event" :key="index" :class="column === true ? 'true' : ''">{{
+							isUTCtime(column) ? new
+								Date(column).toLocaleString() : column
+						}}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -70,9 +84,19 @@ export default {
 	data() {
 		return {
 			postStatus: Object.assign({}, this.appNotify),
+			limit: 5,
+			offset: 0,
+			currentPage: 1,
 			boolOptions: [
 				{ text: "true", value: "1" },
 				{ text: "false", value: "0" },
+			],
+			limitOptions: [
+				{ text: "5", value: 5 },
+				{ text: "10", value: 10 },
+				{ text: "15", value: 15 },
+				{ text: "20", value: 20 },
+				{ text: "50", value: 50 },
 			],
 			dayLocal: "",
 			dateLocal: "",
@@ -85,13 +109,25 @@ export default {
 		};
 	},
 	watch: {
+		limit() {
+			this.currentPage = 1;
+			this.offset = null;
+			// this.limit = this.limit;
+			this.getClockLog();
+		},
+		eventLogList() {
+			this.eventLogList.forEach(event => {
+				event.isWakeupEvent = event?.isWakeupEvent === 1 ? true : false;
+			});
+		}
 	},
 	methods: {
-		handleLogStringFormat(str, event = "") {
-			if (this.isUTCtime(str)) str = new Date(str).toLocaleString();
-			if (event === "isWakeupEvent") str = str === 1 ? true : false;
-			return str;
-		},
+		// handleLogStringFormat(str, event = "") {
+		// 	if (this.isUTCtime(str)) str = new Date(str).toLocaleString();
+		// 	if (event === "isWakeupEvent") str = str === 1 ? true : false;
+		// 	// console.log(str);
+		// 	return str;
+		// },
 		// convertUTCtoLocale() { },
 		charCounter() {
 			let currCount = this.notes.length;
@@ -102,13 +138,24 @@ export default {
 			this.eventBus.emit("showHideLoader", true);
 			this.eventBus.emit("checkIfRefreshNeeded");
 
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL("/api/userlogs/clock/log", this.baseUrl);
+
+			let params = requestUrl.searchParams;
+			params.set("limit", this.limit);
+			params.set("offset", this.offset);
+			requestUrl.search = params.toString();
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'GET',
+				headers: headerObj,
+			});
+
 			try {
-
-				let response = await fetch('/api/users/clock/log', {
-					method: 'GET',
-					headers: { 'Content-Type': 'application/json' },
-				});
-
+				let response = await fetch(request);
 				let data = await response.json();
 
 				this.eventLogList = data;
@@ -141,7 +188,7 @@ export default {
 				let headerObj = new Headers();
 				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL("/api/users/clock", this.baseUrl);
+				let requestUrl = new URL("/api/userlogs/clock", this.baseUrl);
 
 				let request = new Request(
 					requestUrl.toString(), {
@@ -179,6 +226,18 @@ export default {
 			this.dateLocal = date.toLocaleDateString("en-US");
 			this.timeLocal = date.toLocaleTimeString();
 		},
+		previousPage() {
+			if (this.currentPage == 1) return;
+			this.currentPage--;
+			this.offset = this.offset - this.limit;
+			this.getClockLog();
+		},
+		nextPage() {
+			if (this.eventLogList.length < this.limit) return;
+			this.offset = this.offset + this.limit;
+			this.currentPage++;
+			this.getClockLog();
+		},
 	},
 	mounted() {
 		setInterval(() => {
@@ -195,13 +254,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #view {
-	position: absolute;
-	left: 0;
-	top: 80px;
-	right: 0;
-	bottom: 40px;
-	padding: 15px 60px;
-	overflow: auto;
+	padding-bottom: 60px;
 }
 
 #clocklog-container {
@@ -282,16 +335,6 @@ button.time-log {
 	cursor: pointer;
 }
 
-table {
-	margin: 30px auto;
-	padding: 5px;
-	text-align: center;
-	background-color: rgb(0 0 0 / 25%);
-	border-radius: 10px;
-	border: 1px rgb(255 255 255 / 50%) solid;
-	backdrop-filter: blur(5px);
-}
-
 th {
 	padding: 5px 15px;
 	background-color: #fff;
@@ -321,5 +364,13 @@ th {
 	display: flex;
 	flex-flow: column nowrap;
 	justify-content: space-between;
+}
+
+#paging {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	width: 40%;
+	margin: 30px auto 15px;
 }
 </style>

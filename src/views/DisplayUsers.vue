@@ -9,8 +9,8 @@
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button" type="button" @click="previousPage($event)">previous</button>
-			<button class="next-button" type="button" @click="nextPage($event)">next</button>
+			<button class="prev-button" type="button" @click="previousPage()">previous</button>
+			<button class="next-button" type="button" @click="nextPage()">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
@@ -25,8 +25,9 @@
 				</thead>
 				<tbody>
 					<tr class="data-row" v-for="(user, index) in usersList" :key="index">
-						<td v-for="(column, index) in user" :key="index">{{ isUTCtime(column) ? new
-							Date(column).toLocaleString() : column }}</td>
+						<td v-for="(column, index) in user" :key="index" :class="column === true ? 'true' : ''">
+							{{ isUTCtime(column) ? new Date(column).toLocaleString() : column }}
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -116,8 +117,16 @@ export default {
 		limit() {
 			this.currentPage = 1;
 			this.offset = null;
-			this.limit = parseInt(this.limit);
+			this.getUsers();
 		},
+		usersList() {
+			this.usersList.forEach(user => {
+				Object.keys(user).forEach(key => {
+					if (key === "admin" || key === "siteAdmin" || key === "siteEditor" || key === "contributor" || key === "uiDarkMode")
+						user[key] = user[key] === 1 ? true : false;
+				});
+			});
+		}
 	},
 	methods: {
 		async getUsers() {
@@ -128,7 +137,10 @@ export default {
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL("/api/users/", this.baseUrl);
-			// let params = requestUrl.searchParams;
+
+			let params = requestUrl.searchParams;
+			params.set("limit", this.limit);
+			requestUrl.search = params.toString();
 
 			let request = new Request(
 				requestUrl.toString(), {
@@ -154,17 +166,17 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
-		async previousPage(e) {
+		previousPage() {
 			if (this.currentPage == 1) return;
 			this.currentPage--;
 			this.offset = this.offset - this.limit;
-			// this.eventBus.emit("checkAndRefreshSession");
+			this.getUserLogs();
 		},
-		async nextPage(e) {
-			if (this.bankList.length < this.limit) return;
+		nextPage() {
+			if (this.usersList.length < this.limit) return;
 			this.offset = this.offset + this.limit;
 			this.currentPage++;
-			// this.eventBus.emit("checkAndRefreshSession");
+			this.getUserLogs();
 		},
 	},
 	mounted() {
@@ -178,6 +190,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#view {
+	padding-bottom: 80px;
+}
+
 h1 {
 	font-weight: bold;
 	text-align: center;
@@ -210,13 +226,6 @@ h1 {
 	height: calc(100vh - 18em);
 	overflow: hidden auto;
 } */
-
-table {
-	width: 100%;
-	text-align: center;
-	position: relative;
-	border: 1px #666 solid;
-}
 
 td {
 	padding: 15px;
