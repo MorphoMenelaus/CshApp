@@ -208,15 +208,4 @@ label[for="casinoId"] {
 	display: block;
 	margin: 15px auto;
 }
-
-.link {
-	text-decoration: underline;
-	color: #4c88ff;
-	cursor: pointer;
-	user-select: none;
-}
-
-.link:hover {
-	color: #ff6600;
-}
 </style>

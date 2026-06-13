@@ -343,24 +343,6 @@ export default {
 	padding: 5px;
 }
 
-label[for="casinoId"] {
-	text-align: center;
-	text-transform: uppercase;
-	text-shadow: -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000,
-		1px 1px 0px #000;
-}
-
-.link {
-	text-decoration: underline;
-	color: #4c88ff;
-	cursor: pointer;
-	user-select: none;
-}
-
-.link:hover {
-	color: #ff6600;
-}
-
 #delete-button {
 	font-size: 1.25em;
 }

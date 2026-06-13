@@ -59,7 +59,7 @@
 }
 
 body {
-	min-height: 100vh;
+	/* min-height: 100vh; */
 	color: var(--color-text);
 	background: var(--color-background);
 	transition:
@@ -85,6 +85,7 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.btn,
 button {
 	cursor: pointer;
 }
@@ -102,7 +103,11 @@ button {
 }
 
 input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+
+.cancel {
+	background-color: #3f445f;
 }

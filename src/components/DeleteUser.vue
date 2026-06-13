@@ -35,7 +35,7 @@ export default {
 	methods: {
 		async deleteUser() {
 			this.eventBus.emit("checkIfRefreshNeeded");
-			
+
 			let confirmDelete = confirm(
 				`Are you sure you want to DELETE, ${this.appState.user.userName}`
 			);
@@ -74,6 +74,7 @@ export default {
 				this.deleteStatus.success = true;
 				this.eventBus.emit("updateStatus", this.deleteStatus);
 			} finally {
+				this.addUserLog(this.appState, "User Deleted Account");
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
@@ -127,16 +128,5 @@ h2 {
 	background-color: #000;
 	color: #f00;
 	font-weight: bold;
-}
-
-.link {
-	text-decoration: underline;
-	color: #4c88ff;
-	cursor: pointer;
-	user-select: none;
-}
-
-.link:hover {
-	color: #ff6600;
 }
 </style>

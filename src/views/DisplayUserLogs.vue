@@ -9,8 +9,8 @@
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button" type="button" @click="previousPage($event)">previous</button>
-			<button class="next-button" type="button" @click="nextPage($event)">next</button>
+			<button class="prev-button" type="button" @click="previousPage()">previous</button>
+			<button class="next-button" type="button" @click="nextPage()">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
@@ -56,11 +56,11 @@ export default {
 			offset: 0,
 			currentPage: 1,
 			limitOptions: [
-				{ text: "5", value: "5" },
-				{ text: "10", value: "10" },
-				{ text: "15", value: "15" },
-				{ text: "20", value: "20" },
-				{ text: "50", value: "50" },
+				{ text: "5", value: 5 },
+				{ text: "10", value: 10 },
+				{ text: "15", value: 15 },
+				{ text: "20", value: 20 },
+				{ text: "50", value: 50 },
 			],
 			responseStatus: "",
 			logs: [],
@@ -98,7 +98,8 @@ export default {
 		limit() {
 			this.currentPage = 1;
 			this.offset = null;
-			this.limit = parseInt(this.limit);
+			// this.limit = this.limit;
+			this.getUserLogs();
 		},
 	},
 	methods: {
@@ -110,7 +111,11 @@ export default {
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL("/api/userlogs/", this.baseUrl);
-			// let params = requestUrl.searchParams;
+
+			let params = requestUrl.searchParams;
+			params.set("limit", this.limit);
+			params.set("offset", this.offset);
+			requestUrl.search = params.toString();
 
 			let request = new Request(
 				requestUrl.toString(), {
@@ -136,17 +141,17 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
-		async previousPage(e) {
+		previousPage() {
 			if (this.currentPage == 1) return;
 			this.currentPage--;
 			this.offset = this.offset - this.limit;
-			// this.eventBus.emit("checkAndRefreshSession");
+			this.getUserLogs();
 		},
-		async nextPage(e) {
-			if (this.bankList.length < this.limit) return;
+		nextPage() {
+			if (this.logs.length < this.limit) return;
 			this.offset = this.offset + this.limit;
 			this.currentPage++;
-			// this.eventBus.emit("checkAndRefreshSession");
+			this.getUserLogs();
 		},
 	},
 	mounted() {
@@ -160,6 +165,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#view {
+	padding-bottom: 90px;
+}
+
 h1 {
 	font-weight: bold;
 	text-align: center;
@@ -192,13 +201,6 @@ h1 {
 	height: calc(100vh - 18em);
 	overflow: hidden auto;
 } */
-
-table {
-	width: 100%;
-	text-align: center;
-	position: relative;
-	border: 1px #666 solid;
-}
 
 td {
 	padding: 15px;

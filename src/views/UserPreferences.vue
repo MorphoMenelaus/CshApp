@@ -1,97 +1,95 @@
 <template>
 
-	<div class="wrapper">
-
-		<h1>User Preferences</h1>
-		<div v-if="isAdmin">
-			<p style="text-align: center;">Please enter user ID.</p>
-			<!-- @submit.prevent blocks page reloads and executes your logic -->
-			<form id="userid-input" @submit.prevent="handleSubmit" method="get">
-				<div class="form-group">
-					<label for="userId">User ID</label>
-					<input v-model="userId" id="userId" type="text" name="userId" class="form-control"
-						placeholder="User ID" />
-				</div>
-				<button @click="getUser" class="btn">Get User</button>
-			</form>
-		</div>
-
-		<div id="get-set-user-prefs">
-
-			<div class="form-container" v-if="user && Object.keys(user).length > 0">
-				<form @submit.prevent="handleSubmit" method="put">
-
-					<div class="fields">
-						<div class="form-group">
-							<label for="email">Email</label>
-							<input id="email" v-model="email" maxlength="256" />
-						</div>
-						<div class="form-group">
-							<label for="lastName">Last Name</label>
-							<input id="lastName" v-model="lastName" maxlength="64" />
-						</div>
-						<div class="form-group">
-							<label for="firstName">First Name</label>
-							<input id="firstName" v-model="firstName" maxlength="64" />
-						</div>
-						<div class="form-group">
-							<label for="userNotes">User Notes</label>
-							<textarea id="userNotes" v-model="userNotes" maxlength="1024"></textarea>
-						</div>
+	<div id="preferences">
+		<div class="wrapper">
+			<h1>User Preferences</h1>
+			<div v-if="isAdmin">
+				<p style="text-align: center;">Please enter user ID.</p>
+				<!-- @submit.prevent blocks page reloads and executes your logic -->
+				<form id="userid-input" @submit.prevent="handleSubmit" method="get">
+					<div class="form-group">
+						<label for="userId">User ID</label>
+						<input v-model="userId" id="userId" type="text" name="userId" class="form-control"
+							placeholder="User ID" />
 					</div>
-
-					<div class="drop-downs">
-						<div class="form-group" v-if="isAdmin">
-							<label for="admin">Admin</label>
-							<select v-model="admin">
-								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-									{{ item.text }}
-								</option>
-							</select>
-						</div>
-						<div class="form-group" v-if="isAdmin">
-							<label for="siteAdmin">Site Admin</label>
-							<select v-model="siteAdmin">
-								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-									{{ item.text }}
-								</option>
-							</select>
-						</div>
-						<div class="form-group" v-if="isAdmin">
-							<label for="siteEditor">Site Editor</label>
-							<select v-model="siteEditor">
-								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-									{{ item.text }}
-								</option>
-							</select>
-						</div>
-						<div class="form-group" v-if="isAdmin">
-							<label for="contributor">Contributor</label>
-							<select v-model="contributor">
-								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-									{{ item.text }}
-								</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="uiDarkMode">UI DarkMode</label>
-							<select v-model="uiDarkMode">
-								<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-									{{ item.text }}
-								</option>
-							</select>
-						</div>
-					</div>
-
+					<button @click="getUser" class="btn" title="Get User">Get User</button>
 				</form>
-				<button @click="updateUser()" class="btn">Upate User Prefernces</button>
+			</div>
+			<div id="get-set-user-prefs">
+				<div class="form-container" v-if="user && Object.keys(user).length > 0">
+					<form @submit.prevent="handleSubmit" method="put">
+						<div class="fields">
+							<div class="form-group">
+								<label for="email">Email</label>
+								<input id="email" v-model="email" maxlength="256" />
+							</div>
+							<div class="form-group">
+								<label for="lastName">Last Name</label>
+								<input id="lastName" v-model="lastName" maxlength="64" />
+							</div>
+							<div class="form-group">
+								<label for="firstName">First Name</label>
+								<input id="firstName" v-model="firstName" maxlength="64" />
+							</div>
+							<div class="form-group">
+								<label for="userNotes">User Notes</label>
+								<textarea id="userNotes" v-model="userNotes" maxlength="1024"></textarea>
+							</div>
+						</div>
+						<div class="drop-downs">
+							<div class="form-group" v-if="isAdmin">
+								<label for="admin">Admin</label>
+								<select v-model="admin">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+							</div>
+							<div class="form-group" v-if="isAdmin">
+								<label for="siteAdmin">Site Admin</label>
+								<select v-model="siteAdmin">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+							</div>
+							<div class="form-group" v-if="isAdmin">
+								<label for="siteEditor">Site Editor</label>
+								<select v-model="siteEditor">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+							</div>
+							<div class="form-group" v-if="isAdmin">
+								<label for="contributor">Contributor</label>
+								<select v-model="contributor">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="uiDarkMode">UI DarkMode</label>
+								<select v-model="uiDarkMode">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+							</div>
+						</div>
+					</form>
+					<button @click="updateUser()" class="btn" title="Upate User Prefernces">Upate User
+						Prefernces</button>
+				</div>
 			</div>
 		</div>
-
+		<component :is="currentComponent" :appState="appState" />
+		<div id="change-btn">
+			<button @click="currentComponent = 'ChangePassword'" class="btn" title="Change Password">Change
+				Password</button>
+		</div>
 	</div>
-
-	<component :is="currentComponent" :appState="appState" />
-	<button @click="currentComponent = 'ChangePassword'" class="btn">Change Password</button>
 
 </template>
 
@@ -257,17 +255,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#view {
+	padding-bottom: 90px;
+}
+
 #userid-input {
 	margin: auto;
 	width: 25em;
-}
-
-#view.wrapper {
-	height: fit-content;
-	margin: 15px auto;
-	padding: 15px 0 60px;
-	overflow: hidden auto;
-	width: 100%;
 }
 
 h1,
@@ -314,6 +308,6 @@ textarea {
 
 button.btn {
 	display: block;
-	margin: 15px auto;
+	margin: 15px auto 0;
 }
 </style>
