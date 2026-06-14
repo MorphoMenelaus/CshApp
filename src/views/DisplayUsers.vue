@@ -40,7 +40,7 @@
 				<table v-for="(item, index) in usersList" :key="index">
 					<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
 						<th>{{ key }}</th>
-						<td>{{ item[key] }}</td>
+						<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 					</tr>
 				</table>
 			</div>
@@ -215,16 +215,12 @@ h1 {
 }
 
 #listUsers {
-	/* margin-left: 20%; */
 	padding: 15px 15px 60px;
-	/* height: calc(100vh - 10em);*/
-	/* overflow: hidden; */
 }
 
 .header-row {
 	font-size: 1.5em;
 	font-weight: bold;
-	background-color: #666;
 	color: #fff;
 	border: 1px #f00 solid;
 }
@@ -237,27 +233,31 @@ h1 {
 	margin: 15px auto;
 }
 
-/* .user-lists-container {
-	height: calc(100vh - 18em);
-	overflow: hidden auto;
-} */
+.mobile #paging {
+	width: 90%;
+	margin: 30px auto 0;
+}
 
-td {
+#non-mobile table {
+	width: 80%;
 	padding: 15px;
 }
 
-tr {
-	transition: background-color 0.3s;
+#mobile table {
+	position: unset;
+	width: 100%;
+	padding: 10px;
 }
 
-tr:nth-child(2n) {
-	background-color: #414650;
-}
-
-tr.data-row:hover,
-tr:nth-child(2n):hover {
-	background-color: #dfdfdf;
+th {
+	padding: 5px 15px;
+	background-color: #aaa;
 	color: #000;
+	font-weight: bold;
+}
+
+td {
+	border-bottom: 1px #aaa solid;
 }
 
 @media (max-width: 767px) {}
