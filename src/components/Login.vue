@@ -8,7 +8,8 @@
 
 	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''" v-if="!appState.isLoggedOn">
 		<form class="input-section">
-			<h1>Welcome</h1>
+			<h1>CSH App</h1>
+			<h2>Welcome</h2>
 			<!-- <span class="loader"></span> -->
 			<label for="userName">Login to continue</label>
 			<input type="text" name="userName" v-model="userName" placeholder="Username" autocomplete="userName" />
@@ -23,7 +24,7 @@
 		<dialog id="confirmDialog">
 			<div>
 				<h2>
-					Are you sure you want to logout, {{ userName }}?
+					Are you sure you want to logout?
 				</h2>
 				<div class="dialog-buttons">
 					<button class="btn" @click="logout()">Confirm</button>
@@ -245,6 +246,10 @@ export default {
 
 <!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
+h2 {
+	text-align: center;
+}
+
 #dialog-container dialog {
 	margin: auto;
 	padding: 30px;
@@ -274,17 +279,17 @@ export default {
 }
 
 #login {
-	position: absolute;
+	position: fixed;
 	display: grid;
 	align-items: center;
 	width: 100%;
-	height: calc(100% - 139px);
-	top: 94px;
+	/* height: calc(100% - 139px); */
+	top: 0;
 	right: 0;
-	bottom: 0;
+	bottom: 45px;
 	left: 0;
 	background-color: rgb(0 0 0 / 80%);
-	z-index: 5000;
+	z-index: 500200;
 }
 
 .login-btn {

@@ -100,7 +100,8 @@ import ChangePassword from "@/components/ChangePassword.vue";
 export default {
 	name: "UserPreferences",
 	props: {
-		appState: Object
+		appState: Object,
+		isMobile: Boolean
 	},
 	components: {
 		ChangePassword
@@ -262,6 +263,10 @@ export default {
 #userid-input {
 	margin: auto;
 	width: 25em;
+}
+
+.mobile #userid-input {
+	width: unset;
 }
 
 h1,

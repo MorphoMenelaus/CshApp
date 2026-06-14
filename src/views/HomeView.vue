@@ -14,4 +14,15 @@ import TheWelcome from "../components/TheWelcome.vue";
 	padding: 15px;
 	width: 80%;
 }
+
+main#view {
+	z-index: -1;
+	position: relative;
+}
+
+#view.mobile {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
 </style>

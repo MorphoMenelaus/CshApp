@@ -15,21 +15,34 @@
 		</div>
 
 		<div class="user-lists-container">
-			<table v-if="logs && logs.length > 0">
-				<thead>
-					<tr class="header-row">
-						<th v-for="(label, index) in Object.keys(logs[0])" :key="index">{{ this.toTitleCase(label)
-						}}
-						</th>
+
+			<div id="non-mobile" v-if="!isMobile">
+				<table v-if="logs && logs.length > 0">
+					<thead>
+						<tr class="header-row">
+							<th v-for="(label, index) in Object.keys(logs[0])" :key="index">{{ this.toTitleCase(label)
+							}}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data-row" v-for="(user, index) in logs" :key="index">
+							<td v-for="(column, index) in user" :key="index">{{ isUTCtime(column) ? new
+								Date(column).toLocaleString() : column }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div id="mobile" v-if="isMobile">
+				<table v-for="(item, index) in logs" :key="index">
+					<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
+						<th>{{ this.toTitleCase(key) }}</th>
+						<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 					</tr>
-				</thead>
-				<tbody>
-					<tr class="data-row" v-for="(user, index) in logs" :key="index">
-						<td v-for="(column, index) in user" :key="index">{{ isUTCtime(column) ? new
-							Date(column).toLocaleString() : column }}</td>
-					</tr>
-				</tbody>
-			</table>
+				</table>
+			</div>
+
 		</div>
 
 	</div>
@@ -46,7 +59,8 @@ import { onBeforeUnmount } from "vue";
 export default {
 	name: "DisplayUserLogs",
 	props: {
-		appState: Object
+		appState: Object,
+		isMobile: Boolean
 	},
 	components: {},
 	data() {
@@ -175,18 +189,11 @@ h1 {
 }
 
 #listUsersLogs {
-	/* margin-left: 20%; */
 	padding: 15px 15px 60px;
-	/* height: calc(100vh - 10em);*/
-	/* overflow: hidden; */
 }
 
 .header-row {
-	font-size: 1.5em;
-	font-weight: bold;
-	background-color: #666;
 	color: #fff;
-	border: 1px #f00 solid;
 }
 
 #paging {
@@ -197,27 +204,31 @@ h1 {
 	margin: 15px auto;
 }
 
-/* .user-lists-container {
-	height: calc(100vh - 18em);
-	overflow: hidden auto;
-} */
+.mobile #paging {
+	width: 90%;
+	margin: 30px auto 0;
+}
 
-td {
+#non-mobile table {
+	width: 80%;
 	padding: 15px;
 }
 
-tr {
-	transition: background-color 0.3s;
+#mobile table {
+	position: unset;
+	width: 100%;
+	padding: 10px;
 }
 
-tr:nth-child(2n) {
-	background-color: #414650;
-}
-
-tr.data-row:hover,
-tr:nth-child(2n):hover {
-	background-color: #dfdfdf;
+th {
+	padding: 5px 15px;
+	background-color: #aaa;
 	color: #000;
+	font-weight: bold;
+}
+
+td {
+	border-bottom: 1px #aaa solid;
 }
 
 @media (max-width: 767px) {}
