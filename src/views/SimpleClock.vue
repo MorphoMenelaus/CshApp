@@ -47,24 +47,37 @@
 		</div>
 
 		<div class="user-lists-container">
-			<table v-if="eventLogList && eventLogList.length > 0">
-				<thead>
-					<tr class="header-row">
-						<th v-for="(label, index) in Object.keys(eventLogList[0])" :key="index">{{
-							this.toTitleCase(label)
-						}}
-						</th>
+
+			<div id="non-mobile" v-if="!isMobile">
+				<table v-if="eventLogList && eventLogList.length > 0">
+					<thead>
+						<tr class="header-row">
+							<th v-for="(label, index) in Object.keys(eventLogList[0])" :key="index">{{
+								this.toTitleCase(label)
+							}}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data-row" v-for="(event, index) in eventLogList" :key="index">
+							<td v-for="(column, index) in event" :key="index" :class="column === true ? 'true' : ''">{{
+								isUTCtime(column) ? new
+									Date(column).toLocaleString() : column
+							}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div id="mobile" v-if="isMobile">
+				<table v-for="(item, index) in eventLogList" :key="index">
+					<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
+						<th>{{ this.toTitleCase(key) }}</th>
+						<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 					</tr>
-				</thead>
-				<tbody>
-					<tr class="data-row" v-for="(event, index) in eventLogList" :key="index">
-						<td v-for="(column, index) in event" :key="index" :class="column === true ? 'true' : ''">{{
-							isUTCtime(column) ? new
-								Date(column).toLocaleString() : column
-						}}</td>
-					</tr>
-				</tbody>
-			</table>
+				</table>
+			</div>
+
 		</div>
 
 	</div>
@@ -78,7 +91,8 @@ import { onBeforeUnmount } from "vue";
 export default {
 	name: "SimpleClock",
 	props: {
-		appState: Object
+		appState: Object,
+		isMobile: Boolean
 	},
 	components: {},
 	data() {
@@ -272,7 +286,7 @@ export default {
 }
 
 #clock {
-	position: relative;
+	/* position: relative; */
 	width: 15em;
 	margin: 30px auto;
 	padding: 15px;
@@ -280,7 +294,7 @@ export default {
 	align-content: center;
 	background-color: #000;
 	text-align: center;
-	font-size: 200%;
+	font-size: 1.5em;
 	user-select: none;
 	border-radius: 12px;
 	border: 1px #fff solid;
@@ -317,7 +331,7 @@ select {
 
 #notes {
 	height: 5em;
-	width: 30em;
+	width: 25em;
 	align-items: center;
 }
 
@@ -335,11 +349,26 @@ button.time-log {
 	cursor: pointer;
 }
 
+table {
+	width: 80%;
+	padding: 15px;
+}
+
+#mobile table {
+	position: unset;
+	width: 100%;
+	padding: 10px;
+}
+
 th {
 	padding: 5px 15px;
-	background-color: #fff;
+	background-color: #aaa;
 	color: #000;
 	font-weight: bold;
+}
+
+td {
+	border-bottom: 1px #aaa solid;
 }
 
 .thumbs td,
@@ -372,5 +401,10 @@ th {
 	align-items: center;
 	width: 40%;
 	margin: 30px auto 15px;
+}
+
+.mobile #paging {
+	width: 90%;
+	margin: 30px auto 0;
 }
 </style>

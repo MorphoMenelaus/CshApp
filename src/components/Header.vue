@@ -1,7 +1,7 @@
 <template>
 
 	<header>
-		<div v-if="statusArray.length > 0" id="notifications">
+		<div v-if="statusArray.length > 0" id="notifications" :class="isMobile ? 'mobile' : ''">
 			<div class="status-message" v-for="(item, index) in statusArray" :key="index"
 				:class="item.success ? 'ok' : 'error'">
 				<button @click="closeNotification(item)" class="close-notification"
@@ -17,7 +17,7 @@
 			<!-- <RouterLink to="/" @click="showHideLoader = false">Click if page fails to load</RouterLink> -->
 		</div>
 
-		<div id="clock">
+		<div id="clock" v-if="!isMobile">
 			<div id="time-container">
 				<span id="time">{{ timeLocal }}</span>
 			</div>
@@ -27,9 +27,7 @@
 			</div>
 		</div>
 
-		<MainNavbar :appState="appState" />
-
-		<!-- <h1>Welcome</h1> -->
+		<MainNavbar :appState="appState" :isMobile="isMobile" />
 
 	</header>
 
@@ -44,12 +42,9 @@ export default {
 		MainNavbar
 	},
 	props: {
-		appState: {
-			type: Object,
-		},
-		serverVersion: {
-			type: String,
-		},
+		appState: Object,
+		serverVersion: String,
+		isMobile: Boolean
 	},
 	data() {
 		return {
@@ -118,7 +113,7 @@ export default {
 	top: 10px;
 	left: 15px;
 	min-width: 6em;
-	z-index: 10;
+	z-index: 1000;
 	user-select: none;
 }
 
@@ -137,7 +132,12 @@ h1 {
 	top: 15px;
 	left: 15px;
 	overflow: hidden auto;
-	z-index: 10000;
+	z-index: 100200;
+}
+
+#notifications.mobile {
+	top: 115px;
+	display: contents;
 }
 
 .status-message {
@@ -182,8 +182,11 @@ h1 {
 	justify-content: center;
 	position: fixed;
 	top: 94px;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	width: 100vw;
-	height: calc(100vh - 140px);
+	/* height: calc(100vh - 140px); */
 	background: rgb(0 0 0 / 75%);
 	z-index: 10000;
 }

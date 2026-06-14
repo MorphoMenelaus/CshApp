@@ -5,11 +5,11 @@ import HelloWorld from "./components/HelloWorld.vue";
 
 <template>
 
-	<Header :appState="appState" />
+	<Header :appState="appState" :isMobile="isMobile" />
 
 	<Login :appState="appState" />
 
-	<RouterView :appState="appState" id="view" />
+	<RouterView :appState="appState" id="view" :isMobile="isMobile" :class="isMobile ? 'mobile' : ''" />
 
 	<Footer :serverVersion="serverVersion" />
 
@@ -40,7 +40,8 @@ export default {
 			appNotify: Object.assign({}, this.appNotify),
 			serverVersion: "",
 			appState: {},
-			currentComponent: null
+			currentComponent: null,
+			isMobile: window.innerWidth < 1024
 		};
 	},
 	watch: {
@@ -159,6 +160,9 @@ export default {
 		});
 		this.eventBus.on("getUsers", (payload) => {
 			console.log(payload);
+		});
+		window.addEventListener("resize", () => {
+			this.isMobile = window.innerWidth < 1024;
 		});
 	},
 	mounted() {

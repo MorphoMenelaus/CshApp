@@ -1,16 +1,34 @@
 <template>
 
-	<div id="nav-container">
-		<nav aria-label="main menu">
-			<RouterLink to="/" title="Home" class="home-icon"><img src="/favicon.ico" alt="CSH App"></RouterLink>
-			<RouterLink to="/">Home</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/tic-tac-toe">Tic-Tac-Toe</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences">UserPreferences</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers">Display Users</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayuserlogs">Display User Logs</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock">Simple Clock
+	<div id="nav-container" :class="isMobile ? 'mobile' : ''">
+		<div v-if="isMobile" class="mobile-menu-icon">
+			<div id="hamburger" @click="showHideNav()">
+				<div></div>
+				<div></div>
+				<div></div>
+			</div>
+			<div class="home-title">
+				<RouterLink to="/" title="Home" @click="mobileMenuShow = false">CSH App</RouterLink>
+			</div>
+		</div>
+		<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow">
+			<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="mobileMenuShow = false"><img
+					src="/favicon.ico" alt="CSH App">
 			</RouterLink>
-			<RouterLink to="/about">About</RouterLink>
+			<RouterLink to="/" @click="mobileMenuShow = false">Home</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/tic-tac-toe" @click="mobileMenuShow = false">Tic-Tac-Toe
+			</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="mobileMenuShow = false">
+				UserPreferences</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers" @click="mobileMenuShow = false">Display Users
+			</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayuserlogs"
+				@click="mobileMenuShow = false">Display User
+				Logs</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock"
+				@click="mobileMenuShow = false">Simple Clock
+			</RouterLink>
+			<RouterLink to="/about" @click="mobileMenuShow = false">About</RouterLink>
 		</nav>
 	</div>
 
@@ -20,15 +38,104 @@
 export default {
 	name: "MainNavbar",
 	props: {
-		appState: {
-			type: Object,
-		},
+		appState: Object,
+		isMobile: Boolean
+	},
+	data() {
+		return {
+			mobileMenuShow: false
+		};
+	},
+	watch: {
+		// isMobile() {
+		// 	this.mobileMenuShow = !this.isMobile;
+		// }
+	},
+	methods: {
+		showHideNav() {
+			console.log("showHideNav");
+			this.mobileMenuShow = this.mobileMenuShow ? false : true;
+			// this.mobileMenuShow = this.isMobile && this.mobileMenuShow ? false : true;
+		}
+	},
+	created() {
+		this.eventBus.on("closeMainNav", () => {
+			this.mobileMenuShow = false;
+		});
 	},
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.mobile nav {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-flow: column;
+	width: 100%;
+	margin: auto;
+	padding: 15px;
+	background-color: #313b64;
+	border-bottom: 1px solid #fff;
+	z-index: 100;
+}
+
+#nav-container.mobile {
+	background-color: #313b64;
+	border-bottom: 1px #fff solid;
+}
+
+.mobile-menu-icon {
+	margin: 15px;
+}
+
+#hamburger {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 56px;
+	height: 56px;
+	margin: 20px 10px;
+	padding: 5px;
+	border: 1px solid #aaa;
+	border-radius: 100%;
+}
+
+#hamburger div {
+	margin: 5px;
+	border: 1px #fff solid;
+}
+
+.mobile .home-title {
+	position: absolute;
+	top: 20px;
+	left: 98px;
+	display: flex;
+	align-items: center;
+	font-size: 1.75em;
+}
+
+.mobile .home-title {
+	justify-content: center;
+	align-items: center;
+	width: calc(100% - 220px);
+	font-size: 1.75em;
+	display: flex;
+	position: absolute;
+	top: 25px;
+	left: 100px;
+	margin: auto;
+}
+
+.home-title a {
+	/* font-weight: bold; */
+	background-color: unset;
+	color: #fff;
+	box-shadow: unset;
+}
+
 a.home-icon {
 	display: contents;
 }
@@ -41,7 +148,8 @@ a.home-icon {
 }
 
 #nav-container {
-	position: absolute;
+	/* position: absolute; */
+	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -90,6 +198,11 @@ nav a {
 	user-select: none;
 	cursor: pointer;
 	box-shadow: inset -1px -1px 15px 0px rgb(0 0 0 / 40%);
+}
+
+.mobile nav a {
+	width: 90%;
+	text-align: center;
 }
 
 nav a:hover,

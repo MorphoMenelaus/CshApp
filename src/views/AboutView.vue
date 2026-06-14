@@ -40,7 +40,7 @@ h1 {
 	margin: 15px auto;
 	padding: 15px 30px;
 	background-color: #181818;
-	z-index: 100000;
+	/* z-index: 100000; */
 }
 
 @media (min-width: 1024px) {

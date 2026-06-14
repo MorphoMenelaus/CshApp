@@ -15,22 +15,36 @@
 		</div>
 
 		<div class="user-lists-container">
-			<table v-if="usersList && usersList.length > 0">
-				<thead>
-					<tr class="header-row">
-						<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{ this.toTitleCase(label)
-						}}
-						</th>
+
+			<div id="non-mobile" v-if="!isMobile">
+				<table v-if="usersList && usersList.length > 0">
+					<thead>
+						<tr class="header-row">
+							<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{
+								this.toTitleCase(label)
+							}}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="data-row" v-for="(user, index) in usersList" :key="index">
+							<td v-for="(column, index) in user" :key="index" :class="column === true ? 'true' : ''">
+								{{ isUTCtime(column) ? new Date(column).toLocaleString() : column }}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div id="mobile" v-if="isMobile">
+				<table v-for="(item, index) in usersList" :key="index">
+					<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
+						<th>{{ key }}</th>
+						<td>{{ item[key] }}</td>
 					</tr>
-				</thead>
-				<tbody>
-					<tr class="data-row" v-for="(user, index) in usersList" :key="index">
-						<td v-for="(column, index) in user" :key="index" :class="column === true ? 'true' : ''">
-							{{ isUTCtime(column) ? new Date(column).toLocaleString() : column }}
-						</td>
-					</tr>
-				</tbody>
-			</table>
+				</table>
+			</div>
+
 		</div>
 
 	</div>
@@ -47,7 +61,8 @@ import { onBeforeUnmount } from "vue";
 export default {
 	name: "DisplayUsers",
 	props: {
-		appState: Object
+		appState: Object,
+		isMobile: Boolean
 	},
 	components: {},
 	data() {
