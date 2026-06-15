@@ -16,33 +16,37 @@
 
 		<div class="user-lists-container">
 
-			<div id="non-mobile" v-if="!isMobile">
-				<table v-if="usersList && usersList.length > 0">
-					<thead>
-						<tr class="header-row">
-							<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{
-								this.toTitleCase(label)
-							}}
-							</th>
+			<div v-if="usersList.length > 0">
+				<div id="non-mobile" v-if="!isMobile">
+					<table v-if="usersList && usersList.length > 0">
+						<thead>
+							<tr class="header-row">
+								<th v-for="(label, index) in Object.keys(usersList[0])" :key="index">{{
+									this.toTitleCase(label)
+								}}
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="data-row" v-for="(user, index) in usersList" :key="index">
+								<td v-for="(column, index) in user" :key="index" :class="column === true ? 'true' : ''">
+									{{ isUTCtime(column) ? new Date(column).toLocaleString() : column }}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div id="mobile" v-if="isMobile">
+					<table v-for="(item, index) in usersList" :key="index">
+						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
+							<th>{{ this.toTitleCase(key) }}</th>
+							<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 						</tr>
-					</thead>
-					<tbody>
-						<tr class="data-row" v-for="(user, index) in usersList" :key="index">
-							<td v-for="(column, index) in user" :key="index" :class="column === true ? 'true' : ''">
-								{{ isUTCtime(column) ? new Date(column).toLocaleString() : column }}
-							</td>
-						</tr>
-					</tbody>
-				</table>
+					</table>
+				</div>
 			</div>
-
-			<div id="mobile" v-if="isMobile">
-				<table v-for="(item, index) in usersList" :key="index">
-					<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
-						<th>{{ key }}</th>
-						<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
-					</tr>
-				</table>
+			<div v-else>
+				<h1>Nothing more to display.</h1>
 			</div>
 
 		</div>
@@ -219,7 +223,6 @@ h1 {
 }
 
 .header-row {
-	font-size: 1.5em;
 	font-weight: bold;
 	color: #fff;
 	border: 1px #f00 solid;

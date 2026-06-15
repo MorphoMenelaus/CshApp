@@ -16,8 +16,10 @@
 					src="/favicon.ico" alt="CSH App">
 			</RouterLink>
 			<RouterLink to="/" @click="mobileMenuShow = false">Home</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/tic-tac-toe" @click="mobileMenuShow = false">Tic-Tac-Toe
+			<RouterLink v-if="appState?.isLoggedOn" to="/movie-database" @click="mobileMenuShow = false">Movie Database
 			</RouterLink>
+			<!-- <RouterLink v-if="appState?.isLoggedOn" to="/tic-tac-toe" @click="mobileMenuShow = false">Tic-Tac-Toe
+			</RouterLink> -->
 			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="mobileMenuShow = false">
 				UserPreferences</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers" @click="mobileMenuShow = false">Display Users

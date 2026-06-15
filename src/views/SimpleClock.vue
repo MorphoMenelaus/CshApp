@@ -48,34 +48,39 @@
 
 		<div class="user-lists-container">
 
-			<div id="non-mobile" v-if="!isMobile">
-				<table v-if="eventLogList && eventLogList.length > 0">
-					<thead>
-						<tr class="header-row">
-							<th v-for="(label, index) in Object.keys(eventLogList[0])" :key="index">{{
-								this.toTitleCase(label)
-							}}
-							</th>
+			<div v-if="eventLogList.length > 0">
+				<div id="non-mobile" v-if="!isMobile">
+					<table v-if="eventLogList && eventLogList.length > 0">
+						<thead>
+							<tr class="header-row">
+								<th v-for="(label, index) in Object.keys(eventLogList[0])" :key="index">{{
+									this.toTitleCase(label)
+								}}
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="data-row" v-for="(event, index) in eventLogList" :key="index">
+								<td v-for="(column, index) in event" :key="index"
+									:class="column === true ? 'true' : ''">{{
+										isUTCtime(column) ? new
+											Date(column).toLocaleString() : column
+									}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div id="mobile" v-if="isMobile">
+					<table v-for="(item, index) in eventLogList" :key="index">
+						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
+							<th>{{ this.toTitleCase(key) }}</th>
+							<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 						</tr>
-					</thead>
-					<tbody>
-						<tr class="data-row" v-for="(event, index) in eventLogList" :key="index">
-							<td v-for="(column, index) in event" :key="index" :class="column === true ? 'true' : ''">{{
-								isUTCtime(column) ? new
-									Date(column).toLocaleString() : column
-							}}</td>
-						</tr>
-					</tbody>
-				</table>
+					</table>
+				</div>
 			</div>
-
-			<div id="mobile" v-if="isMobile">
-				<table v-for="(item, index) in eventLogList" :key="index">
-					<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
-						<th>{{ this.toTitleCase(key) }}</th>
-						<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
-					</tr>
-				</table>
+			<div v-else>
+				<h1>Nothing more to display.</h1>
 			</div>
 
 		</div>
@@ -171,7 +176,7 @@ export default {
 			try {
 				let response = await fetch(request);
 				let data = await response.json();
-
+				this.eventLogList = [];
 				this.eventLogList = data;
 
 			} catch (error) {
@@ -267,6 +272,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+h1 {
+	text-align: center;
+}
+
 #view {
 	padding-bottom: 60px;
 }

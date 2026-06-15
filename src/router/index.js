@@ -10,12 +10,18 @@ const router = createRouter({
 			component: HomeView,
 			meta: { requiresAuth: false }
 		},
-		{
-			path: '/tic-tac-toe',
-			name: 'TicTacToe',
-			component: () => import('../views/TicTacToe.vue'),
+				{
+			path: '/movie-database',
+			name: 'MovieDatabase',
+			component: () => import('../views/MovieDatabase.vue'),
 			meta: { requiresAuth: true }
 		},
+		// {
+		// 	path: '/tic-tac-toe',
+		// 	name: 'TicTacToe',
+		// 	component: () => import('../views/TicTacToe.vue'),
+		// 	meta: { requiresAuth: true }
+		// },
 		{
 			path: '/userpreferences',
 			name: 'User Preferences',
