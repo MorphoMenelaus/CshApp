@@ -40,7 +40,8 @@
 					<table v-for="(item, index) in usersList" :key="index">
 						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
 							<th>{{ this.toTitleCase(key) }}</th>
-							<td :class="item[key] === true ? 'true' : ''">{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
+							<td :class="item[key] === true ? 'true' : ''">{{ isUTCtime(item[key]) ? new
+								Date(item[key]).toLocaleString() : item[key] }}</td>
 						</tr>
 					</table>
 				</div>
@@ -71,7 +72,7 @@ export default {
 	components: {},
 	data() {
 		return {
-			status: Object.assign({}, this.status),
+			serverStatus: Object.assign({}, this.appNotify),
 			limit: 5,
 			offset: 0,
 			currentPage: 1,
@@ -150,7 +151,13 @@ export default {
 	methods: {
 		async getUsers() {
 			this.eventBus.emit("showHideLoader", true);
-			this.eventBus.emit("checkIfRefreshNeeded");
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -175,12 +182,9 @@ export default {
 					let users = data.users;
 					this.usersList = Array.isArray(users) && users.length > 0 ? users : this.bogusData;
 				}
-
-				this.eventBus.emit("getUsers", this.usersList);
 			} catch (error) {
 				this.usersList = this.bogusData;
 				console.error('Error fetching data:', error)
-				this.eventBus.emit("getUsers", error);
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
 			}

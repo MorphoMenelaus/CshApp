@@ -122,7 +122,7 @@ export default {
 	},
 	data() {
 		return {
-			notify: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, this.appNotify),
 			dialog: null,
 			movie: {},
 			currentComponent: null,
@@ -152,7 +152,12 @@ export default {
 		},
 		async updateMovie() {
 			this.eventBus.emit("showHideLoader", true);
-			this.eventBus.emit("checkIfRefreshNeeded");
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let body = {
 				title: this.title,
@@ -193,15 +198,13 @@ export default {
 					this.eventBus.emit("movieUpdated");
 				}
 
-				this.notify.code = data.code;
-				this.notify.message = data.message;
-				this.notify.success = data.success;
-				this.eventBus.emit("updateStatus", (this.notify));
+				this.serverStatus.code = data.code;
+				this.serverStatus.message = data.message;
+				this.serverStatus.success = data.success;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
-				// this.serverMessage.value = 'Failed to load server data.'
-				// this.eventBus.emit("getUsers", error);
 			} finally {
 				this.addUserLog(this.appState, "Update Movie Details");
 				this.eventBus.emit("showHideLoader", false);
@@ -217,16 +220,8 @@ export default {
 		this.dialog = document.getElementById("confirmEdit");
 	},
 	created() {
-		console.log(this.selectedMovie);
-		this.getUser();
-		this.eventBus.on("closeChangePassword", () => {
-			this.currentComponent = null;
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("closeChangePassword")
-		});
 	},
-};
+}; 
 </script>
 
 
@@ -237,7 +232,7 @@ export default {
 }
 
 h1,
-h2, 
+h2,
 #confirmEdit p {
 	font-weight: bold;
 	text-align: center;

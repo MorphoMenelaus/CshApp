@@ -83,15 +83,64 @@ const addUserLog = async (appState, actionPerformed = "") => {
 		const response = await fetch(request);
 		data = await response.json();
 
-		console.log(data);
-
 	} catch (error) {
-		let postStatus = {};
+		let serverStatus = {};
 		console.error('Error posting data:', error);
-		postStatus.code = 400;
-		postStatus.message = `Error posting data: ${error}`;
-		postStatus.success = false;
-		console.log(postStatus);
+		serverStatus.code = 400;
+		serverStatus.message = `Error posting data: ${error}`;
+		serverStatus.success = false;
+		console.log(serverStatus);
+	}
+}
+
+const refreshAuthTokenAsNeeded = async (appState) => {
+	let serverStatus = Object.assign({}, appNotify);
+
+	// Give it 1 minute of wiggle room on expire time (60000ms)
+	// Better to refresh a minute early than to cause a race condition error
+	let expireMS = appState?.accessTokenExpiration - 60000;
+	let currTime = new Date().getTime();
+	if (currTime < expireMS) {
+		serverStatus.code = 304;
+		serverStatus.message = "Access Token unchanged";
+		serverStatus.success = true;
+		return serverStatus;
+	}
+
+	let body = {
+		accessToken: appState?.accessToken,
+		refreshToken: appState?.refreshToken,
+	};
+
+	try {
+
+		const response = await fetch('/api/auth/refresh', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body)
+		});
+
+		let dataObj = await response.json();
+
+		if (dataObj?.success) {
+			let updateAppState = appState;
+			updateAppState.accessToken = dataObj.accessToken;
+			updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
+			updateAppState.refreshToken = dataObj.refreshToken;
+			updateAppState.isLoggedOn = true;
+			eventBus.emit("updateAppState", updateAppState);
+
+			serverStatus.code = 200;
+			serverStatus.message = "Access Token refeshed";
+			serverStatus.success = true;
+		} else {
+			serverStatus = dataObj;
+			eventBus.emit("updateStatus", serverStatus);
+			eventBus.emit("forceLogout");
+		}
+		return serverStatus;
+	} catch (e) {
+		console.error(e);
 	}
 }
 
@@ -105,3 +154,4 @@ app.config.globalProperties.timeOptions = timeOptions;
 app.config.globalProperties.toTitleCase = toTitleCase;
 app.config.globalProperties.isUTCtime = isUTCtime;
 app.config.globalProperties.addUserLog = addUserLog;
+app.config.globalProperties.refreshAuthTokenAsNeeded = refreshAuthTokenAsNeeded;

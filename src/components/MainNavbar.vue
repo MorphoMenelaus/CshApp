@@ -28,7 +28,7 @@
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock"
 				@click="mobileMenuShow = false">Simple Clock
 			</RouterLink>
-			<RouterLink to="/about" @click="mobileMenuShow = false">About</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/about" @click="mobileMenuShow = false">About</RouterLink>
 		</nav>
 	</div>
 
@@ -53,7 +53,6 @@ export default {
 	},
 	methods: {
 		showHideNav() {
-			console.log("showHideNav");
 			this.mobileMenuShow = this.mobileMenuShow ? false : true;
 			// this.mobileMenuShow = this.isMobile && this.mobileMenuShow ? false : true;
 		}

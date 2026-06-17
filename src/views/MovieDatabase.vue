@@ -24,7 +24,8 @@
 		<div id="movies">
 			<div id="cards" v-if="movieList?.length > 0">
 				<div class="card" v-for="(item, index) in movieList" :key="index">
-					<button v-if="appState?.permissions.admin" class="btn edit" @click="editThisEntry(item)">Edit</button>
+					<button v-if="appState?.permissions.admin" class="btn edit"
+						@click="editThisEntry(item)">Edit</button>
 					<div class="inner">
 						<div class="title-description">
 							<h2 :title="item.original_title ? item.original_title : ''">
@@ -39,7 +40,8 @@
 						<div class="image-container">
 							<img :alt="item.title" :title="item.summary" :src="`./media-poster/${item.slug}.jpg`" />
 						</div>
-						<span v-if="item.content_rating.length > 0" class="content-rating">{{ item.content_rating }}</span>
+						<span v-if="item.content_rating.length > 0" class="content-rating">{{ item.content_rating
+							}}</span>
 					</div>
 				</div>
 			</div>
@@ -76,7 +78,7 @@ export default {
 	},
 	data() {
 		return {
-			postStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, this.appNotify),
 			limit: 10,
 			offset: 0,
 			currentPage: 1,
@@ -129,7 +131,13 @@ export default {
 		},
 		async getMovieList() {
 			this.eventBus.emit("showHideLoader", true);
-			this.eventBus.emit("checkIfRefreshNeeded");
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -157,10 +165,10 @@ export default {
 
 			} catch (error) {
 				console.error('Error posting data:', error);
-				this.postStatus.code = 500;
-				this.postStatus.message = `Error getting data: ${error}`;
-				this.postStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.postStatus));
+				this.serverStatus.code = 500;
+				this.serverStatus.message = `Error getting data: ${error}`;
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
 			}

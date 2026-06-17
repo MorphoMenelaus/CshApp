@@ -108,9 +108,9 @@ export default {
 	},
 	data() {
 		return {
-			notify: Object.assign({}, this.appNotify),
-			admin: this.appState.permissions.admin,
-			userId: this.appState.user.userId,
+			serverStatus: Object.assign({}, this.appNotify),
+			admin: this.appState?.permissions?.admin,
+			userId: this.appState?.user?.userId,
 			boolOptions: [
 				{ text: "true", value: "1" },
 				{ text: "false", value: "0" },
@@ -138,7 +138,13 @@ export default {
 	methods: {
 		async getUser() {
 			this.eventBus.emit("showHideLoader", true);
-			this.eventBus.emit("checkIfRefreshNeeded");
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -169,19 +175,21 @@ export default {
 				this.uiDarkMode = this.user.uiDarkMode;
 				this.userNotes = this.user.userNotes;
 
-				this.eventBus.emit("getUsers", data);
-
 			} catch (error) {
 				console.error('Error fetching data:', error)
-				// this.serverMessage.value = 'Failed to load server data.'
-				this.eventBus.emit("getUsers", error);
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async updateUser() {
 			this.eventBus.emit("showHideLoader", true);
-			this.eventBus.emit("checkIfRefreshNeeded");
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let body = {
 				email: this.email,
@@ -198,9 +206,9 @@ export default {
 			let hasEmpty = Object.values(body).some(val => !val);
 
 			// if (hasEmpty) {
-			// 	this.notify.message = `Every input field must have a value`;
-			// 	this.notify.success = false;
-			// 	this.eventBus.emit("updateStatus", (this.notify));
+			// 	this.serverStatus.message = `Every input field must have a value`;
+			// 	this.serverStatus.success = false;
+			// 	this.eventBus.emit("updateStatus", (this.serverStatus));
 			// }
 
 			let headerObj = new Headers();
@@ -223,15 +231,13 @@ export default {
 					this.getUser();
 				}
 
-				this.notify.code = data.code;
-				this.notify.message = data.message;
-				this.notify.success = data.success;
-				this.eventBus.emit("updateStatus", (this.notify));
+				this.serverStatus.code = data.code;
+				this.serverStatus.message = data.message;
+				this.serverStatus.success = data.success;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
-				// this.serverMessage.value = 'Failed to load server data.'
-				this.eventBus.emit("getUsers", error);
 			} finally {
 				this.addUserLog(this.appState, "Update User Preferences");
 				this.eventBus.emit("showHideLoader", false);
