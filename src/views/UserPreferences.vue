@@ -3,7 +3,7 @@
 	<div id="preferences">
 		<div class="wrapper">
 			<h1>User Preferences</h1>
-			<div v-if="isAdmin">
+			<div v-if="admin">
 				<p style="text-align: center;">Please enter user ID.</p>
 				<!-- @submit.prevent blocks page reloads and executes your logic -->
 				<form id="userid-input" @submit.prevent="handleSubmit" method="get">
@@ -37,7 +37,7 @@
 							</div>
 						</div>
 						<div class="drop-downs">
-							<div class="form-group" v-if="isAdmin">
+							<div class="form-group" v-if="admin">
 								<label for="admin">Admin</label>
 								<select v-model="admin">
 									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
@@ -45,7 +45,7 @@
 									</option>
 								</select>
 							</div>
-							<div class="form-group" v-if="isAdmin">
+							<div class="form-group" v-if="admin">
 								<label for="siteAdmin">Site Admin</label>
 								<select v-model="siteAdmin">
 									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
@@ -53,7 +53,7 @@
 									</option>
 								</select>
 							</div>
-							<div class="form-group" v-if="isAdmin">
+							<div class="form-group" v-if="admin">
 								<label for="siteEditor">Site Editor</label>
 								<select v-model="siteEditor">
 									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
@@ -61,7 +61,7 @@
 									</option>
 								</select>
 							</div>
-							<div class="form-group" v-if="isAdmin">
+							<div class="form-group" v-if="admin">
 								<label for="contributor">Contributor</label>
 								<select v-model="contributor">
 									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
@@ -79,7 +79,7 @@
 							</div>
 						</div>
 					</form>
-					<button @click="updateUser()" class="btn" title="Upate User Prefernces">Upate User
+					<button @click="updateUser()" class="btn" title="Update User Prefernces">Update User
 						Prefernces</button>
 				</div>
 			</div>
@@ -109,7 +109,7 @@ export default {
 	data() {
 		return {
 			notify: Object.assign({}, this.appNotify),
-			isAdmin: this.appState.user.permissions.admin,
+			admin: this.appState.permissions.admin,
 			userId: this.appState.user.userId,
 			boolOptions: [
 				{ text: "true", value: "1" },
@@ -119,7 +119,6 @@ export default {
 			"email": "",
 			"lastName": "",
 			"firstName": "",
-			"admin": 0,
 			"siteAdmin": 0,
 			"siteEditor": 0,
 			"contributor": 0,
@@ -131,7 +130,7 @@ export default {
 	watch: {
 		appState: {
 			handler(val, oldVal) {
-				this.isAdmin = this.appState?.user?.permissions?.admin;
+				this.admin = this.appState?.user?.permissions?.admin;
 			},
 			deep: true,
 		},

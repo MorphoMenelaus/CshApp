@@ -14,17 +14,20 @@
 				<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
 				</option>
 			</select>
-			<button class="prev-button" type="button" @click="previousPage()">previous</button>
-			<button class="next-button" type="button" @click="nextPage()">next</button>
+			<input v-model="contains" placeholder="Title contains..." />
+			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">❌</span>
+			<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
+			<button class="next-button btn" type="button" @click="nextPage()">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
 		<div id="movies">
-			<div id="cards">
+			<div id="cards" v-if="movieList?.length > 0">
 				<div class="card" v-for="(item, index) in movieList" :key="index">
+					<button v-if="appState?.permissions.admin" class="btn edit" @click="editThisEntry(item)">Edit</button>
 					<div class="inner">
 						<div class="title-description">
-							<h2 :title="item.original_title ? `Original Title: ${item.original_title}` : ''">
+							<h2 :title="item.original_title ? item.original_title : ''">
 								{{ item.title }}</h2>
 							<h3>{{ item.tagline }}</h3>
 							<p class="genr-year">
@@ -36,10 +39,20 @@
 						<div class="image-container">
 							<img :alt="item.title" :title="item.summary" :src="`./media-poster/${item.slug}.jpg`" />
 						</div>
+						<span v-if="item.content_rating.length > 0" class="content-rating">{{ item.content_rating }}</span>
 					</div>
 				</div>
 			</div>
+			<div v-else>
+				<h1>No Results Found</h1>
+			</div>
+			<div class="button-container">
+				<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
+				<button class="next-button btn" type="button" @click="nextPage()">next</button>
+			</div>
 		</div>
+
+		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie" />
 
 	</div>
 </template>
@@ -50,6 +63,7 @@ import { ref } from "vue";
 // import session from "@/dependencies/sessionMethods";
 import router from "@/router";
 import { onBeforeUnmount } from "vue";
+import EditMovieDetails from "@/components/EditMovieDetails.vue";
 
 export default {
 	name: "MovieDatabase",
@@ -57,11 +71,13 @@ export default {
 		appState: Object,
 		isMobile: Boolean
 	},
-	components: {},
+	components: {
+		EditMovieDetails
+	},
 	data() {
 		return {
 			postStatus: Object.assign({}, this.appNotify),
-			limit: 5,
+			limit: 10,
 			offset: 0,
 			currentPage: 1,
 			limitOptions: [
@@ -83,22 +99,34 @@ export default {
 				{ text: "Genre", value: "tags_genre" },
 			],
 			sortBy: "title",
-			movieList: []
+			contains: "",
+			movieList: [],
+			currentComponent: null,
+			selectedMovie: {}
 		};
 	},
 	watch: {
 		limit() {
 			this.currentPage = 1;
-			this.offset = null;
+			this.offset = 0;
 			this.getMovieList();
 		},
 		sortBy() {
 			this.currentPage = 1;
-			this.offset = null;
+			this.offset = 0;
 			this.getMovieList();
 		},
+		contains() {
+			this.currentPage = 1;
+			this.offset = 0;
+			this.getMovieList();
+		}
 	},
 	methods: {
+		editThisEntry(movie) {
+			this.selectedMovie = movie;
+			this.currentComponent = "EditMovieDetails";
+		},
 		async getMovieList() {
 			this.eventBus.emit("showHideLoader", true);
 			this.eventBus.emit("checkIfRefreshNeeded");
@@ -106,12 +134,13 @@ export default {
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/userlogs/movies/", this.baseUrl);
+			let requestUrl = new URL("/api/movies/", this.baseUrl);
 
 			let params = requestUrl.searchParams;
 			params.set("limit", this.limit);
 			params.set("offset", this.offset);
 			params.set("sort", this.sortBy);
+			params.set("keyword", this.contains);
 			requestUrl.search = params.toString();
 
 			let request = new Request(
@@ -143,7 +172,7 @@ export default {
 			this.getMovieList();
 		},
 		nextPage() {
-			if (this.movieList.length < this.limit) return;
+			if (this.movieList?.length < this.limit) return;
 			this.offset = this.offset + this.limit;
 			this.currentPage++;
 			this.getMovieList();
@@ -153,10 +182,13 @@ export default {
 		this.getMovieList();
 	},
 	created() {
-		// this.eventBus.emit("eventTest", "Component Created");
-		// onBeforeUnmount(() => {
-		// 	this.eventBus.off("eventTest");
-		// });
+		this.eventBus.on("movieUpdated", () => {
+			this.currentComponent = null;
+			this.getMovieList();
+		});
+		onBeforeUnmount(() => {
+			this.eventBus.off("movieUpdated");
+		});
 	},
 };
 </script>
@@ -174,28 +206,18 @@ h2 {
 }
 
 #cards {
-	/* position: relative; */
 	display: grid;
 	justify-content: center;
 	align-content: center;
-	grid-template-columns: repeat(5, 20%);
-	/* grid-template-rows: minmax(100px, auto) repeat(5, 200px); */
+	grid-template-columns: repeat(1, 90%);
 	background: rgba(92, 89, 136, 0.38);
 	margin: auto;
 	border-radius: 1.25em;
-	/* padding: 30px; */
 }
 
-/* #cards > div {
-	margin: 2px auto;
-	min-width: 3em;
-	font-size: 2rem;
-	border: 1px solid #fff;
-	outline: none;
-	cursor: pointer;
-	background-color: rgba(255, 255, 255, 0.6);
-	transition: transform 0.2s;
-} */
+.card {
+	position: relative;
+}
 
 .card .inner {
 	background-color: #313b64;
@@ -245,5 +267,47 @@ img {
 .mobile #paging {
 	width: 90%;
 	margin: 30px auto 0;
+}
+
+.clear-field {
+	background-color: #fff;
+	padding: 0px 2px 1px;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.button-container {
+	display: flex;
+	justify-content: center;
+	align-self: center;
+	margin-top: 30px;
+}
+
+.button-container button {
+	margin: 0 15px;
+}
+
+.btn.edit {
+	position: relative;
+	top: 45px;
+	left: 5px;
+}
+
+.content-rating {
+	position: absolute;
+	bottom: 40px;
+	right: 30px;
+	background-color: #a39595;
+	padding: 0 8px;
+	border-radius: 8px;
+	color: #000;
+	font-weight: bold;
+	border: 1px #000 solid;
+}
+
+@media (min-width: 1024px) {
+	#cards {
+		grid-template-columns: repeat(5, 20%);
+	}
 }
 </style>

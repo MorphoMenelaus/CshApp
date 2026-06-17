@@ -9,8 +9,8 @@
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button" type="button" @click="previousPage()">previous</button>
-			<button class="next-button" type="button" @click="nextPage()">next</button>
+			<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
+			<button class="next-button btn" type="button" @click="nextPage()">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
@@ -40,7 +40,7 @@
 					<table v-for="(item, index) in usersList" :key="index">
 						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
 							<th>{{ this.toTitleCase(key) }}</th>
-							<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
+							<td :class="item[key] === true ? 'true' : ''">{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 						</tr>
 					</table>
 				</div>
@@ -89,7 +89,7 @@ export default {
 				"userId",
 				"userCreated",
 				"userName",
-				"isAdmin",
+				"admin",
 				"siteAdmin",
 				"siteEditor",
 				"isContributor",
@@ -101,7 +101,7 @@ export default {
 					"userCreated": "2026-05-25T19:34:08.000Z",
 					"userName": "Chris3",
 					"password": "bogusData",
-					"isAdmin": 0,
+					"admin": 0,
 					"siteAdmin": 0,
 					"siteEditor": 0,
 					"isContributor": 1,
@@ -112,7 +112,7 @@ export default {
 					"userCreated": "2026-05-25T14:39:20.000Z",
 					"userName": "Chris2",
 					"password": "bogusData",
-					"isAdmin": 0,
+					"admin": 0,
 					"siteAdmin": 0,
 					"siteEditor": 1,
 					"isContributor": 0,
@@ -123,7 +123,7 @@ export default {
 					"userCreated": "2026-05-23T00:11:09.000Z",
 					"userName": "Chris",
 					"password": "bogusData",
-					"isAdmin": 1,
+					"admin": 1,
 					"siteAdmin": 1,
 					"siteEditor": 0,
 					"isContributor": 0,

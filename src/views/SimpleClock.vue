@@ -41,8 +41,8 @@
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}
 				</option>
 			</select>
-			<button class="prev-button" type="button" @click="previousPage()">previous</button>
-			<button class="next-button" type="button" @click="nextPage()">next</button>
+			<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
+			<button class="next-button btn" type="button" @click="nextPage()">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
@@ -74,7 +74,7 @@
 					<table v-for="(item, index) in eventLogList" :key="index">
 						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
 							<th>{{ this.toTitleCase(key) }}</th>
-							<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
+							<td :class="item[key] === true ? 'true' : ''">{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 						</tr>
 					</table>
 				</div>

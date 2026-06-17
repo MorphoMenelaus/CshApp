@@ -9,8 +9,8 @@
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button" type="button" @click="previousPage()">previous</button>
-			<button class="next-button" type="button" @click="nextPage()">next</button>
+			<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
+			<button class="next-button btn" type="button" @click="nextPage()">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
