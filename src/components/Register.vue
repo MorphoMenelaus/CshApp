@@ -40,7 +40,7 @@ export default {
 	},
 	data() {
 		return {
-			postStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, this.appNotify),
 			userName: "",
 			password: "",
 			confirmPassword: "",
@@ -65,11 +65,11 @@ export default {
 				};
 
 				if (!this.userName || !this.password) {
-					this.postStatus.message = "Please provide a user name and password.";
-					this.postStatus.success = false;
-					this.eventBus.emit("updateStatus", this.postStatus);
+					this.serverStatus.message = "Please provide a user name and password.";
+					this.serverStatus.success = false;
+					this.eventBus.emit("updateStatus", this.serverStatus);
 					this.errState = true;
-					return this.postStatus;
+					return this.serverStatus;
 				}
 
 				const response = await fetch('/api/users/register', {
@@ -80,10 +80,10 @@ export default {
 
 				const data = await response.json();
 
-				this.postStatus.code = data?.code;
-				this.postStatus.message = data?.message;
-				this.postStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", (this.postStatus));
+				this.serverStatus.code = data?.code;
+				this.serverStatus.message = data?.message;
+				this.serverStatus.success = data?.success;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 
 				if (data?.success)
 					this.eventBus.emit("registerUser", false);
@@ -92,10 +92,10 @@ export default {
 
 			} catch (error) {
 				console.error('Error posting data:', error);
-				this.postStatus.code = 400;
-				this.postStatus.message = `Error posting data: ${error}`;
-				this.postStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.postStatus));
+				this.serverStatus.code = 400;
+				this.serverStatus.message = `Error posting data: ${error}`;
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
 			}

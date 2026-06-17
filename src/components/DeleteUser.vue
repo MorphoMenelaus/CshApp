@@ -27,14 +27,20 @@ export default {
 	},
 	data() {
 		return {
-			deleteStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, this.appNotify),
 		};
 	},
 	watch: {
 	},
 	methods: {
 		async deleteUser() {
-			this.eventBus.emit("checkIfRefreshNeeded");
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let confirmDelete = confirm(
 				`Are you sure you want to DELETE, ${this.appState.user.userName}`

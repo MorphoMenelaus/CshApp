@@ -74,7 +74,8 @@
 					<table v-for="(item, index) in eventLogList" :key="index">
 						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
 							<th>{{ this.toTitleCase(key) }}</th>
-							<td :class="item[key] === true ? 'true' : ''">{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
+							<td :class="item[key] === true ? 'true' : ''">{{ isUTCtime(item[key]) ? new
+								Date(item[key]).toLocaleString() : item[key] }}</td>
 						</tr>
 					</table>
 				</div>
@@ -102,7 +103,7 @@ export default {
 	components: {},
 	data() {
 		return {
-			postStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, this.appNotify),
 			limit: 5,
 			offset: 0,
 			currentPage: 1,
@@ -144,7 +145,6 @@ export default {
 		// handleLogStringFormat(str, event = "") {
 		// 	if (this.isUTCtime(str)) str = new Date(str).toLocaleString();
 		// 	if (event === "isWakeupEvent") str = str === 1 ? true : false;
-		// 	// console.log(str);
 		// 	return str;
 		// },
 		// convertUTCtoLocale() { },
@@ -155,7 +155,13 @@ export default {
 		},
 		async getClockLog() {
 			this.eventBus.emit("showHideLoader", true);
-			this.eventBus.emit("checkIfRefreshNeeded");
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -181,17 +187,23 @@ export default {
 
 			} catch (error) {
 				console.error('Error posting data:', error);
-				this.postStatus.code = 500;
-				this.postStatus.message = `Error getting data: ${error}`;
-				this.postStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.postStatus));
+				this.serverStatus.code = 500;
+				this.serverStatus.message = `Error getting data: ${error}`;
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async logSimpleClock() {
 			this.eventBus.emit("showHideLoader", true);
-			this.eventBus.emit("checkIfRefreshNeeded");
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let data;
 			try {
@@ -219,10 +231,10 @@ export default {
 				const response = await fetch(request);
 				data = await response.json();
 
-				this.postStatus.code = data?.code;
-				this.postStatus.message = data?.message;
-				this.postStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", this.postStatus);
+				this.serverStatus.code = data?.code;
+				this.serverStatus.message = data?.message;
+				this.serverStatus.success = data?.success;
+				this.eventBus.emit("updateStatus", this.serverStatus);
 
 				this.isWakeupEvent = false;
 				this.notes = "";
@@ -230,10 +242,10 @@ export default {
 
 			} catch (error) {
 				console.error('Error posting data:', error);
-				this.postStatus.code = 400;
-				this.postStatus.message = `Error posting data: ${error}`;
-				this.postStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.postStatus));
+				this.serverStatus.code = 400;
+				this.serverStatus.message = `Error posting data: ${error}`;
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.addUserLog(this.appState, "Add Entry to Simple Clock Log");
 				this.eventBus.emit("showHideLoader", false);

@@ -23,7 +23,7 @@
 							<tr class="header-row">
 								<th v-for="(label, index) in Object.keys(logs[0])" :key="index">{{
 									this.toTitleCase(label)
-									}}
+								}}
 								</th>
 							</tr>
 						</thead>
@@ -70,7 +70,7 @@ export default {
 	components: {},
 	data() {
 		return {
-			status: Object.assign({}, this.status),
+			serverStatus: Object.assign({}, this.appNotify),
 			limit: 5,
 			offset: 0,
 			currentPage: 1,
@@ -124,7 +124,13 @@ export default {
 	methods: {
 		async getUserLogs() {
 			this.eventBus.emit("showHideLoader", true);
-			this.eventBus.emit("checkIfRefreshNeeded");
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);

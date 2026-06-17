@@ -140,7 +140,6 @@ export default {
 			let expireMS = this.appState?.accessTokenExpiration - 60000;
 			let currTime = new Date().getTime();
 			if (currTime >= expireMS) this.refreshAuthentication();
-			console.log(currTime);
 		},
 		async refreshAuthentication() {
 
@@ -221,9 +220,6 @@ export default {
 		this.dialog = document.getElementById("confirmDialog");
 	},
 	created() {
-		this.eventBus.on("checkIfRefreshNeeded", () => {
-			this.checkIfRefreshNeeded();
-		});
 		this.eventBus.on("cancelDeleteUser", () => {
 			this.currentComponent = null;
 		});
@@ -235,7 +231,6 @@ export default {
 			this.logout();
 		});
 		onBeforeUnmount(() => {
-			this.eventBus.off("checkIfRefreshNeeded");
 			this.eventBus.off("cancelDeleteUser");
 			this.eventBus.off("UserDeleted");
 			this.eventBus.off("forceLogout");
@@ -289,7 +284,7 @@ h2 {
 	bottom: 45px;
 	left: 0;
 	background-color: rgb(0 0 0 / 80%);
-	z-index: 500200;
+	/* z-index: 500200; */
 }
 
 .login-btn {

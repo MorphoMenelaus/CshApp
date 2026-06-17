@@ -37,7 +37,7 @@ export default {
 	},
 	data() {
 		return {
-			appNotify: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, this.appNotify),
 			serverVersion: "",
 			appState: {},
 			currentComponent: null,
@@ -45,96 +45,11 @@ export default {
 		};
 	},
 	watch: {
-		currentComponent() {
-		},
 	},
 	methods: {
 		recallAppState() {
 			this.appState = session.recall.get();
 		},
-		// async refreshSessionData() {
-
-		// 	// this.appState = this.appState || session.recall.get();
-		// 	this.appState = session.recall.get();
-		// 	console.log(this.appState)
-
-
-		// 	try {
-		// 		// let sessionRefreshedStatus = await this.checkAndRefreshSession();
-
-		// 		// if (sessionRefreshedStatus?.success) {
-		// 		let mergedSession = {
-		// 			...this.appState,
-		// 			...session.recall.get(),
-		// 		};
-		// 		let updateState = mergedSession;
-		// 		this.appState = updateState;
-
-		// 		session.recall.save(updateState);
-
-		// 		// if (await this.checkAndRefreshSession()) this.sessionRefreshCheck = new Date().getTime();
-
-		// 		await this.eventBus.emit("updateStatus", await sessionRefreshedStatus);
-		// 		// return sessionRefreshedStatus;
-		// 		// } else {
-		// 		// 	await this.eventBus.emit("updateStatus", sessionRefreshedStatus);
-		// 		// 	return sessionRefreshedStatus;
-		// 		// }
-		// 	} catch (e) {
-		// 		console.error(e);
-		// 		return false;
-		// 	}
-		// },
-		async checkTokenExpireAndRefresh() {
-			// accessTokenExpiration in milliseconds
-			let accessTokenExpiration = this.appState.accessTokenExpiration;
-			let currentTime = new Date().getTime();
-			let minute = 60000; // refresh a minute early to prevent expiration overlap
-
-			if (currentTime - minute > accessTokenExpiration)
-				this.refreshToken();
-		},
-		// async refreshToken() {
-
-		// 	try {
-		// 		let body = {
-		// 			accessToken: this.appState.accessToken,
-		// 			refreshToken: this.appState.refreshToken,
-		// 		};
-
-		// 		const response = await fetch('/api/auth/refresh', {
-		// 			method: 'POST',
-		// 			headers: { 'Content-Type': 'application/json' },
-		// 			body: JSON.stringify(body)
-		// 		});
-
-		// 		let dataObj = await response.json();
-
-		// 		console.log(dataObj);
-
-		// 		let updateAppState = this.appState;
-		// 		if (dataObj?.success) {
-		// 			updateAppState.accessToken = dataObj.accessToken;
-		// 			updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
-		// 			updateAppState.refreshToken = dataObj.refreshToken;
-		// 			this.eventBus.emit("updateAppState", updateAppState);
-
-		// 			this.appNotify.code = 200;
-		// 			this.appNotify.message = "New Access Token acquired: Refresh Success";
-		// 			this.appNotify.success = true;
-		// 		} else {
-		// 			this.appNotify.code = 400;
-		// 			this.appNotify.message = "Refresh Failed. Please, log in again.";
-		// 			this.appNotify.success = false;
-		// 			this.eventBus.emit("updateAppState", {});
-		// 		}
-
-		// 		this.eventBus.emit("updateStatus", this.appNotify);
-
-		// 	} catch (e) {
-		// 		console.error(e);
-		// 	}
-		// },
 		async getServrVersion() {
 			try {
 				const response = await fetch('/api/serverInfo');
@@ -148,18 +63,12 @@ export default {
 	created() {
 		this.getServrVersion();
 		this.recallAppState();
-		// this.refreshSessionData();
-		// if (this.appState?.isLoggedOn) this.eventBus.emit("checkIfRefreshNeeded");
-		this.eventBus.emit("checkIfRefreshNeeded");
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
 			session.recall.save(this.appState);
 		});
 		this.eventBus.on("registerUser", (payload) => {
 			this.currentComponent = payload ? "Register" : null;
-		});
-		this.eventBus.on("getUsers", (payload) => {
-			console.log(payload);
 		});
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
@@ -172,11 +81,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* #view {
-	margin-top: 15px;
-	padding: 15px 30px;
-} */
-
 header {
 	line-height: 1.5;
 	max-height: 100vh;
@@ -213,12 +117,6 @@ nav a:first-of-type {
 }
 
 @media (min-width: 1024px) {
-	/* header {
-		display: flex;
-		place-items: center;
-		padding-right: calc(var(--section-gap) / 2);
-	} */
-
 	header {
 		position: fixed;
 		top: 0;

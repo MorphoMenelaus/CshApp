@@ -39,7 +39,7 @@ export default {
 	},
 	data() {
 		return {
-			postStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, this.appNotify),
 			currentPassword: "",
 			password: "",
 			confirmPassword: "",
@@ -57,6 +57,13 @@ export default {
 		async changePassword() {
 			this.eventBus.emit("showHideLoader", true);
 
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
+
 			try {
 				let body = {
 					userId: this.appState.user.userId,
@@ -65,11 +72,11 @@ export default {
 				};
 
 				if (!this.currentPassword || !this.password) {
-					this.postStatus.message = "Please provide current password and new password.";
-					this.postStatus.success = false;
-					this.eventBus.emit("updateStatus", this.postStatus);
+					this.serverStatus.message = "Please provide current password and new password.";
+					this.serverStatus.success = false;
+					this.eventBus.emit("updateStatus", this.serverStatus);
 					this.errState = true;
-					return this.postStatus;
+					return this.serverStatus;
 				}
 
 				let headerObj = new Headers();
@@ -87,10 +94,10 @@ export default {
 				let response = await fetch(request);
 				const data = await response.json();
 
-				this.postStatus.code = data?.code;
-				this.postStatus.message = data?.message;
-				this.postStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", (this.postStatus));
+				this.serverStatus.code = data?.code;
+				this.serverStatus.message = data?.message;
+				this.serverStatus.success = data?.success;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 
 				if (data?.success)
 					this.eventBus.emit("changePassword", true);
@@ -101,10 +108,10 @@ export default {
 
 			} catch (error) {
 				console.error('Error posting data:', error);
-				this.postStatus.code = 400;
-				this.postStatus.message = `Error posting data: ${error}`;
-				this.postStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.postStatus));
+				this.serverStatus.code = 400;
+				this.serverStatus.message = `Error posting data: ${error}`;
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.addUserLog(this.appState, "User Changed Password");
 				this.eventBus.emit("showHideLoader", false);
