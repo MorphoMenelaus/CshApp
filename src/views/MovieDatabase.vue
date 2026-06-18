@@ -24,8 +24,8 @@
 		<div id="movies">
 			<div id="cards" v-if="movieList?.length > 0">
 				<div class="card" v-for="(item, index) in movieList" :key="index">
-					<button v-if="appState?.permissions.admin" class="btn edit"
-						@click="editThisEntry(item)">Edit</button>
+					<button v-if="appState?.permissions.admin" class="btn edit" @click="editThisEntry(item)"
+						title="Edit this movie's detils">Edit</button>
 					<div class="inner">
 						<div class="title-description">
 							<h2 :title="item.original_title ? item.original_title : ''">
@@ -40,8 +40,11 @@
 						<div class="image-container">
 							<img :alt="item.title" :title="item.summary" :src="`./media-poster/${item.slug}.jpg`" />
 						</div>
+						<span id="favorite" :class="favoritesList.includes(item.movieId) ? 'favs' : ''"
+							@click="favoritesHandler(item.movieId)"
+							:title="`${favoritesList.includes(item.movieId) ? 'Remove from' : 'Add to'} favorites`">🔖</span>
 						<span v-if="item.content_rating.length > 0" class="content-rating">{{ item.content_rating
-							}}</span>
+						}}</span>
 					</div>
 				</div>
 			</div>
@@ -54,16 +57,13 @@
 			</div>
 		</div>
 
-		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie" />
+		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie" :favoritesList="favoritesList" />
 
 	</div>
 </template>
 
 <script>
 // @ is an alias to /src
-import { ref } from "vue";
-// import session from "@/dependencies/sessionMethods";
-import router from "@/router";
 import { onBeforeUnmount } from "vue";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
 
@@ -104,7 +104,8 @@ export default {
 			contains: "",
 			movieList: [],
 			currentComponent: null,
-			selectedMovie: {}
+			selectedMovie: {},
+			favoritesList: []
 		};
 	},
 	watch: {
@@ -125,9 +126,149 @@ export default {
 		}
 	},
 	methods: {
+		favoritesHandler(movieId) {
+			if (this.favoritesList.includes(movieId)) {
+				this.removeFavorite(movieId);
+			} else {
+				this.setFavorite(movieId)
+			}
+		},
 		editThisEntry(movie) {
 			this.selectedMovie = movie;
 			this.currentComponent = "EditMovieDetails";
+		},
+		async setFavorite(movieId) {
+			// this.eventBus.emit("showHideLoader", true);
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
+
+			let body = {
+				userId: this.appState.user.userId,
+				movieId: movieId
+			};
+
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL('/api/movies/favorites', this.baseUrl);
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'POST',
+				headers: headerObj,
+				body: JSON.stringify(body)
+			});
+
+			try {
+				let response = await fetch(request);
+				const data = await response.json();
+
+				if (data.success) {
+					this.eventBus.emit("favoriteUpdated");
+					this.getFavoriteList();
+				}
+
+				this.serverStatus.code = data.code;
+				this.serverStatus.message = data.message;
+				this.serverStatus.success = data.success;
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
+
+			} catch (error) {
+				console.error('Error fetching data:', error)
+			} finally {
+				// this.addUserLog(this.appState, "Update Movie Details");
+			}
+		},
+		async removeFavorite(movieId) {
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
+
+			let body = {
+				movieId: movieId
+			};
+
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL(`/api/movies/favorites/${this.appState.user.userId}`, this.baseUrl);
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'PUT',
+				headers: headerObj,
+				body: JSON.stringify(body)
+			});
+
+			try {
+				let response = await fetch(request);
+				const data = await response.json();
+
+				if (data.success) {
+					this.eventBus.emit("favoriteUpdated");
+					this.getFavoriteList();
+				}
+
+				this.serverStatus.code = data.code;
+				this.serverStatus.message = data.message;
+				this.serverStatus.success = data.success;
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
+
+			} catch (error) {
+				console.error('Error fetching data:', error)
+			} finally {
+				// this.addUserLog(this.appState, "Update Movie Details");
+			}
+		},
+		async getFavoriteList() {
+			// this.eventBus.emit("showHideLoader", true);
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
+
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL(`/api/movies/favorites/${this.appState.user.userId}`, this.baseUrl);
+
+			let params = requestUrl.searchParams;
+			params.set("time", new Date().getTime());
+			requestUrl.search = params.toString();
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'GET',
+				headers: headerObj,
+			});
+
+			try {
+				let response = await fetch(request);
+				let data = await response.json();
+
+				this.favoritesList = data?.userFavorites;
+
+			} catch (error) {
+				console.error('Error posting data:', error);
+				this.serverStatus.code = 500;
+				this.serverStatus.message = `Error getting data: ${error}`;
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
+			} finally {
+				// this.eventBus.emit("showHideLoader", false);
+			}
 		},
 		async getMovieList() {
 			this.eventBus.emit("showHideLoader", true);
@@ -149,6 +290,7 @@ export default {
 			params.set("offset", this.offset);
 			params.set("sort", this.sortBy);
 			params.set("keyword", this.contains);
+			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
 			let request = new Request(
@@ -160,8 +302,9 @@ export default {
 			try {
 				let response = await fetch(request);
 				let data = await response.json();
-				this.movieList = [];
 				this.movieList = data.movies;
+
+				this.getFavoriteList();
 
 			} catch (error) {
 				console.error('Error posting data:', error);
@@ -257,6 +400,7 @@ h2 {
 	margin: 15px auto;
 	border-radius: 8px;
 	border: 1px #999 solid;
+	user-select: none;
 }
 
 img {
@@ -311,6 +455,22 @@ img {
 	color: #000;
 	font-weight: bold;
 	border: 1px #000 solid;
+	user-select: none;
+}
+
+#favorite {
+	font-size: 1.25em;
+	background-color: #a39595;
+	left: 30px;
+	bottom: 40px;
+	position: absolute;
+	border: 1px #000 solid;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+#favorite.favs {
+	background-color: #afaf03;
 }
 
 @media (min-width: 1024px) {

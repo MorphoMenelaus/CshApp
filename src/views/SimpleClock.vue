@@ -171,6 +171,7 @@ export default {
 			let params = requestUrl.searchParams;
 			params.set("limit", this.limit);
 			params.set("offset", this.offset);
+			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
 			let request = new Request(
@@ -182,7 +183,6 @@ export default {
 			try {
 				let response = await fetch(request);
 				let data = await response.json();
-				this.eventLogList = [];
 				this.eventLogList = data;
 
 			} catch (error) {
