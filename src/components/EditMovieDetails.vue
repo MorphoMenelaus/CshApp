@@ -107,15 +107,14 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
 import ChangePassword from "@/components/ChangePassword.vue";
 
 export default {
 	name: "EditMovieDetails",
 	props: {
 		appState: Object,
-		isMobile: Boolean,
-		selectedMovie: Object
+		selectedMovie: Object,
+		favoritesList: Array
 	},
 	components: {
 		ChangePassword
@@ -152,6 +151,7 @@ export default {
 		},
 		async updateMovie() {
 			this.eventBus.emit("showHideLoader", true);
+
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
 			if (!refreshResponse.success) {
 				let mergedStatus = { ...this.serverStatus, ...refreshResponse };

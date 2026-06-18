@@ -151,6 +151,10 @@ export default {
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL(`/api/users/${this.userId}`, this.baseUrl);
 
+			let params = requestUrl.searchParams;
+			params.set("time", new Date().getTime());
+			requestUrl.search = params.toString();
+
 			let request = new Request(
 				requestUrl.toString(), {
 				method: 'GET',

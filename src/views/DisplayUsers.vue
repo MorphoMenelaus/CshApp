@@ -166,6 +166,7 @@ export default {
 
 			let params = requestUrl.searchParams;
 			params.set("limit", this.limit);
+			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
 			let request = new Request(
