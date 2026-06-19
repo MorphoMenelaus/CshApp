@@ -13,8 +13,12 @@
 
 		<form method="post" @submit.prevent="handleSubmit">
 			<div class="checkbox-container">
-				<!-- <input v-model="isWakeupEvent" id="wakeup-event" type="checkbox" name="iswakeupevent"
-					title="Wakeup Event" /> -->
+				<label for="eventType" title="Event Type">Event Type</label>
+				<select v-model="eventType">
+					<option v-for="(item, index) in eventOptions" :key="index" :value="item.value">
+						{{ item.text }}
+					</option>
+				</select>
 				<label for="iswakeupevent" title="Wakeup Event">Wakeup Event</label>
 				<select v-model="isWakeupEvent">
 					<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
@@ -41,8 +45,8 @@
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}
 				</option>
 			</select>
-			<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
-			<button class="next-button btn" type="button" @click="nextPage()">next</button>
+			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
@@ -111,6 +115,12 @@ export default {
 				{ text: "true", value: "1" },
 				{ text: "false", value: "0" },
 			],
+			eventOptions: [
+				{ text: "Go to bed", value: "toBed" },
+				{ text: "Get out of bed", value: "fromBed" },
+				{ text: "Wake up", value: "wakeUp" },
+				{ text: "Dinner time", value: "dinnerTime" },
+			],
 			limitOptions: [
 				{ text: "5", value: 5 },
 				{ text: "10", value: 10 },
@@ -124,6 +134,7 @@ export default {
 			eventLogList: [],
 			maxlength: 512,
 			charRemaining: 512,
+			eventType: "",
 			isWakeupEvent: 0,
 			notes: ""
 		};
@@ -211,6 +222,7 @@ export default {
 				let body = {
 					userId: this.appState.user.userId,
 					userName: this.appState.user.userName,
+					eventType: this.eventType,
 					isWakeupEvent: this.isWakeupEvent,
 					notes: this.notes,
 
@@ -247,7 +259,7 @@ export default {
 				this.serverStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.addUserLog(this.appState, "Add Entry to Simple Clock Log");
+				// this.addUserLog(this.appState, "Add Entry to Simple Clock Log");
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},

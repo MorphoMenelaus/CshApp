@@ -16,8 +16,8 @@
 			</select>
 			<input v-model="contains" placeholder="Title contains..." />
 			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">❌</span>
-			<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
-			<button class="next-button btn" type="button" @click="nextPage()">next</button>
+			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
@@ -52,12 +52,13 @@
 				<h1>No Results Found</h1>
 			</div>
 			<div class="button-container">
-				<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
-				<button class="next-button btn" type="button" @click="nextPage()">next</button>
+				<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+				<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			</div>
 		</div>
 
-		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie" :favoritesList="favoritesList" />
+		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie"
+			:favoritesList="favoritesList" />
 
 	</div>
 </template>
@@ -460,7 +461,7 @@ img {
 
 #favorite {
 	font-size: 1.25em;
-	background-color: #a39595;
+	background-color: rgb(163 149 149 / 40%);
 	left: 30px;
 	bottom: 40px;
 	position: absolute;

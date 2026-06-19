@@ -1,8 +1,15 @@
 <script setup>
 import TheWelcome from "../components/TheWelcome.vue";
+// import Carousel from "../components/Carousel.vue";
+
+// Props & Emits
+const props = defineProps({
+	appState: Object,
+})
 </script>
 
 <template>
+	<!-- <Carousel v-if="appState?.isLoggedOn" :appState="appState" /> -->
 	<main>
 		<TheWelcome />
 	</main>

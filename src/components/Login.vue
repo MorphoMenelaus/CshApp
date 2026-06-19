@@ -224,6 +224,7 @@ export default {
 			this.currentComponent = null;
 		});
 		this.eventBus.on("UserDeleted", () => {
+			console.log("UserDeleted");
 			this.currentComponent = null;
 			this.logout();
 		});
@@ -285,6 +286,7 @@ h2 {
 	left: 0;
 	background-color: rgb(0 0 0 / 80%);
 	/* z-index: 500200; */
+	z-index: 10000;
 }
 
 .login-btn {

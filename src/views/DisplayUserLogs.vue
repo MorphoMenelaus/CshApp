@@ -9,8 +9,8 @@
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
-			<button class="next-button btn" type="button" @click="nextPage()">next</button>
+			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
@@ -90,27 +90,6 @@ export default {
 				"actionPerformed",
 				"dateTime",
 			],
-			bogusData: [
-				{
-					"entryId": 1,
-					"userId": "0b91a221-6059-11f1-ab03-ea0526f21063",
-					"userName": "chrish",
-					"actionPerformed": "Password Changed",
-					"dateTime": "2026-06-10T12:07:07.000Z"
-				}, {
-					"entryId": 1,
-					"userId": "0b91a221-6059-11f1-ab03-ea0526f21063",
-					"userName": "chrish",
-					"actionPerformed": "Password Changed",
-					"dateTime": "2026-06-10T12:07:07.000Z"
-				}, {
-					"entryId": 1,
-					"userId": "0b91a221-6059-11f1-ab03-ea0526f21063",
-					"userName": "chrish",
-					"actionPerformed": "Password Changed",
-					"dateTime": "2026-06-10T12:07:07.000Z"
-				}
-			]
 		};
 	},
 	watch: {
@@ -154,13 +133,11 @@ export default {
 
 				const data = await response.json();
 				if (data.success) {
-					let logs = data.logs;
-					this.logs = Array.isArray(logs) && logs.length > 0 ? logs : this.bogusData;
+					this.logs = data.logs;
 				}
 
 				this.eventBus.emit("getUserLogs", this.logs);
 			} catch (error) {
-				this.logs = this.bogusData;
 				console.error('Error fetching data:', error)
 				this.eventBus.emit("getUserLogs", error);
 			} finally {
