@@ -65,22 +65,23 @@ export default {
 				const response = await fetch(request);
 				const data = await response.json();
 
-				this.deleteStatus.code = data?.code;
-				this.deleteStatus.message = data?.message;
-				this.deleteStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", this.deleteStatus);
+				if (data.success) { this.addUserLog(this.appState, "User Deleted Account"); }
+
+				this.serverStatus.code = data?.code;
+				this.serverStatus.message = data?.message;
+				this.serverStatus.success = data?.success;
+				this.eventBus.emit("updateStatus", this.serverStatus);
 
 				this.eventBus.emit("UserDeleted");
-				router.push("/");
+				console.log("deleteUser");
 
 			} catch (error) {
 				console.error('Error posting data:', error);
-				this.deleteStatus.code = 400;
-				this.deleteStatus.message = `Error deleting user: ${error}`;
-				this.deleteStatus.success = true;
-				this.eventBus.emit("updateStatus", this.deleteStatus);
+				this.serverStatus.code = 400;
+				this.serverStatus.message = `Error deleting user: ${error}`;
+				this.serverStatus.success = true;
+				this.eventBus.emit("updateStatus", this.serverStatus);
 			} finally {
-				this.addUserLog(this.appState, "User Deleted Account");
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},

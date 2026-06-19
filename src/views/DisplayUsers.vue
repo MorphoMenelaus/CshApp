@@ -9,8 +9,8 @@
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button btn" type="button" @click="previousPage()">previous</button>
-			<button class="next-button btn" type="button" @click="nextPage()">next</button>
+			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
@@ -96,41 +96,6 @@ export default {
 				"isContributor",
 				"userNotes",
 			],
-			bogusData: [
-				{
-					"userId": "b59cda6d-5870-11f1-8c64-ea0526f21063",
-					"userCreated": "2026-05-25T19:34:08.000Z",
-					"userName": "Chris3",
-					"password": "bogusData",
-					"admin": 0,
-					"siteAdmin": 0,
-					"siteEditor": 0,
-					"isContributor": 1,
-					"userNotes": ""
-				},
-				{
-					"userId": "86731354-5847-11f1-8c64-ea0526f21063",
-					"userCreated": "2026-05-25T14:39:20.000Z",
-					"userName": "Chris2",
-					"password": "bogusData",
-					"admin": 0,
-					"siteAdmin": 0,
-					"siteEditor": 1,
-					"isContributor": 0,
-					"userNotes": ""
-				},
-				{
-					"userId": "e85e2ac1-563b-11f1-8c64-ea0526f21063",
-					"userCreated": "2026-05-23T00:11:09.000Z",
-					"userName": "Chris",
-					"password": "bogusData",
-					"admin": 1,
-					"siteAdmin": 1,
-					"siteEditor": 0,
-					"isContributor": 0,
-					"userNotes": "Some user notes for testing."
-				}
-			]
 		};
 	},
 	watch: {
@@ -180,11 +145,9 @@ export default {
 
 				const data = await response.json();
 				if (data.success) {
-					let users = data.users;
-					this.usersList = Array.isArray(users) && users.length > 0 ? users : this.bogusData;
+					this.usersList = data.users;
 				}
 			} catch (error) {
-				this.usersList = this.bogusData;
 				console.error('Error fetching data:', error)
 			} finally {
 				this.eventBus.emit("showHideLoader", false);

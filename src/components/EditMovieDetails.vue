@@ -206,7 +206,7 @@ export default {
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
-				this.addUserLog(this.appState, "Update Movie Details");
+				// this.addUserLog(this.appState, "Update Movie Details");
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
