@@ -4,19 +4,24 @@
 		<div class="wrapper">
 			<h1>User Preferences</h1>
 			<div v-if="admin">
-				<p style="text-align: center;">Please enter user ID.</p>
-				<!-- @submit.prevent blocks page reloads and executes your logic -->
+				<p style="text-align: center;">Please enter user name to search.</p>
 				<form id="userid-input" @submit.prevent="handleSubmit" method="get">
 					<div class="form-group">
-						<label for="userId">User ID</label>
-						<input v-model="userId" id="userId" type="text" name="userId" class="form-control"
-							placeholder="User ID" />
+						<label for="userId">Search by User Name</label>
+						<input @keyup="findUserByName()" v-model="keyword" id="keyword" type="text" name="keyword"
+							class="form-control" placeholder="User Name" />
+						<div id="user-select" v-if="usersList.length > 0">
+							<span v-for="(item, index) in usersList" :key="index" @click="populateFields(item)">
+								{{ item.userName }}
+							</span>
+						</div>
 					</div>
-					<button @click="getUser" class="btn" title="Get User">Get User</button>
+					<button @click="getUser()" class="btn" title="Get User">Get User</button>
 				</form>
 			</div>
 			<div id="get-set-user-prefs">
 				<div class="form-container" v-if="user && Object.keys(user).length > 0">
+					<h3 class="user-select-name">Current User: {{ user.userName }}</h3>
 					<form @submit.prevent="handleSubmit" method="put">
 						<div class="fields">
 							<div class="form-group">
@@ -77,6 +82,14 @@
 									</option>
 								</select>
 							</div>
+							<div class="form-group" v-if="admin">
+								<label for="contributor">User Verified</label>
+								<select v-model="verified">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+							</div>
 						</div>
 					</form>
 					<button @click="updateUser()" class="btn" title="Update User Prefernces">Update User
@@ -112,20 +125,23 @@ export default {
 			admin: this.appState?.permissions?.admin,
 			userId: this.appState?.user?.userId,
 			boolOptions: [
-				{ text: "true", value: "1" },
-				{ text: "false", value: "0" },
+				{ text: "True", value: "1" },
+				{ text: "False", value: "0" },
 			],
 			user: {},
+			usersList: [],
 			userAdmin: false,
-			"email": "",
-			"lastName": "",
-			"firstName": "",
-			"siteAdmin": 0,
-			"siteEditor": 0,
-			"contributor": 0,
-			"uiDarkMode": 0,
-			"userNotes": "",
-			currentComponent: null
+			email: "",
+			lastName: "",
+			firstName: "",
+			siteAdmin: 0,
+			siteEditor: 0,
+			contributor: 0,
+			uiDarkMode: 0,
+			userNotes: "",
+			verified: 0,
+			currentComponent: null,
+			keyword: ""
 		};
 	},
 	watch: {
@@ -137,6 +153,63 @@ export default {
 		},
 	},
 	methods: {
+		populateFields(user) {
+			this.usersList = [];
+			this.user = user;
+
+			this.userId = this.user.userId;
+			this.email = this.user.email;
+			this.lastName = this.user.lastName;
+			this.firstName = this.user.firstName;
+			this.userAdmin = this.user.admin;
+			this.siteAdmin = this.user.siteAdmin;
+			this.siteEditor = this.user.siteEditor;
+			this.contributor = this.user.contributor;
+			this.uiDarkMode = this.user.uiDarkMode;
+			this.userNotes = this.user.userNotes;
+			this.verified = this.user.verified;
+		},
+		async findUserByName() {
+
+			if (this.keyword >= 0) {
+				this.usersList = [];
+				return;
+			}
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
+
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL(`/api/users/name/${this.keyword}`, this.baseUrl);
+
+			let params = requestUrl.searchParams;
+			params.set("time", new Date().getTime());
+			requestUrl.search = params.toString();
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'GET',
+				headers: headerObj,
+			});
+
+			try {
+				let response = await fetch(request);
+				const data = await response.json();
+
+				if (data?.success)
+					this.usersList = data.users;
+
+			} catch (error) {
+				console.error('Error fetching data:', error)
+			} finally {
+			}
+		},
 		async getUser() {
 			this.eventBus.emit("showHideLoader", true);
 
@@ -168,17 +241,7 @@ export default {
 				const data = await response.json();
 
 				if (data?.success)
-					this.user = data.user;
-
-				this.email = this.user.email;
-				this.lastName = this.user.lastName;
-				this.firstName = this.user.firstName;
-				this.userAdmin = this.user.admin;
-				this.siteAdmin = this.user.siteAdmin;
-				this.siteEditor = this.user.siteEditor;
-				this.contributor = this.user.contributor;
-				this.uiDarkMode = this.user.uiDarkMode;
-				this.userNotes = this.user.userNotes;
+					this.populateFields(data.user);
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
@@ -205,7 +268,8 @@ export default {
 				siteEditor: this.siteEditor,
 				contributor: this.contributor,
 				uiDarkMode: this.uiDarkMode,
-				userNotes: this.userNotes
+				userNotes: this.userNotes,
+				verified: this.verified
 			};
 
 			let hasEmpty = Object.values(body).some(val => !val);
@@ -274,9 +338,15 @@ export default {
 }
 
 h1,
-h2 {
+h2,
+h3,
+.user-select-name {
 	font-weight: bold;
 	text-align: center;
+}
+
+.user-select-name {
+	margin-top: 15px;
 }
 
 #listUsers {
@@ -318,5 +388,24 @@ textarea {
 button.btn {
 	display: block;
 	margin: 15px auto 0;
+}
+
+#user-select {
+	display: flex;
+	flex-direction: column;
+	background-color: #ccc;
+	color: #000;
+	font-weight: bold;
+	border: 1px #000 solid;
+}
+
+#user-select span {
+	cursor: pointer;
+	padding: 0 10px 5px;
+}
+
+#user-select span:hover {
+	background-color: #06f;
+	color: #ccc;
 }
 </style>

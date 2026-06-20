@@ -112,8 +112,8 @@ export default {
 			offset: 0,
 			currentPage: 1,
 			boolOptions: [
-				{ text: "true", value: "1" },
-				{ text: "false", value: "0" },
+				{ text: "True", value: "1" },
+				{ text: "False", value: "0" },
 			],
 			eventOptions: [
 				{ text: "Go to bed", value: "toBed" },
