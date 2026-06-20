@@ -39,7 +39,7 @@
 						<div class="drop-downs">
 							<div class="form-group" v-if="admin">
 								<label for="admin">Admin</label>
-								<select v-model="admin">
+								<select v-model="userAdmin">
 									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
 										{{ item.text }}
 									</option>
@@ -85,7 +85,7 @@
 			</div>
 		</div>
 		<component :is="currentComponent" :appState="appState" />
-		<div id="change-btn">
+		<div id="change-btn" v-if="user.userId === appState?.user?.userId">
 			<button @click="currentComponent = 'ChangePassword'" class="btn" title="Change Password">Change
 				Password</button>
 		</div>
@@ -116,6 +116,7 @@ export default {
 				{ text: "false", value: "0" },
 			],
 			user: {},
+			userAdmin: false,
 			"email": "",
 			"lastName": "",
 			"firstName": "",
@@ -172,7 +173,7 @@ export default {
 				this.email = this.user.email;
 				this.lastName = this.user.lastName;
 				this.firstName = this.user.firstName;
-				this.admin = this.user.admin;
+				this.userAdmin = this.user.admin;
 				this.siteAdmin = this.user.siteAdmin;
 				this.siteEditor = this.user.siteEditor;
 				this.contributor = this.user.contributor;
@@ -199,7 +200,7 @@ export default {
 				email: this.email,
 				lastName: this.lastName,
 				firstName: this.firstName,
-				admin: this.admin,
+				admin: this.userAdmin,
 				siteAdmin: this.siteAdmin,
 				siteEditor: this.siteEditor,
 				contributor: this.contributor,
@@ -208,12 +209,6 @@ export default {
 			};
 
 			let hasEmpty = Object.values(body).some(val => !val);
-
-			// if (hasEmpty) {
-			// 	this.serverStatus.message = `Every input field must have a value`;
-			// 	this.serverStatus.success = false;
-			// 	this.eventBus.emit("updateStatus", (this.serverStatus));
-			// }
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
