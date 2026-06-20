@@ -9,7 +9,8 @@
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="prev-button btn" type="button" @click="previousPage()"
+				title="Previous Page">previous</button>
 			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
@@ -107,7 +108,7 @@ export default {
 		usersList() {
 			this.usersList.forEach(user => {
 				Object.keys(user).forEach(key => {
-					if (key === "admin" || key === "siteAdmin" || key === "siteEditor" || key === "contributor" || key === "uiDarkMode")
+					if (key === "admin" || key === "verified" || key === "siteAdmin" || key === "siteEditor" || key === "contributor" || key === "uiDarkMode")
 						user[key] = user[key] === 1 ? true : false;
 				});
 			});

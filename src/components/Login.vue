@@ -106,14 +106,22 @@ export default {
 
 				let dataObj = await response.json();
 
+				if (dataObj?.code === 403) {
+					this.appNotify.code = dataObj.code;
+					this.appNotify.message = dataObj.message;
+					this.appNotify.success = dataObj.success;
+					this.eventBus.emit("updateStatus", this.appNotify);
+					return;
+				}
+
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
-					updateAppState.accessToken = dataObj.accessToken;
-					updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
-					updateAppState.refreshToken = dataObj.refreshToken;
+					updateAppState.accessToken = dataObj.authorization.accessToken;
+					updateAppState.accessTokenExpiration = dataObj.authorization.accessTokenExpiration;
+					updateAppState.refreshToken = dataObj.authorization.refreshToken;
 					updateAppState.userName = this.userName;
-					updateAppState.user = dataObj.user
-					updateAppState.permissions = dataObj.user.permissions;
+					updateAppState.user = dataObj.authorization.user
+					updateAppState.permissions = dataObj.authorization.user.permissions;
 					updateAppState.isLoggedOn = true;
 					this.eventBus.emit("updateAppState", updateAppState);
 
