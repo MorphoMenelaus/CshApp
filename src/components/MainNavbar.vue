@@ -20,15 +20,15 @@
 			</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="mobileMenuShow = false">
 				UserPreferences</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/displayusers" @click="mobileMenuShow = false">Display Users
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayusers" @click="mobileMenuShow = false">Display Users
 			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayuserlogs"
+			<RouterLink v-if="appState?.isLoggedOn" to="/displayuserlogs"
 				@click="mobileMenuShow = false">Display User
 				Logs</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock"
 				@click="mobileMenuShow = false">Simple Clock
 			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/about" @click="mobileMenuShow = false">About</RouterLink>
+			<RouterLink to="/about" @click="mobileMenuShow = false">About</RouterLink>
 		</nav>
 	</div>
 

@@ -60,8 +60,8 @@
 
 body {
 	/* min-height: 100vh; */
-	color: var(--color-text);
-	background: var(--color-background);
+	color: var(--vt-c-text-light-2);
+	background: var(--vt-c-white-mute);
 	transition:
 		color 0.5s,
 		background-color 0.5s;
@@ -85,6 +85,10 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+body.uiDarkMode {
+	color: var(--color-text);
+	background: var(--color-background);
+}
 
 .roboto-body {
   font-family: "Roboto", sans-serif;

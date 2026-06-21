@@ -45,7 +45,8 @@
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}
 				</option>
 			</select>
-			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="prev-button btn" type="button" @click="previousPage()"
+				title="Previous Page">previous</button>
 			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
@@ -325,11 +326,18 @@ h1 {
 	padding: 15px;
 	align-self: center;
 	align-content: center;
-	background-color: #000;
+	background-color: #ddd;
+	color: #000;
 	text-align: center;
 	font-size: 1.5em;
 	user-select: none;
 	border-radius: 12px;
+	border: 1px #000 solid;
+}
+
+.uiDarkMode #clock {
+	background-color: #000;
+	color: inherit;
 	border: 1px #fff solid;
 }
 
@@ -380,6 +388,16 @@ button.time-log {
 	display: block;
 	margin: 15px auto 0;
 	cursor: pointer;
+}
+
+table {
+	background-color: #ddd;
+	color: #000;
+}
+
+.uiDarkMode table {
+	background-color: inherit;
+	color: inherit;
 }
 
 table {
@@ -434,6 +452,11 @@ td {
 	align-items: center;
 	width: 40%;
 	margin: 30px auto 15px;
+	color: #000;
+}
+
+.uiDarkMode #paging {
+	color: inherit;
 }
 
 .mobile #paging {

@@ -10,14 +10,33 @@ const props = defineProps({
 
 let lessText = ref(false);
 
+const targetSection = ref(null)
+
+const scrollToId = (id) => {
+	const element = document.getElementById(id)
+	if (element) {
+		element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+	}
+}
+
+const showDetails = (id) => {
+	lessText?.value ? lessText.value = false : lessText.value = true;
+	scrollToId(id);
+}
 </script>
 
 <template>
 	<main class="roboto-body">
 		<div id="main-home-layout">
-			<div>
-				<h1 id="name-title" class="julius-sans">Chris Hardwick</h1>
-				<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
+			<div id="title-block">
+				<div>
+					<h1 id="name-title" class="julius-sans">Chris Hardwick</h1>
+					<div class="tagline-box">
+						<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
+						<h3>Web Application Developer</h3>
+						<h3>Front-End Web Developer</h3>
+					</div>
+				</div>
 				<div id="skills-list">
 					<ul>
 						<li>Responsive Web Design</li>
@@ -27,13 +46,12 @@ let lessText = ref(false);
 						<li>JavaScript ES6</li>
 						<li>Vue 3</li>
 						<li>NodeJS</li>
-						<li>REST APIs</li>
 					</ul>
 					<ul>
+						<li>REST APIs</li>
 						<li>SQL</li>
 						<li>C#</li>
 						<li>SQL</li>
-						<li>Web Application Development</li>
 						<li>Single Page Applications (SPA)</li>
 						<li>ADA compliant design</li>
 						<li>Godot</li>
@@ -41,8 +59,8 @@ let lessText = ref(false);
 				</div>
 			</div>
 			<div id="latest-summary">
-				<h1 class="julius-sans">Latest Accomplishments</h1>
-				<h2>Web Application Developer | Makrö Gaming Studios</h2>
+				<h2 class="julius-sans">Latest Accomplishments</h2>
+				<h3>Web Application Developer | Makrö Gaming Studios</h3>
 				<p>
 					I developed a full suite of Single Page Applications using the Vue 3 framework to accompany the
 					video
@@ -63,7 +81,7 @@ let lessText = ref(false);
 					Cashier,
 					Reporter, and Player all allow for different access and abilities.
 				</p>
-				<Button class="btn" @click="lessText ? lessText = false : lessText = true">{{ lessText ? 'Fewer' :
+				<Button id="scroll-anchor" class="btn" @click="showDetails('scroll-anchor')">{{ lessText ? 'Fewer' :
 					'More'
 				}} Details</Button>
 				<div v-if="lessText" id="latest-details">
@@ -118,51 +136,10 @@ let lessText = ref(false);
 </template>
 
 <style scoped>
-#view {
-	margin: 15px auto;
-	padding: 15px;
-	width: 80%;
-}
-
-main#view {
-	position: relative;
-	padding-bottom: 110px;
-	z-index: -1;
-}
-
-#view.mobile {
-	margin: 0;
-	padding: 0;
-	width: 100%;
-}
-
-#main-home-layout {
-	width: 98%;
-	margin: 15px auto;
-}
-
-#name-title {
-	font-size: 4em;
-}
-
-#latest-summary {
-	background-color: #000;
-	padding: 15px;
-	font-size: 1.25em;
-	border: 1px #555 solid;
-	border-radius: 12px;
-}
-
-#latest-details {
-	margin-top: 30px;
-}
-
-#latest-details ul {
-	margin-bottom: 30px;
-}
-
 h1,
-h2 {
+h2,
+#title-block h3,
+#latest-summary>h3 {
 	text-align: center;
 }
 
@@ -174,9 +151,78 @@ h2 {
 	font-size: 2em;
 }
 
+h3 {
+	font-size: 1.5em;
+}
+
 p {
 	margin: 15px auto;
 	text-indent: 30px;
+}
+
+#view {
+	position: relative;
+	width: 100%;
+	margin: 15px auto;
+	padding: 15px;
+	padding-bottom: 110px;
+	/* z-index: -1; */
+}
+
+#view.mobile {
+	margin: 0;
+	padding: 0;
+}
+
+#main-home-layout {
+	width: 98%;
+	margin: 15px auto;
+}
+
+#title-block {
+	display: flex;
+}
+
+#name-title {
+	font-size: 4em;
+	font-weight: bold;
+}
+
+.uiDarkMode #name-title {
+	font-weight: normal;
+}
+
+
+#latest-summary {
+	background-color: #e7e7e7;
+	padding: 15px;
+	font-size: 1.25em;
+	border: 1px #555 solid;
+	border-radius: 12px;
+}
+
+.uiDarkMode #latest-summary {
+	background-color: #000;
+}
+
+#latest-summary>h3 {
+	font-size: 1.25em;
+}
+
+#latest-summary>h2 {
+	font-weight: bold;
+}
+
+.uiDarkMode #latest-summary>h2 {
+	font-weight: normal;
+}
+
+#latest-details {
+	margin-top: 30px;
+}
+
+#latest-details ul {
+	margin-bottom: 30px;
 }
 
 #skills-list {
@@ -186,23 +232,45 @@ p {
 	font-size: 1.25em;
 }
 
+.details-ul h3 {
+	position: relative;
+	top: -15px;
+	left: -15px;
+	width: calc(100% + 30px);
+	padding: 15px;
+	background-color: #c1c1c1;
+	color: #444;
+	font-size: 1.25em;
+	font-weight: bold;
+	border: 1px #444 solid;
+	border-radius: 8px 8px 0 0;
+}
+
+.uiDarkMode .details-ul h3 {
+	color: #fff;
+	background-color: #112;
+}
+
 .details-ul {
-	background-color: #1c2138;
+	background-color: #fff;
 	padding: 15px;
 	margin-bottom: 30px;
 	border-radius: 0 0 8px 8px;
 }
 
-.details-ul h3 {
-	background-color: #112;
-	padding: 15px;
-	position: relative;
-	top: -15px;
-	left: -15px;
-	color: #fff;
-	width: calc(100% + 30px);
-	border: 1px #444 solid;
-	border-radius: 8px 8px 0 0;
+.uiDarkMode .details-ul {
+	background-color: #1c2138;
+}
+
+.tagline-box {
+	border: 1px #555 solid;
+	background-color: #fff;
+	padding: 15px 30px;
+	border-radius: 8px;
+}
+
+.uiDarkMode .tagline-box {
+	background-color: #222;
 }
 
 @media (max-width: 767px) {}

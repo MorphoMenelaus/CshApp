@@ -1,7 +1,7 @@
 <template>
 
 	<div>
-		<h1>Movie List</h1>
+		<h1>Movie Database</h1>
 
 		<div class="favorite-check" v-if="favoritesList.length > 0">
 			<label for="favoritesOnly">Favorites only</label>
@@ -13,11 +13,13 @@
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
 				</option>
 			</select>
-			<label for="sortByOptions">Sort By</label>
-			<select v-model="sortBy">
-				<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
-				</option>
-			</select>
+			<div v-if="appState?.permissions.admin">
+				<label for="sortByOptions">Sort By</label>
+				<select v-model="sortBy">
+					<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
+					</option>
+				</select>
+			</div>
 			<input v-model="contains" placeholder="Title contains..." />
 			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">❌</span>
 			<button class="prev-button btn" type="button" @click="previousPage()"
@@ -429,16 +431,21 @@ h2 {
 }
 
 .card .inner {
-	background-color: #313b64;
+	color: #000;
+	background-color: #abb8f1;
 	border: 1px solid #777;
 	border-radius: 12px;
 	flex-direction: column;
 	justify-content: space-between;
-	width: 250px;
-	margin: 30px auto;
-	display: flex;
 	width: 90%;
 	height: 460px;
+	margin: 30px auto;
+	display: flex;
+}
+
+.uiDarkMode .card .inner {
+	background-color: #313b64;
+	color: inherit;
 }
 
 .title-description {
@@ -472,6 +479,11 @@ img {
 	align-items: center;
 	width: 40%;
 	margin: 30px auto 15px;
+	color: #000;
+}
+
+.uiDarkMode #paging {
+	color: inherit;
 }
 
 .mobile #paging {
@@ -480,11 +492,16 @@ img {
 }
 
 .clear-field {
-	background-color: #fff;
+	background-color: #ccc;
 	padding: 0px 2px 1px;
 	border-radius: 6px;
 	cursor: pointer;
 }
+
+.uiDarkMode .clear-field {
+	background-color: #fff;
+}
+
 
 .button-container {
 	display: flex;
@@ -528,6 +545,10 @@ img {
 }
 
 #favorite.favs {
+	background-color: #ff0;
+}
+
+.uiDarkMode #favorite.favs {
 	background-color: #afaf03;
 }
 
@@ -536,6 +557,11 @@ img {
 	align-items: center;
 	justify-content: center;
 	margin: 15px 0;
+	color: #000;
+}
+
+.uiDarkMode .favorite-check {
+	color: inherit;
 }
 
 .favorite-check input {

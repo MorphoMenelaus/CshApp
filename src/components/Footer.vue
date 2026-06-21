@@ -28,6 +28,7 @@ footer {
 	align-content: center;
 	background-color: #313b64;
 	border-top: 1px #fff solid;
+	color: var(--color-text);
 }
 
 h3 {

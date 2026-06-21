@@ -5,6 +5,11 @@ import HelloWorld from "./components/HelloWorld.vue";
 
 <template>
 
+	<div v-if="!appState?.isLoggedOn" id="dark-mode-check">
+		<label for="uiDarkMode" title="Toggle dark mode">Dark Mode</label>
+		<input id="uiDarkMode" title="Toggle dark mode" type="checkbox" v-model="uiDarkMode" />
+	</div>
+
 	<Header :appState="appState" :isMobile="isMobile" />
 
 	<Login :appState="appState" />
@@ -38,19 +43,29 @@ export default {
 	data() {
 		return {
 			serverStatus: Object.assign({}, this.appNotify),
+			body: document.getElementsByTagName('body'),
 			serverVersion: "",
 			appState: {},
 			currentComponent: null,
-			isMobile: window.innerWidth < 1024
+			isMobile: window.innerWidth < 1024,
+			uiDarkMode: false
 		};
 	},
 	watch: {
+		uiDarkMode() {
+			if (this.uiDarkMode) {
+				this.body[0].classList.add("uiDarkMode");
+			} else {
+				this.body[0].classList.remove("uiDarkMode");
+			}
+		}
 	},
 	methods: {
 		recallAppState() {
 			this.appState = session.recall.get();
+			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		},
-		async getServrVersion() {
+		async getServerVersion() {
 			try {
 				const response = await fetch('/api/serverInfo');
 				const data = await response.json();
@@ -61,14 +76,15 @@ export default {
 		},
 	},
 	created() {
-		this.getServrVersion();
+		this.getServerVersion();
 		this.recallAppState();
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
 			session.recall.save(this.appState);
+			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		});
 		this.eventBus.on("registerUser", (payload) => {
-			this.currentComponent = payload ? "Register" : null;
+			this.currentComponent = payload.register ? "Register" : null;
 		});
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
@@ -81,6 +97,20 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#dark-mode-check {
+	position: absolute;
+	top: 110px;
+	left: 15px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 8em;
+}
+
+#dark-mode-check label {
+	cursor: pointer;
+}
+
 header {
 	line-height: 1.5;
 	max-height: 100vh;

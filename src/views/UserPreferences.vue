@@ -292,6 +292,9 @@ export default {
 				const data = await response.json();
 
 				if (data.success) {
+					let updateAppState = this.appState;
+					this.appState.user = data.user;
+					this.eventBus.emit("updateAppState", updateAppState);
 					this.getUser();
 				}
 
@@ -378,8 +381,12 @@ h3,
 }
 
 input {
-	font-weight: bold;
+	font-weight: normal;
 	font-size: 1.25em;
+}
+
+.uiDarkMode input {
+	font-weight: bold;
 }
 
 textarea {

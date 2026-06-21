@@ -191,11 +191,26 @@ h1 {
 	align-items: center;
 	width: 40%;
 	margin: 15px auto;
+	color: #000;
+}
+
+.uiDarkMode #paging {
+	color: inherit;
 }
 
 .mobile #paging {
 	width: 90%;
 	margin: 30px auto 0;
+}
+
+table {
+	background-color: #ddd;
+	color: #000;
+}
+
+.uiDarkMode table {
+	background-color: inherit;
+	color: inherit;
 }
 
 #non-mobile table {
