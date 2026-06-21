@@ -43,7 +43,6 @@ onMounted(async () => {
 		console.error('Error fetching data:', error)
 	} finally {
 		isLoading.value = false;
-		console.log(slides.value);
 	}
 });
 

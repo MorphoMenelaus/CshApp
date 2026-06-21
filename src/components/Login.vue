@@ -106,14 +106,6 @@ export default {
 
 				let dataObj = await response.json();
 
-				if (dataObj?.code === 403) {
-					this.appNotify.code = dataObj.code;
-					this.appNotify.message = dataObj.message;
-					this.appNotify.success = dataObj.success;
-					this.eventBus.emit("updateStatus", this.appNotify);
-					return;
-				}
-
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
 					updateAppState.accessToken = dataObj.authorization.accessToken;
@@ -129,9 +121,9 @@ export default {
 					this.appNotify.message = "Access Token acquired: Login Success";
 					this.appNotify.success = true;
 				} else {
-					this.appNotify.code = 400;
-					this.appNotify.message = "Invalid credentials";
-					this.appNotify.success = false;
+					this.appNotify.code = dataObj.code;
+					this.appNotify.message = dataObj.message;
+					this.appNotify.success = dataObj.success;
 				}
 
 				this.eventBus.emit("updateStatus", this.appNotify);
@@ -141,13 +133,6 @@ export default {
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
 			}
-		},
-		checkIfRefreshNeeded() {
-			// Give it 1 minute of wiggle room on expire time (60000ms)
-			// Better to refresh a minute early than to cause a race condition error
-			let expireMS = this.appState?.accessTokenExpiration - 60000;
-			let currTime = new Date().getTime();
-			if (currTime >= expireMS) this.refreshAuthentication();
 		},
 		async refreshAuthentication() {
 
@@ -178,9 +163,9 @@ export default {
 					this.appNotify.message = "Access Token refeshed";
 					this.appNotify.success = true;
 				} else {
-					this.appNotify.code = 400;
-					this.appNotify.message = "Invalid credentials";
-					this.appNotify.success = false;
+					this.appNotify.code = dataObj.code;
+					this.appNotify.message = dataObj.message;
+					this.appNotify.success = dataObj.success;
 				}
 
 				this.eventBus.emit("updateStatus", this.appNotify);
@@ -232,7 +217,6 @@ export default {
 			this.currentComponent = null;
 		});
 		this.eventBus.on("UserDeleted", () => {
-			console.log("UserDeleted");
 			this.currentComponent = null;
 			this.logout();
 		});

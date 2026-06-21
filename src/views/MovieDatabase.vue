@@ -3,7 +3,11 @@
 	<div>
 		<h1>Movie List</h1>
 
-		<div id="paging">
+		<div class="favorite-check" v-if="favoritesList.length > 0">
+			<label for="favoritesOnly">Favorites only</label>
+			<input id="favoritesOnly" type="checkbox" v-model="favoritesOnly" />
+		</div>
+		<div id="paging" v-if="!favoritesOnly || favoritesList.length === 0">
 			<label for="limitOptions">Limit List</label>
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
@@ -16,7 +20,8 @@
 			</select>
 			<input v-model="contains" placeholder="Title contains..." />
 			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">❌</span>
-			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="prev-button btn" type="button" @click="previousPage()"
+				title="Previous Page">previous</button>
 			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
@@ -51,8 +56,9 @@
 			<div v-else>
 				<h1>No Results Found</h1>
 			</div>
-			<div class="button-container">
-				<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<div class="button-container" v-if="!favoritesOnly || favoritesList.length === 0">
+				<button class="prev-button btn" type="button" @click="previousPage()"
+					title="Previous Page">previous</button>
 				<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			</div>
 		</div>
@@ -106,7 +112,9 @@ export default {
 			movieList: [],
 			currentComponent: null,
 			selectedMovie: {},
-			favoritesList: []
+			favoritesList: [],
+			movieFavorites: [],
+			favoritesOnly: false
 		};
 	},
 	watch: {
@@ -124,6 +132,14 @@ export default {
 			this.currentPage = 1;
 			this.offset = 0;
 			this.getMovieList();
+		},
+		async favoritesOnly() {
+			if (this.favoritesOnly) {
+				await this.getMovieByFavorites();
+				this.movieList = this.movieFavorites;
+			} else {
+				this.getMovieList();
+			}
 		}
 	},
 	methods: {
@@ -269,6 +285,47 @@ export default {
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				// this.eventBus.emit("showHideLoader", false);
+			}
+		},
+		async getMovieByFavorites() {
+			this.eventBus.emit("showHideLoader", true);
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
+
+			let body = {
+				movieIds: this.favoritesList
+			}
+
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL("/api/movies/", this.baseUrl);
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'POST',
+				headers: headerObj,
+				body: JSON.stringify(body)
+			});
+
+			try {
+				let response = await fetch(request);
+				let data = await response.json();
+				this.movieFavorites = data.movies;
+
+			} catch (error) {
+				console.error('Error posting data:', error);
+				this.serverStatus.code = 500;
+				this.serverStatus.message = `Error getting data: ${error}`;
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async getMovieList() {
@@ -472,6 +529,17 @@ img {
 
 #favorite.favs {
 	background-color: #afaf03;
+}
+
+.favorite-check {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 15px 0;
+}
+
+.favorite-check input {
+	margin-left: 10px;
 }
 
 @media (min-width: 1024px) {

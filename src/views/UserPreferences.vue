@@ -9,7 +9,7 @@
 					<div class="form-group">
 						<label for="userId">Search by User Name</label>
 						<input @keyup="findUserByName()" v-model="keyword" id="keyword" type="text" name="keyword"
-							class="form-control" placeholder="User Name" />
+							class="form-control" placeholder="User Name" onfocus="this.select()" />
 						<div id="user-select" v-if="usersList.length > 0">
 							<span v-for="(item, index) in usersList" :key="index" @click="populateFields(item)">
 								{{ item.userName }}
@@ -84,7 +84,7 @@
 							</div>
 							<div class="form-group" v-if="admin">
 								<label for="contributor">User Verified</label>
-								<select v-model="verified">
+								<select v-model="verified" :class="!verified ? 'not-ver' : ''">
 									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
 										{{ item.text }}
 									</option>
@@ -156,6 +156,7 @@ export default {
 		populateFields(user) {
 			this.usersList = [];
 			this.user = user;
+			this.keyword = user.userName;
 
 			this.userId = this.user.userId;
 			this.email = this.user.email;
@@ -407,5 +408,9 @@ button.btn {
 #user-select span:hover {
 	background-color: #06f;
 	color: #ccc;
+}
+
+.not-ver {
+	border: 3px #f00 solid;
 }
 </style>
