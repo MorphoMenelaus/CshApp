@@ -73,8 +73,6 @@ export default {
 				this.eventBus.emit("updateStatus", this.serverStatus);
 
 				this.eventBus.emit("UserDeleted");
-				console.log("deleteUser");
-
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;

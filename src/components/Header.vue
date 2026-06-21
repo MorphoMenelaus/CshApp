@@ -108,6 +108,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+header {
+	color: var(--color-text);
+}
+
 #clock {
 	position: absolute;
 	top: 10px;

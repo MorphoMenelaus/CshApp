@@ -191,6 +191,23 @@ h1 {
 	padding: 15px 15px 60px;
 }
 
+table {
+	text-align: center;
+	border: 1px solid #666;
+	border-radius: 10px;
+	width: 100%;
+	margin: 30px auto;
+	padding: 5px;
+	position: relative;
+	background-color: #ddd;
+	color: #000;
+}
+
+.uiDarkMode table {
+	background-color: inherit;
+	color: inherit;
+}
+
 .header-row {
 	font-weight: bold;
 	color: #fff;
@@ -203,6 +220,11 @@ h1 {
 	align-items: center;
 	width: 40%;
 	margin: 15px auto;
+	color: #000;
+}
+
+.uiDarkMode #paging {
+	color: inherit;
 }
 
 .mobile #paging {

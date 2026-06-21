@@ -18,7 +18,10 @@
 					<label>Confirm Password</label>
 					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
 				</div>
-				<button class="btn" type='submit'>Register</button>
+				<div style="display: flex;">
+					<button class="btn" type='submit'>Register</button>
+					<button class="btn" type="button" @click="eventBus.emit('registerUser', false)">Cancel</button>
+				</div>
 				<p>Already have an account? <span class="link" title="Login here"
 						@click="removeRegisterUserComponent()">Login here.</span>
 				</p>
@@ -53,7 +56,12 @@ export default {
 	},
 	methods: {
 		removeRegisterUserComponent() {
-			this.eventBus.emit("registerUser", false);
+			// Control the state of both components
+			let payload = {
+				register: false,
+				login: true
+			}
+			this.eventBus.emit("registerUser", payload);
 		},
 		async register() {
 			this.eventBus.emit("showHideLoader", true);
@@ -85,8 +93,14 @@ export default {
 				this.serverStatus.success = data?.success;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 
-				if (data?.success)
-					this.eventBus.emit("registerUser", false);
+				if (data?.success) {
+					// Control the state of both components
+					let payload = {
+						register: false,
+						login: false
+					}
+					this.eventBus.emit("registerUser", payload);
+				}
 
 				this.errState = data?.success;
 
@@ -136,7 +150,7 @@ form {
 }
 
 .input-section {
-	background: rgb(71 68 196 / 40%);
+	background: rgb(49 59 100 / 90%);
 	padding: 30px;
 	position: relative;
 	top: 0;
@@ -145,6 +159,10 @@ form {
 	border-radius: 12px;
 	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
 	max-width: 30em;
+}
+
+.uiDarkMode .input-section[data-v-3bd1a200] {
+	background: rgb(49 59 100 / 70%);
 }
 
 .login-status {
@@ -185,7 +203,11 @@ label[for="casinoId"] {
 	left: 0;
 	top: 95px;
 	align-items: center;
+	color: #aaa;
 }
+
+/* .uiDarkMode #register {
+} */
 
 .wrapper {
 	max-width: 30em;

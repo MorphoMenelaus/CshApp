@@ -60,8 +60,8 @@
 
 body {
 	/* min-height: 100vh; */
-	color: var(--color-text);
-	background: var(--color-background);
+	color: var(--vt-c-text-light-2);
+	background: var(--vt-c-white-mute);
 	transition:
 		color 0.5s,
 		background-color 0.5s;
@@ -79,10 +79,30 @@ body {
 		"Droid Sans",
 		"Helvetica Neue",
 		sans-serif;
-	font-size: 15px;
+	font-size: 18px;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+
+body.uiDarkMode {
+	color: var(--color-text);
+	background: var(--color-background);
+}
+
+.roboto-body {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+.julius-sans {
+  font-family: "Julius Sans One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .btn,

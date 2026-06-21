@@ -1,12 +1,22 @@
 <template>
 
-	<div class="login-status" v-if="appState?.isLoggedOn">
-		<span>{{ appState.userName }}</span>
-		<button class="btn" type="button" @click="openConfirmDialog()">Logout</button>
-		<span id="delete-button" class="link" @click="currentComponent = 'DeleteUser'">Delete Account</span>
+	<!-- <div class="login-status" v-if="appState?.isLoggedOn"> -->
+	<div class="login-status">
+		<div v-if="appState?.isLoggedOn">
+			<span>{{ appState.userName }}</span>
+			<button class="btn" type="button" @click="openConfirmDialog()">Logout</button>
+			<span v-if="userName !== 'guest'" id="delete-button" class="link"
+				@click="currentComponent = 'DeleteUser'">Delete Account</span>
+		</div>
+		<div v-else>
+			<button class="btn" type="button" @click="loginShow = true">Login</button>
+			<span @click="showRegisterUserComponent()">New User? <span class="link">Click to register</span>.</span>
+		</div>
 	</div>
 
-	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''" v-if="!appState.isLoggedOn">
+	<!-- <div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''" v-if="!appState.isLoggedOn"> -->
+	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''"
+		v-if="!appState?.isLoggedOn && loginShow">
 		<form class="input-section">
 			<h1>CSH App</h1>
 			<h2>Welcome</h2>
@@ -15,7 +25,10 @@
 			<input type="text" name="userName" v-model="userName" placeholder="Username" autocomplete="userName" />
 			<input type="password" name="password" v-model="password" placeholder="Password"
 				autocomplete="current-password" />
-			<button class="btn login-btn" type="button" @click="login()">Login</button>
+			<div class="login-buttons">
+				<button class="btn login-btn" type="button" @click="login()">Login</button>
+				<button class="btn" type="button" @click="loginShow = false">Cancel</button>
+			</div>
 			<span @click="showRegisterUserComponent()">New User? <span class="link">Click to register</span>.</span>
 		</form>
 	</div>
@@ -46,6 +59,13 @@ import { onBeforeUnmount } from "vue";
 import router from "@/router";
 import DeleteUser from "@/components/DeleteUser.vue";
 
+const user = import.meta.env.VITE_APP_GUEST_USER;
+const password = import.meta.env.VITE_APP_GUEST_PASS;
+const guestUser = {
+	userName: user,
+	password: password
+}
+
 export default {
 	name: "Login",
 	props: {
@@ -57,6 +77,7 @@ export default {
 	data() {
 		return {
 			appNotify: Object.assign({}, this.appNotify),
+			loginShow: false,
 			activeSession: null,
 			accessToken: "",
 			accessTokenExpiration: "",
@@ -78,9 +99,22 @@ export default {
 			dialog: null
 		};
 	},
+	watch: {
+		userName() {
+			if (this.userName === guestUser.userName) {
+				this.password = guestUser.password;
+				this.login();
+			}
+		}
+	},
 	methods: {
 		showRegisterUserComponent() {
-			this.eventBus.emit("registerUser", true);
+			// Control the state of both components
+			let payload = {
+				register: true,
+				login: false
+			}
+			this.eventBus.emit("registerUser", payload);
 		},
 		async login() {
 			this.eventBus.emit("showHideLoader", true);
@@ -106,14 +140,6 @@ export default {
 
 				let dataObj = await response.json();
 
-				if (dataObj?.code === 403) {
-					this.appNotify.code = dataObj.code;
-					this.appNotify.message = dataObj.message;
-					this.appNotify.success = dataObj.success;
-					this.eventBus.emit("updateStatus", this.appNotify);
-					return;
-				}
-
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
 					updateAppState.accessToken = dataObj.authorization.accessToken;
@@ -128,10 +154,11 @@ export default {
 					this.appNotify.code = 200;
 					this.appNotify.message = "Access Token acquired: Login Success";
 					this.appNotify.success = true;
+					this.loginShow = false;
 				} else {
-					this.appNotify.code = 400;
-					this.appNotify.message = "Invalid credentials";
-					this.appNotify.success = false;
+					this.appNotify.code = dataObj.code;
+					this.appNotify.message = dataObj.message;
+					this.appNotify.success = dataObj.success;
 				}
 
 				this.eventBus.emit("updateStatus", this.appNotify);
@@ -141,13 +168,6 @@ export default {
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
 			}
-		},
-		checkIfRefreshNeeded() {
-			// Give it 1 minute of wiggle room on expire time (60000ms)
-			// Better to refresh a minute early than to cause a race condition error
-			let expireMS = this.appState?.accessTokenExpiration - 60000;
-			let currTime = new Date().getTime();
-			if (currTime >= expireMS) this.refreshAuthentication();
 		},
 		async refreshAuthentication() {
 
@@ -178,9 +198,9 @@ export default {
 					this.appNotify.message = "Access Token refeshed";
 					this.appNotify.success = true;
 				} else {
-					this.appNotify.code = 400;
-					this.appNotify.message = "Invalid credentials";
-					this.appNotify.success = false;
+					this.appNotify.code = dataObj.code;
+					this.appNotify.message = dataObj.message;
+					this.appNotify.success = dataObj.success;
 				}
 
 				this.eventBus.emit("updateStatus", this.appNotify);
@@ -232,17 +252,20 @@ export default {
 			this.currentComponent = null;
 		});
 		this.eventBus.on("UserDeleted", () => {
-			console.log("UserDeleted");
 			this.currentComponent = null;
 			this.logout();
 		});
 		this.eventBus.on("forceLogout", () => {
 			this.logout();
 		});
+		this.eventBus.on("registerUser", (payload) => {
+			this.loginShow = payload.login;
+		});
 		onBeforeUnmount(() => {
 			this.eventBus.off("cancelDeleteUser");
 			this.eventBus.off("UserDeleted");
 			this.eventBus.off("forceLogout");
+			this.eventBus.off("registerUser");
 		});
 	},
 };
@@ -250,6 +273,11 @@ export default {
 
 <!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
+.login-status,
+#login {
+	color: var(--color-text);
+}
+
 h2 {
 	text-align: center;
 }
@@ -272,6 +300,13 @@ h2 {
 	display: flex;
 	justify-content: space-evenly;
 	margin: 30px auto 0;
+}
+
+.login-buttons {
+	display: flex;
+	justify-content: space-between;
+	width: 9em;
+	align-items: baseline;
 }
 
 .cancel {
@@ -323,16 +358,20 @@ h2 {
 	max-width: 30em;
 	padding: 30px 30px 45px;
 	margin: 30px auto;
-	background: rgb(49 59 100 / 70%);
+	background: rgb(49 59 100 / 90%);
 	border-radius: 8px;
 	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
+}
+
+.uiDarkMode .input-section[data-v-3bd1a200] {
+	background: rgb(49 59 100 / 70%);
 }
 
 .input-section>* {
 	margin: 15px 15px 0;
 }
 
-.login-status {
+.login-status>div {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;

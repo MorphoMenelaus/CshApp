@@ -96,6 +96,7 @@ const addUserLog = async (appState, actionPerformed = "") => {
 const refreshAuthTokenAsNeeded = async (appState) => {
 	let serverStatus = Object.assign({}, appNotify);
 
+	// Server settings for Token expire is 1h
 	// Give it 1 minute of wiggle room on expire time (60000ms)
 	// Better to refresh a minute early than to cause a race condition error
 	let expireMS = appState?.accessTokenExpiration - 60000;

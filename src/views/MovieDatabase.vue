@@ -1,22 +1,29 @@
 <template>
 
 	<div>
-		<h1>Movie List</h1>
+		<h1>Movie Database</h1>
 
-		<div id="paging">
+		<div class="favorite-check" v-if="favoritesList.length > 0">
+			<label for="favoritesOnly">Favorites only</label>
+			<input id="favoritesOnly" type="checkbox" v-model="favoritesOnly" />
+		</div>
+		<div id="paging" v-if="!favoritesOnly || favoritesList.length === 0">
 			<label for="limitOptions">Limit List</label>
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
 				</option>
 			</select>
-			<label for="sortByOptions">Sort By</label>
-			<select v-model="sortBy">
-				<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
-				</option>
-			</select>
+			<div v-if="appState?.permissions.admin">
+				<label for="sortByOptions">Sort By</label>
+				<select v-model="sortBy">
+					<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
+					</option>
+				</select>
+			</div>
 			<input v-model="contains" placeholder="Title contains..." />
 			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">❌</span>
-			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="prev-button btn" type="button" @click="previousPage()"
+				title="Previous Page">previous</button>
 			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
@@ -51,8 +58,9 @@
 			<div v-else>
 				<h1>No Results Found</h1>
 			</div>
-			<div class="button-container">
-				<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<div class="button-container" v-if="!favoritesOnly || favoritesList.length === 0">
+				<button class="prev-button btn" type="button" @click="previousPage()"
+					title="Previous Page">previous</button>
 				<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			</div>
 		</div>
@@ -106,7 +114,9 @@ export default {
 			movieList: [],
 			currentComponent: null,
 			selectedMovie: {},
-			favoritesList: []
+			favoritesList: [],
+			movieFavorites: [],
+			favoritesOnly: false
 		};
 	},
 	watch: {
@@ -124,6 +134,14 @@ export default {
 			this.currentPage = 1;
 			this.offset = 0;
 			this.getMovieList();
+		},
+		async favoritesOnly() {
+			if (this.favoritesOnly) {
+				await this.getMovieByFavorites();
+				this.movieList = this.movieFavorites;
+			} else {
+				this.getMovieList();
+			}
 		}
 	},
 	methods: {
@@ -271,6 +289,47 @@ export default {
 				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
+		async getMovieByFavorites() {
+			this.eventBus.emit("showHideLoader", true);
+
+			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			if (!refreshResponse.success) {
+				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+				this.eventBus.emit("updateStatus", mergedStatus);
+				return;
+			}
+
+			let body = {
+				movieIds: this.favoritesList
+			}
+
+			let headerObj = new Headers();
+			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL("/api/movies/", this.baseUrl);
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'POST',
+				headers: headerObj,
+				body: JSON.stringify(body)
+			});
+
+			try {
+				let response = await fetch(request);
+				let data = await response.json();
+				this.movieFavorites = data.movies;
+
+			} catch (error) {
+				console.error('Error posting data:', error);
+				this.serverStatus.code = 500;
+				this.serverStatus.message = `Error getting data: ${error}`;
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
+			}
+		},
 		async getMovieList() {
 			this.eventBus.emit("showHideLoader", true);
 
@@ -372,16 +431,21 @@ h2 {
 }
 
 .card .inner {
-	background-color: #313b64;
+	color: #000;
+	background-color: #abb8f1;
 	border: 1px solid #777;
 	border-radius: 12px;
 	flex-direction: column;
 	justify-content: space-between;
-	width: 250px;
-	margin: 30px auto;
-	display: flex;
 	width: 90%;
 	height: 460px;
+	margin: 30px auto;
+	display: flex;
+}
+
+.uiDarkMode .card .inner {
+	background-color: #313b64;
+	color: inherit;
 }
 
 .title-description {
@@ -415,6 +479,11 @@ img {
 	align-items: center;
 	width: 40%;
 	margin: 30px auto 15px;
+	color: #000;
+}
+
+.uiDarkMode #paging {
+	color: inherit;
 }
 
 .mobile #paging {
@@ -423,11 +492,16 @@ img {
 }
 
 .clear-field {
-	background-color: #fff;
+	background-color: #ccc;
 	padding: 0px 2px 1px;
 	border-radius: 6px;
 	cursor: pointer;
 }
+
+.uiDarkMode .clear-field {
+	background-color: #fff;
+}
+
 
 .button-container {
 	display: flex;
@@ -471,7 +545,27 @@ img {
 }
 
 #favorite.favs {
+	background-color: #ff0;
+}
+
+.uiDarkMode #favorite.favs {
 	background-color: #afaf03;
+}
+
+.favorite-check {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 15px 0;
+	color: #000;
+}
+
+.uiDarkMode .favorite-check {
+	color: inherit;
+}
+
+.favorite-check input {
+	margin-left: 10px;
 }
 
 @media (min-width: 1024px) {
