@@ -9,8 +9,8 @@
 				@click="currentComponent = 'DeleteUser'">Delete Account</span>
 		</div>
 		<div v-else>
-			<button class="btn" type="button" @click="loginShow = true">Login</button>
-			<span @click="showRegisterUserComponent()">New User? <span class="link">Click to register</span>.</span>
+			<button class="btn" type="button" @click="showRegisterUserComponent(true, false)">Login</button>
+			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to register</span>.</span>
 		</div>
 	</div>
 
@@ -29,7 +29,7 @@
 				<button class="btn login-btn" type="button" @click="login()">Login</button>
 				<button class="btn" type="button" @click="loginShow = false">Cancel</button>
 			</div>
-			<span @click="showRegisterUserComponent()">New User? <span class="link">Click to register</span>.</span>
+			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to register</span>.</span>
 		</form>
 	</div>
 
@@ -108,11 +108,11 @@ export default {
 		}
 	},
 	methods: {
-		showRegisterUserComponent() {
+		showRegisterUserComponent(login = false, register = false) {
 			// Control the state of both components
 			let payload = {
-				register: true,
-				login: false
+				register: register,
+				login: login
 			}
 			this.eventBus.emit("registerUser", payload);
 		},
