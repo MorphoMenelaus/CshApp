@@ -5,21 +5,26 @@
 			<h2>Register</h2>
 			<p>Please fill this form to create an account.</p>
 			<!-- @submit.prevent blocks page reloads and executes your logic -->
-			<form @submit.prevent="register" method="post">
+			<form @submit.prevent="registerHandler" method="post">
 				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
 					<label>Username</label>
-					<input v-model.trim="userName" type="text" name="userName" class="form-control">
+					<input autocomplete="username" v-model.trim="userName" type="text" name="userName"
+						class="form-control">
 				</div>
 				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
 					<label>Password</label>
-					<input v-model.trim="password" type="password" name="password" class="form-control">
+					<input autocomplete="new-password" v-model.trim="password" type="password" name="password"
+						class="form-control">
 				</div>
 				<div class="form-group">
 					<label>Confirm Password</label>
-					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
+					<input autocomplete="new-password" v-model.trim="confirmPassword" type="password"
+						name="confirmPassword" class="form-control">
 				</div>
 				<div style="display: flex;">
-					<button class="btn" type='submit'>Register</button>
+					<button class="btn" type="submit" @click.prevent="registerHandler">
+						Register
+					</button>
 					<button class="btn" type="button" @click="eventBus.emit('registerUser', false)">Cancel</button>
 				</div>
 				<p>Already have an account? <span class="link" title="Login here"
@@ -33,7 +38,8 @@
 
 <script>
 // @ is an alias to /src
-import session from "@/dependencies/sessionMethods";
+// import { onBeforeUnmount } from 'vue';
+// import session from "@/dependencies/sessionMethods";
 // import sharedScripts from "@/dependencies/sharedScripts";
 
 export default {
@@ -49,7 +55,8 @@ export default {
 			confirmPassword: "",
 			errState: false,
 			isLoggedOn: false,
-			siteKey: this.reCaptchaSiteKey
+			siteKey: this.reCaptchaSiteKey,
+			token: ""
 		};
 	},
 	watch: {
@@ -70,6 +77,7 @@ export default {
 				let body = {
 					userName: this.userName,
 					password: this.password,
+					token: this.token,
 				};
 
 				if (!this.userName || !this.password) {
@@ -114,8 +122,45 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
+		async registerHandler() {
+			try {
+				// Ensure the reCAPTCHA API has finished loading globally
+				if (!window.grecaptcha || !window.grecaptcha.enterprise) {
+					console.error("reCAPTCHA script has not loaded yet.");
+					return;
+				}
+
+				// Wrap execution in grecaptcha.enterprise.ready to guarantee the library is initialized
+				window.grecaptcha.enterprise.ready(async () => {
+					try {
+						// Execute reCAPTCHA programmatically
+						const token = await window.grecaptcha.enterprise.execute(this.siteKey, {
+							action: 'register' // Match your expected backend action
+						});
+
+						// Send token to your backend along with your registration form data
+						this.token = token;
+						await this.register();
+
+					} catch (error) {
+						console.error("reCAPTCHA execution failed:", error);
+					}
+				});
+
+			} catch (err) {
+				console.error("Registration failed:", err);
+			}
+		},
 	},
 	mounted() {
+		if (!document.getElementById('recaptcha-script')) {
+			const script = document.createElement('script');
+			script.id = 'recaptcha-script';
+			script.src = `https://google.com/recaptcha/enterprise.js?render=${this.siteKey}`;
+			script.async = true;
+			script.defer = true;
+			document.head.appendChild(script);
+		}
 	},
 	created() {
 	},
@@ -193,7 +238,7 @@ label[for="casinoId"] {
 }
 
 #register {
-	position: absolute;
+	position: fixed;
 	z-index: 10000;
 	display: grid;
 	width: 100%;
@@ -201,7 +246,7 @@ label[for="casinoId"] {
 	justify-content: center;
 	background-color: rgb(0 0 0 / 30%);
 	left: 0;
-	top: 95px;
+	top: 86px;
 	align-items: center;
 	color: #aaa;
 }
