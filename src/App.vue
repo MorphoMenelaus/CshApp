@@ -29,6 +29,7 @@ import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
+import ContactForm from "@/components/ContactForm.vue";
 
 import session from "@/dependencies/sessionMethods.js";
 // import sharedScripts from "@/dependencies/sharedScripts";
@@ -38,7 +39,8 @@ export default {
 		Header,
 		Footer,
 		Login,
-		Register
+		Register,
+		ContactForm
 	},
 	data() {
 		return {
@@ -85,6 +87,9 @@ export default {
 		});
 		this.eventBus.on("registerUser", (payload) => {
 			this.currentComponent = payload.register ? "Register" : null;
+		});
+		this.eventBus.on("contactEmail", (bool) => {
+			this.currentComponent = bool ? "ContactForm" : null;
 		});
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;

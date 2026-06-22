@@ -8,6 +8,9 @@
 			<a class="btn" href="https://www.linkedin.com/in/cs-hardwick" title="Chris Hardwick | Linkedin Profile"
 				target="_blank">Linkedin Profile</a>
 		</h3>
+		<div class="btn-container">
+			<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Form</button>
+		</div>
 		<div id="profile">
 			<h2 class="julius-sans profile">Professional Profile</h2>
 			<p>
@@ -121,6 +124,18 @@ h2.profile {
 .uiDarkMode #profile {
 	background-color: #000;
 	color: #aaa;
+}
+
+.btn-container {
+	margin: 15px auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5em;
+}
+
+.btn-container .btn {
+	font-size: 1em;
 }
 
 @media (min-width: 1024px) {
