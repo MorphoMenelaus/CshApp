@@ -5,6 +5,9 @@
 			<small class="appVersion" v-if="this.appCurrentVersion">App Version: {{ this.appCurrentVersion }}</small>
 		</div>
 		<h3>Csh App</h3>
+		<div class="btn-container">
+			<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Form</button>
+		</div>
 	</footer>
 </template>
 
@@ -44,5 +47,15 @@ h3 {
 	left: 0;
 	padding: 5px 15px;
 	z-index: 500;
+}
+
+.btn-container {
+	position: absolute;
+	right: 15px;
+	top: 15px;
+}
+
+.btn-container button {
+	font-size: .8em;
 }
 </style>

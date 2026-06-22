@@ -1,36 +1,44 @@
 <template>
 
-	<div id="register">
+	<div id="contact">
 		<div class="wrapper">
-			<h2>Register</h2>
-			<p>Please fill this form to create an account.</p>
-			<!-- @submit.prevent blocks page reloads and executes your logic -->
-			<form @submit.prevent="registerHandler" method="post">
-				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
-					<label for="username">Username</label>
-					<input id="username" title="Username" autocomplete="username" v-model.trim="userName" type="text"
-						name="userName" class="form-control">
-				</div>
-				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
-					<label for="password">Password</label>
-					<input id="password" title="Password" autocomplete="new-password" v-model.trim="password"
-						type="password" name="password" class="form-control">
-				</div>
+			<h2 class="julius-sans">I hope to hear from you</h2>
+			<h4 style="text-align: center;">Please, let me know what you think.</h4>
+			<p style="text-align: center;">Your contact info will not be shared with anyone.</p>
+			<form @submit.prevent="contactHandler" method="post">
 				<div class="form-group">
-					<label for="confirmPassword">Confirm Password</label>
-					<input id="confirmPassword" title="Confirm Password" autocomplete="new-password"
-						v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
+					<label for="name" title="Name">Name<span v-if="!name && errState" class="err"> * required</span></label>
+					<input v-model.trim="name" id="name" type="text" name="name" class="form-control">
+				</div>
+
+				<div class="form-group">
+					<label for="email" title="Email Address">Email Address<span v-if="!email && errState" class="err"> *
+							required</span></label>
+					<input v-model.trim="email" id="email" type="text" name="email" class="form-control">
+				</div>
+
+				<div class="form-group">
+					<label for="phone" title="Phone (optional)">Phone (optional)</label>
+					<input v-model.trim="phone" id="phone" type="text" name="phone" class="form-control">
+				</div>
+
+				<div class="form-group" title="Subject">
+					<label for="subject">Subject<span v-if="!subject && errState" class="err"> *
+							required</span></label>
+					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control">
+				</div>
+
+				<div class="form-group">
+					<label for="message" title="Message">Message<span v-if="!message && errState" class="err"> *
+							required</span></label>
+					<input v-model.trim="message" id="message" type="text" name="message" class="form-control">
 				</div>
 				<div style="display: flex;">
-					<button class="btn" type="submit" @click.prevent="registerHandler" title="Register">
-						Register
+					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">
+						Send
 					</button>
-					<button class="btn" type="button" @click="eventBus.emit('registerUser', false)"
-						title="Cancel">Cancel</button>
+					<button class="btn" type="button" @click="eventBus.emit('contactEmail', false)" title="Cancel">Cancel</button>
 				</div>
-				<p>Already have an account? <span class="link" title="Login here"
-						@click="removeRegisterUserComponent()">Login here.</span>
-				</p>
 			</form>
 		</div>
 	</div>
@@ -44,52 +52,48 @@
 // import sharedScripts from "@/dependencies/sharedScripts";
 
 export default {
-	name: "RegisterUser",
+	name: "ContactForm",
 	props: {
 		appState: Object,
 	},
 	data() {
 		return {
 			serverStatus: Object.assign({}, this.appNotify),
-			userName: "",
-			password: "",
-			confirmPassword: "",
-			errState: false,
-			isLoggedOn: false,
 			siteKey: this.reCaptchaSiteKey,
-			token: ""
+			token: "",
+			name: "",
+			email: "",
+			phone: "",
+			subject: "",
+			message: "",
+			errState: false,
 		};
 	},
 	watch: {
 	},
 	methods: {
-		removeRegisterUserComponent() {
-			// Control the state of both components
-			let payload = {
-				register: false,
-				login: true
-			}
-			this.eventBus.emit("registerUser", payload);
-		},
-		async register() {
+		async sendEmail() {
 			this.eventBus.emit("showHideLoader", true);
 
 			try {
 				let body = {
-					userName: this.userName,
-					password: this.password,
+					name: this.name,
+					email: this.email,
+					phone: this.phone,
+					subject: this.subject,
+					message: this.message,
 					token: this.token,
 				};
 
-				if (!this.userName || !this.password) {
-					this.serverStatus.message = "Please provide a user name and password.";
+				if (!this.name || !this.email || !this.subject || !this.message) {
+					this.serverStatus.message = "Please fill in all required fields.";
 					this.serverStatus.success = false;
 					this.eventBus.emit("updateStatus", this.serverStatus);
 					this.errState = true;
 					return this.serverStatus;
 				}
 
-				const response = await fetch('/api/users/register', {
+				const response = await fetch('/api/mail', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify(body)
@@ -97,20 +101,12 @@ export default {
 
 				const data = await response.json();
 
-				this.serverStatus.code = data?.code;
-				this.serverStatus.message = data?.message;
-				this.serverStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
-
-				if (data?.success) {
-					// Control the state of both components
-					let payload = {
-						register: false,
-						login: false
-					}
-					this.eventBus.emit("registerUser", payload);
+				if (data.success) {
+					this.serverStatus.code = data?.code;
+					this.serverStatus.message = data?.message;
+					this.serverStatus.success = data?.success;
+					this.eventBus.emit("updateStatus", (this.serverStatus));
 				}
-
 				this.errState = data?.success;
 
 			} catch (error) {
@@ -121,9 +117,10 @@ export default {
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
+				this.eventBus.emit("contactEmail", false);
 			}
 		},
-		async registerHandler() {
+		async contactHandler() {
 			try {
 				// Ensure the reCAPTCHA API has finished loading globally
 				if (!window.grecaptcha || !window.grecaptcha.enterprise) {
@@ -136,12 +133,12 @@ export default {
 					try {
 						// Execute reCAPTCHA programmatically
 						const token = await window.grecaptcha.enterprise.execute(this.siteKey, {
-							action: 'register' // Match your expected backend action
+							action: 'sendEmail' // Match your expected backend action
 						});
 
 						// Send token to your backend along with your registration form data
 						this.token = token;
-						await this.register();
+						await this.sendEmail();
 
 					} catch (error) {
 						console.error("reCAPTCHA execution failed:", error);
@@ -149,7 +146,7 @@ export default {
 				});
 
 			} catch (err) {
-				console.error("Registration failed:", err);
+				console.error("Email failed:", err);
 			}
 		},
 	},
@@ -175,7 +172,8 @@ h2 {
 }
 
 .err {
-	border: 2px #f00 solid;
+	color: #f00;
+	font-weight: bold;
 }
 
 #view {
@@ -238,7 +236,7 @@ label[for="casinoId"] {
 		1px 1px 0px #000;
 }
 
-#register {
+#contact {
 	position: fixed;
 	z-index: 10000;
 	display: grid;
@@ -252,7 +250,7 @@ label[for="casinoId"] {
 	color: #aaa;
 }
 
-/* .uiDarkMode #register {
+/* .uiDarkMode #contact {
 } */
 
 .wrapper {
@@ -270,9 +268,10 @@ label[for="casinoId"] {
 	display: flex;
 	align-content: center;
 	flex-direction: column;
+	margin-bottom: 15px;
 }
 
-#register button {
+#contact button {
 	display: block;
 	margin: 15px auto;
 }
