@@ -79,10 +79,12 @@ body {
 		"Droid Sans",
 		"Helvetica Neue",
 		sans-serif;
-	font-size: 18px;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	/* font-size: 18px; */
+	/* font-size: calc(16px + (24 - 16) * ((100vw - 300px) / (1600 - 300))); */
+	font-size: calc(16px + (24 - 16) * ((100vw - 300px) / (3200 - 300)));
 }
 
 body.uiDarkMode {
@@ -91,18 +93,18 @@ body.uiDarkMode {
 }
 
 .roboto-body {
-  font-family: "Roboto", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+	font-family: "Roboto", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 400;
+	font-style: normal;
+	font-variation-settings:
+		"wdth" 100;
 }
 
 .julius-sans {
-  font-family: "Julius Sans One", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+	font-family: "Julius Sans One", sans-serif;
+	font-weight: 400;
+	font-style: normal;
 }
 
 .btn,
@@ -130,4 +132,9 @@ input[type="checkbox"] {
 
 .cancel {
 	background-color: #3f445f;
+}
+
+.grecaptcha-badge {
+	bottom: 60px !important;
+	z-index: 10000 !important;
 }

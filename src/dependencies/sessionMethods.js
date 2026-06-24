@@ -18,8 +18,27 @@ const recall = {
 	}
 }
 
+const storage = {
+	get(key = storageKey) {
+		const storage = JSON.parse(localStorage.getItem(key) || "{}");
+		return storage;
+	},
+	add(value, key, storeKey = storageKey) {
+		let storage = JSON.parse(localStorage.getItem(storeKey) || "{}");
+		storage[key] = value;
+		localStorage.setItem(storeKey, JSON.stringify(storage));
+	},
+	save(storage, key = storageKey) {
+		localStorage.setItem(key, JSON.stringify(storage));
+	},
+	deleteAll(key = storageKey) {
+		localStorage.removeItem(key);
+	}
+}
+
 const session = {
 	recall,
+	storage,
 }
 
 export default session;

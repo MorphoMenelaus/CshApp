@@ -1,6 +1,5 @@
 <template>
 
-	<!-- <div class="login-status" v-if="appState?.isLoggedOn"> -->
 	<div class="login-status">
 		<div v-if="appState?.isLoggedOn">
 			<span>{{ appState.userName }}</span>
@@ -10,26 +9,33 @@
 		</div>
 		<div v-else>
 			<button class="btn" type="button" @click="showRegisterUserComponent(true, false)">Login</button>
-			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to register</span>.</span>
+			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to
+					register</span>.</span>
 		</div>
 	</div>
 
-	<!-- <div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''" v-if="!appState.isLoggedOn"> -->
 	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''"
 		v-if="!appState?.isLoggedOn && loginShow">
 		<form class="input-section">
-			<h1>CSH App</h1>
-			<h2>Welcome</h2>
-			<!-- <span class="loader"></span> -->
-			<label for="userName">Login to continue</label>
-			<input type="text" name="userName" v-model="userName" placeholder="Username" autocomplete="userName" />
-			<input type="password" name="password" v-model="password" placeholder="Password"
-				autocomplete="current-password" />
+			<div id="form-header">
+				<h1>Chris Hardwick's SPA</h1>
+				<h2>Welcome</h2>
+			</div>
+			<h2>Login to continue</h2>
+			<div class="inputs">
+				<label for="username">User Name</label>
+				<input id="username" type="text" name="username" v-model="userName" placeholder="User Name"
+					autocomplete="username" />
+				<label for="password">Password</label>
+				<input id="password" type="password" name="password" v-model="password" placeholder="Password"
+					autocomplete="current-password" />
+			</div>
 			<div class="login-buttons">
 				<button class="btn login-btn" type="button" @click="login()">Login</button>
 				<button class="btn" type="button" @click="loginShow = false">Cancel</button>
 			</div>
-			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to register</span>.</span>
+			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to
+					register</span>.</span>
 		</form>
 	</div>
 
@@ -276,6 +282,7 @@ export default {
 .login-status,
 #login {
 	color: var(--color-text);
+	font-size: 18px;
 }
 
 h2 {
@@ -293,7 +300,8 @@ h2 {
 
 ::backdrop {
 	background-color: rgb(0 0 0 / 60%);
-	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 }
 
 .dialog-buttons {
@@ -339,8 +347,8 @@ h2 {
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
 	#login {
 		background-color: unset;
-		-webkit-backdrop-filter: blur(12px) saturate(140%);
-		backdrop-filter: blur(12px) saturate(140%);
+		-webkit-backdrop-filter: blur(10px);
+		backdrop-filter: blur(10px);
 	}
 }
 
@@ -361,6 +369,7 @@ h2 {
 	background: rgb(49 59 100 / 90%);
 	border-radius: 8px;
 	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
+	overflow: hidden;
 }
 
 .uiDarkMode .input-section[data-v-3bd1a200] {
@@ -392,7 +401,29 @@ h2 {
 	padding: 5px;
 }
 
+.inputs {
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+}
+
+#username {
+	margin-bottom: 15px;
+}
+
 #delete-button {
 	font-size: 1.25em;
+}
+
+#form-header {
+	background-color: hsl(228 34% 40% / 1);
+	position: relative;
+	text-align: center;
+	left: 0;
+	width: calc(100% + 62px);
+	top: -46px;
+	padding: 15px;
+	color: #ddd;
+	box-shadow: 1px 1;
 }
 </style>

@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import Disclaimers from "../components/Disclaimers.vue";
+
 // import Carousel from "../components/Carousel.vue";
 // <Carousel v-if="appState?.isLoggedOn" :appState="appState" />
 
@@ -39,20 +41,20 @@ const showDetails = (id) => {
 				</div>
 				<div id="skills-list">
 					<ul>
-						<li>Responsive Web Design</li>
-						<li>Full-Stack Development</li>
+						<li>Vue 3</li>
+						<li>Vuex</li>
+						<li>NodeJS</li>
+						<li>REST APIs</li>
 						<li>HTML5</li>
 						<li>CSS3</li>
 						<li>JavaScript ES6</li>
-						<li>Vue 3</li>
-						<li>NodeJS</li>
 					</ul>
 					<ul>
-						<li>REST APIs</li>
-						<li>SQL</li>
 						<li>C#</li>
 						<li>SQL</li>
-						<li>Single Page Applications (SPA)</li>
+						<li>Single Page Applications</li>
+						<li>Responsive Web Design</li>
+						<li>Full-Stack Development</li>
 						<li>ADA compliant design</li>
 						<li>Godot</li>
 					</ul>
@@ -131,6 +133,7 @@ const showDetails = (id) => {
 					</div>
 				</div>
 			</div>
+			<Disclaimers />
 		</div>
 	</main>
 </template>
@@ -161,26 +164,34 @@ p {
 }
 
 #view {
-	position: relative;
+	/* position: relative; */
 	width: 100%;
 	margin: 15px auto;
 	padding: 15px;
-	padding-bottom: 110px;
+	/* padding-bottom: 110px; */
 	/* z-index: -1; */
+	position: absolute;
+	inset: 0;
 }
 
 #view.mobile {
-	margin: 0;
-	padding: 0;
+	/* margin: 0;
+	padding: 0; */
 }
 
 #main-home-layout {
 	width: 98%;
 	margin: 15px auto;
+	padding-bottom: 45px;
 }
 
 #title-block {
 	display: flex;
+	font-size: 18px;
+}
+
+.mobile #title-block {
+	flex-direction: column;
 }
 
 #name-title {
@@ -196,7 +207,7 @@ p {
 #latest-summary {
 	background-color: #e7e7e7;
 	padding: 15px;
-	font-size: 1.25em;
+	/* font-size: 1.25em; */
 	border: 1px #555 solid;
 	border-radius: 12px;
 }
@@ -227,9 +238,16 @@ p {
 
 #skills-list {
 	display: flex;
-	justify-content: space-evenly;
+	justify-content: space-around;
 	margin: 30px auto;
 	font-size: 1.25em;
+	width: 50%;
+	padding: 0 30px;
+}
+
+.mobile #skills-list {
+	/* flex-direction: column; */
+	width: 100%;
 }
 
 .details-ul h3 {
@@ -267,13 +285,31 @@ p {
 	background-color: #fff;
 	padding: 15px 30px;
 	border-radius: 8px;
+	width: fit-content;
+	margin: 0 auto 30px;
 }
 
 .uiDarkMode .tagline-box {
 	background-color: #222;
 }
 
-@media (max-width: 767px) {}
+@media (max-width: 767px) {
+	#name-title {
+		font-size: 2.5em;
+	}
+
+	h2 {
+		font-size: 1.5em;
+	}
+
+	h3 {
+		font-size: 1.25em;
+	}
+
+	#skills-list {
+		padding: 0;
+	}
+}
 
 @media (min-width: 768px) and (max-width: 991px) {}
 
@@ -293,11 +329,21 @@ p {
 	}
 }
 
-@media (min-width: 992px) and (max-width: 1199px) {}
-
 @media (min-width: 1200px) {
 	#main-home-layout {
-		width: 85%;
+		width: 80%;
+	}
+}
+
+@media (min-width: 1800px) {
+	#main-home-layout {
+		width: 70%;
+	}
+}
+
+@media (min-width: 2200px) {
+	#main-home-layout {
+		width: 60%;
 	}
 }
 </style>

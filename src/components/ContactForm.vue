@@ -2,42 +2,46 @@
 
 	<div id="contact">
 		<div class="wrapper">
-			<h2 class="julius-sans">I hope to hear from you</h2>
-			<h4 style="text-align: center;">Please, let me know what you think.</h4>
-			<p style="text-align: center;">Your contact info will not be shared with anyone.</p>
+			<div id="form-header">
+				<h2>I'd love to hear from you</h2>
+				<h4 style="text-align: center;">Please, let me know what you think.</h4>
+				<p style="text-align: center;">Your info will not be shared with anyone.</p>
+			</div>
 			<form @submit.prevent="contactHandler" method="post">
 				<div class="form-group">
-					<label for="name" title="Name">Name<span v-if="!name && errState" class="err"> * required</span></label>
-					<input v-model.trim="name" id="name" type="text" name="name" class="form-control">
+					<label for="name" title="Name">Name<span v-if="!name && errState" class="err"> *
+							required</span></label>
+					<input v-model.trim="name" id="name" type="text" name="name" class="form-control" />
 				</div>
 
 				<div class="form-group">
 					<label for="email" title="Email Address">Email Address<span v-if="!email && errState" class="err"> *
 							required</span></label>
-					<input v-model.trim="email" id="email" type="text" name="email" class="form-control">
+					<input v-model.trim="email" id="email" type="text" name="email" class="form-control" />
 				</div>
 
 				<div class="form-group">
 					<label for="phone" title="Phone (optional)">Phone (optional)</label>
-					<input v-model.trim="phone" id="phone" type="text" name="phone" class="form-control">
+					<input v-model.trim="phone" id="phone" type="text" name="phone" class="form-control" />
 				</div>
 
 				<div class="form-group" title="Subject">
 					<label for="subject">Subject<span v-if="!subject && errState" class="err"> *
 							required</span></label>
-					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control">
+					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control" />
 				</div>
 
 				<div class="form-group">
 					<label for="message" title="Message">Message<span v-if="!message && errState" class="err"> *
 							required</span></label>
-					<input v-model.trim="message" id="message" type="text" name="message" class="form-control">
+					<textarea v-model.trim="message" id="message" type="text" name="message" class="form-control" />
 				</div>
 				<div style="display: flex;">
 					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">
 						Send
 					</button>
-					<button class="btn" type="button" @click="eventBus.emit('contactEmail', false)" title="Cancel">Cancel</button>
+					<button class="btn" type="button" @click="eventBus.emit('contactEmail', false)"
+						title="Cancel">Cancel</button>
 				</div>
 			</form>
 		</div>
@@ -106,6 +110,7 @@ export default {
 					this.serverStatus.message = data?.message;
 					this.serverStatus.success = data?.success;
 					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.eventBus.emit("contactEmail", false);
 				}
 				this.errState = data?.success;
 
@@ -117,7 +122,6 @@ export default {
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
-				this.eventBus.emit("contactEmail", false);
 			}
 		},
 		async contactHandler() {
@@ -199,7 +203,8 @@ form {
 	position: relative;
 	top: 0;
 	/* left: 10vw; */
-	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 	border-radius: 12px;
 	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
 	max-width: 30em;
@@ -248,6 +253,8 @@ label[for="casinoId"] {
 	top: 86px;
 	align-items: center;
 	color: #aaa;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 }
 
 /* .uiDarkMode #contact {
@@ -262,6 +269,8 @@ label[for="casinoId"] {
 	border-radius: 8px;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
+	box-shadow: 2px 2px 6px #000;
 }
 
 .wrapper .form-group {
@@ -274,5 +283,21 @@ label[for="casinoId"] {
 #contact button {
 	display: block;
 	margin: 15px auto;
+}
+
+#form-header {
+	background-color: hsl(228 34% 40% / 1);
+	position: relative;
+	text-align: center;
+	left: -31px;
+	width: calc(100% + 62px);
+	top: -16px;
+	padding: 15px;
+	color: #ddd;
+	box-shadow: 1px 1;
+}
+
+textarea#message {
+	min-height: 5em;
 }
 </style>

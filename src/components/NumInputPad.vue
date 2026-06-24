@@ -153,6 +153,7 @@ export default {
 	bottom: 60px;
 	left: 0;
 	background-color: rgba(0, 0, 0, 0.6);
+	-webkit-backdrop-filter: blur(4px);
 	backdrop-filter: blur(4px);
 	z-index: 100;
 }

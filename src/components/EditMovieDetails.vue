@@ -39,10 +39,10 @@
 								</div>
 							</div>
 							<div id="fieldset-two">
-								<div class="form-group">
+								<!-- <div class="form-group">
 									<label for="duration">Duration</label>
 									<input id="duration" v-model="duration" />
-								</div>
+								</div> -->
 								<div class="form-group">
 									<label for="tags_genre">Genre</label>
 									<input id="tags_genre" v-model="tags_genre" />
@@ -246,6 +246,7 @@ h2,
 	position: fixed;
 	inset: 90px 0 45px;
 	background-color: rgb(50 55 63 / 80%);
+	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	overflow: hidden auto;
 }
@@ -263,8 +264,7 @@ h2,
 	width: 40%;
 	display: flex;
 	flex-direction: column;
-
-	margin: 60px auto 15px;
+	margin: 0 auto 15px;
 }
 
 .form-group label {
@@ -322,7 +322,8 @@ button.btn {
 
 ::backdrop {
 	background-color: rgb(0 0 0 / 60%);
-	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 }
 
 .dialog-buttons {

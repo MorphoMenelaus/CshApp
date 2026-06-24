@@ -107,7 +107,8 @@ h2 {
 	align-items: center;
 	justify-content: center;
 	background-color: rgb(50 55 63 / 80%);
-	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 	z-index: 999999;
 }
 

@@ -277,7 +277,7 @@ export default {
 				let response = await fetch(request);
 				let data = await response.json();
 
-				this.favoritesList = data?.userFavorites;
+				this.favoritesList = data?.userFavorites || [];
 
 			} catch (error) {
 				console.error('Error posting data:', error);
@@ -420,10 +420,11 @@ h2 {
 	display: grid;
 	justify-content: center;
 	align-content: center;
-	grid-template-columns: repeat(1, 90%);
+	grid-template-columns: repeat(1, 95%);
 	background: rgba(92, 89, 136, 0.38);
 	margin: auto;
 	border-radius: 1.25em;
+	font-size: 18px;
 }
 
 .card {
@@ -480,6 +481,7 @@ img {
 	width: 40%;
 	margin: 30px auto 15px;
 	color: #000;
+	font-size: 18px;
 }
 
 .uiDarkMode #paging {
@@ -488,7 +490,7 @@ img {
 
 .mobile #paging {
 	width: 90%;
-	margin: 30px auto 0;
+	margin: 30px auto;
 }
 
 .clear-field {
@@ -568,9 +570,45 @@ img {
 	margin-left: 10px;
 }
 
+@media (max-width: 767px) {}
+
+@media (min-width: 768px) and (max-width: 991px) {}
+
+@media (min-width: 768px) {
+	#cards {
+		grid-template-columns: repeat(2, 50%);
+	}
+}
+
+@media (min-width: 992px) {
+	#cards {
+		grid-template-columns: repeat(3, 33%);
+	}
+}
+
 @media (min-width: 1024px) {
+	/* #cards {
+		grid-template-columns: repeat(4, 22%);
+	} */
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {}
+
+@media (min-width: 1200px) {
+	#cards {
+		grid-template-columns: repeat(4, 25%);
+	}
+}
+
+@media (min-width: 1800px) {
 	#cards {
 		grid-template-columns: repeat(5, 20%);
+	}
+}
+
+@media (min-width: 2200px) {
+	#cards {
+		grid-template-columns: repeat(6, 16%);
 	}
 }
 </style>
