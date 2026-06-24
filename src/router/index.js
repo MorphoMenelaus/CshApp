@@ -10,7 +10,7 @@ const router = createRouter({
 			component: HomeView,
 			meta: { requiresAuth: false }
 		},
-				{
+		{
 			path: '/movie-database',
 			name: 'MovieDatabase',
 			component: () => import('../views/MovieDatabase.vue'),
@@ -41,6 +41,12 @@ const router = createRouter({
 			meta: { requiresAuth: true }
 		},
 		{
+			path: '/resume',
+			name: 'ResumeView',
+			component: () => import('../views/ResumeView.vue'),
+			meta: { requiresAuth: true }
+		},
+		{
 			path: '/simpleclock',
 			name: 'SimpleClock',
 			component: () => import('../views/SimpleClock.vue'),
@@ -61,6 +67,14 @@ const router = createRouter({
 			component: () => import('@/views/NotFound.vue')
 		}
 	],
+	scrollBehavior(to, from, savedPosition) {
+		// If the browser back/forward button is pressed, maintain the saved position
+		if (savedPosition) {
+			return savedPosition
+		}
+		// Otherwise, always scroll to the top of the page
+		return { top: 0 }
+	},
 });
 
 // router.beforeEach((to, from) => {

@@ -1,6 +1,5 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/HelloWorld.vue";
 </script>
 
 <template>
@@ -16,7 +15,7 @@ import HelloWorld from "./components/HelloWorld.vue";
 
 	<RouterView :appState="appState" id="view" :isMobile="isMobile" :class="isMobile ? 'mobile' : ''" />
 
-	<Footer :serverVersion="serverVersion" />
+	<Footer :serverVersion="serverVersion" :isMobile="isMobile" />
 
 	<component :is="currentComponent" :appState="appState" />
 
@@ -25,14 +24,13 @@ import HelloWorld from "./components/HelloWorld.vue";
 <script>
 // @ is an alias to /src
 // import { ref, reactive } from "vue";
+// import sharedScripts from "@/dependencies/sharedScripts";
+import session from "@/dependencies/sessionMethods.js";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
-
-import session from "@/dependencies/sessionMethods.js";
-// import sharedScripts from "@/dependencies/sharedScripts";
 
 export default {
 	components: {
@@ -48,6 +46,7 @@ export default {
 			body: document.getElementsByTagName('body'),
 			serverVersion: "",
 			appState: {},
+			guestLoginDoc: false,
 			currentComponent: null,
 			isMobile: window.innerWidth < 1024,
 			uiDarkMode: false
@@ -67,6 +66,19 @@ export default {
 			this.appState = session.recall.get();
 			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		},
+		// createNewStorage() {
+		// 	// Create a new storage if it doesn't already exist
+		// 	let currentStorage = session.storage.get();
+		// 	let storageEmpty = Object.keys(currentStorage).length <= 0;
+		// 	if (storageEmpty)
+		// 		session.storage.save(this.storageState);
+		// },
+		// addRequiredDocs() {
+		// 	// if properties don't exit, create one
+		// 	let currentStorage = session.storage.get();
+		// 	if(currentStorage?.guestLoginDoc)
+		// 	session.storage.add(false, "guestLoginDoc");
+		// },
 		async getServerVersion() {
 			try {
 				const response = await fetch('/api/serverInfo');
@@ -80,6 +92,7 @@ export default {
 	created() {
 		this.getServerVersion();
 		this.recallAppState();
+		// this.createNewStorage();
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
 			session.recall.save(this.appState);
@@ -104,12 +117,18 @@ export default {
 <style scoped>
 #dark-mode-check {
 	position: absolute;
-	top: 110px;
+	top: 15px;
 	left: 15px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	width: 8em;
+	color: #000;
+	z-index: 1;
+}
+
+.uiDarkMode #dark-mode-check {
+	color: #ddd;
 }
 
 #dark-mode-check label {

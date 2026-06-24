@@ -163,7 +163,8 @@ form {
 	position: relative;
 	top: 0;
 	/* left: 10vw; */
-	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 	border-radius: 12px;
 	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
 	max-width: 30em;
@@ -206,6 +207,7 @@ label[for="casinoId"] {
 	width: 100%;
 	height: calc(100vh - 140px);
 	background-color: rgb(0 0 0 / 50%);
+	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	z-index: 10000;
 }

@@ -8,27 +8,28 @@
 				<div></div>
 			</div>
 			<div class="home-title">
-				<RouterLink to="/" title="Home" @click="mobileMenuShow = false">CSH App</RouterLink>
+				<RouterLink to="/" title="Home" @click="closeDialogs()">CSH</RouterLink>
 			</div>
 		</div>
 		<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow">
-			<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="mobileMenuShow = false"><img
+			<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="closeDialogs()"><img
 					src="/favicon.ico" alt="CSH App">
 			</RouterLink>
-			<RouterLink to="/" @click="mobileMenuShow = false">Home</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/movie-database" @click="mobileMenuShow = false">Movie Database
+			<RouterLink to="/" @click="closeDialogs()">Home</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn" to="/movie-database" @click="closeDialogs()">Movie Database
 			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="mobileMenuShow = false">
+			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs()">
 				UserPreferences</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayusers" @click="mobileMenuShow = false">Display Users
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayusers"
+				@click="closeDialogs()">Display Users
 			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/displayuserlogs"
-				@click="mobileMenuShow = false">Display User
+			<RouterLink v-if="appState?.isLoggedOn" to="/displayuserlogs" @click="closeDialogs()">Display User
 				Logs</RouterLink>
+			<RouterLink to="/resume" @click="closeDialogs()">Resume</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock"
-				@click="mobileMenuShow = false">Simple Clock
+				@click="closeDialogs()">Simple Clock
 			</RouterLink>
-			<RouterLink to="/about" @click="mobileMenuShow = false">About</RouterLink>
+			<RouterLink to="/about" @click="closeDialogs()">About</RouterLink>
 		</nav>
 	</div>
 
@@ -52,6 +53,16 @@ export default {
 		// }
 	},
 	methods: {
+		closeDialogs() {
+			// Control the state of both components
+			let payload = {
+				register: false,
+				login: false
+			}
+			this.eventBus.emit("registerUser", payload);
+			this.eventBus.emit("contactEmail", false);
+			this.mobileMenuShow = false;
+		},
 		showHideNav() {
 			this.mobileMenuShow = this.mobileMenuShow ? false : true;
 			// this.mobileMenuShow = this.isMobile && this.mobileMenuShow ? false : true;
@@ -113,14 +124,13 @@ export default {
 	left: 98px;
 	display: flex;
 	align-items: center;
-	font-size: 1.75em;
+	font-size: 18px;
 }
 
 .mobile .home-title {
 	justify-content: center;
 	align-items: center;
 	width: calc(100% - 220px);
-	font-size: 1.75em;
 	display: flex;
 	position: absolute;
 	top: 25px;
@@ -133,6 +143,7 @@ export default {
 	background-color: unset;
 	color: #fff;
 	box-shadow: unset;
+	font-size: 1.75em;
 }
 
 a.home-icon {
@@ -153,6 +164,7 @@ a.home-icon {
 	left: 0;
 	width: 100%;
 	margin: auto;
+	z-index: 1;
 }
 
 nav {
@@ -165,6 +177,7 @@ nav {
 	padding: 15px;
 	border-bottom: 1px #fff solid;
 	background-color: #313b64;
+	font-size: 18px;
 }
 
 /* #nav {

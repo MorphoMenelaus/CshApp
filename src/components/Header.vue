@@ -8,13 +8,11 @@
 					title="Close This Notification">❌</button>
 				<span v-if="item.code != null">{{ item.code }}</span>
 				<span v-if="item.message != null">{{ item.message }}</span>
-				<!-- <span v-if="item.eventTimeDisplay != null">{{ item.eventTimeDisplay }}</span> -->
 			</div>
 		</div>
 
 		<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
 			<div class="loader-icon"></div>
-			<!-- <RouterLink to="/" @click="showHideLoader = false">Click if page fails to load</RouterLink> -->
 		</div>
 
 		<div id="clock" v-if="!isMobile">
@@ -119,6 +117,7 @@ header {
 	min-width: 6em;
 	z-index: 1000;
 	user-select: none;
+	font-size: 18px;
 }
 
 h1 {

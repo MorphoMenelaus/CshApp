@@ -2,9 +2,10 @@
 
 	<div id="register">
 		<div class="wrapper">
-			<h2>Register</h2>
-			<p>Please fill this form to create an account.</p>
-			<!-- @submit.prevent blocks page reloads and executes your logic -->
+			<div id="form-header">
+				<h2>Register</h2>
+				<p>Please fill out this form to create an account.</p>
+			</div>
 			<form @submit.prevent="registerHandler" method="post">
 				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
 					<label for="username">Username</label>
@@ -28,7 +29,7 @@
 					<button class="btn" type="button" @click="eventBus.emit('registerUser', false)"
 						title="Cancel">Cancel</button>
 				</div>
-				<p>Already have an account? <span class="link" title="Login here"
+				<p style="text-align: center;">Already have an account? <span class="link" title="Login here"
 						@click="removeRegisterUserComponent()">Login here.</span>
 				</p>
 			</form>
@@ -201,7 +202,8 @@ form {
 	position: relative;
 	top: 0;
 	/* left: 10vw; */
-	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 	border-radius: 12px;
 	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
 	max-width: 30em;
@@ -250,6 +252,8 @@ label[for="casinoId"] {
 	top: 86px;
 	align-items: center;
 	color: #aaa;
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
 }
 
 /* .uiDarkMode #register {
@@ -264,16 +268,31 @@ label[for="casinoId"] {
 	border-radius: 8px;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
+	box-shadow: 2px 2px 6px #000;
 }
 
 .wrapper .form-group {
 	display: flex;
 	align-content: center;
 	flex-direction: column;
+	margin-bottom: 15px;
 }
 
 #register button {
 	display: block;
 	margin: 15px auto;
+}
+
+#form-header {
+	background-color: hsl(228 34% 40% / 1);
+	position: relative;
+	text-align: center;
+	left: -31px;
+	width: calc(100% + 62px);
+	top: -16px;
+	padding: 15px;
+	color: #ddd;
+	box-shadow: 1px 1;
 }
 </style>

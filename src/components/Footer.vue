@@ -4,9 +4,9 @@
 			<small class="version" v-if="serverVersion">Server Version: {{ serverVersion }}</small>
 			<small class="appVersion" v-if="this.appCurrentVersion">App Version: {{ this.appCurrentVersion }}</small>
 		</div>
-		<h3>Csh App</h3>
+		<h3 id="name-contact" title="Contact Me" @click="openThisModalCloseOthers()">{{ isMobile ? 'CSH' : 'Chris Hardwick' }}</h3>
 		<div class="btn-container">
-			<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Form</button>
+			<button title="Contact Me" class="btn" @click="openThisModalCloseOthers()">Contact Me</button>
 		</div>
 	</footer>
 </template>
@@ -15,7 +15,21 @@
 export default {
 	name: 'Footer',
 	props: {
-		serverVersion: String
+		serverVersion: String,
+		isMobile: Boolean
+	},
+	methods: {
+		openThisModalCloseOthers() {
+			// Control the state of both components
+			let payload = {
+				register: false,
+				login: false
+			}
+			this.eventBus.emit("registerUser", payload);
+			this.eventBus.emit("contactEmail", true);
+		}
+	},
+	mounted() {
 	}
 }
 </script>
@@ -43,19 +57,30 @@ h3 {
 	position: absolute;
 	display: flex;
 	flex-direction: column;
-	top: 0;
+	top: 5px;
 	left: 0;
 	padding: 5px 15px;
 	z-index: 500;
+	font-size: 18px;
 }
 
 .btn-container {
 	position: absolute;
 	right: 15px;
 	top: 15px;
+	font-size: 18px;
 }
 
 .btn-container button {
-	font-size: .8em;
+	font-size: 1.25em;
+}
+
+#name-contact {
+	cursor: pointer;
+	font-size: 1.25em;
+}
+
+#name-contact:hover {
+	color: #f60;
 }
 </style>
