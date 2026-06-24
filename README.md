@@ -1,6 +1,6 @@
 # CshApp
 
-Simple Vue3 based app
+Vue3 based app
 
 ## Project setup
 
