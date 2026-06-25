@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<div id="layout-container">
+
 			<div id="resume-header">
 				<h1 class="julius-sans center name">Chris Hardwick</h1>
 				<h2>Resume</h2>
@@ -9,12 +10,19 @@
 					Download PDF
 				</a>
 			</div>
+
+			<div class="btn-container">
+				<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Me</button>
+			</div>
+
 			<div>
 				<ResumeTable v-if="!isMobile" :resumeArray="resumeArray" />
 			</div>
+
 			<div>
 				<ResumeTableMobile v-if="isMobile" :resumeArray="resumeArray" />
 			</div>
+
 		</div>
 	</div>
 </template>
@@ -80,6 +88,10 @@ export default {
 	text-align: center;
 }
 
+.btn-container button {
+	font-size: 1em;
+}
+
 @media (max-width: 767px) {
 	#resume-header h1 {
 		font-size: 2.5em;
@@ -117,5 +129,4 @@ export default {
 		width: 60%;
 	}
 }
-
 </style>

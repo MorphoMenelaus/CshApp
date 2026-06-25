@@ -11,6 +11,10 @@
 	position: fixed;
 	inset: 0;
 	overflow: hidden auto;
+	/* background: url('./img/IMG_6648_tonemapped_2026.png') no-repeat;
+	background-size: cover;
+	background-position: 0 50%; */
+	top: -5px;
 }
 
 table {

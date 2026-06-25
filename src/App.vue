@@ -123,12 +123,12 @@ export default {
 	align-items: center;
 	justify-content: space-between;
 	width: 8em;
-	color: #000;
+	/* color: #000; */
 	z-index: 1;
 }
 
 .uiDarkMode #dark-mode-check {
-	color: #ddd;
+	/* color: #ddd; */
 }
 
 #dark-mode-check label {

@@ -1,6 +1,6 @@
 <template>
 	<div id="disclaimers">
-		<p>This web application was made using <strong>Vue 3</strong> frontend with a <strong>NodeJS</strong> backend.
+		<p>This web application was made using a <strong>Vue 3</strong> frontend with a <strong>NodeJS</strong> backend.
 		</p>
 		<p>
 			This site is protected by reCAPTCHA and the Google
