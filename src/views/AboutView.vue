@@ -63,7 +63,7 @@ export default {
 	width: 100%;
 	margin: 15px auto;
 	/* padding: 15px 30px 100px; */
-	background-color: var(--vt-c-white-mute);
+	/* background-color: var(--vt-c-white-mute); */
 	color: var(--vt-c-text-light-2);
 	/* z-index: -1; */
 	font-size: 18px;
@@ -77,7 +77,7 @@ export default {
 
 
 .uiDarkMode #about {
-	background-color: #181818;
+	/* background-color: #181818; */
 	color: #aaa;
 }
 
