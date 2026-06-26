@@ -152,6 +152,7 @@ h1 {
 	border-radius: 6px;
 	border: 1px #a1a1a1 solid;
 	font-weight: 700;
+	z-index: 100000;
 }
 
 .status-message.ok {

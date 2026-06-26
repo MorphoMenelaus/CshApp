@@ -75,12 +75,15 @@
 // @ is an alias to /src
 import { onBeforeUnmount } from "vue";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
+// Test placeholderData
+// import placeholderData from "@/dependencies/movies.json";
 
 export default {
 	name: "MovieDatabase",
 	props: {
 		appState: Object,
-		isMobile: Boolean
+		isMobile: Boolean,
+		windowWidth: Number
 	},
 	components: {
 		EditMovieDetails
@@ -91,17 +94,7 @@ export default {
 			limit: 10,
 			offset: 0,
 			currentPage: 1,
-			limitOptions: [
-				{ text: "5", value: 5 },
-				{ text: "10", value: 10 },
-				{ text: "15", value: 15 },
-				{ text: "20", value: 20 },
-				{ text: "50", value: 50 },
-				{ text: "75", value: 75 },
-				{ text: "100", value: 100 },
-				{ text: "200", value: 200 },
-				{ text: "300", value: 300 },
-			],
+			limitOptions: [],
 			sortByOptions: [
 				{ text: "Title", value: "title" },
 				{ text: "Rating", value: "rating" },
@@ -112,11 +105,14 @@ export default {
 			sortBy: "title",
 			contains: "",
 			movieList: [],
+			// Test placeholderData
+			// movieList: placeholderData,
 			currentComponent: null,
 			selectedMovie: {},
 			favoritesList: [],
 			movieFavorites: [],
-			favoritesOnly: false
+			favoritesOnly: false,
+			columns: 1,
 		};
 	},
 	watch: {
@@ -135,6 +131,9 @@ export default {
 			this.offset = 0;
 			this.getMovieList();
 		},
+		windowWidth() {
+			this.populateLimits();
+		},
 		async favoritesOnly() {
 			if (this.favoritesOnly) {
 				await this.getMovieByFavorites();
@@ -145,6 +144,51 @@ export default {
 		}
 	},
 	methods: {
+		populateLimits() {
+			let width = this.windowWidth;
+			let multiplier;
+			switch (true) {
+				case width < 576:
+					multiplier = 1;
+					break;
+				case width < 768:
+					multiplier = 1;
+					break;
+				case width < 1024:
+					multiplier = 2;
+					break;
+				case width < 1200:
+					multiplier = 3;
+					break;
+				case width < 1800:
+					multiplier = 4;
+					break;
+				case width < 2400:
+					multiplier = 5;
+					break;
+				case width < 2800:
+					multiplier = 6;
+					break;
+				case width >= 2800:
+					multiplier = 7;
+					break;
+				default:
+					multiplier = 1;
+			};
+			let limitBase = [2, 4, 6, 8, 10]
+			this.limitOptions = [];
+			limitBase.forEach(limit => {
+				console.log(limit * multiplier);
+				let limitCbj = { text: "", value: null }
+				limitCbj.text = (limit * multiplier).toString();
+				limitCbj.value = (limit * multiplier);
+				this.limitOptions.push(limitCbj);
+			})
+
+			// set defaults for limit and columns
+			this.limit = 2 * multiplier;
+			this.columns = multiplier;
+		},
 		favoritesHandler(movieId) {
 			if (this.favoritesList.includes(movieId)) {
 				this.removeFavorite(movieId);
@@ -390,6 +434,8 @@ export default {
 		},
 	},
 	mounted() {
+		this.limit = this.columns * 2;
+		this.populateLimits();
 		this.getMovieList();
 	},
 	created() {
@@ -420,7 +466,7 @@ h2 {
 	display: grid;
 	justify-content: center;
 	align-content: center;
-	grid-template-columns: repeat(1, 95%);
+	grid-template-columns: repeat(1, 1fr);
 	background: rgba(92, 89, 136, 0.38);
 	margin: auto;
 	border-radius: 1.25em;
@@ -570,45 +616,45 @@ img {
 	margin-left: 10px;
 }
 
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {
+@media (min-width: 576px) {
 	#cards {
-		grid-template-columns: repeat(2, 50%);
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
 
-@media (min-width: 992px) {
+@media (min-width: 768px) {
 	#cards {
-		grid-template-columns: repeat(3, 33%);
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
 
 @media (min-width: 1024px) {
-	/* #cards {
-		grid-template-columns: repeat(4, 22%);
-	} */
+	#cards {
+		grid-template-columns: repeat(3, 1fr);
+	}
 }
-
-@media (min-width: 992px) and (max-width: 1199px) {}
 
 @media (min-width: 1200px) {
 	#cards {
-		grid-template-columns: repeat(4, 25%);
+		grid-template-columns: repeat(4, 1fr);
 	}
 }
 
 @media (min-width: 1800px) {
 	#cards {
-		grid-template-columns: repeat(5, 20%);
+		grid-template-columns: repeat(5, 1fr);
 	}
 }
 
-@media (min-width: 2200px) {
+@media (min-width: 2400px) {
 	#cards {
-		grid-template-columns: repeat(6, 16%);
+		grid-template-columns: repeat(6, 1fr);
+	}
+}
+
+@media (min-width: 2800px) {
+	#cards {
+		grid-template-columns: repeat(7, 1fr);
 	}
 }
 </style>
