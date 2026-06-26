@@ -13,7 +13,7 @@ import { RouterLink, RouterView } from "vue-router";
 
 	<Login :appState="appState" />
 
-	<RouterView :appState="appState" id="view" :isMobile="isMobile" :class="isMobile ? 'mobile' : ''" />
+	<RouterView :appState="appState" id="view" :isMobile="isMobile" :windowWidth="windowWidth" :class="isMobile ? 'mobile' : ''" />
 
 	<Footer :serverVersion="serverVersion" :isMobile="isMobile" />
 
@@ -49,6 +49,7 @@ export default {
 			guestLoginDoc: false,
 			currentComponent: null,
 			isMobile: window.innerWidth < 1024,
+			windowWidth: window.innerWidth,
 			uiDarkMode: false
 		};
 	},
@@ -106,6 +107,7 @@ export default {
 		});
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
+			this.windowWidth = window.innerWidth;
 		});
 	},
 	mounted() {
@@ -127,9 +129,9 @@ export default {
 	z-index: 1;
 }
 
-.uiDarkMode #dark-mode-check {
-	/* color: #ddd; */
-}
+/* .uiDarkMode #dark-mode-check {
+	color: #ddd;
+} */
 
 #dark-mode-check label {
 	cursor: pointer;
