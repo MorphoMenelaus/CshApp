@@ -16,12 +16,12 @@ const router = createRouter({
 			component: () => import('../views/MovieDatabase.vue'),
 			meta: { requiresAuth: true }
 		},
-		// {
-		// 	path: '/tic-tac-toe',
-		// 	name: 'TicTacToe',
-		// 	component: () => import('../views/TicTacToe.vue'),
-		// 	meta: { requiresAuth: true }
-		// },
+		{
+			path: '/verify',
+			name: 'Verify',
+			component: () => import('../views/Verify.vue'),
+			meta: { requiresAuth: false }
+		},
 		{
 			path: '/userpreferences',
 			name: 'User Preferences',

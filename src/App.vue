@@ -13,7 +13,8 @@ import { RouterLink, RouterView } from "vue-router";
 
 	<Login :appState="appState" />
 
-	<RouterView :appState="appState" id="view" :isMobile="isMobile" :windowWidth="windowWidth" :class="isMobile ? 'mobile' : ''" />
+	<RouterView :appState="appState" id="view" :isMobile="isMobile" :windowWidth="windowWidth"
+		:class="isMobile ? 'mobile' : ''" />
 
 	<Footer :serverVersion="serverVersion" :isMobile="isMobile" />
 

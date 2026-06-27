@@ -5,13 +5,13 @@
 			<div id="resume-header">
 				<h1 class="julius-sans center name">Chris Hardwick</h1>
 				<h2>Resume</h2>
+			</div>
+
+			<div class="btn-container top">
 				<a class="btn" href="/pdf/ChrisHardwickResume2026nc.pdf" title="Download Chris Hardwick Resume PDF"
 					download="ChrisHardwickResume2026.pdf">
 					Download PDF
 				</a>
-			</div>
-
-			<div class="btn-container">
 				<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Me</button>
 			</div>
 
@@ -81,11 +81,19 @@ export default {
 
 .name {
 	font-size: 3.5em;
-	font-weight: bold;
+	/* font-weight: bold; */
 }
 
 .center {
 	text-align: center;
+}
+
+.btn-container.top {
+	display: flex;
+	justify-self: center;
+	justify-content: space-evenly;
+	width: 50%;
+	flex-direction: column;
 }
 
 .btn-container button {
@@ -103,6 +111,12 @@ export default {
 
 	h3 {
 		font-size: 1.25em;
+	}
+}
+
+@media (min-width: 576px) {
+	.btn-container.top {
+		flex-direction: row;
 	}
 }
 

@@ -12,6 +12,11 @@
 					<input id="username" title="Username" autocomplete="username" v-model.trim="userName" type="text"
 						name="userName" class="form-control">
 				</div>
+				<div class="form-group" :class="errState && !email.length > 0 ? 'err' : ''">
+					<label for="email">Email <small>*required to verify account</small></label>
+					<input id="email" title="Username" autocomplete="email" v-model.trim="email" type="text"
+						name="email" class="form-control">
+				</div>
 				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
 					<label for="password">Password</label>
 					<input id="password" title="Password" autocomplete="new-password" v-model.trim="password"
@@ -22,6 +27,9 @@
 					<input id="confirmPassword" title="Confirm Password" autocomplete="new-password"
 						v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
 				</div>
+				<small>By registering, you agree to receive a verification code by email. Your email will not be shared
+					or
+					used for any other purpose.</small>
 				<div style="display: flex;">
 					<button class="btn" type="submit" @click.prevent="registerHandler" title="Register">
 						Register
@@ -55,6 +63,7 @@ export default {
 			userName: "",
 			password: "",
 			confirmPassword: "",
+			email: "",
 			errState: false,
 			isLoggedOn: false,
 			siteKey: this.reCaptchaSiteKey,
@@ -79,11 +88,12 @@ export default {
 				let body = {
 					userName: this.userName,
 					password: this.password,
+					email: this.email,
 					token: this.token,
 				};
 
-				if (!this.userName || !this.password) {
-					this.serverStatus.message = "Please provide a user name and password.";
+				if (!this.userName || !this.email || !this.password) {
+					this.serverStatus.message = "Please provide a user name, email and password.";
 					this.serverStatus.success = false;
 					this.eventBus.emit("updateStatus", this.serverStatus);
 					this.errState = true;

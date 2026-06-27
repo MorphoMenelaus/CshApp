@@ -4,7 +4,10 @@
 			<small class="version" v-if="serverVersion">Server Version: {{ serverVersion }}</small>
 			<small class="appVersion" v-if="this.appCurrentVersion">App Version: {{ this.appCurrentVersion }}</small>
 		</div>
-		<h3 id="name-contact" title="Contact Me" @click="openThisModalCloseOthers()">{{ isMobile ? 'CSH' : 'Chris Hardwick' }}</h3>
+		<div class="center-flex">
+			<h3 id="name-contact" title="Contact Me" @click="openThisModalCloseOthers()">{{ isMobile ? 'CSH' :
+				'Chris&nbsp;Hardwick' }}</h3>
+		</div>
 		<div class="btn-container">
 			<button title="Contact Me" class="btn" @click="openThisModalCloseOthers()">Contact Me</button>
 		</div>
@@ -73,6 +76,13 @@ h3 {
 
 .btn-container button {
 	font-size: 1.25em;
+}
+
+.center-flex {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 #name-contact {

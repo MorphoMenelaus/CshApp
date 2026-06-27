@@ -6,6 +6,7 @@
 			<button class="btn" type="button" @click="openConfirmDialog()">Logout</button>
 			<span v-if="userName !== 'guest'" id="delete-button" class="link"
 				@click="currentComponent = 'DeleteUser'">Delete Account</span>
+			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify Account</RouterLink>
 		</div>
 		<div v-else>
 			<button class="btn" type="button" @click="showRegisterUserComponent(true, false)">Login</button>
@@ -321,7 +322,8 @@ h2 {
 	background-color: #3f445f;
 }
 
-.err {
+.err,
+.unverified {
 	border: 2px #f00 solid;
 }
 
