@@ -29,6 +29,12 @@ const showDetails = (id) => {
 
 <template>
 	<main class="roboto-body">
+
+		<div v-if="appState?.isLoggedOn && !appState?.permissions.verified" class="not-verified">
+			<span>Not Verified. </span>
+			<RouterLink class="unverified" to="/verify">Click to Verify Account</RouterLink>
+		</div>
+
 		<div id="main-home-layout">
 			<div id="title-block">
 				<div>
@@ -291,6 +297,18 @@ p {
 
 .uiDarkMode .tagline-box {
 	background-color: #222;
+}
+
+.not-verified {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	color: #f00;
+	text-align: center;
+	font-weight: bold;
+	z-index: 10000;
 }
 
 @media (max-width: 767px) {
