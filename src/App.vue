@@ -4,7 +4,7 @@ import { RouterLink, RouterView } from "vue-router";
 
 <template>
 
-	<div v-if="!appState?.isLoggedOn" id="dark-mode-check">
+	<div v-if="!appState?.isLoggedOn || appState?.userName == 'guest'" id="dark-mode-check">
 		<label for="uiDarkMode" title="Toggle dark mode">Dark Mode</label>
 		<input id="uiDarkMode" title="Toggle dark mode" type="checkbox" v-model="uiDarkMode" />
 	</div>

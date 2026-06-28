@@ -1,7 +1,7 @@
 <template>
 
 	<div>
-		<div id="verify">
+		<div id="verify" v-if="!success">
 			<div id="form-header">
 				<h1>Please enter code to verify</h1>
 			</div>
@@ -15,7 +15,14 @@
 					<button class="btn login-btn" type="button" @click="verifyCode()">Verify</button>
 				</div>
 			</form>
-			<button class="btn resend" v-if="appState?.isLoggedOn" @click="resendVerifyCode()">Resend Verification Email</button>
+			<button class="btn resend" v-if="appState?.isLoggedOn" @click="resendVerifyCode()">Resend Verification
+				Email</button>
+		</div>
+		<div v-else>
+			<h1>Success!</h1>
+			<h2>Your account has been verified.</h2>
+			<h3 v-if="appState?.isLoggedOn">Please logout and log back in again.</h3>
+			<h3 v-else>Click login in the upper right of the screen.</h3>
 		</div>
 	</div>
 
@@ -34,7 +41,8 @@ export default {
 		return {
 			appNotify: Object.assign({}, this.appNotify),
 			userName: "",
-			verificationCode: ""
+			verificationCode: "",
+			success: false
 		};
 	},
 	watch: {
@@ -67,8 +75,9 @@ export default {
 					this.appNotify.code = 200;
 					this.appNotify.message = "Verification success. Please Log in to continue.";
 					this.appNotify.success = true;
-					this.eventBus.emit("forceLogout");
-					router.push("/");
+					this.success = true;
+					// this.eventBus.emit("forceLogout");
+					// router.push("/");
 				} else {
 					this.appNotify.code = dataObj.code;
 					this.appNotify.message = dataObj.message;
@@ -127,6 +136,12 @@ export default {
 
 <!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
+h1,
+h2,
+h3 {
+	text-align: center;
+}
+
 #verify {
 	width: 100%;
 	text-align: center;

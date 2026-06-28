@@ -7,11 +7,9 @@
 				<h3>Web Application Developer</h3>
 				<h3>Front-End Web Developer</h3>
 			</div>
-			<h3 class="linkedin">
-				<a class="btn" href="https://www.linkedin.com/in/cs-hardwick" title="Chris Hardwick | Linkedin Profile"
-					target="_blank">Linkedin Profile</a>
-			</h3>
-			<div class="btn-container">
+			<div class="btn-container top">
+				<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
+					title="Chris Hardwick | Linkedin Profile" target="_blank">Linkedin Profile</a>
 				<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Me</button>
 			</div>
 			<div id="profile">
@@ -89,7 +87,7 @@ h3 {
 
 h1 {
 	font-size: 4em;
-	font-weight: bold;
+	/* font-weight: bold; */
 }
 
 .uiDarkMode #about h1 {
@@ -108,10 +106,6 @@ p {
 	/* text-indent: 30px; */
 	margin: 0 auto 15px;
 	padding: 0 30px 15px;
-}
-
-.linkedin {
-	margin-top: 15px;
 }
 
 .profile {
@@ -149,7 +143,20 @@ h2.profile {
 }
 
 .btn-container .btn {
-	font-size: 1em;
+	font-size: .75em;
+	line-height: 1.5em;
+	padding: 5px 15px;
+	border: 1px #000 solid;
+}
+
+.btn-container.top {
+	display: flex;
+	flex-direction: row;
+	justify-self: center;
+	justify-content: space-evenly;
+	width: 100%;
+	margin: auto;
+	font-size: 18px;
 }
 
 .tagline-box {
@@ -179,13 +186,17 @@ h2.profile {
 	}
 }
 
+@media (min-width: 768px) {
+	.btn-container.top {
+		width: 50%;
+	}
+}
+
 @media (min-width: 992px) {
 	#about {
 		width: 90%;
 	}
 }
-
-@media (min-width: 992px) and (max-width: 1199px) {}
 
 @media (min-width: 1200px) {
 	#about {

@@ -1,6 +1,6 @@
 <template>
 
-	<div id="contact">
+	<div id="contact" @click="handleClick($event)">
 		<div class="wrapper">
 			<div id="form-header">
 				<h2>I'd love to hear from you</h2>
@@ -51,7 +51,7 @@
 
 <script>
 // @ is an alias to /src
-// import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount } from 'vue';
 // import session from "@/dependencies/sessionMethods";
 // import sharedScripts from "@/dependencies/sharedScripts";
 
@@ -65,8 +65,8 @@ export default {
 			serverStatus: Object.assign({}, this.appNotify),
 			siteKey: this.reCaptchaSiteKey,
 			token: "",
-			name: "",
-			email: "",
+			name: this.appState?.userName || "",
+			email: this.appState?.user?.email || "",
 			phone: "",
 			subject: "",
 			message: "",
@@ -135,13 +135,11 @@ export default {
 				// Wrap execution in grecaptcha.enterprise.ready to guarantee the library is initialized
 				window.grecaptcha.enterprise.ready(async () => {
 					try {
-						// Execute reCAPTCHA programmatically
-						const token = await window.grecaptcha.enterprise.execute(this.siteKey, {
-							action: 'sendEmail' // Match your expected backend action
+						// Execute reCAPTCHA
+						this.token = await window.grecaptcha.enterprise.execute(this.siteKey, {
+							action: "sendEmail"
 						});
 
-						// Send token to your backend along with your registration form data
-						this.token = token;
 						await this.sendEmail();
 
 					} catch (error) {
@@ -153,8 +151,17 @@ export default {
 				console.error("Email failed:", err);
 			}
 		},
+		handleKeyDown(event) {
+			if (event.key === "Escape")
+				this.eventBus.emit('contactEmail', false);
+		},
+		handleClick(event) {
+			if (event.target.id === "contact")
+				this.eventBus.emit('contactEmail', false);
+		},
 	},
 	mounted() {
+		window.addEventListener("keydown", this.handleKeyDown);
 		if (!document.getElementById('recaptcha-script')) {
 			const script = document.createElement('script');
 			script.id = 'recaptcha-script';
@@ -165,6 +172,9 @@ export default {
 		}
 	},
 	created() {
+		onBeforeUnmount(() => {
+			window.removeEventListener("keydown", this.handleKeyDown);
+		});
 	},
 };
 </script>
