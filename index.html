@@ -11,9 +11,25 @@
 	<link
 		href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
 		rel="stylesheet">
+	<script>
+		onRecaptchaExpired = () => {
+			// isExpired.value = true
+			alert('reCAPTCHA expired! Resetting...')
+			// refreshRecaptcha()
+		}
+	</script>
 </head>
 
 <body>
+	<noscript>
+		<div style="width:100vw;height:100vh;">
+			<h1 style="text-align: center;">Chris Hardwick's Web App</h1>
+			<h2 style="text-align: center;">This site requires javascript to function correctly.
+				<br />Please turn off any script blockers or whitelist this site.
+			</h2>
+			<h1 style="text-align: center;">Thank you.</h1>
+		</div>
+	</noscript>
 	<div id="app"></div>
 	<script type="module" src="/src/main.js"></script>
 </body>

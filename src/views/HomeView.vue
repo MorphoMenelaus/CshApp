@@ -50,7 +50,7 @@ const showDetails = (id) => {
 						<li>Vue 3</li>
 						<li>Vuex</li>
 						<li>NodeJS</li>
-						<li>REST APIs</li>
+						<li>REST API</li>
 						<li>HTML5</li>
 						<li>CSS3</li>
 						<li>JavaScript ES6</li>
@@ -202,7 +202,7 @@ p {
 
 #name-title {
 	font-size: 4em;
-	font-weight: bold;
+	/* font-weight: bold; */
 }
 
 .uiDarkMode #name-title {

@@ -116,10 +116,15 @@ export default {
 		};
 	},
 	watch: {
-		limit() {
+		async limit() {
 			this.currentPage = 1;
 			this.offset = 0;
-			this.getMovieList();
+			if (this.favoritesOnly) {
+				await this.getMovieByFavorites();
+				this.movieList = this.movieFavorites;
+			} else {
+				this.getMovieList();
+			}
 		},
 		sortBy() {
 			this.currentPage = 1;
@@ -590,6 +595,7 @@ img {
 	border: 1px #000 solid;
 	border-radius: 8px;
 	cursor: pointer;
+	user-select: none;
 }
 
 #favorite.favs {

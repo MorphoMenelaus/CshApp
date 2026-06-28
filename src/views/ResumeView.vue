@@ -88,13 +88,23 @@ export default {
 	text-align: center;
 }
 
+.btn-container .btn {
+	font-size: .75em;
+	line-height: 1.5em;
+	padding: 5px 15px;
+	border: 1px #000 solid;
+}
+
 .btn-container.top {
 	display: flex;
+	flex-direction: row;
 	justify-self: center;
 	justify-content: space-evenly;
-	width: 50%;
-	flex-direction: column;
+	width: 100%;
+	margin: auto;
+	font-size: 18px;
 }
+
 
 .btn-container button {
 	font-size: 1em;
@@ -117,6 +127,12 @@ export default {
 @media (min-width: 576px) {
 	.btn-container.top {
 		flex-direction: row;
+	}
+}
+
+@media (min-width: 768px) {
+	.btn-container.top {
+		width: 50%;
 	}
 }
 

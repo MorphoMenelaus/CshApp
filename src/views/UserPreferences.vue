@@ -22,58 +22,34 @@
 			<div id="get-set-user-prefs">
 				<div class="form-container" v-if="user && Object.keys(user).length > 0">
 					<h3 class="user-select-name">Current User: {{ user.userName }}</h3>
+					<p v-if="appState.userName == 'guest'" class="guest">Fields are not
+						editable with guest login.
+						<br />Please, create an account to be able to edit on this site.
+					</p>
 					<form @submit.prevent="handleSubmit" method="put">
 						<div class="fields">
 							<div class="form-group">
 								<label for="email">Email</label>
-								<input id="email" v-model="email" maxlength="256" />
+								<input id="email" v-model="email" maxlength="256"
+									:readonly="appState.userName == 'guest'" />
 							</div>
 							<div class="form-group">
 								<label for="lastName">Last Name</label>
-								<input id="lastName" v-model="lastName" maxlength="64" />
+								<input id="lastName" v-model="lastName" maxlength="64"
+									:readonly="appState.userName == 'guest'" />
 							</div>
 							<div class="form-group">
 								<label for="firstName">First Name</label>
-								<input id="firstName" v-model="firstName" maxlength="64" />
+								<input id="firstName" v-model="firstName" maxlength="64"
+									:readonly="appState.userName == 'guest'" />
 							</div>
 							<div class="form-group">
 								<label for="userNotes">User Notes</label>
-								<textarea id="userNotes" v-model="userNotes" maxlength="1024"></textarea>
+								<textarea id="userNotes" v-model="userNotes" maxlength="1024"
+									:readonly="appState.userName == 'guest'"></textarea>
 							</div>
 						</div>
 						<div class="drop-downs">
-							<div class="form-group" v-if="admin">
-								<label for="admin">Admin</label>
-								<select v-model="userAdmin">
-									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-										{{ item.text }}
-									</option>
-								</select>
-							</div>
-							<div class="form-group" v-if="admin">
-								<label for="siteAdmin">Site Admin</label>
-								<select v-model="siteAdmin">
-									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-										{{ item.text }}
-									</option>
-								</select>
-							</div>
-							<div class="form-group" v-if="admin">
-								<label for="siteEditor">Site Editor</label>
-								<select v-model="siteEditor">
-									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-										{{ item.text }}
-									</option>
-								</select>
-							</div>
-							<div class="form-group" v-if="admin">
-								<label for="contributor">Contributor</label>
-								<select v-model="contributor">
-									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-										{{ item.text }}
-									</option>
-								</select>
-							</div>
 							<div class="form-group">
 								<label for="uiDarkMode">UI DarkMode</label>
 								<select v-model="uiDarkMode">
@@ -82,24 +58,63 @@
 									</option>
 								</select>
 							</div>
-							<div class="form-group" v-if="admin">
-								<label for="contributor">User Verified</label>
-								<select v-model="verified" :class="!verified ? 'not-ver' : ''">
+							<div class="form-group">
+								<label for="admin">Admin</label>
+								<select v-model="userAdmin" v-if="admin">
 									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
 										{{ item.text }}
 									</option>
 								</select>
+								<small v-else>{{ userAdmin == 1 ? "True" : "False" }}</small>
+							</div>
+							<div class="form-group">
+								<label for="siteAdmin">Site Admin</label>
+								<select v-model="siteAdmin" v-if="admin">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+								<small v-else>{{ siteAdmin == 1 ? "True" : "False" }}</small>
+							</div>
+							<div class="form-group">
+								<label for="siteEditor">Site Editor</label>
+								<select v-model="siteEditor" v-if="admin">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+								<small v-else>{{ siteEditor == 1 ? "True" : "False" }}</small>
+							</div>
+							<div class="form-group">
+								<label for="contributor">Contributor</label>
+								<select v-model="contributor" v-if="admin">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+								<small v-else>{{ contributor == 1 ? "True" : "False" }}</small>
+							</div>
+							<div class="form-group">
+								<label for="contributor">User Verified</label>
+								<select v-model="verified" :class="!verified ? 'not-ver' : ''" v-if="admin">
+									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
+										{{ item.text }}
+									</option>
+								</select>
+								<small v-else>{{ verified == 1 ? "True" : "False" }}</small>
 							</div>
 						</div>
 					</form>
-					<button @click="updateUser()" class="btn" title="Update User Prefernces">Update User
+					<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn"
+						title="Update User Prefernces">Update User
 						Prefernces</button>
 				</div>
 			</div>
 		</div>
 		<component :is="currentComponent" :appState="appState" />
 		<div id="change-btn" v-if="user.userId === appState?.user?.userId">
-			<button @click="currentComponent = 'ChangePassword'" class="btn" title="Change Password">Change
+			<button v-if="appState.userName !== 'guest'" @click="currentComponent = 'ChangePassword'" class="btn"
+				title="Change Password">Change
 				Password</button>
 		</div>
 	</div>
@@ -291,12 +306,13 @@ export default {
 				let response = await fetch(request);
 				const data = await response.json();
 
-				if (data.success) {
+				if (data.success && this.user.userName === this.appState.userName) {
 					let updateAppState = this.appState;
 					this.appState.user = data.user;
 					this.eventBus.emit("updateAppState", updateAppState);
-					this.getUser();
 				}
+
+				this.getUser();
 
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
@@ -385,6 +401,11 @@ input {
 	font-size: 1.25em;
 }
 
+#userNotes {
+	font-size: 1em;
+	font-family: "Roboto", sans-serif;
+}
+
 .uiDarkMode input {
 	font-weight: bold;
 }
@@ -419,5 +440,13 @@ button.btn {
 
 .not-ver {
 	border: 3px #f00 solid;
+}
+
+.guest {
+	text-align: center;
+	color: yellow;
+	background-color: grey;
+	border-radius: 8px;
+	padding: 15px;
 }
 </style>

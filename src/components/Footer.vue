@@ -75,7 +75,7 @@ h3 {
 }
 
 .btn-container button {
-	font-size: 1.25em;
+	font-size: 1em;
 }
 
 .center-flex {

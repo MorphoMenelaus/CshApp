@@ -6,7 +6,8 @@
 			<button class="btn" type="button" @click="openConfirmDialog()">Logout</button>
 			<span v-if="userName !== 'guest'" id="delete-button" class="link"
 				@click="currentComponent = 'DeleteUser'">Delete Account</span>
-			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify Account</RouterLink>
+			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify
+				Account</RouterLink>
 		</div>
 		<div v-else>
 			<button class="btn" type="button" @click="showRegisterUserComponent(true, false)">Login</button>
@@ -16,7 +17,7 @@
 	</div>
 
 	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''"
-		v-if="!appState?.isLoggedOn && loginShow">
+		v-if="!appState?.isLoggedOn && loginShow" @click="handleClick($event)">
 		<form class="input-section">
 			<div id="form-header">
 				<h1>Chris Hardwick's SPA</h1>
@@ -161,6 +162,7 @@ export default {
 					this.appNotify.code = 200;
 					this.appNotify.message = "Access Token acquired: Login Success";
 					this.appNotify.success = true;
+					router.push("/");
 					this.loginShow = false;
 				} else {
 					this.appNotify.code = dataObj.code;
@@ -250,9 +252,18 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
+		handleKeyDown(event) {
+			if (event.key === "Escape")
+				this.loginShow = false;
+		},
+		handleClick(event) {
+			if (event.target.id === "login")
+				this.loginShow = false;
+		},
 	},
 	mounted() {
 		this.dialog = document.getElementById("confirmDialog");
+		window.addEventListener("keydown", this.handleKeyDown);
 	},
 	created() {
 		this.eventBus.on("cancelDeleteUser", () => {
@@ -269,6 +280,7 @@ export default {
 			this.loginShow = payload.login;
 		});
 		onBeforeUnmount(() => {
+			window.removeEventListener("keydown", this.handleKeyDown);
 			this.eventBus.off("cancelDeleteUser");
 			this.eventBus.off("UserDeleted");
 			this.eventBus.off("forceLogout");
