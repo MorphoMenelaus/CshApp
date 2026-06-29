@@ -46,6 +46,16 @@ a,
 	color: #ff6600;
 }
 
+button.close-modal {
+	font-size: 1.2em;
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+}
+
 @media (hover: hover) {
 	a:hover {
 		background-color: hsla(160, 100%, 37%, 0.2);

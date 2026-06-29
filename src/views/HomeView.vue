@@ -308,6 +308,7 @@ p {
 	color: #f00;
 	text-align: center;
 	font-weight: bold;
+	text-transform: uppercase;
 	z-index: 10000;
 }
 

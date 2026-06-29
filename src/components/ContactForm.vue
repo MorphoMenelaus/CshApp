@@ -1,7 +1,10 @@
 <template>
 
-	<div id="contact" @click="handleClick($event)">
+	<div id="contact">
 		<div class="wrapper">
+			<!-- <div class="btn-container">
+				<button @click="eventBus.emit('contactEmail', false)" class="close-modal" title="Close This Dialog">❌</button>
+			</div> -->
 			<div id="form-header">
 				<h2>I'd love to hear from you</h2>
 				<h4 style="text-align: center;">Please, let me know what you think.</h4>
@@ -34,7 +37,9 @@
 				<div class="form-group">
 					<label for="message" title="Message">Message<span v-if="!message && errState" class="err"> *
 							required</span></label>
-					<textarea v-model.trim="message" id="message" type="text" name="message" class="form-control" />
+					<small>(characters remaining: {{ charRemaining }})</small>
+					<textarea v-model.trim="message" id="message" type="text" name="message" class="form-control"
+						:maxlength="maxlength" @keyup="charCounter()" />
 				</div>
 				<div style="display: flex;">
 					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">
@@ -71,11 +76,18 @@ export default {
 			subject: "",
 			message: "",
 			errState: false,
+			maxlength: 1024,
+			charRemaining: 1024,
 		};
 	},
 	watch: {
 	},
 	methods: {
+		charCounter() {
+			let currCount = this.message.length;
+			if (this.charRemaining <= this.maxlength)
+				this.charRemaining = this.maxlength - currCount;
+		},
 		async sendEmail() {
 			this.eventBus.emit("showHideLoader", true);
 
@@ -153,10 +165,6 @@ export default {
 		},
 		handleKeyDown(event) {
 			if (event.key === "Escape")
-				this.eventBus.emit('contactEmail', false);
-		},
-		handleClick(event) {
-			if (event.target.id === "contact")
 				this.eventBus.emit('contactEmail', false);
 		},
 	},
@@ -288,6 +296,12 @@ label[for="casinoId"] {
 	align-content: center;
 	flex-direction: column;
 	margin-bottom: 15px;
+}
+
+.btn-container {
+	position: absolute;
+	top: -45px;
+	right: -15px;
 }
 
 #contact button {

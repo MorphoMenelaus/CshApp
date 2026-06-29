@@ -45,8 +45,9 @@
 							</div>
 							<div class="form-group">
 								<label for="userNotes">User Notes</label>
-								<textarea id="userNotes" v-model="userNotes" maxlength="1024"
-									:readonly="appState.userName == 'guest'"></textarea>
+								<small>(characters remaining: {{ charRemaining }})</small>
+								<textarea id="userNotes" v-model="userNotes" :maxlength="maxlength"
+									@keyup="charCounter()" :readonly="appState.userName == 'guest'"></textarea>
 							</div>
 						</div>
 						<div class="drop-downs">
@@ -156,7 +157,9 @@ export default {
 			userNotes: "",
 			verified: 0,
 			currentComponent: null,
-			keyword: ""
+			keyword: "",
+			maxlength: 1024,
+			charRemaining: 1024,
 		};
 	},
 	watch: {
@@ -168,6 +171,11 @@ export default {
 		},
 	},
 	methods: {
+		charCounter() {
+			let currCount = this.userNotes.length;
+			if (this.charRemaining <= this.maxlength)
+				this.charRemaining = this.maxlength - currCount;
+		},
 		populateFields(user) {
 			this.usersList = [];
 			this.user = user;
@@ -383,6 +391,10 @@ h3,
 	justify-content: space-evenly;
 }
 
+.wrapper {
+	padding: 15px;
+}
+
 .fields,
 .drop-downs {
 	margin: 15px;
@@ -448,5 +460,15 @@ button.btn {
 	background-color: grey;
 	border-radius: 8px;
 	padding: 15px;
+}
+
+@media (max-width: 767px) {
+	.fields {
+		width: 50%;
+	}
+
+	.form-group * {
+		width: 100%;
+	}
 }
 </style>

@@ -1,7 +1,11 @@
 <template>
 
-	<div id="register" @click="handleClick($event)">
+	<div id="register">
 		<div class="wrapper">
+			<!-- <div class="btn-container">
+				<button @click="eventBus.emit('registerUser', false)" class="close-modal"
+					title="Close This Dialog">❌</button>
+			</div> -->
 			<div id="form-header">
 				<h2>Register</h2>
 				<p>Please fill out this form to create an account.</p>
@@ -167,10 +171,6 @@ export default {
 			if (event.key === "Escape")
 				this.eventBus.emit('registerUser', false);
 		},
-		handleClick(event) {
-			if (event.target.id === "register")
-				this.eventBus.emit('registerUser', false);
-		},
 	},
 	mounted() {
 		window.addEventListener("keydown", this.handleKeyDown);
@@ -282,6 +282,7 @@ label[for="casinoId"] {
 } */
 
 .wrapper {
+	/* position: relative; */
 	max-width: 30em;
 	align-content: center;
 	background-color: #313b64;
@@ -292,6 +293,8 @@ label[for="casinoId"] {
 	flex-direction: column;
 	overflow: hidden;
 	box-shadow: 2px 2px 6px #000;
+	width: 90%;
+	margin: auto;
 }
 
 .wrapper .form-group {
@@ -300,6 +303,12 @@ label[for="casinoId"] {
 	flex-direction: column;
 	margin-bottom: 15px;
 }
+
+/* .btn-container {
+	position: absolute;
+	top: -45px;
+	right: -15px;
+} */
 
 #register button {
 	display: block;
