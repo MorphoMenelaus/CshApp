@@ -149,6 +149,13 @@ export default {
 		}
 	},
 	methods: {
+		scrollToTop() {
+			let container = document.getElementById("app");
+			container.scrollTo({
+				top: 0,
+				behavior: "smooth"
+			});
+		},
 		populateLimits() {
 			let width = this.windowWidth;
 			let multiplier;
@@ -376,6 +383,7 @@ export default {
 				this.serverStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
+				this.scrollToTop();
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
@@ -422,6 +430,7 @@ export default {
 				this.serverStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
+				this.scrollToTop();
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},

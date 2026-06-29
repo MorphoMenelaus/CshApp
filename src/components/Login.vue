@@ -294,7 +294,7 @@ export default {
 <style scoped>
 .login-status,
 #login {
-	color: var(--color-text);
+	color: #ebebeba3;
 	font-size: 18px;
 }
 
