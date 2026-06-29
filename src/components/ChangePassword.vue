@@ -2,9 +2,9 @@
 
 	<div id="change-password">
 		<div class="wrapper">
-			<div class="btn-container">
-				<button @click="closePopup()" class="close-notification" title="Close This Dialog">❌</button>
-			</div>
+			<!-- <div class="btn-container">
+				<button @click="closePopup()" class="close-modal" title="Close This Dialog">❌</button>
+			</div> -->
 			<h1>Password Change</h1>
 			<p style="margin: 15px 0;"><span class="warning">Warning!</span> After changing your password you will have
 				to log in again.</p>
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import { onBeforeUnmount } from 'vue';
+
 export default {
 	name: "RegisterUser",
 	props: {
@@ -117,10 +119,18 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
+		handleKeyDown(event) {
+			if (event.key === "Escape")
+				this.closePopup();
+		},
 	},
 	mounted() {
+		window.addEventListener("keydown", this.handleKeyDown);
 	},
 	created() {
+		onBeforeUnmount(() => {
+			window.removeEventListener("keydown", this.handleKeyDown);
+		});
 	},
 };
 </script>
@@ -200,7 +210,7 @@ label[for="casinoId"] {
 #change-password {
 	position: absolute;
 	left: 0;
-	top: 95px;
+	top: 0;
 	display: grid;
 	align-items: center;
 	justify-content: center;
@@ -212,7 +222,10 @@ label[for="casinoId"] {
 	z-index: 10000;
 }
 
-#change-password button {
+.button-container {
+	display: flex;
+	width: 100%;
+	justify-content: space-evenly;
 	margin: 30px auto 15px;
 }
 
@@ -230,18 +243,8 @@ label[for="casinoId"] {
 
 .btn-container {
 	position: absolute;
-	top: -45px;
+	top: -15px;
 	right: -15px;
-}
-
-button.close-notification {
-	font-size: 1.2em;
-	width: 36px;
-	height: 36px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 8px;
 }
 
 .button-container {

@@ -1,0 +1,9 @@
+User-agent: Googlebot
+Disallow: /img/
+Disallow: /media-poster/
+Disallow: /pdf/
+
+User-agent: *
+Disallow: /img/
+Disallow: /media-poster/
+Disallow: /pdf/

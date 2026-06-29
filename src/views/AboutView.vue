@@ -122,11 +122,10 @@ h2.profile {
 	color: #000;
 	border: 1px solid #555;
 	border-radius: 12px;
-	padding: 15px;
-	font-size: 1.25em;
+	padding: 15px 0;
+	font-size: 1em;
 	margin: 15px auto;
 	background-color: #e7e7e7;
-	/* width: 80%; */
 }
 
 .uiDarkMode #profile {
@@ -187,6 +186,11 @@ h2.profile {
 }
 
 @media (min-width: 768px) {
+	#profile {
+		padding: 15px;
+		font-size: 1.25em;
+	}
+
 	.btn-container.top {
 		width: 50%;
 	}

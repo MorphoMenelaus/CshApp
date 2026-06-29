@@ -377,6 +377,7 @@ h2 {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	width: 90%;
 	max-width: 30em;
 	padding: 30px 30px 45px;
 	margin: 30px auto;
@@ -439,5 +440,11 @@ h2 {
 	padding: 15px;
 	color: #ddd;
 	box-shadow: 1px 1;
+}
+
+@media (min-width: 768px) {
+	.input-section {
+		width: unset;
+	}
 }
 </style>

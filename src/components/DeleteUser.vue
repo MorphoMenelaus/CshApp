@@ -16,6 +16,7 @@
 
 <script>
 // @ is an alias to /src
+import { onBeforeUnmount } from 'vue';
 // import session from "@/dependencies/sessionMethods";
 // import sharedScripts from "@/dependencies/sharedScripts";
 import router from "@/router";
@@ -83,10 +84,18 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
+		handleKeyDown(event) {
+			if (event.key === "Escape")
+				this.eventBus.emit("cancelDeleteUser");
+		},
 	},
 	mounted() {
+		window.addEventListener("keydown", this.handleKeyDown);
 	},
 	created() {
+		onBeforeUnmount(() => {
+			window.removeEventListener("keydown", this.handleKeyDown);
+		});
 	},
 };
 </script>
