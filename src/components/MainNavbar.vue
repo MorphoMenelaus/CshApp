@@ -15,19 +15,22 @@
 			<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="closeDialogs()"><img
 					src="/favicon.ico" alt="CSH App">
 			</RouterLink>
-			<RouterLink to="/" @click="closeDialogs()">Home</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/movie-database" @click="closeDialogs()">Movie Database
+			<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/movie-database"
+				@click="closeDialogs()" title="Movie Database">Movie Database
 			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs()">
-				UserPreferences</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified && appState?.permissions.admin" to="/displayusers"
-				@click="closeDialogs()">Display Users
+			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs()"
+				title="User Preferences">
+				Preferences</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayusers"
+				@click="closeDialogs()" title="Display Users">Display Users
 			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs" @click="closeDialogs()">Display User
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs"
+				@click="closeDialogs()" title="Display User">Display User
 				Logs</RouterLink>
 			<RouterLink to="/resume" @click="closeDialogs()">Resume</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified && appState?.permissions.admin" to="/simpleclock"
-				@click="closeDialogs()">Simple Clock
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock"
+				@click="closeDialogs()" title="Simple Clock">Simple Clock
 			</RouterLink>
 			<RouterLink to="/about" @click="closeDialogs()">About</RouterLink>
 		</nav>
