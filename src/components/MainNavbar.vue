@@ -17,16 +17,19 @@
 			</RouterLink>
 			<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/movie-database"
-				@click="closeDialogs()" title="Movie Database">Movie Database
+				@click="closeDialogs()" title="Movie Database">Movie DB
+			</RouterLink>
+			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/blog-reader"
+				@click="closeDialogs()" title="Blog">Blog
 			</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs()"
 				title="User Preferences">
 				Preferences</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayusers"
-				@click="closeDialogs()" title="Display Users">Display Users
+				@click="closeDialogs()" title="Display Users">Users
 			</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs"
-				@click="closeDialogs()" title="Display User">Display User
+				@click="closeDialogs()" title="Display User">User
 				Logs</RouterLink>
 			<RouterLink to="/resume" @click="closeDialogs()">Resume</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock"

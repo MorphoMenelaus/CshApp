@@ -257,6 +257,7 @@ h2,
 
 .fields {
 	display: flex;
+	font-size: 18px;
 }
 
 #fieldset-one,

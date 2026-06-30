@@ -17,6 +17,12 @@ const router = createRouter({
 			meta: { requiresAuth: true }
 		},
 		{
+			path: '/blog-reader',
+			name: 'BlogReader',
+			component: () => import('../views/BlogReader.vue'),
+			meta: { requiresAuth: true }
+		},
+		{
 			path: '/verify',
 			name: 'Verify',
 			component: () => import('../views/Verify.vue'),
