@@ -13,8 +13,12 @@
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
 				</option>
 			</select>
-			<div v-if="appState?.permissions.admin">
-				<label for="sortByOptions">Sort By</label>
+			<label for="sortByOptions" title="Click to toggle sort order" class="link"
+				@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">Sort
+				By</label>
+			<div class="order">
+				<small title="Click to toggle sort order"
+					@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir }}</small>
 				<select v-model="sortBy">
 					<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
 					</option>
@@ -27,7 +31,6 @@
 			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
-
 		<div id="movies">
 			<div id="cards" v-if="movieList?.length > 0">
 				<div class="card" v-for="(item, index) in movieList" :key="index">
@@ -102,7 +105,12 @@ export default {
 				{ text: "Director", value: "tags_director" },
 				{ text: "Genre", value: "tags_genre" },
 			],
-			sortBy: "title",
+			orderDirOptions: [
+				{ text: "Descending", value: "DESC" },
+				{ text: "Ascending", value: "ASC" },
+			],
+			sortBy: "year",
+			orderDir: "DESC",
 			contains: "",
 			movieList: [],
 			// Test placeholderData
@@ -127,6 +135,11 @@ export default {
 			}
 		},
 		sortBy() {
+			this.currentPage = 1;
+			this.offset = 0;
+			this.getMovieList();
+		},
+		orderDir() {
 			this.currentPage = 1;
 			this.offset = 0;
 			this.getMovieList();
@@ -406,6 +419,7 @@ export default {
 			params.set("limit", this.limit);
 			params.set("offset", this.offset);
 			params.set("sort", this.sortBy);
+			params.set("order", this.orderDir);
 			params.set("keyword", this.contains);
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
@@ -605,6 +619,23 @@ img {
 	border-radius: 8px;
 	cursor: pointer;
 	user-select: none;
+}
+
+.order {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+	bottom: 10px;
+}
+
+.order small {
+	background-color: #7e7c7c;
+	color: #fff;
+	padding: 0 5px;
+	line-height: 1.25em;
+	margin-bottom: 3px;
+	cursor: pointer;
 }
 
 #favorite.favs {
