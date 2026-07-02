@@ -1,7 +1,3 @@
-<script setup>
-import { RouterLink, RouterView } from "vue-router";
-</script>
-
 <template>
 
 	<div v-if="!appState?.isLoggedOn || appState?.userName == 'guest'" id="dark-mode-check">
@@ -24,8 +20,8 @@ import { RouterLink, RouterView } from "vue-router";
 
 <script>
 // @ is an alias to /src
-// import { ref, reactive } from "vue";
 // import sharedScripts from "@/dependencies/sharedScripts";
+import { RouterLink, RouterView } from "vue-router";
 import session from "@/dependencies/sessionMethods.js";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
@@ -84,8 +80,10 @@ export default {
 		async getServerVersion() {
 			try {
 				const response = await fetch('/api/serverInfo');
-				const data = await response.json();
-				this.serverVersion = data?.version || "";
+				if (response?.ok) {
+					let data = await response.json();
+					this.serverVersion = data?.version || "";
+				}
 			} catch (error) {
 				console.error('Error fetching server version:', error);
 			}
@@ -112,6 +110,7 @@ export default {
 		});
 	},
 	mounted() {
+		// this.getServerVersion();
 	},
 };
 </script>

@@ -6,8 +6,6 @@ const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 	console.warn('Global function not found! sendAnalyticsEvent()')
 });
 
-console.log(sendAnalyticsEvent);
-
 // import Carousel from "../components/Carousel.vue";
 // <Carousel v-if="appState?.isLoggedOn" :appState="appState" />
 
@@ -96,9 +94,14 @@ const showDetails = (id) => {
 					Cashier,
 					Reporter, and Player all allow for different access and abilities.
 				</p>
-				<Button id="scroll-anchor" class="btn" @click="showDetails('scroll-anchor')">{{ lessText ? 'Fewer' :
-					'More'
-				}} Details</Button>
+				<div class="btn-link-container">
+					<Button id="scroll-anchor" class="btn" @click="showDetails('scroll-anchor')">{{ lessText ? 'Fewer' :
+						'More'
+					}} Details</Button>
+					<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
+						title="Chris Hardwick | Linkedin Profile" target="_blank"
+						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
+				</div>
 				<div v-if="lessText" id="latest-details">
 					<div class="details-ul">
 						<h3 class="julius-sans">Admin App:</h3>
@@ -317,6 +320,22 @@ p {
 	font-weight: bold;
 	text-transform: uppercase;
 	z-index: 10000;
+}
+
+.btn-link-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.linkedin {
+	display: inline-block;
+	position: relative;
+	right: 0;
+	font-size: .75em;
+	padding: 2px 15px;
+	border: 1px #000 solid;
+	box-shadow: 1px 1px 0px #000;
 }
 
 @media (max-width: 767px) {

@@ -63,13 +63,19 @@ export default {
 					return this.appNotify;
 				}
 
-				const response = await fetch('/api/users/verify', {
+				let headerObj = new Headers();
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL('/api/users/verify', this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: headerObj,
 					body: JSON.stringify(body)
 				});
 
-				let dataObj = await response.json();
+				let response = await fetch(request);
+				const dataObj = await response.json();
 
 				if (dataObj?.success) {
 					this.appNotify.code = 200;
@@ -97,13 +103,19 @@ export default {
 					email: this.appState.user.email,
 				};
 
-				const response = await fetch('/api/mail/verify', {
+				let headerObj = new Headers();
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL('/api/mail/verify', this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: headerObj,
 					body: JSON.stringify(body)
 				});
 
-				let dataObj = await response.json();
+				let response = await fetch(request);
+				const dataObj = await response.json();
 
 				if (dataObj?.success) {
 					this.appNotify.code = 200;

@@ -104,11 +104,18 @@ export default {
 					return this.serverStatus;
 				}
 
-				const response = await fetch('/api/users/register', {
+				let headerObj = new Headers();
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL('/api/users/register', this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: headerObj,
 					body: JSON.stringify(body)
 				});
+
+				let response = await fetch(request);
 
 				if (response.ok) {
 					const data = await response.json();

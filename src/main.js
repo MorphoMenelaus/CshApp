@@ -115,13 +115,19 @@ const refreshAuthTokenAsNeeded = async (appState) => {
 
 	try {
 
-		const response = await fetch('/api/auth/refresh', {
+		let headerObj = new Headers();
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL('/api/auth/refresh', this.baseUrl);
+
+		let request = new Request(
+			requestUrl.toString(), {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
+			headers: headerObj,
 			body: JSON.stringify(body)
 		});
 
-		let dataObj = await response.json();
+		let response = await fetch(request);
+		const dataObj = await response.json();
 
 		if (dataObj?.success) {
 			let updateAppState = appState;

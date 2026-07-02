@@ -12,6 +12,9 @@
 					download="ChrisHardwickResume2026.pdf" @click="sendAnalyticsEvent('download', 'resume_link')">
 					Download PDF
 				</a>
+				<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
+					title="Chris Hardwick | Linkedin Profile" target="_blank"
+					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
 				<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Me</button>
 			</div>
 
