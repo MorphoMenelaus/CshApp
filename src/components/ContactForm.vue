@@ -123,6 +123,7 @@ export default {
 					this.serverStatus.success = data?.success;
 					this.eventBus.emit("updateStatus", (this.serverStatus));
 					this.eventBus.emit("contactEmail", false);
+					this.sendAnalyticsEvent('contact_form_send', 'contact_modal');
 				}
 				this.errState = data?.success;
 
@@ -169,6 +170,7 @@ export default {
 		},
 	},
 	mounted() {
+		this.sendAnalyticsEvent('contact_form_load', 'contact_modal');
 		window.addEventListener("keydown", this.handleKeyDown);
 		if (!document.getElementById('recaptcha-script')) {
 			const script = document.createElement('script');

@@ -125,6 +125,7 @@ export default {
 							login: false
 						}
 						this.eventBus.emit("registerUser", payload);
+						this.sendAnalyticsEvent('register_form_send', 'register_modal');
 					}
 
 					this.errState = data?.success;
@@ -173,6 +174,7 @@ export default {
 		},
 	},
 	mounted() {
+		this.sendAnalyticsEvent('register_form_load', 'register_modal');
 		window.addEventListener("keydown", this.handleKeyDown);
 		if (!document.getElementById('recaptcha-script')) {
 			const script = document.createElement('script');

@@ -60,7 +60,8 @@
 
 body {
 	/* min-height: 100vh; */
-	color: #3c3c3ca8;
+	/* color: #3c3c3ca8; */
+	color: rgb(0 0 0 / 70%);
 	background-color: #f2f2f2;
 	transition:
 		color 0.5s,

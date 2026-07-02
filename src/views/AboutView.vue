@@ -9,7 +9,8 @@
 			</div>
 			<div class="btn-container top">
 				<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
-					title="Chris Hardwick | Linkedin Profile" target="_blank">Linkedin Profile</a>
+					title="Chris Hardwick | Linkedin Profile" target="_blank"
+					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
 				<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Me</button>
 			</div>
 			<div id="profile">
@@ -33,6 +34,9 @@
 			</div>
 			<Disclaimers />
 		</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
 	</div>
 </template>
 
@@ -42,6 +46,11 @@ import Disclaimers from "../components/Disclaimers.vue";
 export default {
 	components: {
 		Disclaimers
+	},
+	data() {
+		return {
+			copyright: `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`
+		}
 	},
 	mounted() {
 	},
@@ -169,6 +178,10 @@ h2.profile {
 
 .uiDarkMode .tagline-box {
 	background-color: #222;
+}
+
+#copyright {
+	text-align: center;
 }
 
 @media (max-width: 767px) {

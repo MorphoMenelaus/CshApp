@@ -12,7 +12,7 @@
 		</div>
 
 		<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
-			<div class="loader-icon"></div>
+			<div class="spinner-comet"></div>
 		</div>
 
 		<div id="clock" v-if="!isMobile">

@@ -6,7 +6,7 @@
 			</div>
 			<div>
 				<div id="paging">
-					<label for="limitOptions">Limit List</label>
+					<label for="limitOptions">Limit{{ isMobile ? '' : ' List' }}</label>
 					<select v-model="limit" id="limitOptions">
 						<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
 						</option>
@@ -15,7 +15,8 @@
 						@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">Sort By</label>
 					<div class="order">
 						<small title="Click to toggle sort order"
-							@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir }}</small>
+							@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir === 'ASC' ?
+								'Ascend' : 'Descend' }}</small>
 						<select v-model="sortBy" id="sortBy">
 							<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text
 							}}
@@ -27,17 +28,17 @@
 					<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 					<span :currentPage="currentPage">page {{ currentPage }}</span>
 				</div>
-				<div id="posts">
-					<h2>Posts</h2>
-					<div class="button-container">
-						<button class="btn" :class="item.post_id === selectedBlog?.post_id ? 'selected' : ''"
-							v-for="(item, index) in postButtons" :key="index" @click="loadPost(item.post_id)">
-							{{ item.post_id }} | {{ item.post_title }}</button>
-					</div>
+				<div class="button-container">
+					<button class="btn" :class="item.post_id === selectedBlog?.post_id ? 'selected' : ''"
+						v-for="(item, index) in postButtons" :key="index" @click="loadPost(item.post_id)">
+						{{ item.post_title }}</button>
+				</div>
+				<div id="posts" v-if="Object.keys(selectedBlog).length > 0">
 					<h1>{{ selectedBlog?.post_title }}</h1>
 					<h3>{{ selectedBlog?.post_author }}</h3>
 					<div v-html="selectedBlog?.post_content"></div>
 				</div>
+				<h1 v-else>Click a button to view a blog post</h1>
 			</div>
 		</div>
 	</div>
@@ -52,7 +53,8 @@ import { onBeforeUnmount } from "vue";
 export default {
 	name: "BlogReader",
 	props: {
-		appState: Object
+		appState: Object,
+		isMobile: Boolean,
 	},
 	components: {},
 	data() {
@@ -143,8 +145,8 @@ export default {
 						post_title: post.post_title,
 						post_id: post.post_id
 					}
-					// if (post.post_status === "publish")
-					this.postButtons.push(button);
+					if (post.post_status === "publish")
+						this.postButtons.push(button);
 				});
 
 			} catch (error) {
@@ -202,9 +204,14 @@ h3 {
 	inset: 0;
 }
 
-#view.mobile {
-	/* margin: 0;
-	padding: 0; */
+#posts {
+	color: #000;
+	background-color: #e7e7e7;
+	border: 1px solid #555;
+	border-radius: 12px;
+	margin: 15px auto;
+	padding: 30px;
+	font-size: 1em;
 }
 
 #blogs {
@@ -214,22 +221,21 @@ h3 {
 }
 
 #paging {
-	display: flex;
-	justify-content: space-evenly;
-	align-items: center;
-	width: 40%;
-	margin: 30px auto 15px;
 	color: #000;
 	font-size: 18px;
 }
 
-.uiDarkMode #paging {
-	color: inherit;
+#paging {
+	color: #000;
 }
 
-.mobile #paging {
-	width: 90%;
-	margin: 30px auto;
+.uiDarkMode #paging {
+	color: #c1c1c1;
+}
+
+.mobile .order,
+.mobile label[for="sortBy"] {
+	display: none;
 }
 
 .button-container {
@@ -258,7 +264,7 @@ h3 {
 }
 
 .order small {
-	background-color: #7e7c7c;
+	background-color: #238519;
 	color: #fff;
 	padding: 0 5px;
 	line-height: 1.25em;

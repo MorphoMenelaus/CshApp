@@ -1,6 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import Disclaimers from "../components/Disclaimers.vue";
+
+const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
+	console.warn('Global function not found! sendAnalyticsEvent()')
+});
+
+console.log(sendAnalyticsEvent);
 
 // import Carousel from "../components/Carousel.vue";
 // <Carousel v-if="appState?.isLoggedOn" :appState="appState" />
@@ -24,6 +30,7 @@ const scrollToId = (id) => {
 const showDetails = (id) => {
 	lessText?.value ? lessText.value = false : lessText.value = true;
 	scrollToId(id);
+	sendAnalyticsEvent('show_details', 'accomplishments');
 }
 </script>
 

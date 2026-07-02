@@ -145,6 +145,13 @@ const refreshAuthTokenAsNeeded = async (appState) => {
 	}
 }
 
+const sendAnalyticsEvent = (eventType, method) => {
+	gtag('event', eventType, {
+		'method': method,
+		'page_location': window.location.href
+	});
+}
+
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.baseUrl = baseUrl;
@@ -156,3 +163,6 @@ app.config.globalProperties.toTitleCase = toTitleCase;
 app.config.globalProperties.isUTCtime = isUTCtime;
 app.config.globalProperties.addUserLog = addUserLog;
 app.config.globalProperties.refreshAuthTokenAsNeeded = refreshAuthTokenAsNeeded;
+app.config.globalProperties.sendAnalyticsEvent = sendAnalyticsEvent;
+
+app.provide('sendAnalyticsEvent', sendAnalyticsEvent)

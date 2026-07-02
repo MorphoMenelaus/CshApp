@@ -30,6 +30,7 @@ export default {
 			}
 			this.eventBus.emit("registerUser", payload);
 			this.eventBus.emit("contactEmail", true);
+			this.sendAnalyticsEvent('contact_form_footer', 'contact_modal');
 		}
 	},
 	mounted() {
