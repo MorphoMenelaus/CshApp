@@ -36,7 +36,8 @@ export default {
 #pseudo-table {
 	border: 1px #666 solid;
 	border-radius: 12px;
-	color: #666;
+	/* color: #666; */
+	color: rgb(0 0 0 / 70%);
 }
 
 .uiDarkMode #pseudo-table {
@@ -58,7 +59,7 @@ export default {
 }
 
 .uiDarkMode .flex-inner {
-		background-color: #000;
+	background-color: #000;
 }
 
 .left-column {

@@ -8,7 +8,7 @@
 			<input id="favoritesOnly" type="checkbox" v-model="favoritesOnly" />
 		</div>
 		<div id="paging" v-if="!favoritesOnly || favoritesList.length === 0">
-			<label for="limitOptions">Limit List</label>
+			<label for="limitOptions">Limit{{ isMobile ? '' : ' List' }}</label>
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
 				</option>
@@ -18,7 +18,8 @@
 				By</label>
 			<div class="order">
 				<small title="Click to toggle sort order"
-					@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir }}</small>
+					@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir === 'ASC' ? 'Ascend'
+						: 'Descend' }}</small>
 				<select v-model="sortBy">
 					<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
 					</option>
@@ -36,6 +37,9 @@
 				<div class="card" v-for="(item, index) in movieList" :key="index">
 					<button v-if="appState?.permissions.admin" class="btn edit" @click="editThisEntry(item)"
 						title="Edit this movie's detils">Edit</button>
+					<!-- <div v-if="item.original_title" class="summary-pop">
+							<p>{{ item.summary }}</p>
+						</div> -->
 					<div class="inner">
 						<div class="title-description">
 							<h2 :title="item.original_title ? item.original_title : ''">
@@ -549,22 +553,13 @@ img {
 }
 
 #paging {
-	display: flex;
-	justify-content: space-evenly;
-	align-items: center;
-	width: 40%;
-	margin: 30px auto 15px;
 	color: #000;
 	font-size: 18px;
 }
 
-.uiDarkMode #paging {
-	color: inherit;
-}
-
-.mobile #paging {
-	width: 90%;
-	margin: 30px auto;
+.mobile .order,
+.mobile label[for="sortByOptions"] {
+	display: none;
 }
 
 .clear-field {
@@ -630,7 +625,7 @@ img {
 }
 
 .order small {
-	background-color: #7e7c7c;
+	background-color: #238519;
 	color: #fff;
 	padding: 0 5px;
 	line-height: 1.25em;

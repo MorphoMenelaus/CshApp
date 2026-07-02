@@ -5,11 +5,12 @@
 		<h1>User Logs</h1>
 
 		<div id="paging">
-			<label for="limitOptions">Limit List</label>
+			<label for="limitOptions">Limit{{ isMobile ? '' : ' List' }}</label>
 			<select v-model="limit">
 				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
+			<button class="prev-button btn" type="button" @click="previousPage()"
+				title="Previous Page">previous</button>
 			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
@@ -186,21 +187,12 @@ h1 {
 }
 
 #paging {
-	display: flex;
-	justify-content: space-evenly;
-	align-items: center;
-	width: 40%;
-	margin: 15px auto;
 	color: #000;
+	max-width: 30em;
 }
 
 .uiDarkMode #paging {
-	color: inherit;
-}
-
-.mobile #paging {
-	width: 90%;
-	margin: 30px auto 0;
+	color: #c1c1c1;
 }
 
 table {

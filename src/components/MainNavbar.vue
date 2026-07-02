@@ -19,21 +19,21 @@
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/movie-database"
 				@click="closeDialogs()" title="Movie Database">Movie DB
 			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/blog-reader"
-				@click="closeDialogs()" title="Blog">Blog
+			<RouterLink v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
+				to="/blog-reader" @click="closeDialogs()" title="Blog">Blog
 			</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs()"
 				title="User Preferences">
 				Preferences</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/displayusers"
-				@click="closeDialogs()" title="Display Users">Users
+			<RouterLink v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
+				to="/displayusers" @click="closeDialogs()" title="Display Users">Users
 			</RouterLink>
 			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs"
 				@click="closeDialogs()" title="Display User">User
 				Logs</RouterLink>
 			<RouterLink to="/resume" @click="closeDialogs()">Resume</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/simpleclock"
-				@click="closeDialogs()" title="Simple Clock">Simple Clock
+			<RouterLink v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
+				to="/simpleclock" @click="closeDialogs()" title="Simple Clock">Simple Clock
 			</RouterLink>
 			<RouterLink to="/about" @click="closeDialogs()">About</RouterLink>
 		</nav>
@@ -200,7 +200,8 @@ nav {
 } */
 
 nav a.router-link-exact-active {
-	color: #100f2e;
+	/* color: #100f2e; */
+	color: #f2f1ff;
 }
 
 nav a {

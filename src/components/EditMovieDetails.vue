@@ -208,6 +208,7 @@ export default {
 			} finally {
 				// this.addUserLog(this.appState, "Update Movie Details");
 				this.eventBus.emit("showHideLoader", false);
+				this.addUserLog(this.appState, `Update Movie Details. MovieId: ${this.selectedMovie.movieId}`);
 			}
 		},
 		cancel() {

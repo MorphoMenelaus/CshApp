@@ -197,9 +197,9 @@ export default {
 
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
-					updateAppState.accessToken = dataObj.accessToken;
-					updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
-					updateAppState.refreshToken = dataObj.refreshToken;
+					updateAppState.accessToken = dataObj.authorization.accessToken;
+					updateAppState.accessTokenExpiration = dataObj.authorization.accessTokenExpiration;
+					updateAppState.refreshToken = dataObj.authorization.refreshToken;
 					updateAppState.isLoggedOn = true;
 					this.eventBus.emit("updateAppState", updateAppState);
 

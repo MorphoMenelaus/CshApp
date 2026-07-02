@@ -447,20 +447,11 @@ td {
 }
 
 #paging {
-	display: flex;
-	justify-content: space-evenly;
-	align-items: center;
-	width: 40%;
-	margin: 30px auto 15px;
 	color: #000;
+	max-width: 30em;
 }
 
 .uiDarkMode #paging {
-	color: inherit;
-}
-
-.mobile #paging {
-	width: 90%;
-	margin: 30px auto 0;
+	color: #c1c1c1;
 }
 </style>
