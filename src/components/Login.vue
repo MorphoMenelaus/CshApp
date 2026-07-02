@@ -86,7 +86,7 @@ export default {
 		return {
 			appNotify: Object.assign({}, this.appNotify),
 			loginShow: false,
-			activeSession: null,
+			activeSession: {},
 			accessToken: "",
 			accessTokenExpiration: "",
 			refreshToken: "",
@@ -101,7 +101,6 @@ export default {
 			displayName: "",
 			password: "",
 			userId: "",
-			activeSession: {},
 			usersList: [],
 			currentComponent: null,
 			dialog: null
@@ -140,13 +139,19 @@ export default {
 					return this.appNotify;
 				}
 
-				const response = await fetch('/api/auth/login', {
+				let headerObj = new Headers();
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL('/api/auth/login', this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: headerObj,
 					body: JSON.stringify(body)
 				});
 
-				let dataObj = await response.json();
+				let response = await fetch(request);
+				const dataObj = await response.json();
 
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
@@ -187,13 +192,19 @@ export default {
 
 			try {
 
-				const response = await fetch('/api/auth/refresh', {
+				let headerObj = new Headers();
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL('/api/auth/refresh', this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: headerObj,
 					body: JSON.stringify(body)
 				});
 
-				let dataObj = await response.json();
+				let response = await fetch(request);
+				const dataObj = await response.json();
 
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
@@ -232,13 +243,19 @@ export default {
 
 				this.dialog.close();
 
-				const response = await fetch('/api/auth/logout', {
+				let headerObj = new Headers();
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL('/api/auth/logout', this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: headerObj,
 					body: JSON.stringify(body)
 				});
 
-				let dataObj = await response.json();
+				let response = await fetch(request);
+				const dataObj = await response.json();
 
 				let updateAppState = {};
 				this.eventBus.emit("updateAppState", updateAppState);

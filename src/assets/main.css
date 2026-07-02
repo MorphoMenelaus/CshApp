@@ -15,8 +15,8 @@
 }
 
 #app {
-	background: url(../img/IMG_6648_tonemapped_2026.png) 0 65%/cover no-repeat;
-	/* background: url('../img/IMG_6648_tonemapped_2026.png') no-repeat;
+	background: url(../img/IMG_6648_BG_2026.webp) 0 65%/cover no-repeat;
+	/* background: url('../img/IMG_6648_BG_2026.webp') no-repeat;
 	background-size: cover;
 	background-position: 0 65%; */
 }
@@ -206,6 +206,6 @@ button.close-modal {
 
 @media (min-width: 1920px) {
 	#app {
-		background: url(../img/IMG_6648_tonemapped_2026.png) 0 35%/cover no-repeat;
+		background: url(../img/IMG_6648_BG_2026.webp) 0 35%/cover no-repeat;
 	}
 }

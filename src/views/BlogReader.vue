@@ -143,7 +143,6 @@ export default {
 					let button = {
 						post_id: post.post_id,
 						post_title: post.post_title,
-						post_id: post.post_id
 					}
 					if (post.post_status === "publish")
 						this.postButtons.push(button);
