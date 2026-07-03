@@ -207,7 +207,6 @@ export default {
 			let limitBase = [2, 4, 6, 8, 10]
 			this.limitOptions = [];
 			limitBase.forEach(limit => {
-				console.log(limit * multiplier);
 				let limitCbj = { text: "", value: null }
 				limitCbj.text = (limit * multiplier).toString();
 				limitCbj.value = (limit * multiplier);

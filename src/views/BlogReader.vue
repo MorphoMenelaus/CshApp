@@ -183,6 +183,34 @@ export default {
 };
 </script>
 
+<style>
+/* BEGIN Blog styles */
+#posts>div {
+	margin-bottom: 45px;
+}
+
+#posts .alignright,
+#posts .alignleft,
+#posts .size-medium {
+	margin: 30px;
+}
+
+#posts .alignright {
+	float: right;
+}
+
+#posts .alignleft {
+	float: left;
+}
+
+#posts .size-full {
+	width: 100%;
+	object-fit: contain;
+	margin: 30px auto;
+}
+
+/* END Blog styles */
+</style>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>

@@ -211,7 +211,7 @@ export default {
 			this.eventBus.emit("showHideLoader", true);
 
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
+			if (!refreshResponse?.success) {
 				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
 				this.eventBus.emit("updateStatus", mergedStatus);
 				return;

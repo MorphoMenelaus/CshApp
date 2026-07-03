@@ -89,7 +89,6 @@ const addUserLog = async (appState, actionPerformed = "") => {
 		serverStatus.code = 400;
 		serverStatus.message = `Error posting data: ${error}`;
 		serverStatus.success = false;
-		console.log(serverStatus);
 	}
 }
 
@@ -117,7 +116,7 @@ const refreshAuthTokenAsNeeded = async (appState) => {
 
 		let headerObj = new Headers();
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL('/api/auth/refresh', this.baseUrl);
+		let requestUrl = new URL('/api/auth/refresh', baseUrl);
 
 		let request = new Request(
 			requestUrl.toString(), {
@@ -131,9 +130,9 @@ const refreshAuthTokenAsNeeded = async (appState) => {
 
 		if (dataObj?.success) {
 			let updateAppState = appState;
-			updateAppState.accessToken = dataObj.accessToken;
-			updateAppState.accessTokenExpiration = dataObj.accessTokenExpiration;
-			updateAppState.refreshToken = dataObj.refreshToken;
+			updateAppState.accessToken = dataObj.authorization.accessToken;
+			updateAppState.accessTokenExpiration = dataObj.authorization.accessTokenExpiration;
+			updateAppState.refreshToken = dataObj.authorization.refreshToken;
 			updateAppState.isLoggedOn = true;
 			eventBus.emit("updateAppState", updateAppState);
 
