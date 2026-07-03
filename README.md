@@ -1,6 +1,6 @@
 # CshApp
 
-Vue3 based app
+Vue3 based single page app
 
 ## Project setup
 
