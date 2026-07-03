@@ -16,7 +16,6 @@ export default defineConfig({
 	],
 	base: './',
 	define: {
-		// Wrap the string value in JSON.stringify so it compiles as a raw string literal
 		APP_VERSION: JSON.stringify(packageJson.version),
 		__VUE_PROD_DEVTOOLS__: JSON.stringify(false) // true or false for dev tools in production mode
 	},

@@ -16,7 +16,9 @@ const props = defineProps({
 
 let lessText = ref(false);
 
-const targetSection = ref(null)
+const targetSection = ref(null);
+
+const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
 const scrollToId = (id) => {
 	const element = document.getElementById(id)
@@ -151,10 +153,17 @@ const showDetails = (id) => {
 			</div>
 			<Disclaimers />
 		</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
 	</main>
 </template>
 
 <style scoped>
+#copyright {
+	text-align: center;
+}
+
 h1,
 h2,
 #title-block h3,
@@ -333,7 +342,7 @@ p {
 	position: relative;
 	right: 0;
 	font-size: .75em;
-	padding: 2px 15px;
+	padding: 3px 15px 2px;
 	border: 1px #000 solid;
 	box-shadow: 1px 1px 0px #000;
 }
