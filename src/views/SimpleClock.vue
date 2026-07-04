@@ -96,9 +96,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import { onBeforeUnmount } from "vue";
-
 export default {
 	name: "SimpleClock",
 	props: {

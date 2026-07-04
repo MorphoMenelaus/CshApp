@@ -80,8 +80,7 @@ const addUserLog = async (appState, actionPerformed = "") => {
 			body: JSON.stringify(body)
 		});
 
-		const response = await fetch(request);
-		data = await response.json();
+		await fetch(request);
 
 	} catch (error) {
 		let serverStatus = {};

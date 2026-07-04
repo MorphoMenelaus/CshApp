@@ -35,7 +35,7 @@
 import MainNavbar from "@/components/MainNavbar.vue";
 
 export default {
-	name: "Header",
+	name: "FooterMain",
 	components: {
 		MainNavbar
 	},

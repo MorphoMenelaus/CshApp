@@ -16,7 +16,7 @@
 
 <script>
 export default {
-	name: 'Footer',
+	name: 'FooterMain',
 	props: {
 		serverVersion: String,
 		isMobile: Boolean

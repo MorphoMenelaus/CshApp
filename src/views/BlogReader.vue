@@ -3,6 +3,15 @@
 		<div id="blogs">
 			<div>
 				<h1>Blog</h1>
+				<div class="blog-intro">
+					<p>These are all old blog posts from a blog I had over ten years ago. It was originally a Wordpress
+						site
+						but I found an old backup of that site including the SQL backup files. All are pretty dated and
+						not
+						using the Wordpress themes and styles but kind of amusing to see past posts.</p>
+					<p>Many posts are hidden and will be unhidden as I clean them up a little but even the ones that are
+						unhidden are pretty rough.</p>
+				</div>
 			</div>
 			<div>
 				<div id="paging">
@@ -28,14 +37,25 @@
 					<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 					<span :currentPage="currentPage">page {{ currentPage }}</span>
 				</div>
+				<div v-if="appState?.permissions.admin" id="status-container">
+					<label for="postStatusOptions">Post Status</label>
+					<select v-model="postStatus" id="postStatusOptions">
+						<option v-for="(item, index) in postStatusOptions" :key="index" :value="item.value">
+							{{ item.text }}
+						</option>
+					</select>
+				</div>
 				<div class="button-container">
 					<button class="btn" :class="item.post_id === selectedBlog?.post_id ? 'selected' : ''"
 						v-for="(item, index) in postButtons" :key="index" @click="loadPost(item.post_id)">
 						{{ item.post_title }}</button>
 				</div>
 				<div id="posts" v-if="Object.keys(selectedBlog).length > 0">
+					<span v-if="selectedBlog?.post_status == 'hidden'" class="hidden-post">Post is hidden</span>
 					<h1>{{ selectedBlog?.post_title }}</h1>
 					<h3>{{ selectedBlog?.post_author }}</h3>
+					<span class="post-date">Published: {{ new Date(selectedBlog?.post_date).toLocaleDateString("en-US")
+					}}</span>
 					<div v-html="selectedBlog?.post_content"></div>
 				</div>
 				<h1 v-else>Click a button to view a blog post</h1>
@@ -46,8 +66,6 @@
 
 <script>
 // @ is an alias to /src
-import { ref } from "vue";
-import router from "@/router";
 import { onBeforeUnmount } from "vue";
 
 export default {
@@ -74,13 +92,17 @@ export default {
 				{ text: "Author", value: "post_author" },
 				{ text: "Date", value: "post_date" },
 				{ text: "Title", value: "post_title" },
-				{ text: "Status", value: "post_status" },
 				{ text: "Post Id", value: "post_id" },
 			],
 			orderDirOptions: [
 				{ text: "Descending", value: "DESC" },
 				{ text: "Ascending", value: "ASC" },
 			],
+			postStatusOptions: [
+				{ text: "Published", value: "publish" },
+				{ text: "Hidden", value: "hidden" },
+			],
+			postStatus: "publish",
 			orderDir: "ASC",
 			sortBy: "post_date",
 			blogList: [],
@@ -97,6 +119,10 @@ export default {
 		},
 		orderDir() {
 			this.getBlogPosts();
+		},
+		postStatus() {
+			this.selectedBlog = {},
+				this.getBlogPosts();
 		},
 	},
 	methods: {
@@ -123,6 +149,7 @@ export default {
 			params.set("offset", this.offset);
 			params.set("sort", this.sortBy);
 			params.set("order", this.orderDir);
+			params.set("status", this.postStatus);
 			// params.set("keyword", this.contains);
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
@@ -144,8 +171,7 @@ export default {
 						post_id: post.post_id,
 						post_title: post.post_title,
 					}
-					if (post.post_status === "publish")
-						this.postButtons.push(button);
+					this.postButtons.push(button);
 				});
 
 			} catch (error) {
@@ -203,10 +229,24 @@ export default {
 	float: left;
 }
 
+#posts .aligncenter {
+	display: block;
+	margin: auto;
+}
+
 #posts .size-full {
 	width: 100%;
 	object-fit: contain;
 	margin: 30px auto;
+}
+
+#posts .post-date {
+	display: block;
+	text-align: right;
+}
+
+#posts figcaption {
+	text-align: center;
 }
 
 /* END Blog styles */
@@ -245,6 +285,25 @@ h3 {
 	width: 98%;
 	margin: 15px auto;
 	padding-bottom: 45px;
+}
+
+#status-container {
+	display: flex;
+	justify-content: center;
+}
+
+#status-container>* {
+	margin: 15px;
+}
+
+.blog-intro {
+	background-color: rgb(77 77 77);
+	color: #ddd;
+	font-size: 1em;
+	padding: 30px;
+	border-radius: 12px;
+	border: 1px #999 solid;
+	margin: 30px auto 45px;
 }
 
 #paging {
@@ -297,6 +356,16 @@ h3 {
 	line-height: 1.25em;
 	margin-bottom: 3px;
 	cursor: pointer;
+}
+
+.hidden-post {
+	display: flex;
+	justify-content: center;
+	margin: auto;
+	width: fit-content;
+	padding: 5px 15px;
+	background-color: #ff0;
+	font-weight: bold;
 }
 
 @media (min-width: 768px) {

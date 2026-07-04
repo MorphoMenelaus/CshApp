@@ -656,6 +656,10 @@ img {
 	margin-left: 10px;
 }
 
+label[for="favoritesOnly"] {
+	cursor: pointer;
+}
+
 @media (min-width: 576px) {
 	#cards {
 		grid-template-columns: repeat(2, 1fr);
