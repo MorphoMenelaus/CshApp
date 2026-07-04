@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, inject } from 'vue';
+import { ref, inject } from 'vue';
 import Disclaimers from "../components/Disclaimers.vue";
 
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
@@ -9,14 +9,11 @@ const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 // import Carousel from "../components/Carousel.vue";
 // <Carousel v-if="appState?.isLoggedOn" :appState="appState" />
 
-// Props & Emits
-const props = defineProps({
+defineProps({
 	appState: Object,
 })
 
 let lessText = ref(false);
-
-const targetSection = ref(null);
 
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
@@ -28,8 +25,8 @@ const scrollToId = (id) => {
 }
 
 const showDetails = (id) => {
-	lessText?.value ? lessText.value = false : lessText.value = true;
-	scrollToId(id);
+	lessText.value = lessText?.value ? false : true;
+	// scrollToId(id);
 	sendAnalyticsEvent('show_details', 'accomplishments');
 }
 </script>
@@ -104,52 +101,58 @@ const showDetails = (id) => {
 						title="Chris Hardwick | Linkedin Profile" target="_blank"
 						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
 				</div>
-				<div v-if="lessText" id="latest-details">
-					<div class="details-ul">
-						<h3 class="julius-sans">Admin App:</h3>
-						<ul>
-							<li>Allows casino administrators to manage casinos and to view and set game settings.</li>
-							<li>Admins can enable or disable any games, game types or pay tiers.</li>
-							<li>Admins can review all game history, logs and player account status.</li>
-							<li>Admins can review each individual game play, showing the reels spin, bonus games, and
-								payouts for each line to help with dispute resolution.</li>
-							<li>Game play history can be filtered by game name and date/time range.</li>
-						</ul>
+				<Transition name="slide-down">
+					<div v-if="lessText" id="latest-details">
+						<div class="details-ul">
+							<h3 class="julius-sans">Admin App:</h3>
+							<ul>
+								<li>Allows casino administrators to manage casinos and to view and set game settings.
+								</li>
+								<li>Admins can enable or disable any games, game types or pay tiers.</li>
+								<li>Admins can review all game history, logs and player account status.</li>
+								<li>Admins can review each individual game play, showing the reels spin, bonus games,
+									and
+									payouts for each line to help with dispute resolution.</li>
+								<li>Game play history can be filtered by game name and date/time range.</li>
+							</ul>
+						</div>
+						<div class="details-ul">
+							<h3 class="julius-sans">Cashier App:</h3>
+							<ul>
+								<li>Handles all cash-in/cash-out requirements of the players. All cash-in is immediately
+									playable in any game in the system.</li>
+								<li>View the transaction history for each player account.</li>
+								<li>Prints receipts to a connected receipt printer.</li>
+								<li>Displays and prints each cashier’s bank transaction totals, and starting and ending
+									cash
+									for
+									the shift.</li>
+							</ul>
+						</div>
+						<div class="details-ul">
+							<h3 class="julius-sans">Player App:</h3>
+							<ul>
+								<li>Register new accounts and verify email address or phone number depending on rules
+									set by
+									the
+									site administrator.</li>
+								<li>Verify player identification in jurisdictions where this is required.</li>
+								<li>Generate QR code on the player mobile app for Cashiers to scan to authorize funds
+									transfers
+									for the player’s account.</li>
+							</ul>
+						</div>
+						<div class="details-ul">
+							<h3 class="julius-sans">Report App:</h3>
+							<ul>
+								<li>All reports can be filtered by various parameters and date/time range.</li>
+								<li>Game performance data tables to document individual game performance.</li>
+								<li>Casino payout liability reports.</li>
+								<li>Shows all active players and stats.</li>
+							</ul>
+						</div>
 					</div>
-					<div class="details-ul">
-						<h3 class="julius-sans">Cashier App:</h3>
-						<ul>
-							<li>Handles all cash-in/cash-out requirements of the players. All cash-in is immediately
-								playable in any game in the system.</li>
-							<li>View the transaction history for each player account.</li>
-							<li>Prints receipts to a connected receipt printer.</li>
-							<li>Displays and prints each cashier’s bank transaction totals, and starting and ending cash
-								for
-								the shift.</li>
-						</ul>
-					</div>
-					<div class="details-ul">
-						<h3 class="julius-sans">Player App:</h3>
-						<ul>
-							<li>Register new accounts and verify email address or phone number depending on rules set by
-								the
-								site administrator.</li>
-							<li>Verify player identification in jurisdictions where this is required.</li>
-							<li>Generate QR code on the player mobile app for Cashiers to scan to authorize funds
-								transfers
-								for the player’s account.</li>
-						</ul>
-					</div>
-					<div class="details-ul">
-						<h3 class="julius-sans">Report App:</h3>
-						<ul>
-							<li>All reports can be filtered by various parameters and date/time range.</li>
-							<li>Game performance data tables to document individual game performance.</li>
-							<li>Casino payout liability reports.</li>
-							<li>Shows all active players and stats.</li>
-						</ul>
-					</div>
-				</div>
+				</Transition>
 			</div>
 			<Disclaimers />
 		</div>
@@ -255,6 +258,7 @@ p {
 
 #latest-details {
 	margin-top: 30px;
+	overflow: hidden;
 }
 
 #latest-details ul {

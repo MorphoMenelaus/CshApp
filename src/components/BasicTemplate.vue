@@ -1,13 +1,10 @@
 <template>
+	<div>
+
+	</div>
 </template>
 
 <script>
-// @ is an alias to /src
-import { ref } from "vue";
-// import session from "@/dependencies/sessionMethods";
-import router from "@/router";
-import { onBeforeUnmount } from "vue";
-
 export default {
 	name: "SomeView",
 	props: {},
@@ -17,12 +14,12 @@ export default {
 	},
 	watch: {
 		deepWatch: {
-			// Deep watch example
-			// Watches for changes to all properties of an object
-			handler(val, oldVal) {
-				// doSomething();
-			},
-			deep: true,
+			// ** Deep watch example
+			// ** Watches for changes to all properties of an object
+			// handler(val, oldVal) {
+			// 	// doSomething();
+			// },
+			// deep: true,
 		},
 		otherWatch() {
 			// doSomething();

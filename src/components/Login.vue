@@ -255,15 +255,16 @@ export default {
 				});
 
 				let response = await fetch(request);
-				const dataObj = await response.json();
 
-				let updateAppState = {};
-				this.eventBus.emit("updateAppState", updateAppState);
-				session.recall.deleteAll();
+				if (response.ok) {
+					let updateAppState = {};
+					this.eventBus.emit("updateAppState", updateAppState);
+					session.recall.deleteAll();
+				}
 
 				router.push("/");
 
-			} catch {
+			} catch (e) {
 				console.error(e);
 			} finally {
 				this.eventBus.emit("showHideLoader", false);

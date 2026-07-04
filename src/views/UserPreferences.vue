@@ -117,6 +117,8 @@
 			<button v-if="appState.userName !== 'guest'" @click="currentComponent = 'ChangePassword'" class="btn"
 				title="Change Password">Change
 				Password</button>
+			<button v-if="appState.userName !== 'guest'" id="delete-button" class="btn delete"
+				@click="currentComponent = 'DeleteUser'">Delete Account</button>
 		</div>
 	</div>
 
@@ -125,6 +127,7 @@
 <script>
 import { onBeforeUnmount } from "vue";
 import ChangePassword from "@/components/ChangePassword.vue";
+import DeleteUser from "@/components/DeleteUser.vue";
 
 export default {
 	name: "UserPreferences",
@@ -133,7 +136,8 @@ export default {
 		isMobile: Boolean
 	},
 	components: {
-		ChangePassword
+		ChangePassword,
+		DeleteUser
 	},
 	data() {
 		return {
@@ -164,7 +168,7 @@ export default {
 	},
 	watch: {
 		appState: {
-			handler(val, oldVal) {
+			handler() {
 				this.admin = this.appState?.user?.permissions?.admin;
 			},
 			deep: true,
@@ -231,7 +235,6 @@ export default {
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
-			} finally {
 			}
 		},
 		async getUser() {
@@ -296,7 +299,7 @@ export default {
 				verified: this.verified
 			};
 
-			let hasEmpty = Object.values(body).some(val => !val);
+			// let hasEmpty = Object.values(body).some(val => !val);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -316,7 +319,7 @@ export default {
 
 				if (data.success && this.user.userName === this.appState.userName) {
 					let updateAppState = this.appState;
-					this.appState.user = data.user;
+					updateAppState.user = data.user;
 					this.eventBus.emit("updateAppState", updateAppState);
 				}
 
@@ -339,10 +342,19 @@ export default {
 	},
 	created() {
 		this.getUser();
+		this.eventBus.on("UserDeleted", () => {
+			this.currentComponent = null;
+			this.eventBus.emit("forceLogout");
+		});
+		this.eventBus.on("cancelDeleteUser", () => {
+			this.currentComponent = null;
+		});
 		this.eventBus.on("closeChangePassword", () => {
 			this.currentComponent = null;
 		});
 		onBeforeUnmount(() => {
+			this.eventBus.off("UserDeleted");
+			this.eventBus.off("cancelDeleteUser");
 			this.eventBus.off("closeChangePassword")
 		});
 	},
@@ -460,6 +472,23 @@ button.btn {
 	background-color: grey;
 	border-radius: 8px;
 	padding: 15px;
+}
+
+#change-btn {
+	display: flex;
+	align-items: center;
+	justify-self: center;
+	margin-top: 15px;
+}
+
+#change-btn .btn {
+	margin: 0 15px;
+}
+
+.delete {
+	background-color: #000;
+	color: #f00;
+	font-weight: bold;
 }
 
 @media (max-width: 767px) {

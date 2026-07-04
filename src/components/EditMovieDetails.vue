@@ -107,17 +107,12 @@
 </template>
 
 <script>
-import ChangePassword from "@/components/ChangePassword.vue";
-
 export default {
 	name: "EditMovieDetails",
 	props: {
 		appState: Object,
 		selectedMovie: Object,
 		favoritesList: Array
-	},
-	components: {
-		ChangePassword
 	},
 	data() {
 		return {

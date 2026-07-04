@@ -29,9 +29,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import router from "@/router";
-
 export default {
 	name: "Verify",
 	props: {
@@ -82,8 +79,6 @@ export default {
 					this.appNotify.message = "Verification success. Please Log in to continue.";
 					this.appNotify.success = true;
 					this.success = true;
-					// this.eventBus.emit("forceLogout");
-					// router.push("/");
 				} else {
 					this.appNotify.code = dataObj.code;
 					this.appNotify.message = dataObj.message;

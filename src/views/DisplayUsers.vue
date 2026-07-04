@@ -62,7 +62,6 @@
 // import { ref } from "vue";
 // import session from "@/dependencies/sessionMethods";
 // import router from "@/router";
-import { onBeforeUnmount } from "vue";
 
 export default {
 	name: "DisplayUsers",

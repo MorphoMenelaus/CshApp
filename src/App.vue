@@ -5,14 +5,14 @@
 		<input id="uiDarkMode" title="Toggle dark mode" type="checkbox" v-model="uiDarkMode" />
 	</div>
 
-	<Header :appState="appState" :isMobile="isMobile" />
+	<HeaderMain :appState="appState" :isMobile="isMobile" />
 
 	<Login :appState="appState" />
 
 	<RouterView :appState="appState" id="view" :isMobile="isMobile" :windowWidth="windowWidth"
 		:class="isMobile ? 'mobile' : ''" />
 
-	<Footer :serverVersion="serverVersion" :isMobile="isMobile" />
+	<FooterMain :serverVersion="serverVersion" :isMobile="isMobile" />
 
 	<component :is="currentComponent" :appState="appState" />
 
@@ -21,18 +21,18 @@
 <script>
 // @ is an alias to /src
 // import sharedScripts from "@/dependencies/sharedScripts";
-import { RouterLink, RouterView } from "vue-router";
+// import { RouterLink, RouterView } from "vue-router";
 import session from "@/dependencies/sessionMethods.js";
-import Header from "@/components/Header.vue";
-import Footer from "@/components/Footer.vue";
+import HeaderMain from "@/components/HeaderMain.vue";
+import FooterMain from "@/components/FooterMain.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
 
 export default {
 	components: {
-		Header,
-		Footer,
+		HeaderMain,
+		FooterMain,
 		Login,
 		Register,
 		ContactForm

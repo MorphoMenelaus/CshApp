@@ -17,9 +17,6 @@
 <script>
 // @ is an alias to /src
 import { onBeforeUnmount } from 'vue';
-// import session from "@/dependencies/sessionMethods";
-// import sharedScripts from "@/dependencies/sharedScripts";
-import router from "@/router";
 
 export default {
 	name: "DeleteUser",
@@ -66,7 +63,7 @@ export default {
 				const response = await fetch(request);
 				const data = await response.json();
 
-				if (data.success) { this.addUserLog(this.appState, "User Deleted Account"); }
+				if (data.success) { this.addUserLog(this.appState, "User Deleted Account"); }	
 
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
