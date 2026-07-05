@@ -213,19 +213,23 @@ button.close-modal {
 
 .slide-down-enter-active,
 .slide-down-leave-active {
-	transition: height .5s;
+	transition: height .5s, opacity .2s ease;
 	height: auto;
+	opacity: 100;
 	interpolate-size: allow-keywords;
 }
 
 .slide-down-enter-from,
 .slide-down-leave-to {
+	transition: height .5s, opacity .2s ease .3s;
 	height: 0;
+	opacity: 0;
 }
 
 .slide-up-enter-active,
 .slide-up-leave-active {
 	transition: transform 0.4s ease, opacity 0.4s ease;
+	transform: translateY(0);
 }
 
 .slide-up-enter-from,

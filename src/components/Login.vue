@@ -4,8 +4,8 @@
 		<div v-if="appState?.isLoggedOn">
 			<span>{{ appState.userName }}</span>
 			<button class="btn" type="button" @click="openConfirmDialog()">Logout</button>
-			<span v-if="userName !== 'guest'" id="delete-button" class="link"
-				@click="currentComponent = 'DeleteUser'">Delete Account</span>
+			<!-- <span v-if="userName !== 'guest'" id="delete-button" class="link"
+				@click="currentComponent = 'DeleteUser'">Delete Account</span> -->
 			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify
 				Account</RouterLink>
 		</div>

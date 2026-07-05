@@ -11,32 +11,37 @@
 				<RouterLink to="/" title="Home" @click="closeDialogs('home_title')">CSH</RouterLink>
 			</div>
 		</div>
-		<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow">
-			<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="closeDialogs('home_icon')"><img
-					src="/favicon.ico" alt="CSH App">
-			</RouterLink>
-			<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/movie-database"
-				@click="closeDialogs('movie_db')" title="Movie Database">Movie DB
-			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
-				to="/blog-reader" @click="closeDialogs('blog')" title="Blog">Blog
-			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs('preferences')"
-				title="User Preferences">
-				Preferences</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
-				to="/displayusers" @click="closeDialogs('users')" title="Display Users">Users
-			</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs"
-				@click="closeDialogs('user_logs')" title="Display User">User
-				Logs</RouterLink>
-			<RouterLink to="/resume" @click="closeDialogs('resume')">Resume</RouterLink>
-			<RouterLink v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
-				to="/simpleclock" @click="closeDialogs('simple_clock')" title="Simple Clock">Simple Clock
-			</RouterLink>
-			<RouterLink to="/about" @click="closeDialogs('about')">About</RouterLink>
-		</nav>
+		<Transition name="slide-down">
+			<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow">
+				<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="closeDialogs('home_icon')">
+					<img src="/favicon.ico" alt="CSH App">
+				</RouterLink>
+				<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
+				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/movie-database"
+					@click="closeDialogs('movie_db')" title="Movie Database">Movie DB
+				</RouterLink>
+				<RouterLink
+					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
+					to="/blog-reader" @click="closeDialogs('blog')" title="Blog">Blog
+				</RouterLink>
+				<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs('preferences')"
+					title="User Preferences">
+					Preferences</RouterLink>
+				<RouterLink
+					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
+					to="/displayusers" @click="closeDialogs('users')" title="Display Users">Users
+				</RouterLink>
+				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs"
+					@click="closeDialogs('user_logs')" title="Display User">User
+					Logs</RouterLink>
+				<RouterLink to="/resume" @click="closeDialogs('resume')">Resume</RouterLink>
+				<RouterLink
+					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
+					to="/simpleclock" @click="closeDialogs('simple_clock')" title="Simple Clock">Simple Clock
+				</RouterLink>
+				<RouterLink to="/about" @click="closeDialogs('about')">About</RouterLink>
+			</nav>
+		</Transition>
 	</div>
 
 </template>
@@ -98,7 +103,8 @@ export default {
 	padding: 15px;
 	background-color: #313b64;
 	border-bottom: 1px solid #fff;
-	z-index: 100;
+	z-index: -1;
+	overflow: hidden;
 }
 
 #nav-container.mobile {

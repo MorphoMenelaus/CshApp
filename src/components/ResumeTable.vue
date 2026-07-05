@@ -3,7 +3,7 @@
 		<div id="pseudo-table">
 
 			<div class="container">
-				<div class="flex-inner" v-for="(item, index) in resumeArray" :key="index">
+				<div class="flex-inner" v-for="(item, index) in resumeArray" :key="index" :id="`id-${item.id}`">
 					<div class="left-column">
 						<h2>{{ item.title }}</h2>
 						<h3>{{ item.company }}</h3>
