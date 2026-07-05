@@ -211,6 +211,16 @@ export default {
 
 <style>
 /* BEGIN Blog styles */
+#posts .indent {
+	text-indent: 3em;
+}
+
+#posts .subhead {
+	text-align: center;
+	margin: 10px auto 20px;
+	font-weight: 500;
+}
+
 #posts>div {
 	margin-bottom: 45px;
 }
@@ -245,8 +255,22 @@ export default {
 	text-align: right;
 }
 
+#posts figure {
+	margin-bottom: 15px;
+}
+
+#posts figure img {
+	margin: 15px auto 5px;
+}
+
 #posts figcaption {
 	text-align: center;
+	max-width: 60%;
+	margin: auto;
+}
+
+#posts p {
+	margin-bottom: 30px;
 }
 
 /* END Blog styles */

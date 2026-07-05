@@ -17,7 +17,21 @@
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
 				<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Me</button>
 			</div>
-
+			<div>
+				<div class="form-group">
+					<label for="keywords">Search Roles</label>
+					<input id="keywords" title="keywords" v-model.trim="keywords" type="text" name="keywords"
+						class="form-control">
+					<span v-if="keywords.length > 0" title="Clear search" @click="keywords = ''"
+						class="clear-field">❌</span>
+				</div>
+				<div v-if="filteredArray.length > 0 && keywords.length >= 3" id="filtered">
+					<h2>Filtered Resposibilities</h2>
+					<ul id="resp-list">
+						<li v-for="(item, index) in filteredArray" :key="index" v-html="item"></li>
+					</ul>
+				</div>
+			</div>
 			<div v-if="resumeArray.length > 0 && !isMobile">
 				<ResumeTable :resumeArray="resumeArray" />
 			</div>
@@ -38,6 +52,7 @@ import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
 export default {
 	name: "ResumeView",
 	props: {
+		appState: Object,
 		isMobile: Boolean
 	},
 	components: {
@@ -47,10 +62,36 @@ export default {
 	data() {
 		return {
 			serverStatus: Object.assign({}, this.appNotify),
-			resumeArray: []
+			resumeArray: [],
+			allDutiesArray: [],
+			keywords: "",
+			filteredArray: [],
 		};
 	},
+	watch: {
+		keywords() {
+			this.keywordFilter();
+		}
+	},
 	methods: {
+		keywordFilter() {
+			let filtered = [];
+			const regex = new RegExp(this.keywords, "gi");
+			this.allDutiesArray.forEach(duty => {
+				if (duty.toUpperCase().includes(this.keywords.toUpperCase()))
+					filtered.push(duty.replaceAll(regex, (match) => {
+						return match.replaceAll(regex, `<b>${match}</b>`);
+					}));
+			});
+			this.filteredArray = filtered;
+		},
+		combineAllToNewArray() {
+			let newArr = [];
+			this.resumeArray.forEach(entry => {
+				newArr = [...newArr, ...entry.duties]
+			});
+			this.allDutiesArray = newArr;
+		},
 		async getResumeData() {
 			this.eventBus.emit("showHideLoader", true);
 
@@ -72,8 +113,10 @@ export default {
 
 				let response = await fetch(request);
 				let data = await response.json();
-				if (data?.success)
+				if (data?.success) {
 					this.resumeArray = data.resume;
+					this.combineAllToNewArray();
+				}
 
 			} catch (error) {
 				console.error('Error reading data:', error);
@@ -92,9 +135,32 @@ export default {
 };
 </script>
 
+<style>
+#filtered {
+	background-color: #c1c1c1;
+	color: #000;
+	padding: 5px 15px 10px;
+	border-radius: 12px;
+	margin: 15px auto;
+	border: 2px rgb(255 255 0 / 50%) solid;
+}
+
+#resp-list b {
+	background-color: rgb(86 131 239 / 30%);
+	color: #000;
+	font-weight: 500;
+	padding-bottom: 2px;
+	border-radius: 4px;
+}
+</style>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+h2 {
+	text-align: center;
+	font-weight: 500;
+}
+
 .btn {
 	margin: 15px auto;
 	display: block;
@@ -118,6 +184,25 @@ export default {
 
 #resume-header h2 {
 	font-size: 2em;
+}
+
+.form-group {
+	color: #000;
+	background-color: #e7e7e7;
+	border: 1px solid #7f7f7f;
+	border-radius: 12px;
+	justify-content: space-around;
+	width: 20em;
+	margin: auto;
+	padding: 5px 15px;
+	display: flex;
+	margin-bottom: 15px;
+}
+
+.uiDarkMode .form-group {
+	color: #ddd;
+	background-color: #000;
+	border: 1px solid #fff;
 }
 
 .name {
@@ -149,6 +234,20 @@ export default {
 
 .btn-container button {
 	font-size: 1em;
+}
+
+.clear-field {
+	position: relative;
+	right: -5px;
+	background-color: #ccc;
+	padding: 0px 2px 1px;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.form-group input {
+	font-size: .8em;
+	padding-left: 10px;
 }
 
 @media (max-width: 767px) {

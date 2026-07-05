@@ -118,7 +118,7 @@
 				title="Change Password">Change
 				Password</button>
 			<button v-if="appState.userName !== 'guest'" id="delete-button" class="btn delete"
-				@click="currentComponent = 'DeleteUser'">Delete Account</button>
+				@click="currentComponent = 'DeleteUser'" title="Delete Account">Delete Account</button>
 		</div>
 	</div>
 
