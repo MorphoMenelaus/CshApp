@@ -1,19 +1,26 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { onMounted, ref, inject } from 'vue';
 import Disclaimers from "../components/Disclaimers.vue";
 
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 	console.warn('Global function not found! sendAnalyticsEvent()')
 });
+const baseUrl = inject('baseUrl', () => {
+	console.warn('Global variable not found! baseUrl')
+});
+const eventBus = inject('eventBus', () => {
+	console.warn('Global function not found! eventBus()')
+});
 
 // import Carousel from "../components/Carousel.vue";
 // <Carousel v-if="appState?.isLoggedOn" :appState="appState" />
 
-defineProps({
+const props = defineProps({
 	appState: Object,
 })
 
 let lessText = ref(false);
+let appDevDuties = ref([]);
 
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
@@ -29,6 +36,45 @@ const showDetails = (id) => {
 	// scrollToId(id);
 	sendAnalyticsEvent('show_details', 'accomplishments');
 }
+
+const getResumeData = async () => {
+	eventBus.emit("showHideLoader", true);
+
+	let headerObj = new Headers();
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/blog/appduties/", baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(
+		requestUrl.toString(), {
+		method: 'GET',
+		headers: headerObj,
+	});
+
+	try {
+
+		let response = await fetch(request);
+		let data = await response.json();
+		if (data?.success) {
+			appDevDuties.value = data.appDevDuties;
+			let updateAppState = props.appState;
+			updateAppState.appDevDuties = data.appDevDuties;
+			eventBus.emit("updateAppState", updateAppState);
+		}
+
+	} catch (error) {
+		console.error('Error reading data:', error);
+	} finally {
+		eventBus.emit("showHideLoader", false);
+	}
+}
+
+onMounted(() => {
+	getResumeData();
+});
 </script>
 
 <template>
@@ -111,8 +157,7 @@ const showDetails = (id) => {
 								<li>Admins can enable or disable any games, game types or pay tiers.</li>
 								<li>Admins can review all game history, logs and player account status.</li>
 								<li>Admins can review each individual game play, showing the reels spin, bonus games,
-									and
-									payouts for each line to help with dispute resolution.</li>
+									and payouts for each line to help with dispute resolution.</li>
 								<li>Game play history can be filtered by game name and date/time range.</li>
 							</ul>
 						</div>
@@ -123,23 +168,18 @@ const showDetails = (id) => {
 									playable in any game in the system.</li>
 								<li>View the transaction history for each player account.</li>
 								<li>Prints receipts to a connected receipt printer.</li>
-								<li>Displays and prints each cashier’s bank transaction totals, and starting and ending
-									cash
-									for
-									the shift.</li>
+								<li>Displays and prints each cashier's bank transaction totals, and starting and ending
+									cash for the shift.</li>
 							</ul>
 						</div>
 						<div class="details-ul">
 							<h3 class="julius-sans">Player App:</h3>
 							<ul>
 								<li>Register new accounts and verify email address or phone number depending on rules
-									set by
-									the
-									site administrator.</li>
+									set by the site administrator.</li>
 								<li>Verify player identification in jurisdictions where this is required.</li>
 								<li>Generate QR code on the player mobile app for Cashiers to scan to authorize funds
-									transfers
-									for the player’s account.</li>
+									transfers for the player's account.</li>
 							</ul>
 						</div>
 						<div class="details-ul">

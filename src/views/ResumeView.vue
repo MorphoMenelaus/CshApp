@@ -23,7 +23,7 @@
 					<input id="keywords" title="keywords" v-model.trim="keywords" type="text" name="keywords"
 						class="form-control">
 					<span v-if="keywords.length > 0" title="Clear search" @click="keywords = ''"
-						class="clear-field">❌</span>
+						class="clear-field">✕</span>
 				</div>
 				<div v-if="filteredArray.length > 0 && keywords.length >= 3" id="filtered">
 					<h2>Filtered Resposibilities</h2>
@@ -87,8 +87,10 @@ export default {
 		},
 		combineAllToNewArray() {
 			let newArr = [];
+			let duitiesArr = this.appState?.appDevDuties.flatMap(app => app.duties);
+			newArr = [...newArr, ...duitiesArr];
 			this.resumeArray.forEach(entry => {
-				newArr = [...newArr, ...entry.duties]
+				newArr = [...newArr, ...entry.duties];
 			});
 			this.allDutiesArray = newArr;
 		},
@@ -214,6 +216,10 @@ h2 {
 	text-align: center;
 }
 
+#keywords {
+	align-self: center;
+}
+
 .btn-container .btn {
 	font-size: .75em;
 	line-height: 1.5em;
@@ -237,17 +243,26 @@ h2 {
 }
 
 .clear-field {
+	cursor: pointer;
+	background-color: #ccc;
+	border-radius: 6px;
+	padding: 4px;
 	position: relative;
 	right: -5px;
-	background-color: #ccc;
-	padding: 0px 2px 1px;
-	border-radius: 6px;
-	cursor: pointer;
+	font-size: .9em;
+	font-weight: bold;
+	line-height: .9em;
+	color: #000;
+	align-self: center;
+}
+
+.clear-field:hover {
+	background-color: #aaa;
 }
 
 .form-group input {
 	font-size: .8em;
-	padding-left: 10px;
+	padding-left: 6px;
 }
 
 @media (max-width: 767px) {

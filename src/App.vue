@@ -5,6 +5,11 @@
 		<input id="uiDarkMode" title="Toggle dark mode" type="checkbox" v-model="uiDarkMode" />
 	</div>
 
+	<div class="register-link" v-if="!appState?.isLoggedOn && !isMobile">
+		<span>New User? <span class="link" @click="showRegisterUserComponent(false, true)"
+				title="Click to register">Click to register</span>. Or login with username "guest"</span>
+	</div>
+
 	<HeaderMain :appState="appState" :isMobile="isMobile" />
 
 	<Login :appState="appState" />
@@ -14,7 +19,9 @@
 
 	<FooterMain :serverVersion="serverVersion" :isMobile="isMobile" />
 
-	<component :is="currentComponent" :appState="appState" />
+	<Transition name="fade">
+		<component :is="currentComponent" :appState="appState" />
+	</Transition>
 
 </template>
 
@@ -60,6 +67,14 @@ export default {
 		}
 	},
 	methods: {
+		showRegisterUserComponent(login = false, register = false) {
+			// Control the state of both components
+			let payload = {
+				register: register,
+				login: login
+			}
+			this.eventBus.emit("registerUser", payload);
+		},
 		recallAppState() {
 			this.appState = session.recall.get();
 			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
@@ -117,6 +132,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+span.link {
+	font-weight: bold;
+}
+
 #dark-mode-check {
 	position: absolute;
 	top: 15px;
@@ -124,7 +143,8 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	width: 8em;
+	flex-direction: column;
+	width: 6em;
 	/* color: #000; */
 	z-index: 1;
 }
@@ -132,6 +152,18 @@ export default {
 /* .uiDarkMode #dark-mode-check {
 	color: #ddd;
 } */
+
+.register-link {
+	right: 15px;
+	position: absolute;
+	font-weight: bold;
+	z-index: 1;
+	color: #000;
+}
+
+.uiDarkMode .register-link {
+	color: #fff;
+}
 
 #dark-mode-check label {
 	cursor: pointer;

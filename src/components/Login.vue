@@ -16,30 +16,32 @@
 		</div>
 	</div>
 
-	<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''"
-		v-if="!appState?.isLoggedOn && loginShow" @click="handleClick($event)">
-		<form class="input-section">
-			<div id="form-header">
-				<h1>Chris Hardwick's SPA</h1>
-				<h2>Welcome</h2>
-			</div>
-			<h2>Login to continue</h2>
-			<div class="inputs">
-				<label for="username">User Name</label>
-				<input id="username" type="text" name="username" v-model="userName" placeholder="User Name"
-					autocomplete="username" />
-				<label for="password">Password</label>
-				<input id="password" type="password" name="password" v-model="password" placeholder="Password"
-					autocomplete="current-password" />
-			</div>
-			<div class="login-buttons">
-				<button class="btn login-btn" type="button" @click="login()">Login</button>
-				<button class="btn" type="button" @click="loginShow = false">Cancel</button>
-			</div>
-			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to
-					register</span>.</span>
-		</form>
-	</div>
+	<Transition name="fade">
+		<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''"
+			v-if="!appState?.isLoggedOn && loginShow" @click="handleClick($event)">
+			<form class="input-section">
+				<div id="form-header">
+					<h1>Chris Hardwick's SPA</h1>
+					<h2>Welcome</h2>
+				</div>
+				<h2>Login to continue</h2>
+				<div class="inputs">
+					<label for="username">User Name</label>
+					<input id="username" type="text" name="username" v-model="userName" placeholder="User Name"
+						autocomplete="username" />
+					<label for="password">Password</label>
+					<input id="password" type="password" name="password" v-model="password" placeholder="Password"
+						autocomplete="current-password" />
+				</div>
+				<div class="login-buttons">
+					<button class="btn login-btn" type="button" @click="login()">Login</button>
+					<button class="btn" type="button" @click="loginShow = false">Cancel</button>
+				</div>
+				<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to
+						register</span>.</span>
+			</form>
+		</div>
+	</Transition>
 
 	<div id="dialog-container">
 		<dialog id="confirmDialog">

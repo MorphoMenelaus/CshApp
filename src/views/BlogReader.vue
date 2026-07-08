@@ -121,8 +121,8 @@ export default {
 			this.getBlogPosts();
 		},
 		postStatus() {
-			this.selectedBlog = {},
-				this.getBlogPosts();
+			this.selectedBlog = {};
+			this.getBlogPosts();
 		},
 	},
 	methods: {

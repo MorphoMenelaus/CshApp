@@ -408,6 +408,16 @@ table {
 	padding: 10px;
 }
 
+tbody {
+	color: #000;
+	background-color: #e7e7e7;
+}
+
+.uiDarkMode tbody {
+	background-color: rgb(100 100 100/ 50%);
+	color: #eee;
+}
+
 th {
 	padding: 5px 15px;
 	background-color: #aaa;

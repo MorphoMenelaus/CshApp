@@ -3,7 +3,7 @@
 	<div id="change-password">
 		<div class="wrapper">
 			<!-- <div class="btn-container">
-				<button @click="closePopup()" class="close-modal" title="Close This Dialog">❌</button>
+				<button @click="closePopup()" class="close-modal" title="Close This Dialog">✕</button>
 			</div> -->
 			<h1>Password Change</h1>
 			<p style="margin: 15px 0;"><span class="warning">Warning!</span> After changing your password you will have
