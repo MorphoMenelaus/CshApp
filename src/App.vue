@@ -107,6 +107,9 @@ export default {
 	created() {
 		this.getServerVersion();
 		this.recallAppState();
+		this.eventBus.on("EscapeKeydown", () => {
+			this.currentComponent = null;
+		});
 		// this.createNewStorage();
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
@@ -122,6 +125,10 @@ export default {
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
 			this.windowWidth = window.innerWidth;
+		});
+		window.addEventListener("keydown", (down) => {
+			if (down.key === "Escape")
+				this.eventBus.emit("EscapeKeydown");
 		});
 	},
 	mounted() {

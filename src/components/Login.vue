@@ -272,10 +272,6 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
-		handleKeyDown(event) {
-			if (event.key === "Escape")
-				this.loginShow = false;
-		},
 		handleClick(event) {
 			if (event.target.id === "login")
 				this.loginShow = false;
@@ -283,9 +279,11 @@ export default {
 	},
 	mounted() {
 		this.dialog = document.getElementById("confirmDialog");
-		window.addEventListener("keydown", this.handleKeyDown);
 	},
 	created() {
+		this.eventBus.on("EscapeKeydown", () => {
+			this.loginShow = false;
+		});
 		this.eventBus.on("cancelDeleteUser", () => {
 			this.currentComponent = null;
 		});
@@ -300,7 +298,7 @@ export default {
 			this.loginShow = payload.login;
 		});
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.handleKeyDown);
+			this.eventBus.off("EscapeKeydown");
 			this.eventBus.off("cancelDeleteUser");
 			this.eventBus.off("UserDeleted");
 			this.eventBus.off("forceLogout");
