@@ -170,3 +170,5 @@ app.config.globalProperties.refreshAuthTokenAsNeeded = refreshAuthTokenAsNeeded;
 app.config.globalProperties.sendAnalyticsEvent = sendAnalyticsEvent;
 
 app.provide('sendAnalyticsEvent', sendAnalyticsEvent)
+app.provide('baseUrl', baseUrl)
+app.provide('eventBus', eventBus)

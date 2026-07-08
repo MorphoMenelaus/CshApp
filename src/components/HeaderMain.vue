@@ -5,7 +5,7 @@
 			<div class="status-message" v-for="(item, index) in statusArray" :key="index"
 				:class="item.success ? 'ok' : 'error'">
 				<button @click="closeNotification(item)" class="close-notification"
-					title="Close This Notification">❌</button>
+					title="Close This Notification">✕</button>
 				<span v-if="item.code != null">{{ item.code }}</span>
 				<span v-if="item.message != null">{{ item.message }}</span>
 			</div>
@@ -132,9 +132,11 @@ h1 {
 	flex-direction: column;
 	position: absolute;
 	max-height: 90vh;
-	top: 15px;
+	top: 10px;
 	left: 15px;
 	overflow: hidden auto;
+	padding-right: 5px;
+	padding-top: 5px;
 	z-index: 100200;
 }
 
@@ -174,10 +176,16 @@ h1 {
 	top: -10px;
 	right: -10px;
 	margin: 0;
-	padding: 1px 2px 1px;
-	font-size: 1.1em;
+	padding: 2px 3px 1px;
+	line-height: .9em;
+	font-size: .9em;
 	border-radius: 6px;
 	cursor: pointer;
+	font-weight: bold;
+}
+
+.close-notification:hover {
+	background-color: #aaa;
 }
 
 #loading-icon {

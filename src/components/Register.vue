@@ -4,7 +4,7 @@
 		<div class="wrapper">
 			<!-- <div class="btn-container">
 				<button @click="eventBus.emit('registerUser', false)" class="close-modal"
-					title="Close This Dialog">❌</button>
+					title="Close This Dialog">✕</button>
 			</div> -->
 			<div id="form-header">
 				<h2>Register</h2>

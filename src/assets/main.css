@@ -121,6 +121,10 @@ button.close-modal {
 	color: green;
 }
 
+.uiDarkMode .true {
+	color: #3dcf3d;
+}
+
 .false {
 	color: yellow
 }
@@ -209,6 +213,17 @@ button.close-modal {
 		transform: scale(1);
 		opacity: 1;
 	}
+}
+
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity .3s ease;
+	opacity: 100;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
 }
 
 .slide-down-enter-active,

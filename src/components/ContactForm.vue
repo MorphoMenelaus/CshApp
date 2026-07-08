@@ -3,7 +3,7 @@
 	<div id="contact">
 		<div class="wrapper">
 			<!-- <div class="btn-container">
-				<button @click="eventBus.emit('contactEmail', false)" class="close-modal" title="Close This Dialog">❌</button>
+				<button @click="eventBus.emit('contactEmail', false)" class="close-modal" title="Close This Dialog">✕</button>
 			</div> -->
 			<div id="form-header">
 				<h2>I'd love to hear from you</h2>

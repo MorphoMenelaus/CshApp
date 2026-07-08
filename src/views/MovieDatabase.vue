@@ -26,7 +26,7 @@
 				</select>
 			</div>
 			<input v-model="contains" placeholder="Title contains..." />
-			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">❌</span>
+			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">✕</span>
 			<button class="prev-button btn" type="button" @click="previousPage()"
 				title="Previous Page">previous</button>
 			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
@@ -41,7 +41,8 @@
 							<p>{{ item.summary }}</p>
 						</div> -->
 					<div class="inner">
-						<div class="title-description">
+						<div class="title-description" :title="`View details for ${item.title}`"
+							@click="viewThisEntry(item)">
 							<h2 :title="item.original_title ? item.original_title : ''">
 								{{ item.title }}</h2>
 							<h3>{{ item.tagline }}</h3>
@@ -51,8 +52,9 @@
 							</p>
 							<!-- <p>{{ item.summary }}</p> -->
 						</div>
-						<div class="image-container">
-							<img :alt="item.title" :title="item.summary" :src="`./media-poster/${item.slug}.jpg`" />
+						<div class="image-container" :title="`View details for ${item.title}`"
+							@click="viewThisEntry(item)">
+							<img :alt="item.title" :src="`./media-poster/${item.slug}.jpg`" />
 						</div>
 						<span id="favorite" :class="favoritesList.includes(item.movieId) ? 'favs' : ''"
 							@click="favoritesHandler(item.movieId)"
@@ -73,7 +75,7 @@
 		</div>
 
 		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie"
-			:favoritesList="favoritesList" />
+			:favoritesList="favoritesList" :isMobile="isMobile" />
 
 	</div>
 </template>
@@ -82,6 +84,7 @@
 // @ is an alias to /src
 import { onBeforeUnmount } from "vue";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
+import MovieDetails from "@/components/MovieDetails.vue";
 // Test placeholderData
 // import placeholderData from "@/dependencies/movies.json";
 
@@ -93,7 +96,8 @@ export default {
 		windowWidth: Number
 	},
 	components: {
-		EditMovieDetails
+		EditMovieDetails,
+		MovieDetails
 	},
 	data() {
 		return {
@@ -223,6 +227,10 @@ export default {
 			} else {
 				this.setFavorite(movieId)
 			}
+		},
+		viewThisEntry(movie) {
+			this.selectedMovie = movie;
+			this.currentComponent = "MovieDetails";
 		},
 		editThisEntry(movie) {
 			this.selectedMovie = movie;
@@ -519,6 +527,7 @@ h2 {
 	height: 460px;
 	margin: 30px auto;
 	display: flex;
+	cursor: pointer;
 }
 
 .uiDarkMode .card .inner {
@@ -562,8 +571,12 @@ img {
 }
 
 .clear-field {
+	padding: 4px;
 	background-color: #ccc;
-	padding: 0px 2px 1px;
+	color: #000;
+	font-size: .9em;
+	line-height: .9em;
+	font-weight: bold;
 	border-radius: 6px;
 	cursor: pointer;
 }
