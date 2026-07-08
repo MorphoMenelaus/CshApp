@@ -170,14 +170,9 @@ export default {
 				console.error("Email failed:", err);
 			}
 		},
-		handleKeyDown(event) {
-			if (event.key === "Escape")
-				this.eventBus.emit('contactEmail', false);
-		},
 	},
 	mounted() {
 		this.sendAnalyticsEvent('contact_form_load', 'contact_modal');
-		window.addEventListener("keydown", this.handleKeyDown);
 		if (!document.getElementById('recaptcha-script')) {
 			const script = document.createElement('script');
 			script.id = 'recaptcha-script';
@@ -188,8 +183,11 @@ export default {
 		}
 	},
 	created() {
+		this.eventBus.on("EscapeKeydown", () => {
+			this.eventBus.emit('contactEmail', false);
+		});
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.handleKeyDown);
+			this.eventBus.off("EscapeKeydown");
 		});
 	},
 };

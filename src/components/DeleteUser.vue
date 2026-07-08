@@ -63,7 +63,8 @@ export default {
 				const response = await fetch(request);
 				const data = await response.json();
 
-				if (data.success) { this.addUserLog(this.appState, "User Deleted Account"); }	
+				if (data.success)
+					this.addUserLog(this.appState, "User Deleted Account");
 
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
@@ -81,17 +82,15 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
-		handleKeyDown(event) {
-			if (event.key === "Escape")
-				this.eventBus.emit("cancelDeleteUser");
-		},
 	},
 	mounted() {
-		window.addEventListener("keydown", this.handleKeyDown);
 	},
 	created() {
+		this.eventBus.on("EscapeKeydown", () => {
+			this.eventBus.emit("cancelDeleteUser");
+		});
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.handleKeyDown);
+			this.eventBus.off("EscapeKeydown");
 		});
 	},
 };

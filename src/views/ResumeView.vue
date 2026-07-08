@@ -26,7 +26,7 @@
 						class="clear-field">✕</span>
 				</div>
 				<div v-if="filteredArray.length > 0 && keywords.length >= 3" id="filtered">
-					<h2>Filtered Resposibilities</h2>
+					<h2>Roles Search Results</h2>
 					<ul id="resp-list">
 						<li v-for="(item, index) in filteredArray" :key="index" v-html="item"></li>
 					</ul>
@@ -158,10 +158,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h2 {
+/* h2 {
 	text-align: center;
 	font-weight: 500;
-}
+} */
 
 .btn {
 	margin: 15px auto;

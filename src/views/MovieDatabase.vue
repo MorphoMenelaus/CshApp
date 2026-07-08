@@ -135,12 +135,7 @@ export default {
 		async limit() {
 			this.currentPage = 1;
 			this.offset = 0;
-			if (this.favoritesOnly) {
-				await this.getMovieByFavorites();
-				this.movieList = this.movieFavorites;
-			} else {
-				this.getMovieList();
-			}
+			this.refreshMoviesWithFaves();
 		},
 		sortBy() {
 			this.currentPage = 1;
@@ -160,14 +155,9 @@ export default {
 		windowWidth() {
 			this.populateLimits();
 		},
-		async favoritesOnly() {
-			if (this.favoritesOnly) {
-				await this.getMovieByFavorites();
-				this.movieList = this.movieFavorites;
-			} else {
-				this.getMovieList();
-			}
-		}
+		favoritesOnly() {
+			this.refreshMoviesWithFaves();
+		},
 	},
 	methods: {
 		scrollToTop() {
@@ -459,6 +449,14 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
+		async refreshMoviesWithFaves() {
+			if (this.favoritesOnly) {
+				await this.getMovieByFavorites();
+				this.movieList = this.movieFavorites;
+			} else {
+				this.getMovieList();
+			}
+		},
 		previousPage() {
 			if (this.currentPage == 1) return;
 			this.currentPage--;
@@ -480,10 +478,15 @@ export default {
 	created() {
 		this.eventBus.on("movieUpdated", () => {
 			this.currentComponent = null;
-			this.getMovieList();
+			this.refreshMoviesWithFaves();
+		});
+		this.eventBus.on("EscapeKeydown", () => {
+			this.currentComponent = null;
+			this.refreshMoviesWithFaves();
 		});
 		onBeforeUnmount(() => {
 			this.eventBus.off("movieUpdated");
+			this.eventBus.off("EscapeKeydown");
 		});
 	},
 };
@@ -527,7 +530,6 @@ h2 {
 	height: 460px;
 	margin: 30px auto;
 	display: flex;
-	cursor: pointer;
 }
 
 .uiDarkMode .card .inner {
@@ -538,6 +540,7 @@ h2 {
 .title-description {
 	padding: 5px 15px;
 	text-align: center;
+	cursor: pointer;
 }
 
 .genr-year {
@@ -553,6 +556,7 @@ h2 {
 	border-radius: 8px;
 	border: 1px #999 solid;
 	user-select: none;
+	cursor: pointer;
 }
 
 img {

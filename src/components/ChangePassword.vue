@@ -119,17 +119,15 @@ export default {
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
-		handleKeyDown(event) {
-			if (event.key === "Escape")
-				this.closePopup();
-		},
 	},
 	mounted() {
-		window.addEventListener("keydown", this.handleKeyDown);
 	},
 	created() {
+		this.eventBus.on("EscapeKeydown", () => {
+			this.closePopup();
+		});
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.handleKeyDown);
+			this.eventBus.off("EscapeKeydown");
 		});
 	},
 };

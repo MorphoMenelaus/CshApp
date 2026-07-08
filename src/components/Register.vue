@@ -175,14 +175,9 @@ export default {
 				console.error("Registration failed:", err);
 			}
 		},
-		handleKeyDown(event) {
-			if (event.key === "Escape")
-				this.eventBus.emit('registerUser', false);
-		},
 	},
 	mounted() {
 		this.sendAnalyticsEvent('register_form_load', 'register_modal');
-		window.addEventListener("keydown", this.handleKeyDown);
 		if (!document.getElementById('recaptcha-script')) {
 			const script = document.createElement('script');
 			script.id = 'recaptcha-script';
@@ -193,8 +188,11 @@ export default {
 		}
 	},
 	created() {
+		this.eventBus.on("EscapeKeydown", () => {
+			this.eventBus.emit('registerUser', false);
+		});
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.handleKeyDown);
+			this.eventBus.off("EscapeKeydown");
 		});
 	},
 };
