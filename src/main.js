@@ -17,8 +17,14 @@ app.use(router)
 app.config.globalProperties.eventBus = eventBus
 app.mount('#app')
 
+const allowedDomains = [
+	import.meta.env.VITE_API_BASE_URL,
+	import.meta.env.VITE_API_STAGING_URL
+];
+const origin = window.location.origin;
+const baseUrl = allowedDomains.includes(origin) ? origin : "";
+
 const appCurrentVersion = APP_VERSION;
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
 const reCaptchaSiteKey = import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY;
 
 const appNotify = {
