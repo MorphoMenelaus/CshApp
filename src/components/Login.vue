@@ -8,6 +8,8 @@
 				@click="currentComponent = 'DeleteUser'">Delete Account</span> -->
 			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify
 				Account</RouterLink>
+			<RouterLink v-if="appState?.permissions.verified" to="/userpreferences" title="User Preferences">Preferences
+			</RouterLink>
 		</div>
 		<div v-else>
 			<button class="btn" type="button" @click="showRegisterUserComponent(true, false)">Login</button>
@@ -114,7 +116,9 @@ export default {
 				this.password = guestUser.password;
 				this.login();
 			}
-		}
+		},
+		loginShow() {
+		},
 	},
 	methods: {
 		showRegisterUserComponent(login = false, register = false) {

@@ -215,6 +215,7 @@ label[for="casinoId"] {
 	width: 100%;
 	height: calc(100vh - 140px);
 	background-color: rgb(0 0 0 / 50%);
+	color: #c1c1c1;
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	z-index: 10000;

@@ -25,12 +25,14 @@
 					<span v-if="keywords.length > 0" title="Clear search" @click="keywords = ''"
 						class="clear-field">✕</span>
 				</div>
-				<div v-if="filteredArray.length > 0 && keywords.length >= 3" id="filtered">
-					<h2>Roles Search Results</h2>
-					<ul id="resp-list">
-						<li v-for="(item, index) in filteredArray" :key="index" v-html="item"></li>
-					</ul>
-				</div>
+				<Transition name="slide-down">
+					<div v-if="filteredArray.length > 0 && keywords.length >= 3" id="filtered">
+						<h2>Roles Search Results</h2>
+						<ul id="resp-list">
+							<li v-for="(item, index) in filteredArray" :key="index" v-html="item"></li>
+						</ul>
+					</div>
+				</Transition>
 			</div>
 			<div v-if="resumeArray.length > 0 && !isMobile">
 				<ResumeTable :resumeArray="resumeArray" />
@@ -87,8 +89,11 @@ export default {
 		},
 		combineAllToNewArray() {
 			let newArr = [];
-			let duitiesArr = this.appState?.appDevDuties.flatMap(app => app.duties);
-			newArr = [...newArr, ...duitiesArr];
+			let duitiesArr = [];
+			if (this.appState?.appDevDuties?.length > 0) {
+				duitiesArr = this.appState?.appDevDuties.flatMap(app => app.duties);
+				newArr = [...newArr, ...duitiesArr];
+			}
 			this.resumeArray.forEach(entry => {
 				newArr = [...newArr, ...entry.duties];
 			});
@@ -145,6 +150,12 @@ export default {
 	border-radius: 12px;
 	margin: 15px auto;
 	border: 2px rgb(255 255 0 / 50%) solid;
+	overflow: hidden;
+}
+
+#filtered h2 {
+	text-align: center;
+	font-weight: 500;
 }
 
 #resp-list b {

@@ -182,6 +182,10 @@ h1 {
 }
 
 .header-row {
+	color: #222;
+}
+
+.uiDarkMode .header-row {
 	color: #fff;
 }
 

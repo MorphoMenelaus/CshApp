@@ -5,17 +5,11 @@ import router from './router'
 // import session from "./sessionMethods";
 // import sharedScripts from "./sharedScripts";
 
-// createApp(App).use(store).use(router).mount('#app')
-
 import mitt from 'mitt'
 
 const eventBus = mitt()
 const app = createApp(App)
-
 app.use(router)
-
-app.config.globalProperties.eventBus = eventBus
-app.mount('#app')
 
 const allowedDomains = [
 	import.meta.env.VITE_API_BASE_URL,
@@ -57,11 +51,11 @@ const toTitleCase = (str) => {
 }
 
 const isUTCtime = (str) => {
-	// Regex strictly enforces a trailing Z or +00:00/ -00:00 offset
+	// strictly enforces a trailing Z or +00:00/ -00:00 offset
 	let utcRegex = /^(?:.+)(Z|[+-]00:?00)$/;
 	if (!utcRegex.test(str)) return false;
 
-	// Ensure the string can be successfully parsed into a real date
+	// ensure the string can be successfully parsed into a real date
 	let date = new Date(str);
 	return !isNaN(date.getTime());
 }
@@ -165,6 +159,7 @@ const sendAnalyticsEvent = (eventType, method) => {
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.baseUrl = baseUrl;
+app.config.globalProperties.eventBus = eventBus;
 app.config.globalProperties.reCaptchaSiteKey = reCaptchaSiteKey;
 app.config.globalProperties.appNotify = appNotify;
 app.config.globalProperties.dateOptions = dateOptions;
@@ -175,6 +170,6 @@ app.config.globalProperties.addUserLog = addUserLog;
 app.config.globalProperties.refreshAuthTokenAsNeeded = refreshAuthTokenAsNeeded;
 app.config.globalProperties.sendAnalyticsEvent = sendAnalyticsEvent;
 
-app.provide('sendAnalyticsEvent', sendAnalyticsEvent)
-app.provide('baseUrl', baseUrl)
-app.provide('eventBus', eventBus)
+app.provide('sendAnalyticsEvent', sendAnalyticsEvent);
+
+app.mount('#app')

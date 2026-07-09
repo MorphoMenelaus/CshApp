@@ -37,7 +37,8 @@ export default {
 	border: 1px #666 solid;
 	border-radius: 12px;
 	/* color: #666; */
-	color: rgb(0 0 0 / 70%);
+	/* color: rgb(0 0 0 / 70%); */
+	color: #222;
 }
 
 .uiDarkMode #pseudo-table {

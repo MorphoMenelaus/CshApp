@@ -1,26 +1,16 @@
 <script setup>
-import { onMounted, ref, inject } from 'vue';
+import { ref, inject } from 'vue';
 import Disclaimers from "../components/Disclaimers.vue";
 
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 	console.warn('Global function not found! sendAnalyticsEvent()')
 });
-const baseUrl = inject('baseUrl', () => {
-	console.warn('Global variable not found! baseUrl')
-});
-const eventBus = inject('eventBus', () => {
-	console.warn('Global function not found! eventBus()')
-});
-
-// import Carousel from "../components/Carousel.vue";
-// <Carousel v-if="appState?.isLoggedOn" :appState="appState" />
 
 const props = defineProps({
 	appState: Object,
 })
 
 let lessText = ref(false);
-let appDevDuties = ref([]);
 
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
@@ -36,45 +26,6 @@ const showDetails = (id) => {
 	// scrollToId(id);
 	sendAnalyticsEvent('show_details', 'accomplishments');
 }
-
-const getResumeData = async () => {
-	eventBus.emit("showHideLoader", true);
-
-	let headerObj = new Headers();
-	headerObj.append("Content-Type", "application/json; charset=utf-8");
-	let requestUrl = new URL("/api/blog/appduties/", baseUrl);
-
-	let params = requestUrl.searchParams;
-	params.set("time", new Date().getTime());
-	requestUrl.search = params.toString();
-
-	let request = new Request(
-		requestUrl.toString(), {
-		method: 'GET',
-		headers: headerObj,
-	});
-
-	try {
-
-		let response = await fetch(request);
-		let data = await response.json();
-		if (data?.success) {
-			appDevDuties.value = data.appDevDuties;
-			let updateAppState = props.appState;
-			updateAppState.appDevDuties = data.appDevDuties;
-			eventBus.emit("updateAppState", updateAppState);
-		}
-
-	} catch (error) {
-		console.error('Error reading data:', error);
-	} finally {
-		eventBus.emit("showHideLoader", false);
-	}
-}
-
-onMounted(() => {
-	getResumeData();
-});
 </script>
 
 <template>
