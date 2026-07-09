@@ -106,17 +106,19 @@
 							</div>
 						</div>
 					</form>
-					<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn"
-						title="Update User Prefernces">Update User
-						Prefernces</button>
+					<div class="btn-container">
+						<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn"
+							title="Update User Prefernces">Save Prefernces</button>
+						<button v-if="appState.userName !== 'guest'" @click="currentComponent = 'ChangePassword'"
+							class="btn" title="Change Password">Change
+							Password</button>
+					</div>
 				</div>
 			</div>
 		</div>
 		<component :is="currentComponent" :appState="appState" />
 		<div id="change-btn" v-if="user.userId === appState?.user?.userId">
-			<button v-if="appState.userName !== 'guest'" @click="currentComponent = 'ChangePassword'" class="btn"
-				title="Change Password">Change
-				Password</button>
+			<button class="btn back" @click="goBack()">Exit</button>
 			<button v-if="appState.userName !== 'guest'" id="delete-button" class="btn delete"
 				@click="currentComponent = 'DeleteUser'" title="Delete Account">Delete Account</button>
 		</div>
@@ -126,6 +128,7 @@
 
 <script>
 import { onBeforeUnmount } from "vue";
+import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
 import DeleteUser from "@/components/DeleteUser.vue";
 
@@ -175,6 +178,9 @@ export default {
 		},
 	},
 	methods: {
+		goBack() {
+			router.back();
+		},
 		charCounter() {
 			let currCount = this.userNotes.length;
 			if (this.charRemaining <= this.maxlength)
@@ -368,6 +374,10 @@ export default {
 	padding-bottom: 90px;
 }
 
+#view.mobile {
+	margin-top: 30px;
+}
+
 #userid-input {
 	margin: auto;
 	width: 25em;
@@ -443,6 +453,16 @@ button.btn {
 	margin: 15px auto 0;
 }
 
+.btn-container {
+	display: flex;
+	justify-self: center;
+	justify-content: center;
+}
+
+.btn-container button {
+	margin: 15px;
+}
+
 #user-select {
 	display: flex;
 	flex-direction: column;
@@ -478,6 +498,7 @@ button.btn {
 	display: flex;
 	align-items: center;
 	justify-self: center;
+	justify-content: center;
 	margin-top: 15px;
 }
 
@@ -490,6 +511,12 @@ button.btn {
 	color: #f00;
 	font-weight: bold;
 }
+
+/* .btn.back {
+	position: absolute;
+	top: 0;
+	left: 15px;
+} */
 
 @media (max-width: 767px) {
 	.fields {

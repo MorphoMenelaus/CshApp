@@ -14,7 +14,7 @@
 
 	<Login :appState="appState" />
 
-	<RouterView :appState="appState" id="view" :isMobile="isMobile" :windowWidth="windowWidth"
+	<RouterView id="view" :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth"
 		:class="isMobile ? 'mobile' : ''" />
 
 	<FooterMain :serverVersion="serverVersion" :isMobile="isMobile" />
@@ -29,6 +29,7 @@
 // @ is an alias to /src
 // import sharedScripts from "@/dependencies/sharedScripts";
 // import { RouterLink, RouterView } from "vue-router";
+// import { inject } from 'vue';
 import session from "@/dependencies/sessionMethods.js";
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
@@ -37,6 +38,13 @@ import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
 
 export default {
+	// setup() {
+	// 	const baseUrl = inject('baseUrl');
+	// 	return {
+	// 		baseUrl
+	// 	}
+	// },
+	// inject: ['baseUrl'],
 	components: {
 		HeaderMain,
 		FooterMain,
@@ -50,6 +58,7 @@ export default {
 			body: document.getElementsByTagName('body'),
 			serverVersion: "",
 			appState: {},
+			appDevDuties: [],
 			guestLoginDoc: false,
 			currentComponent: null,
 			isMobile: window.innerWidth < 1024,
@@ -103,10 +112,45 @@ export default {
 				console.error('Error fetching server version:', error);
 			}
 		},
+		async getAppRolesData() {
+			this.eventBus.emit("showHideLoader", true);
+
+			let headerObj = new Headers();
+			headerObj.append("Content-Type", "application/json; charset=utf-8");
+			let requestUrl = new URL("/api/blog/appduties/", this.baseUrl);
+
+			let params = requestUrl.searchParams;
+			params.set("time", new Date().getTime());
+			requestUrl.search = params.toString();
+
+			let request = new Request(
+				requestUrl.toString(), {
+				method: 'GET',
+				headers: headerObj,
+			});
+
+			try {
+
+				let response = await fetch(request);
+				let data = await response.json();
+				if (data?.success) {
+					this.appDevDuties = data.appDevDuties;
+					let updateAppState = this.appState;
+					updateAppState.appDevDuties = data.appDevDuties;
+					this.eventBus.emit("updateAppState", updateAppState);
+				}
+
+			} catch (error) {
+				console.error('Error reading data:', error);
+			} finally {
+				this.eventBus.emit("showHideLoader", false);
+			}
+		},
 	},
 	created() {
 		this.getServerVersion();
 		this.recallAppState();
+		this.getAppRolesData();
 		this.eventBus.on("EscapeKeydown", () => {
 			this.currentComponent = null;
 		});
@@ -130,9 +174,13 @@ export default {
 			if (down.key === "Escape")
 				this.eventBus.emit("EscapeKeydown");
 		});
+		let body = document.getElementsByTagName('body')[0];
+		body.addEventListener("click", (event) => {
+			if (event.target.id !== "nav-container" && event.target.id !== "hamburger")
+				this.eventBus.emit("closeMainNav");
+		}, true);
 	},
 	mounted() {
-		// this.getServerVersion();
 	},
 };
 </script>

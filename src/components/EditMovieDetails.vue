@@ -256,12 +256,25 @@ h2,
 	font-size: 18px;
 }
 
+.mobile .form-container {
+	padding-bottom: 30px;
+}
+
+.mobile .fields {
+	flex-direction: column;
+}
+
 #fieldset-one,
 #fieldset-two {
 	width: 40%;
 	display: flex;
 	flex-direction: column;
 	margin: 0 auto 15px;
+}
+
+.mobile #fieldset-one,
+.mobile #fieldset-two {
+	width: 95%;
 }
 
 .form-group label {

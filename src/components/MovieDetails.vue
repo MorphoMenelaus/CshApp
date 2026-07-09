@@ -27,7 +27,7 @@
 					</div>
 					<h3>Cast: {{ selectedMovie.tags_star.replaceAll("|", ", ") }}</h3>
 					<div>Writer: {{ selectedMovie.tags_writer.replaceAll("|", ", ") }}</div>
-					<div v-if="selectedMovie.studio">Studio: {{ selectedMovie.studio }}</div>
+					<div v-if="selectedMovie.studio">Studio: {{ selectedMovie.studio.replaceAll("|", ", ") }}</div>
 					<div class="btn-container">
 						<button @click="cancel()" class="btn" title="Close Details">Close Details</button>
 					</div>
@@ -99,10 +99,13 @@ p {
 	left: 0;
 	background-color: rgb(0 0 0 / 80%);
 	backdrop-filter: blur(10px);
+	z-index: 1;
 }
 
 #movie-details.mobile {
 	overflow: hidden auto;
+	top: 95px;
+	bottom: 45px;
 }
 
 .card {
@@ -123,6 +126,7 @@ p {
 }
 
 .img-box {
+	display: flex;
 	padding-right: 30px;
 }
 
@@ -131,9 +135,15 @@ p {
 }
 
 .mobile .img-box {
-	padding: 15px;
+	padding: unset;
 	align-items: center;
 	margin: auto;
+}
+
+img.poster {
+	border: 1px solid #999;
+	border-radius: 14px;
+	overflow: hidden;
 }
 
 .mobile img.poster {

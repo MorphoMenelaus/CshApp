@@ -209,9 +209,13 @@ table {
 
 .header-row {
 	font-weight: bold;
-	color: #fff;
-	border: 1px #f00 solid;
+	color: #222;
 }
+
+.uiDarkMode .header-row {
+	color: #fff;
+}
+
 
 #paging {
 	color: #000;

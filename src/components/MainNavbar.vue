@@ -24,9 +24,9 @@
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
 					to="/blog-reader" @click="closeDialogs('blog')" title="Blog">Blog
 				</RouterLink>
-				<RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs('preferences')"
+				<!-- <RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs('preferences')"
 					title="User Preferences">
-					Preferences</RouterLink>
+					Preferences</RouterLink> -->
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
 					to="/displayusers" @click="closeDialogs('users')" title="Display Users">Users
