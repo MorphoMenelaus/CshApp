@@ -19,18 +19,27 @@
 			</div>
 			<div>
 				<div class="form-group">
-					<label for="keywords">Search Roles</label>
+					<label for="keywords">Search Skills&nbsp;&&nbsp;Roles</label>
 					<input id="keywords" title="keywords" v-model.trim="keywords" type="text" name="keywords"
-						class="form-control">
+						placeholder="Enter keyword to search" class="form-control">
 					<span v-if="keywords.length > 0" title="Clear search" @click="keywords = ''"
 						class="clear-field">✕</span>
 				</div>
 				<Transition name="slide-down">
-					<div v-if="filteredArray.length > 0 && keywords.length >= 3" id="filtered">
-						<h2>Roles Search Results</h2>
-						<ul id="resp-list">
-							<li v-for="(item, index) in filteredArray" :key="index" v-html="item"></li>
-						</ul>
+					<div v-if="(filteredSkills.length > 0 || filteredArray.length > 0) && keywords.length >= 3"
+						id="filtered">
+						<div v-if="filteredArray.length > 0">
+							<h2>Roles Search Results</h2>
+							<ul id="resp-list">
+								<li v-for="(item, index) in filteredArray" :key="index" v-html="item"></li>
+							</ul>
+						</div>
+						<div v-if="filteredSkills.length > 0">
+							<h2>Skills Search Results</h2>
+							<ul id="skill-list">
+								<li v-for="(item, index) in filteredSkills" :key="index" v-html="item"></li>
+							</ul>
+						</div>
 					</div>
 				</Transition>
 			</div>
@@ -50,6 +59,7 @@
 // @ is an alias to /src
 import ResumeTable from "@/components/ResumeTable.vue";
 import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
+import skills from "@/dependencies/skills.json";
 
 export default {
 	name: "ResumeView",
@@ -68,6 +78,8 @@ export default {
 			allDutiesArray: [],
 			keywords: "",
 			filteredArray: [],
+			filteredSkills: [],
+			skills: skills,
 		};
 	},
 	watch: {
@@ -78,6 +90,7 @@ export default {
 	methods: {
 		keywordFilter() {
 			let filtered = [];
+			let filteredSkills = [];
 			const regex = new RegExp(this.keywords, "gi");
 			this.allDutiesArray.forEach(duty => {
 				if (duty.toUpperCase().includes(this.keywords.toUpperCase()))
@@ -85,7 +98,14 @@ export default {
 						return match.replaceAll(regex, `<b>${match}</b>`);
 					}));
 			});
+			this.skills.forEach(skill => {
+				if (skill.toUpperCase().includes(this.keywords.toUpperCase()))
+					filteredSkills.push(skill.replaceAll(regex, (match) => {
+						return match.replaceAll(regex, `<b>${match}</b>`);
+					}));
+			})
 			this.filteredArray = filtered;
+			this.filteredSkills = filteredSkills;
 		},
 		combineAllToNewArray() {
 			let newArr = [];
@@ -158,12 +178,18 @@ export default {
 	font-weight: 500;
 }
 
-#resp-list b {
+#resp-list b,
+#skill-list b {
 	background-color: rgb(86 131 239 / 30%);
 	color: #000;
 	font-weight: 500;
 	padding-bottom: 2px;
 	border-radius: 4px;
+}
+
+#skill-list {
+	margin: auto;
+	width: fit-content;
 }
 </style>
 
@@ -229,6 +255,11 @@ export default {
 
 #keywords {
 	align-self: center;
+}
+
+#keywords::placeholder {
+	font-weight: 500;
+	color: #000;
 }
 
 .btn-container .btn {
