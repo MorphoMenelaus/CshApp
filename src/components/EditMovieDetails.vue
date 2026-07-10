@@ -72,14 +72,15 @@
 									<input id="audience_rating" v-model="audience_rating" />
 								</div>
 								<div class="form-group">
-									<label for="slug">Image Name</label>
+									<label for="slug">Image Name <small>(file type assumed to be .jpg)</small></label>
 									<input id="slug" v-model="slug" />
 								</div>
 							</div>
 						</div>
 					</form>
 					<div class="button-container">
-						<button @click="openConfirmDialog()" class="btn" title="Update Movie Details">Update Movie
+						<button @click="openConfirmDialog()" class="btn"
+							title="Update Movie Details">Update Movie
 							Details</button>
 						<button @click="cancel()" class="btn" title="Cancel">Cancel</button>
 					</div>
@@ -95,7 +96,7 @@
 					</h2>
 					<p>This cannot be undone.</p>
 					<div class="dialog-buttons">
-						<button class="btn" @click="updateMovie()">Update</button>
+						<button class="btn" @click="updateMovie()" :disabled="disableBtn">Update</button>
 						<button class="btn cancel" @click="dialog.close()">Cancel</button>
 					</div>
 				</div>
@@ -118,6 +119,7 @@ export default {
 		return {
 			serverStatus: Object.assign({}, this.appNotify),
 			dialog: null,
+			disableBtn: false,
 			movie: {},
 			currentComponent: null,
 			title: this.selectedMovie.title,
@@ -146,6 +148,7 @@ export default {
 		},
 		async updateMovie() {
 			this.eventBus.emit("showHideLoader", true);
+			this.disableBtn = true;
 
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
 			if (!refreshResponse.success) {
@@ -203,6 +206,7 @@ export default {
 			} finally {
 				// this.addUserLog(this.appState, "Update Movie Details");
 				this.eventBus.emit("showHideLoader", false);
+				this.disableBtn = false;
 				this.addUserLog(this.appState, `Update Movie Details. MovieId: ${this.selectedMovie.movieId}`);
 			}
 		},
