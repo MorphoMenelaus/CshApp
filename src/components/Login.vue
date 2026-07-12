@@ -8,7 +8,8 @@
 				@click="currentComponent = 'DeleteUser'">Delete Account</span> -->
 			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify
 				Account</RouterLink>
-			<RouterLink v-if="appState?.permissions.verified" to="/userpreferences" title="User Preferences">Preferences
+			<RouterLink v-if="appState?.permissions.verified" to="/userpreferences" title="User Preferences"
+				class="preferences">Preferences
 			</RouterLink>
 		</div>
 		<div v-else>
@@ -322,6 +323,10 @@ export default {
 
 h2 {
 	text-align: center;
+}
+
+.preferences {
+	text-transform: uppercase;
 }
 
 #dialog-container dialog {

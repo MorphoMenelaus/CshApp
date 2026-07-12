@@ -1,0 +1,80 @@
+[
+	{
+		"city": "Miami",
+		"lat": 25.7743,
+		"long": -80.1937,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Atlanta",
+		"lat": 33.749,
+		"long": -84.388,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "New York",
+		"lat": 40.7143,
+		"long": -74.006,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Chicago",
+		"lat": 41.85,
+		"long": -87.65,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "New Orleans",
+		"lat": 29.9547,
+		"long": -90.0751,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Dallas",
+		"lat": 32.7831,
+		"long": -96.8067,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Denver",
+		"lat": 39.7392,
+		"long": -104.9847,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Las Vegas",
+		"lat": 36.175,
+		"long": -115.1372,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Los Angeles",
+		"lat": 34.0522,
+		"long": -118.2437,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Toronto",
+		"lat": 43.7064,
+		"long": -79.3986,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Vancouver",
+		"lat": 49.2497,
+		"long": -123.1193,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Honolulu",
+		"lat": 21.3069,
+		"long": -157.8583,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	},
+	{
+		"city": "Loganville",
+		"lat": 33.839,
+		"long": -83.9007,
+		"hourly": "temperature_2m,precipitation_probability,precipitation"
+	}
+]
