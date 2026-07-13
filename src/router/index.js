@@ -28,10 +28,16 @@ const router = createRouter({
 			component: () => import('../views/Verify.vue'),
 			meta: { requiresAuth: false }
 		},
-		{
+				{
 			path: '/userpreferences',
 			name: 'User Preferences',
 			component: () => import('../views/UserPreferences.vue'),
+			meta: { requiresAuth: true }
+		},
+		{
+			path: '/weather',
+			name: 'Weather',
+			component: () => import('../views/WeatherBasic.vue'),
 			meta: { requiresAuth: true }
 		},
 		{

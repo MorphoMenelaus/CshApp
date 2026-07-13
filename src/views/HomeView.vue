@@ -57,6 +57,7 @@ const showDetails = (id) => {
 						<li>JavaScript ES6</li>
 					</ul>
 					<ul>
+						<li>ChartJS</li>
 						<li>C#</li>
 						<li>SQL</li>
 						<li>Single Page Applications</li>

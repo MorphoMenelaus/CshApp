@@ -24,9 +24,6 @@
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
 					to="/blog-reader" @click="closeDialogs('blog')" title="Blog">Blog
 				</RouterLink>
-				<!-- <RouterLink v-if="appState?.isLoggedOn" to="/userpreferences" @click="closeDialogs('preferences')"
-					title="User Preferences">
-					Preferences</RouterLink> -->
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
 					to="/displayusers" @click="closeDialogs('users')" title="Display Users">Users
@@ -35,6 +32,7 @@
 					@click="closeDialogs('user_logs')" title="Display User">User
 					Logs</RouterLink>
 				<RouterLink to="/resume" @click="closeDialogs('resume')">Resume</RouterLink>
+				<RouterLink to="/weather" @click="closeDialogs('weather')" title="Weather">Weather</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
 					to="/simpleclock" @click="closeDialogs('simple_clock')" title="Simple Clock">Simple Clock
