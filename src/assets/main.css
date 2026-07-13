@@ -132,6 +132,7 @@ button.close-modal {
 .btn[disabled] {
 	background-color: #666;
 	color: #333;
+	cursor: default;
 }
 
 /* @media (min-width: 1024px) {

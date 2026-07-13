@@ -4,10 +4,9 @@
 			<div id="description-box">
 				<h1>{{ forecastDayText }} Weather Forecast</h1>
 				<p>This data is retreived by a REST API call for up-to-date weather and is the combined reliable NOAA
-					GFS
-					weather model with rapid updating HRRR weather model.</p>
-				<p>The graph is plotted based on data as returned by the weather server API. Only formatting changes are
-					performed to make the data more readable.</p>
+					GFS weather model with rapid updating HRRR weather model.</p>
+				<p>The graph is plotted based on data as returned by a weather server API and formatted to make the
+					data more readable.</p>
 				<small>No promises or guarantees of forecasts.</small>
 			</div>
 			<div class="input-container">
@@ -28,14 +27,27 @@
 							weatherData?.elevation }}m asl
 					</span></small>
 			</div>
+			<div v-if="weatherDateTime" class="weather-time">
+				<span>Last refreshed: {{ weatherDateTime.toLocaleString() }}</span>
+				<button v-if="weatherRefreshButton" class="btn" @click="getWeatherData()">Refresh Data</button>
+			</div>
 			<div id="weather">
 				<canvas id="weather-graph" :width="chartWidth" :height="chartHeight"></canvas>
+			</div>
+			<div class="attribution">
+				<span>REST API weather data by </span>
+				<a class="link" href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank">
+					Open-Meteo.com
+				</a>&nbsp;|&nbsp;
+				<a class="link" href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE"
+					title="Read licence here" target="_blank">Licence here</a>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+// import session from "@/dependencies/sessionMethods.js";
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
 
@@ -57,10 +69,9 @@ export default {
 			chartWidth: this.windowWidth,
 			chartHeight: this.windowWidth * defaultMult,
 			dateOptions: {
-				month: '2-digit',
-				day: '2-digit',
-				hour: '2-digit',
-				minute: '2-digit',
+				month: 'numeric',
+				day: 'numeric',
+				hour: 'numeric',
 				hour12: true
 			},
 			CHART_COLORS: {
@@ -70,7 +81,9 @@ export default {
 				green: 'rgb(75, 192, 192)',
 				blue: 'rgb(54, 162, 235)',
 				purple: 'rgb(153, 102, 255)',
-				grey: 'rgb(201, 203, 207)'
+				grey: 'rgb(201, 203, 207)',
+				white: 'rgb(255, 255, 255)',
+				black: 'rgb(0, 0, 0)'
 			},
 			forecastDaysOptions: [
 				{ text: "1 Day", value: 1 },
@@ -84,6 +97,9 @@ export default {
 			weatherData: {},
 			location: locations.filter(loc => loc.city === "Atlanta")[0],
 			locationOptions: locations.toSorted((a, b) => a.city.localeCompare(b.city)),
+			weatherDateTime: null,
+			weatherRefreshButton: false,
+			refreshTimer: null,
 		};
 	},
 	watch: {
@@ -97,10 +113,9 @@ export default {
 			this.forecastDayText = this.forecastDaysOptions.filter(item => item.value === this.forecastDays)[0].text;
 			this.getWeatherData();
 		},
-		isMobile() {
-		},
 		windowWidth() {
 			this.setGraphSizeRatio();
+			this.drawChart();
 			if (this.isMobile)
 				this.forecastDays = 1;
 			this.chartWidth = this.windowWidth;
@@ -130,8 +145,16 @@ export default {
 					this.multiplier = 1;
 			};
 		},
+		refreshButton() {
+			this.weatherRefreshButton = true;
+		},
+		setRefreshTimer() {
+			if (this.refreshTimer) clearTimeout(this.refreshTimer);
+			this.weatherRefreshButton = false;
+			this.refreshTimer = setTimeout(this.refreshButton, 1800000);
+		},
 		formatWeatherTime() {
-			// Formats every hour in the weather data.
+			// Formats every hour item in the weather data array.
 			let newTimeArr = [];
 			this.weatherData.hourly.time.forEach(time => {
 				let date = new Date(time);
@@ -139,6 +162,12 @@ export default {
 			});
 			this.weatherData.hourly.time = newTimeArr;
 		},
+		// getWeatherFromSession(data) {
+		// 	this.weatherData = data;
+		// 	this.weatherDateTime = new Date(this.weatherData.forecastTimecode);
+		// 	this.formatWeatherTime();
+		// 	this.drawChart();
+		// },
 		async getWeatherData() {
 			this.eventBus.emit("showHideLoader", true);
 
@@ -165,7 +194,24 @@ export default {
 			try {
 				let response = await fetch(request);
 				let data = await response.json();
+
+				if (data?.error) {
+					console.error('Error getting data:', data?.reason);
+					this.serverStatus.code = 503;
+					this.serverStatus.message = data?.reason;
+					this.serverStatus.success = false;
+					this.eventBus.emit("updateStatus", (this.serverStatus));
+					return;
+				}
+
 				this.weatherData = data;
+				this.weatherData.forecastTimecode = new Date().getTime();
+
+				this.weatherDateTime = new Date();
+				this.setRefreshTimer();
+				this.weatherRefreshButton = false;
+
+				// session.recall.save(this.weatherData, "weatherData");
 
 				this.formatWeatherTime();
 				this.drawChart();
@@ -205,27 +251,35 @@ export default {
 						tension: 0.4,
 						yAxisID: "y1"
 					},
-					{
-						type: 'line',
-						label: 'Precip. Probability',
-						data: precipProbData,
-						backgroundColor: this.CHART_COLORS.green,
-						borderColor: this.CHART_COLORS.green,
-						fill: false,
-						tension: 0.4,
-						yAxisID: "y2"
-					},
-					{
-						type: 'bar',
-						label: 'Precipitation Inches',
-						data: precipitation,
-						backgroundColor: this.CHART_COLORS.purple,
-						borderColor: this.CHART_COLORS.purple,
-						fill: false,
-						yAxisID: "y3"
-					},
 				]
 			};
+
+			// dataSetsExtended conditionally added. Added when windowWidth is big enought.
+			const dataSetsExtended = [
+				{
+					type: 'line',
+					label: 'Precip. Probability',
+					data: precipProbData,
+					backgroundColor: this.CHART_COLORS.green,
+					borderColor: this.CHART_COLORS.green,
+					fill: false,
+					tension: 0.4,
+					yAxisID: "y2"
+				},
+				{
+					type: 'bar',
+					label: 'Precipitation Inches',
+					data: precipitation,
+					backgroundColor: this.CHART_COLORS.purple,
+					borderColor: this.CHART_COLORS.purple,
+					fill: false,
+					yAxisID: "y3"
+				},
+			];
+
+			if (!this.isMobile) {
+				data.datasets = [...data.datasets, ...dataSetsExtended];
+			}
 
 			const chartConfig = {
 				// type: 'line',
@@ -236,7 +290,7 @@ export default {
 					plugins: {
 						title: {
 							display: true,
-							text: `Local Weather for ${this.location.city}`,
+							text: `${this.forecastDayText} Weather for ${this.location.city}`,
 							font: {
 								size: this.isMobile ? 16 : 26
 							}
@@ -251,7 +305,7 @@ export default {
 							title: {
 								display: true,
 								text: 'Date / Time'
-							}
+							},
 						},
 						y1: {
 							display: true,
@@ -263,7 +317,7 @@ export default {
 							suggestedMax: (Math.max(...temperatureData) > 80 ? Math.max(...temperatureData) : 80) + 10
 						},
 						y2: {
-							display: true,
+							display: this.isMobile ? false : true,
 							title: {
 								display: true,
 								text: 'Precip. Probability %'
@@ -272,7 +326,7 @@ export default {
 							suggestedMax: (Math.max(...precipitation) > 60 ? Math.max(...precipitation) : 60) + 10
 						},
 						y3: {
-							display: true,
+							display: this.isMobile ? false : true,
 							title: {
 								display: true,
 								text: 'Precip. inch'
@@ -280,7 +334,6 @@ export default {
 							suggestedMin: 0,
 							suggestedMax: (Math.max(...precipitation) > .15 ? Math.max(...precipitation) : .15) + .05
 						}
-
 					}
 				},
 			}
@@ -288,13 +341,16 @@ export default {
 			Chart.defaults.font.size = this.isMobile ? 12 : 18;
 			this.weatherChart = new Chart(this.chartElem, chartConfig);
 		},
+		setupForGraph() {
+			this.forecastDayText = this.forecastDaysOptions.filter(item => item.value === this.forecastDays)[0].text;
+			this.setGraphSizeRatio();
+			this.chartWidth = this.windowWidth;
+			this.chartHeight = this.windowWidth * this.multiplier;
+			this.chartElem = document.getElementById('weather-graph');
+		}
 	},
 	mounted() {
-		this.forecastDayText = this.forecastDaysOptions.filter(item => item.value === this.forecastDays)[0].text;
-		this.setGraphSizeRatio();
-		this.chartWidth = this.windowWidth;
-		this.chartHeight = this.windowWidth * this.multiplier;
-		this.chartElem = document.getElementById('weather-graph');
+		this.setupForGraph();
 		this.getWeatherData();
 	},
 	created() {
@@ -377,6 +433,17 @@ select {
 
 small span {
 	cursor: default;
+}
+
+.weather-time {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.weather-time .btn {
+	margin-left: 15px;
 }
 
 @media (max-width: 767px) {
