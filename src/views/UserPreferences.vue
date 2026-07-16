@@ -52,6 +52,17 @@
 						</div>
 						<div class="drop-downs">
 							<div class="form-group">
+								<label for="location">Location Default<br />
+									<small>(for weather charts)</small>
+								</label>
+								<select v-model="location">
+									<option v-for="(item, index) in locationOptions" :key="index" :value="item">
+										{{ item.city }}
+									</option>
+								</select>
+							</div>
+
+							<div class="form-group">
 								<label for="uiDarkMode">UI DarkMode</label>
 								<select v-model="uiDarkMode">
 									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
@@ -131,6 +142,7 @@ import { onBeforeUnmount } from "vue";
 import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
 import DeleteUser from "@/components/DeleteUser.vue";
+import locations from '@/dependencies/locations.json';
 
 export default {
 	name: "UserPreferences",
@@ -161,12 +173,16 @@ export default {
 			siteEditor: 0,
 			contributor: 0,
 			uiDarkMode: 0,
+			locationDefault: "Atlanta",
 			userNotes: "",
 			verified: 0,
 			currentComponent: null,
 			keyword: "",
 			maxlength: 1024,
 			charRemaining: 1024,
+			location: locations.filter(loc => loc.city === this.locationDefault)[0],
+			locationOptions: locations.toSorted((a, b) => a.city.localeCompare(b.city)),
+
 		};
 	},
 	watch: {
@@ -176,6 +192,9 @@ export default {
 			},
 			deep: true,
 		},
+		location() {
+			this.locationDefault = this.location.city;
+		}
 	},
 	methods: {
 		goBack() {
@@ -200,8 +219,10 @@ export default {
 			this.siteEditor = this.user.siteEditor;
 			this.contributor = this.user.contributor;
 			this.uiDarkMode = this.user.uiDarkMode;
+			this.locationDefault = this.user.locationDefault || "Atlanta";
 			this.userNotes = this.user.userNotes;
 			this.verified = this.user.verified;
+			this.location = locations.filter(loc => loc.city === this.locationDefault)[0];
 		},
 		async findUserByName() {
 
@@ -301,6 +322,7 @@ export default {
 				siteEditor: this.siteEditor,
 				contributor: this.contributor,
 				uiDarkMode: this.uiDarkMode,
+				locationDefault: this.locationDefault,
 				userNotes: this.userNotes,
 				verified: this.verified
 			};
