@@ -73,23 +73,17 @@ const showDetails = (id) => {
 				<h3>Web Application Developer | Makrö Gaming Studios</h3>
 				<p>
 					I developed a full suite of Single Page Applications using the Vue 3 framework to accompany the
-					video
-					slots
-					game application ecosystem for Makrö Gaming Studios. I placed a strong emphasis on responsive clean
-					design,
-					interactivity and readability in order to present and effortlessly manage potentially complex
-					functionality
-					and data. The apps consist of an Admin App, Cashier App, Player App and Report App to facilitate all
-					the
-					behind-the-scenes functions and player facing needs in order to support the game client and the site
-					administrators mostly through REST API calls to the game server.
+					video slots game application ecosystem for Makrö Gaming Studios. I placed a strong emphasis on
+					responsive clean design, interactivity and readability in order to present and effortlessly manage
+					potentially complex functionality and data. The apps consist of an Admin App, Cashier App, Player
+					App and Report App to facilitate all the behind-the-scenes functions and player facing needs in
+					order to support the game client and the site administrators mostly through REST API calls to the
+					game server.
 				</p>
 				<p>
 					A robust role and permissions management system was implemented in each application that dynamically
-					renders
-					user interfaces and enables functions based on role/permissions. Authorization for Admin, HelpDesk,
-					Cashier,
-					Reporter, and Player all allow for different access and abilities.
+					renders user interfaces and enables functions based on role/permissions. Authorization for Admin,
+					HelpDesk, Cashier, Reporter, and Player all allow for different access and abilities.
 				</p>
 				<div class="btn-link-container">
 					<Button id="scroll-anchor" class="btn" @click="showDetails('scroll-anchor')">{{ lessText ? 'Fewer' :
@@ -100,51 +94,20 @@ const showDetails = (id) => {
 						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
 				</div>
 				<Transition name="slide-down">
-					<div v-if="lessText" id="latest-details">
-						<div class="details-ul">
-							<h3 class="julius-sans">Admin App:</h3>
-							<ul>
-								<li>Allows casino administrators to manage casinos and to view and set game settings.
-								</li>
-								<li>Admins can enable or disable any games, game types or pay tiers.</li>
-								<li>Admins can review all game history, logs and player account status.</li>
-								<li>Admins can review each individual game play, showing the reels spin, bonus games,
-									and payouts for each line to help with dispute resolution.</li>
-								<li>Game play history can be filtered by game name and date/time range.</li>
-							</ul>
-						</div>
-						<div class="details-ul">
-							<h3 class="julius-sans">Cashier App:</h3>
-							<ul>
-								<li>Handles all cash-in/cash-out requirements of the players. All cash-in is immediately
-									playable in any game in the system.</li>
-								<li>View the transaction history for each player account.</li>
-								<li>Prints receipts to a connected receipt printer.</li>
-								<li>Displays and prints each cashier's bank transaction totals, and starting and ending
-									cash for the shift.</li>
-							</ul>
-						</div>
-						<div class="details-ul">
-							<h3 class="julius-sans">Player App:</h3>
-							<ul>
-								<li>Register new accounts and verify email address or phone number depending on rules
-									set by the site administrator.</li>
-								<li>Verify player identification in jurisdictions where this is required.</li>
-								<li>Generate QR code on the player mobile app for Cashiers to scan to authorize funds
-									transfers for the player's account.</li>
-							</ul>
-						</div>
-						<div class="details-ul">
-							<h3 class="julius-sans">Report App:</h3>
-							<ul>
-								<li>All reports can be filtered by various parameters and date/time range.</li>
-								<li>Game performance data tables to document individual game performance.</li>
-								<li>Casino payout liability reports.</li>
-								<li>Shows all active players and stats.</li>
-							</ul>
+					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
+						<div v-if="lessText" id="latest-details">
+							<div class="details-ul" v-for="(app, index) in appState.appDevDuties" :key="index">
+								<h3 class="julius-sans">{{ app.appName }}:</h3>
+								<ul>
+									<li v-for="(li, index) in app.duties" :key="index">{{ li }}</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</Transition>
+				<div v-if="!appState?.appDevDuties?.length > 0">
+					<h1>No results found. Please refresh your browser.</h1>
+				</div>
 			</div>
 			<Disclaimers />
 		</div>

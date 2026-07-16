@@ -17,8 +17,7 @@
 					<img src="/favicon.ico" alt="CSH App">
 				</RouterLink>
 				<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
-				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/movie-database"
-					@click="closeDialogs('movie_db')" title="Movie Database">Movie DB
+				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Database">Movie DB
 				</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
