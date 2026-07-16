@@ -7,7 +7,7 @@
 
 	<div class="register-link" v-if="!appState?.isLoggedOn && !isMobile">
 		<span>New User? <span class="link" @click="showRegisterUserComponent(false, true)"
-				title="Click to register">Click to register</span>. Or login with username "guest"</span>
+				title="Click to register">Click to register</span>.<br />Or login with username "guest"</span>
 	</div>
 
 	<HeaderMain :appState="appState" :isMobile="isMobile" />

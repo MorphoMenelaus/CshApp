@@ -1,7 +1,7 @@
 <template>
 
 	<div id="contact">
-		<div class="wrapper">
+		<div class="wrapper" v-if="!messageSent">
 			<!-- <div class="btn-container">
 				<button @click="eventBus.emit('contactEmail', false)" class="close-modal" title="Close This Dialog">✕</button>
 			</div> -->
@@ -50,6 +50,20 @@
 				</div>
 			</form>
 		</div>
+
+		<div class="wrapper" v-else>
+			<div id="form-header">
+				<h2>Message sent</h2>
+			</div>
+			<div>
+				<h3>I'll get back to you as soon as I can.</h3>
+			</div>
+			<div style="display: flex;">
+				<button class="btn" type="button" @click="eventBus.emit('contactEmail', false)"
+					title="Cancel">Close</button>
+			</div>
+		</div>
+
 	</div>
 
 </template>
@@ -78,6 +92,7 @@ export default {
 			errState: false,
 			maxlength: 1024,
 			charRemaining: 1024,
+			messageSent: false,
 		};
 	},
 	watch: {
@@ -128,8 +143,9 @@ export default {
 					this.serverStatus.message = data?.message;
 					this.serverStatus.success = data?.success;
 					this.eventBus.emit("updateStatus", (this.serverStatus));
-					this.eventBus.emit("contactEmail", false);
+					// this.eventBus.emit("contactEmail", false);
 					this.sendAnalyticsEvent('contact_form_send', 'contact_modal');
+					this.messageSent = true;
 				}
 				this.errState = data?.success;
 

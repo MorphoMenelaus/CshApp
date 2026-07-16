@@ -56,6 +56,7 @@ const defaultMult = .25;
 export default {
 	name: "WeatherBasic",
 	props: {
+		appState: Object,
 		isMobile: Boolean,
 		windowWidth: Number
 	},
@@ -95,7 +96,8 @@ export default {
 			forecastDayText: "",
 			dataSet: [],
 			weatherData: {},
-			location: locations.filter(loc => loc.city === "Atlanta")[0],
+			locationDefault: this.appState?.user?.locationDefault || "Atlanta",
+			location: {},
 			locationOptions: locations.toSorted((a, b) => a.city.localeCompare(b.city)),
 			weatherDateTime: null,
 			weatherRefreshButton: false,
@@ -350,6 +352,7 @@ export default {
 		}
 	},
 	mounted() {
+		this.location = locations.filter(loc => loc.city === this.locationDefault)[0];
 		this.setupForGraph();
 		this.getWeatherData();
 	},

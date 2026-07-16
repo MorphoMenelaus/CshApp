@@ -8,7 +8,7 @@
 			</div>
 
 			<div class="btn-container top">
-				<a class="btn" href="/pdf/ChrisHardwickResume2026nc.pdf" title="Download Chris Hardwick Resume PDF"
+				<a class="btn" href="/pdf/ChrisHardwickResume2026-nc.pdf" title="Download Chris Hardwick Resume PDF"
 					download="ChrisHardwickResume2026.pdf" @click="sendAnalyticsEvent('download', 'resume_link')">
 					Download PDF
 				</a>
@@ -43,12 +43,17 @@
 					</div>
 				</Transition>
 			</div>
-			<div v-if="resumeArray.length > 0 && !isMobile">
-				<ResumeTable :resumeArray="resumeArray" />
+			<div v-if="resumeArray?.length > 0">
+				<div v-if="!isMobile">
+					<ResumeTable :resumeArray="resumeArray" />
+				</div>
+				<div v-if="isMobile">
+					<ResumeTableMobile :resumeArray="resumeArray" />
+				</div>
 			</div>
-
-			<div v-if="resumeArray.length > 0 && isMobile">
-				<ResumeTableMobile :resumeArray="resumeArray" />
+			<div v-else>
+				<h1 class="center">Resume Data Failed to Load.</h1>
+				<h2 class="center">Please try again.</h2>
 			</div>
 
 		</div>
