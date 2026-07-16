@@ -31,7 +31,7 @@
 				<div class="inputs">
 					<label for="username">User Name</label>
 					<input id="username" type="text" name="username" v-model="userName" placeholder="User Name"
-						autocomplete="username" />
+						autocomplete="username" onfocus="this.select()" />
 					<label for="password">Password</label>
 					<input id="password" type="password" name="password" v-model="password" placeholder="Password"
 						autocomplete="current-password" />

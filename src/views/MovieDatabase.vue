@@ -1,41 +1,55 @@
 <template>
 
 	<div>
-		<h1>Movie Database</h1>
+		<div id="movie-header">
+			<h1>Movie Database</h1>
+			<p class="movie-intro">A searchable, sortable list of more than 1500 movies in my database containing cast,
+				crew, ratings, etc...
+				Not a complete list of all movies ever made, obviously.</p>
+			<p class="movie-intro">Favorites can be saved to your account, if you have an account on this site.</p>
+		</div>
 
 		<div class="favorite-check" v-if="favoritesList.length > 0">
-			<label for="favoritesOnly">Favorites only</label>
-			<input id="favoritesOnly" type="checkbox" v-model="favoritesOnly" />
+			<label for="favoritesOnly" title="Show only movies in your favorites list">Favorites only</label>
+			<input id="favoritesOnly" title="Show only movies in your favorites list" type="checkbox"
+				v-model="favoritesOnly" />
 		</div>
 		<div id="paging" v-if="!favoritesOnly || favoritesList.length === 0">
-			<label for="limitOptions">Limit{{ isMobile ? '' : ' List' }}</label>
-			<select v-model="limit">
-				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
-				</option>
-			</select>
-			<label for="sortByOptions" title="Click to toggle sort order" class="link"
-				@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">Sort
-				By</label>
-			<div class="order">
-				<small title="Click to toggle sort order"
-					@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir === 'ASC' ? 'Ascend'
-						: 'Descend' }}</small>
-				<select v-model="sortBy">
-					<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
+			<div class="center">
+				<label for="limitOptions">Limit List</label>
+				<select v-model="limit">
+					<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
 					</option>
 				</select>
 			</div>
+			<div class="flex-row">
+				<label for="sortByOptions" title="Click to toggle sort order" class="link"
+					@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">Sort
+					By</label>
+				<div class="order">
+					<small title="Click to toggle sort order"
+						@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir === 'ASC' ?
+							'Ascend'
+							: 'Descend' }}</small>
+					<select v-model="sortBy">
+						<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
+						</option>
+					</select>
+				</div>
+			</div>
 			<input v-model="contains" placeholder="Title contains..." />
 			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">✕</span>
-			<button class="prev-button btn" type="button" @click="previousPage()"
-				title="Previous Page">previous</button>
-			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
-			<span :currentPage="currentPage">page {{ currentPage }}</span>
+			<div>
+				<button class="prev-button btn" type="button" @click="previousPage()"
+					title="Previous Page">previous</button>
+				<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
+				<span :currentPage="currentPage">page {{ currentPage }}</span>
+			</div>
 		</div>
 		<div id="movies">
 			<div id="cards" v-if="movieList?.length > 0">
 				<div class="card" v-for="(item, index) in movieList" :key="index">
-					<button v-if="appState?.permissions.admin" class="btn edit" @click="editThisEntry(item)"
+					<button v-if="appState?.permissions?.admin" class="btn edit" @click="editThisEntry(item)"
 						title="Edit this movie's detils">Edit</button>
 					<!-- <div v-if="item.original_title" class="summary-pop">
 							<p>{{ item.summary }}</p>
@@ -76,6 +90,25 @@
 
 		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie"
 			:favoritesList="favoritesList" :isMobile="isMobile" />
+
+		<div id="permissions-dialog-container">
+			<dialog id="not-allowed">
+				<div>
+					<h2>
+						Verified account needed to save Favorites
+					</h2>
+					<p>You must be logged in with a verified account to save to your fovorites list.</p>
+					<div class="dialog-buttons">
+						<button class="btn" @click="showRegisterUserComponent(false, true)"
+							title="Click to register">Click to register</button>
+						<button class="btn" title="Login here" @click="showRegisterUserComponent(true, false)">Login
+							here.</button>
+						<button class="btn cancel" @click="dialog.close()">Close</button>
+					</div>
+				</div>
+			</dialog>
+		</div>
+
 
 	</div>
 </template>
@@ -160,6 +193,18 @@ export default {
 		},
 	},
 	methods: {
+		showRegisterUserComponent(login = false, register = false) {
+			this.dialog.close();
+			// Control the state of both components
+			let payload = {
+				register: register,
+				login: login
+			}
+			this.eventBus.emit("registerUser", payload);
+		},
+		openPermissionsDialog() {
+			this.dialog.showModal()
+		},
 		scrollToTop() {
 			let container = document.getElementById("app");
 			container.scrollTo({
@@ -212,6 +257,11 @@ export default {
 			this.columns = multiplier;
 		},
 		favoritesHandler(movieId) {
+			if (!this.appState?.permissions?.verified) {
+				this.openPermissionsDialog();
+				return;
+			}
+
 			if (this.favoritesList.includes(movieId)) {
 				this.removeFavorite(movieId);
 			} else {
@@ -321,6 +371,11 @@ export default {
 		async getFavoriteList() {
 			// this.eventBus.emit("showHideLoader", true);
 
+			if (!this.appState?.permissions?.verified) {
+				return;
+			}
+
+
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
 			if (!refreshResponse.success) {
 				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
@@ -404,15 +459,15 @@ export default {
 		async getMovieList() {
 			this.eventBus.emit("showHideLoader", true);
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
-				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-				this.eventBus.emit("updateStatus", mergedStatus);
-				return;
-			}
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (!refreshResponse.success) {
+			// 	let mergedStatus = { ...this.serverStatus, ...refreshResponse };
+			// 	this.eventBus.emit("updateStatus", mergedStatus);
+			// 	return;
+			// }
 
 			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+			// headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL("/api/movies/", this.baseUrl);
 
@@ -474,6 +529,7 @@ export default {
 		this.limit = this.columns * 2;
 		this.populateLimits();
 		this.getMovieList();
+		this.dialog = document.getElementById("not-allowed");
 	},
 	created() {
 		this.eventBus.on("movieUpdated", () => {
@@ -498,6 +554,21 @@ export default {
 h1,
 h2 {
 	text-align: center;
+}
+
+#movie-header {
+	background-color: #c1c1c1;
+	color: #000;
+	width: fit-content;
+	margin: 15px auto auto;
+	padding: 15px 0 30px;
+	border-radius: 12px;
+	border: 1px #aaa solid;
+}
+
+.uiDarkMode #movie-header {
+	background-color: #333;
+	color: #c1c1c1;
 }
 
 #movies {
@@ -569,10 +640,41 @@ img {
 	font-size: 18px;
 }
 
-.mobile .order,
+.mobile #paging {
+	display: grid;
+}
+
+label[for="limitOptions"] {
+	margin-right: 15px;
+}
+
+#paging .btn {
+	margin: auto 5px;
+}
+
+.mobile #paging .center {
+	display: block;
+	margin: auto;
+}
+
+#paging .flex-row {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+}
+
+.mobile #paging .flex-row {
+	margin: 15px auto 0;
+}
+
+#paging .flex-row * {
+	margin: auto 3px;
+}
+
+/* .mobile .order,
 .mobile label[for="sortByOptions"] {
 	display: none;
-}
+} */
 
 .clear-field {
 	padding: 4px;
@@ -677,6 +779,32 @@ label[for="favoritesOnly"] {
 	cursor: pointer;
 }
 
+#permissions-dialog-container dialog {
+	margin: auto;
+	padding: 30px;
+	color: #bda5af;
+	background-color: #313b64;
+	border-radius: 12px;
+	border-width: 1px;
+}
+
+::backdrop {
+	background-color: rgb(0 0 0 / 60%);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.dialog-buttons {
+	display: flex;
+	justify-content: space-evenly;
+	margin: 30px auto 0;
+}
+
+p.movie-intro {
+	width: 95%;
+	margin: auto;
+}
+
 @media (min-width: 576px) {
 	#cards {
 		grid-template-columns: repeat(2, 1fr);
@@ -687,17 +815,30 @@ label[for="favoritesOnly"] {
 	#cards {
 		grid-template-columns: repeat(2, 1fr);
 	}
+
+	p.movie-intro {
+		width: 90%;
+	}
 }
 
 @media (min-width: 1024px) {
 	#cards {
 		grid-template-columns: repeat(3, 1fr);
 	}
+
+	p.movie-intro {
+		width: 85%;
+	}
+
 }
 
 @media (min-width: 1200px) {
 	#cards {
 		grid-template-columns: repeat(4, 1fr);
+	}
+
+	p.movie-intro {
+		width: 80%;
 	}
 }
 
@@ -705,11 +846,19 @@ label[for="favoritesOnly"] {
 	#cards {
 		grid-template-columns: repeat(5, 1fr);
 	}
+
+	p.movie-intro {
+		width: 70%;
+	}
 }
 
 @media (min-width: 2400px) {
 	#cards {
 		grid-template-columns: repeat(6, 1fr);
+	}
+
+	p.movie-intro {
+		width: 60%;
 	}
 }
 
