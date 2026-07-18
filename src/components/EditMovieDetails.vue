@@ -79,8 +79,7 @@
 						</div>
 					</form>
 					<div class="button-container">
-						<button @click="openConfirmDialog()" class="btn"
-							title="Update Movie Details">Update Movie
+						<button @click="openConfirmDialog()" class="btn" title="Update Movie Details">Update Movie
 							Details</button>
 						<button @click="cancel()" class="btn" title="Cancel">Cancel</button>
 					</div>
@@ -151,11 +150,13 @@ export default {
 			this.disableBtn = true;
 
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
-				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-				this.eventBus.emit("updateStatus", mergedStatus);
+			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			if (!refreshResponse?.success) {
+				this.eventBus.emit("updateStatus", refreshResponse);
 				return;
-			}
+			} else if (refreshResponse?.code !== 304) {
+				this.eventBus.emit("updateAppState", refreshResponse.appState);
+			};
 
 			let body = {
 				title: this.title,
@@ -191,6 +192,11 @@ export default {
 			try {
 				let response = await fetch(request);
 				const data = await response.json();
+
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
 
 				if (data.success) {
 					this.eventBus.emit("movieUpdated");

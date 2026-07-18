@@ -47,7 +47,6 @@
 </template>
 
 <script>
-// import session from "@/dependencies/sessionMethods.js";
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
 
@@ -108,6 +107,7 @@ export default {
 		location: {
 			handler() {
 				this.getWeatherData();
+				this.sendAnalyticsEvent("weather_location", this.location.city);
 			},
 			deep: true,
 		},
@@ -164,12 +164,6 @@ export default {
 			});
 			this.weatherData.hourly.time = newTimeArr;
 		},
-		// getWeatherFromSession(data) {
-		// 	this.weatherData = data;
-		// 	this.weatherDateTime = new Date(this.weatherData.forecastTimecode);
-		// 	this.formatWeatherTime();
-		// 	this.drawChart();
-		// },
 		async getWeatherData() {
 			this.eventBus.emit("showHideLoader", true);
 
@@ -197,6 +191,11 @@ export default {
 				let response = await fetch(request);
 				let data = await response.json();
 
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
+
 				if (data?.error) {
 					console.error('Error getting data:', data?.reason);
 					this.serverStatus.code = 503;
@@ -212,8 +211,6 @@ export default {
 				this.weatherDateTime = new Date();
 				this.setRefreshTimer();
 				this.weatherRefreshButton = false;
-
-				// session.recall.save(this.weatherData, "weatherData");
 
 				this.formatWeatherTime();
 				this.drawChart();

@@ -74,6 +74,11 @@ export default {
 				let response = await fetch(request);
 				const dataObj = await response.json();
 
+				if (dataObj?.code === 403) {
+					this.eventBus.emit("updateStatus", dataObj);
+					this.eventBus.emit("forceLogout");
+				}
+
 				if (dataObj?.success) {
 					this.appNotify.code = 200;
 					this.appNotify.message = "Verification success. Please Log in to continue.";
@@ -111,6 +116,11 @@ export default {
 
 				let response = await fetch(request);
 				const dataObj = await response.json();
+
+				if (dataObj?.code === 403) {
+					this.eventBus.emit("updateStatus", dataObj);
+					this.eventBus.emit("forceLogout");
+				}
 
 				if (dataObj?.success) {
 					this.appNotify.code = 200;

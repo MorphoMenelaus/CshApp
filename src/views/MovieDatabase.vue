@@ -3,7 +3,7 @@
 	<div>
 		<div id="movie-header">
 			<h1>Movie Database</h1>
-			<p class="movie-intro">A searchable, sortable list of more than 1500 movies in my database containing cast,
+			<p class="movie-intro">A searchable, sortable list of more than 1500 movies in my database, containing cast,
 				crew, ratings, etc...
 				Not a complete list of all movies ever made, obviously.</p>
 			<p class="movie-intro">Favorites can be saved to your account, if you have an account on this site.</p>
@@ -95,7 +95,7 @@
 			<dialog id="not-allowed">
 				<div>
 					<h2>
-						Verified account needed to save Favorites
+						Saving Favorites requires a verified account
 					</h2>
 					<p>You must be logged in with a verified account to save to your fovorites list.</p>
 					<div class="dialog-buttons">
@@ -280,11 +280,13 @@ export default {
 			// this.eventBus.emit("showHideLoader", true);
 
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
-				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-				this.eventBus.emit("updateStatus", mergedStatus);
+			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			if (!refreshResponse?.success) {
+				this.eventBus.emit("updateStatus", refreshResponse);
 				return;
-			}
+			} else if (refreshResponse?.code !== 304) {
+				this.eventBus.emit("updateAppState", refreshResponse.appState);
+			};
 
 			let body = {
 				userId: this.appState.user.userId,
@@ -307,6 +309,11 @@ export default {
 				let response = await fetch(request);
 				const data = await response.json();
 
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
+
 				if (data.success) {
 					this.eventBus.emit("favoriteUpdated");
 					this.getFavoriteList();
@@ -326,11 +333,13 @@ export default {
 		async removeFavorite(movieId) {
 
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
-				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-				this.eventBus.emit("updateStatus", mergedStatus);
+			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			if (!refreshResponse?.success) {
+				this.eventBus.emit("updateStatus", refreshResponse);
 				return;
-			}
+			} else if (refreshResponse?.code !== 304) {
+				this.eventBus.emit("updateAppState", refreshResponse.appState);
+			};
 
 			let body = {
 				movieId: movieId
@@ -351,6 +360,11 @@ export default {
 			try {
 				let response = await fetch(request);
 				const data = await response.json();
+
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
 
 				if (data.success) {
 					this.eventBus.emit("favoriteUpdated");
@@ -375,13 +389,14 @@ export default {
 				return;
 			}
 
-
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
-				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-				this.eventBus.emit("updateStatus", mergedStatus);
+			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			if (!refreshResponse?.success) {
+				this.eventBus.emit("updateStatus", refreshResponse);
 				return;
-			}
+			} else if (refreshResponse?.code !== 304) {
+				this.eventBus.emit("updateAppState", refreshResponse.appState);
+			};
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -402,6 +417,11 @@ export default {
 				let response = await fetch(request);
 				let data = await response.json();
 
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
+
 				this.favoritesList = data?.userFavorites || [];
 
 			} catch (error) {
@@ -418,11 +438,13 @@ export default {
 			this.eventBus.emit("showHideLoader", true);
 
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
-				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-				this.eventBus.emit("updateStatus", mergedStatus);
+			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			if (!refreshResponse?.success) {
+				this.eventBus.emit("updateStatus", refreshResponse);
 				return;
-			}
+			} else if (refreshResponse?.code !== 304) {
+				this.eventBus.emit("updateAppState", refreshResponse.appState);
+			};
 
 			let body = {
 				movieIds: this.favoritesList
@@ -443,6 +465,12 @@ export default {
 			try {
 				let response = await fetch(request);
 				let data = await response.json();
+
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
+
 				this.movieFavorites = data.movies;
 
 			} catch (error) {
@@ -458,13 +486,6 @@ export default {
 		},
 		async getMovieList() {
 			this.eventBus.emit("showHideLoader", true);
-
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (!refreshResponse.success) {
-			// 	let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-			// 	this.eventBus.emit("updateStatus", mergedStatus);
-			// 	return;
-			// }
 
 			let headerObj = new Headers();
 			// headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -489,6 +510,12 @@ export default {
 			try {
 				let response = await fetch(request);
 				let data = await response.json();
+
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
+
 				this.movieList = data.movies;
 
 				this.getFavoriteList();
@@ -534,10 +561,12 @@ export default {
 	created() {
 		this.eventBus.on("movieUpdated", () => {
 			this.currentComponent = null;
+			this.selectedMovie = null;
 			this.refreshMoviesWithFaves();
 		});
 		this.eventBus.on("EscapeKeydown", () => {
 			this.currentComponent = null;
+			this.selectedMovie = null;
 			this.refreshMoviesWithFaves();
 		});
 		onBeforeUnmount(() => {
@@ -749,6 +778,8 @@ label[for="limitOptions"] {
 	line-height: 1.25em;
 	margin-bottom: 3px;
 	cursor: pointer;
+	position: relative;
+	bottom: 5px;
 }
 
 #favorite.favs {

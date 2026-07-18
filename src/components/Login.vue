@@ -66,10 +66,9 @@
 
 <script>
 // @ is an alias to /src
-import session from "@/dependencies/sessionMethods.js";
-// import sharedScripts from "@/dependencies/sharedScripts";
 import { onBeforeUnmount } from "vue";
 import router from "@/router";
+import { Storage } from "@/dependencies/csh-libs.js";
 import DeleteUser from "@/components/DeleteUser.vue";
 
 const user = import.meta.env.VITE_APP_GUEST_USER;
@@ -90,6 +89,7 @@ export default {
 	data() {
 		return {
 			appNotify: Object.assign({}, this.appNotify),
+			recall: new Storage(),
 			loginShow: false,
 			activeSession: {},
 			accessToken: "",
@@ -160,6 +160,11 @@ export default {
 				let response = await fetch(request);
 				const dataObj = await response.json();
 
+				if (dataObj?.code === 403) {
+					this.eventBus.emit("updateStatus", dataObj);
+					this.eventBus.emit("forceLogout");
+				}
+
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
 					updateAppState.accessToken = dataObj.authorization.accessToken;
@@ -212,6 +217,11 @@ export default {
 
 				let response = await fetch(request);
 				const dataObj = await response.json();
+
+				if (dataObj?.code === 403) {
+					this.eventBus.emit("updateStatus", dataObj);
+					this.eventBus.emit("forceLogout");
+				}
 
 				if (dataObj?.success) {
 					let updateAppState = this.appState;
@@ -266,15 +276,14 @@ export default {
 				if (response.ok) {
 					let updateAppState = {};
 					this.eventBus.emit("updateAppState", updateAppState);
-					session.recall.deleteAll();
+					this.recall.deleteAll();
 				}
-
-				router.push("/");
 
 			} catch (e) {
 				console.error(e);
 			} finally {
 				this.eventBus.emit("showHideLoader", false);
+				router.push("/");
 			}
 		},
 		handleClick(event) {

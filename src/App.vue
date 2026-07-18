@@ -27,15 +27,15 @@
 
 <script>
 // @ is an alias to /src
-// import sharedScripts from "@/dependencies/sharedScripts";
 // import { RouterLink, RouterView } from "vue-router";
 // import { inject } from 'vue';
-import session from "@/dependencies/sessionMethods.js";
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
+import { Storage } from "@/dependencies/csh-libs.js";
+
 
 export default {
 	// setup() {
@@ -55,6 +55,7 @@ export default {
 	data() {
 		return {
 			serverStatus: Object.assign({}, this.appNotify),
+			recall: new Storage(),
 			body: document.getElementsByTagName('body'),
 			serverVersion: "",
 			appState: {},
@@ -76,6 +77,17 @@ export default {
 		}
 	},
 	methods: {
+		async initialSetup() {
+			this.getServerVersion();
+			this.recallAppState();
+			if (this.appState?.accessToken) {
+				let checkTokens = await this.tokenCheck(this.appState);
+				if (!checkTokens?.tokenValid) this.eventBus.emit("forceLogout");
+			}
+			// The order of this getAppRolesData() call is important.
+			// The recall and access token check should be done first.
+			this.getAppRolesData();
+		},
 		showRegisterUserComponent(login = false, register = false) {
 			// Control the state of both components
 			let payload = {
@@ -85,22 +97,9 @@ export default {
 			this.eventBus.emit("registerUser", payload);
 		},
 		recallAppState() {
-			this.appState = session.recall.get();
+			this.appState = this.recall.get();
 			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		},
-		// createNewStorage() {
-		// 	// Create a new storage if it doesn't already exist
-		// 	let currentStorage = session.storage.get();
-		// 	let storageEmpty = Object.keys(currentStorage).length <= 0;
-		// 	if (storageEmpty)
-		// 		session.storage.save(this.storageState);
-		// },
-		// addRequiredDocs() {
-		// 	// if properties don't exit, create one
-		// 	let currentStorage = session.storage.get();
-		// 	if(currentStorage?.guestLoginDoc)
-		// 	session.storage.add(false, "guestLoginDoc");
-		// },
 		async getServerVersion() {
 			try {
 				const response = await fetch('/api/serverInfo');
@@ -113,7 +112,7 @@ export default {
 			}
 		},
 		async getAppRolesData() {
-			this.eventBus.emit("showHideLoader", true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -143,21 +142,19 @@ export default {
 			} catch (error) {
 				console.error('Error reading data:', error);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
-	created() {
-		this.getServerVersion();
-		this.recallAppState();
-		this.getAppRolesData();
+	async created() {
+		this.initialSetup();
 		this.eventBus.on("EscapeKeydown", () => {
 			this.currentComponent = null;
 		});
 		// this.createNewStorage();
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
-			session.recall.save(this.appState);
+			this.recall.save(this.appState);
 			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		});
 		this.eventBus.on("registerUser", (payload) => {
@@ -179,6 +176,11 @@ export default {
 			if (event.target.id !== "nav-container" && event.target.id !== "hamburger")
 				this.eventBus.emit("closeMainNav");
 		}, true);
+		window.addEventListener('storage', (event) => {
+			if (event.key === this.recall.getstorageKey()) {
+				this.recallAppState();
+			}
+		});
 	},
 	mounted() {
 	},
