@@ -60,7 +60,6 @@
 <script>
 // @ is an alias to /src
 // import { ref } from "vue";
-// import session from "@/dependencies/sessionMethods";
 // import router from "@/router";
 
 export default {
@@ -118,11 +117,13 @@ export default {
 			this.eventBus.emit("showHideLoader", true);
 
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
-				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-				this.eventBus.emit("updateStatus", mergedStatus);
+			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			if (!refreshResponse?.success) {
+				this.eventBus.emit("updateStatus", refreshResponse);
 				return;
-			}
+			} else if (refreshResponse?.code !== 304) {
+				this.eventBus.emit("updateAppState", refreshResponse.appState);
+			};
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -144,6 +145,12 @@ export default {
 				let response = await fetch(request);
 
 				const data = await response.json();
+
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
+
 				if (data.success) {
 					this.usersList = data.users;
 				}

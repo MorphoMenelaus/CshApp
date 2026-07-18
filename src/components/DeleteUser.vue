@@ -34,11 +34,13 @@ export default {
 		async deleteUser() {
 
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (!refreshResponse.success) {
-				let mergedStatus = { ...this.serverStatus, ...refreshResponse };
-				this.eventBus.emit("updateStatus", mergedStatus);
+			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			if (!refreshResponse?.success) {
+				this.eventBus.emit("updateStatus", refreshResponse);
 				return;
-			}
+			} else if (refreshResponse?.code !== 304) {
+				this.eventBus.emit("updateAppState", refreshResponse.appState);
+			};
 
 			let confirmDelete = confirm(
 				`Are you sure you want to DELETE, ${this.appState.user.userName}`
@@ -62,6 +64,11 @@ export default {
 
 				const response = await fetch(request);
 				const data = await response.json();
+
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
 
 				if (data.success)
 					this.addUserLog(this.appState, "User Deleted Account");

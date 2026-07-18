@@ -53,8 +53,6 @@
 <script>
 // @ is an alias to /src
 import { onBeforeUnmount } from 'vue';
-// import session from "@/dependencies/sessionMethods";
-// import sharedScripts from "@/dependencies/sharedScripts";
 
 export default {
 	name: "RegisterUser",
@@ -119,6 +117,11 @@ export default {
 
 				if (response.ok) {
 					const data = await response.json();
+
+					if (data?.code === 403) {
+						this.eventBus.emit("updateStatus", data);
+						this.eventBus.emit("forceLogout");
+					}
 
 					this.serverStatus.code = data?.code;
 					this.serverStatus.message = data?.message;

@@ -2,8 +2,14 @@ User-agent: Googlebot
 Disallow: /img/
 Disallow: /media-poster/
 Disallow: /pdf/
+Disallow: /assets/
+Disallow: /blogImg/
+Disallow: /icons/
 
 User-agent: *
 Disallow: /img/
 Disallow: /media-poster/
 Disallow: /pdf/
+Disallow: /assets/
+Disallow: /blogImg/
+Disallow: /icons/
