@@ -88,7 +88,8 @@ const showDetails = (id) => {
 				<div class="btn-link-container">
 					<Button id="scroll-anchor" class="btn" @click="showDetails('scroll-anchor')">{{ lessText ? 'Fewer' :
 						'More'
-					}} Details</Button>
+					}} Details <span :class="lessText ? 'rotated' : ''">▽</span></Button>
+					<RouterLink to="/resume" class="btn linkedin">Full Resume</RouterLink>
 					<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
 						title="Chris Hardwick | Linkedin Profile" target="_blank"
 						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
@@ -118,6 +119,17 @@ const showDetails = (id) => {
 </template>
 
 <style scoped>
+.btn span {
+	display: inline-block;
+	margin-left: 10px;
+	font-weight: bold;
+	transition: transform .4s ease-in-out;
+}
+
+.rotated {
+	transform: rotate(180deg);
+}
+
 #copyright {
 	text-align: center;
 }

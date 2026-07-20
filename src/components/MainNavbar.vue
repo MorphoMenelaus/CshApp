@@ -32,6 +32,9 @@
 					Logs</RouterLink>
 				<RouterLink to="/resume" @click="closeDialogs('resume')">Resume</RouterLink>
 				<RouterLink to="/weather" @click="closeDialogs('weather')" title="Weather">Weather</RouterLink>
+				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/toggl"
+					@click="closeDialogs('toggl')" title="Toggl">Toggl
+				</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
 					to="/simpleclock" @click="closeDialogs('simple_clock')" title="Simple Clock">Simple Clock

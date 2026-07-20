@@ -2,7 +2,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { addUserLog, toTitleCase, isUTCtime, refreshAuthTokenAsNeeded, tokenCheck } from "@/dependencies/csh-libs.js";
+import { addUserLog, toTitleCase, isUTCtime, sendAnalyticsEvent, refreshAuthTokenAsNeeded, tokenCheck } from "@/dependencies/csh-libs.js";
 
 import mitt from 'mitt'
 
@@ -41,13 +41,6 @@ const timeOptions = {
 	hour: "numeric",
 	minute: "2-digit",
 	second: "2-digit"
-}
-
-const sendAnalyticsEvent = (eventType, method) => {
-	gtag('event', eventType, {
-		'method': method,
-		'page_location': window.location.href
-	});
 }
 
 // Global variables

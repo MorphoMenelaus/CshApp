@@ -28,7 +28,7 @@ const router = createRouter({
 			component: () => import('../views/Verify.vue'),
 			meta: { requiresAuth: false }
 		},
-				{
+		{
 			path: '/userpreferences',
 			name: 'User Preferences',
 			component: () => import('../views/UserPreferences.vue'),
@@ -56,6 +56,12 @@ const router = createRouter({
 			path: '/resume',
 			name: 'ResumeView',
 			component: () => import('../views/ResumeView.vue'),
+			meta: { requiresAuth: true }
+		},
+		{
+			path: '/toggl',
+			name: 'Toggl',
+			component: () => import('../views/Toggl.vue'),
 			meta: { requiresAuth: true }
 		},
 		{
