@@ -4,6 +4,7 @@
 		<div class="proj-container">
 			<h1>Timer: {{ hours }}:{{ minutes }}:{{ seconds }}</h1>
 			<div id="start-stop">
+				<h3 class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}</h3>
 				<div class="input-container" v-if="!started">
 					<div class="form-group">
 						<label for="description">What are you working on?</label>
@@ -17,11 +18,7 @@
 						<label for="tagsString">Tags</label>
 						<input id="tagsString" v-model="tagsString" />
 					</div>
-				</div>
-				<div v-else>
-					<h3 class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}</h3>
-					<h4>{{ description }}</h4>
-					<button v-if="!started" class="btn small" @click="reset()">Start New Tracker</button>
+					<button class="btn small" @click="reset()">Change Project</button>
 				</div>
 				<div class="btn-container">
 					<button class="btn start" :title="`Start Timer ${started ? '(disabled)' : ''}`" :disabled="started"
@@ -32,10 +29,18 @@
 			</div>
 		</div>
 		<div id="project">
-			<div class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}</div>
-			<div>{{ project.client_name }}</div>
-			<div>Created: {{ new Date(project.created_at).toLocaleString() }}</div>
-			<div>Hours: {{ (project.actual_seconds / 60 / 60).toFixed(2) }}</div>
+			<div class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}
+				<span class="running" v-if="started">Started</span>
+			</div>
+			<div class="descrip" v-if="startInstance?.start">
+				<div>{{ startInstance.description }}</div>
+				<div>Started: {{ new Date(startInstance.start).toLocaleString() }}</div>
+			</div>
+			<div class="descrip" v-else>
+				<div>{{ project.client_name }}</div>
+				<div>Created: {{ new Date(project.created_at).toLocaleString() }}</div>
+				<div>Hours: {{ (project.actual_seconds / 60 / 60).toFixed(2) }}</div>
+			</div>
 		</div>
 		<!-- <div v-if="startInstance?.id">{{ startInstance }}</div> -->
 	</div>
@@ -48,7 +53,8 @@ export default {
 	name: "TimeTracker",
 	props: {
 		appState: Object,
-		project: Object
+		project: Object,
+		openTracker: Object,
 	},
 	data() {
 		return {
@@ -94,6 +100,7 @@ export default {
 			this.started = false;
 			if (this.togglRecall?.startInstance)
 				this.togglStore.delete("startInstance");
+			this.eventBus.emit("deselectTogglProject");
 		},
 		async startTime() {
 			this.eventBus.emit("showHideLoader", true);
@@ -143,7 +150,22 @@ export default {
 					this.eventBus.emit("forceLogout");
 				}
 
+				if (data.code === 402) {
+					this.serverStatus.code = 402;
+					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
+					this.serverStatus.success = false;
+					this.eventBus.emit("updateStatus", (this.serverStatus));
+					return;
+				}
+
 				this.started = true;
+
+				let updateAppState = this.appState;
+				updateAppState.togglStarted = {
+					started: this.started,
+					project_id: this.project.id
+				}
+				this.eventBus.emit("updateAppState", updateAppState);
 
 				this.startInstance = data.startInstance;
 				this.togglStore.add("startInstance", data.startInstance);
@@ -205,10 +227,22 @@ export default {
 					this.eventBus.emit("forceLogout");
 				}
 
+				if (data.code === 402) {
+					this.serverStatus.code = 402;
+					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
+					this.serverStatus.success = false;
+					this.eventBus.emit("updateStatus", (this.serverStatus));
+					return;
+				}
+
 				clearInterval(this.interval);
 				this.start = 0;
 				this.started = false;
 				this.togglStore.delete("startInstance");
+
+				let updateAppState = this.appState;
+				delete updateAppState.togglStarted;
+				this.eventBus.emit("updateAppState", updateAppState);
 
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
@@ -244,13 +278,20 @@ export default {
 		},
 	},
 	mounted() {
+		if (Object.keys(this.openTracker).length > 0) {
+			this.startInstance = { ...this.startInstance, ...this.openTracker };
+			this.togglStore.add("startInstance", this.startInstance);
+			this.start = this.openTracker.start;
+			this.started = true;
+			this.setInterval();
+		}
 		this.workspace_id = this.project.workspace_id;
 		if (this.togglRecall?.startInstance?.start) {
 			this.startInstance = this.togglRecall.startInstance;
 			this.start = this.togglRecall.startInstance.start;
 			this.description = this.togglRecall.startInstance.description;
 			this.started = true;
-			this.interval = this.setInterval();
+			this.setInterval();
 		}
 	},
 	created() {
@@ -269,7 +310,7 @@ export default {
 }
 
 .proj-container h1 {
-	font-size: 3em;
+	font-size: 2.5em;
 }
 
 .proj-container h4 {
@@ -282,12 +323,12 @@ export default {
 
 #project {
 	display: flex;
-	justify-content: space-evenly;
+	justify-content: space-between;
 	width: 90%;
 	max-width: 75em;
 	align-items: baseline;
 	background-color: #000;
-	margin: 15px auto;
+	margin: 30px auto 15px;
 	padding: 10px;
 	border-radius: 12px;
 }
@@ -328,6 +369,19 @@ export default {
 	margin: 15px 0;
 }
 
+.descrip {
+	align-self: center;
+	width: 100%;
+	font-weight: 700;
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.descrip div {
+	/* flex: 1 0 auto; */
+	padding: 0 15px;
+}
+
 #start-stop {
 	width: 100%;
 }
@@ -339,6 +393,13 @@ export default {
 #start-stop .btn {
 	font-size: 2em;
 	margin: 0 15px;
+}
+
+#start-stop .btn.small {
+	justify-self: center;
+	margin-top: 15px;
+	font-size: .8em;
+	align-self: center;
 }
 
 .start {
@@ -358,6 +419,17 @@ export default {
 	color: #000;
 	box-shadow: inset -3px -3px 6px 1px rgb(0 0 0 / 80%),
 		inset 2px 2px 6px rgb(255 255 255 / 80%);
+}
+
+.running {
+	color: #fff;
+	background-color: green;
+	border: 1px solid #fff;
+	border-radius: 10px;
+	padding: 0 10px;
+	font-weight: 500;
+	line-height: 1.4em;
+	/* margin-left: 15px; */
 }
 
 @media (max-width: 767px) {}

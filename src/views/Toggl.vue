@@ -7,11 +7,8 @@
 						Website</small></a>
 				<h1>{{ toggleUser.fullname }}</h1>
 				<h2>User Id: {{ toggleUser.user_account_id }}</h2>
-				<!-- <h3>Default Workspace Id: {{ toggleUser.default_workspace_id }}</h3>
-				<h3>Toggl Account Id: {{ toggleUser.toggl_accounts_id }}</h3> -->
 
 				<div class="btn-group">
-					<!-- <button class="btn" @click="getProjects()">Get Projects</button> -->
 					<button class="btn" @click="showAcountDetails = showAcountDetails ? false : true">Account
 						Details</button>
 				</div>
@@ -76,20 +73,29 @@ export default {
 				this.eventBus.emit("updateAppState", refreshResponse.appState);
 			};
 
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/toggl/user", this.baseUrl);
-
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
-				headers: headerObj,
-			});
-
 			try {
+
+				let headerObj = new Headers();
+				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL("/api/toggl/user", this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
+					method: 'GET',
+					headers: headerObj,
+				});
+
 				let response = await fetch(request);
 				let data = await response.json();
+
+				if (data.code === 402) {
+					this.serverStatus.code = 402;
+					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
+					this.serverStatus.success = false;
+					this.eventBus.emit("updateStatus", (this.serverStatus));
+					return;
+				}
 
 				let timecode = new Date().getTime();
 				data.users.timecode = timecode;
@@ -119,20 +125,28 @@ export default {
 				this.eventBus.emit("updateAppState", refreshResponse.appState);
 			};
 
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/toggl/projects", this.baseUrl);
-
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
-				headers: headerObj,
-			});
-
 			try {
+				let headerObj = new Headers();
+				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
+				headerObj.append("Content-Type", "application/json; charset=utf-8");
+				let requestUrl = new URL("/api/toggl/projects", this.baseUrl);
+
+				let request = new Request(
+					requestUrl.toString(), {
+					method: 'GET',
+					headers: headerObj,
+				});
+
 				let response = await fetch(request);
 				let data = await response.json();
+
+				if (data.code === 402) {
+					this.serverStatus.code = 402;
+					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
+					this.serverStatus.success = false;
+					this.eventBus.emit("updateStatus", (this.serverStatus));
+					return;
+				}
 
 				let timecode = new Date().getTime();
 				data.projects.timecode = timecode;
@@ -161,12 +175,16 @@ export default {
 			this.getUserData();
 	},
 	created() {
-		if (Object.keys(this.togglStore.get()).length === 0) {
+		this.togglRecall = this.togglStore.get();
+		if (Object.keys(this.togglRecall).length === 0) {
 			this.togglStore.save({});
+		}
+		if (!this.togglRecall?.projects) {
 			this.getProjects();
+		}
+		if (!this.togglRecall?.users) {
 			this.getUserData();
 		}
-		this.togglRecall = this.togglStore.get();
 		this.projects = this.togglRecall?.projects;
 		this.toggleUser = this.togglRecall?.users;
 	},
