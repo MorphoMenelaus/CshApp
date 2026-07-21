@@ -291,6 +291,7 @@ export default {
 							display: true,
 							text: `${this.forecastDayText} Weather for ${this.location.city}`,
 							font: {
+								weight: 700,
 								size: this.isMobile ? 16 : 26
 							}
 						},
@@ -310,7 +311,8 @@ export default {
 							display: true,
 							title: {
 								display: true,
-								text: 'Temperature °F'
+								text: 'Temperature °F',
+								color: this.CHART_COLORS.blue
 							},
 							suggestedMin: (Math.min(...temperatureData) < 50 ? Math.min(...temperatureData) : 50) - 10,
 							suggestedMax: (Math.max(...temperatureData) > 80 ? Math.max(...temperatureData) : 80) + 10
@@ -319,7 +321,8 @@ export default {
 							display: this.isMobile ? false : true,
 							title: {
 								display: true,
-								text: 'Precip. Probability %'
+								text: 'Precip. Probability %',
+								color: this.CHART_COLORS.green
 							},
 							suggestedMin: 0,
 							suggestedMax: (Math.max(...precipitation) > 60 ? Math.max(...precipitation) : 60) + 10
@@ -328,7 +331,8 @@ export default {
 							display: this.isMobile ? false : true,
 							title: {
 								display: true,
-								text: 'Precip. inch'
+								text: 'Precip. inch',
+								color: this.CHART_COLORS.purple
 							},
 							suggestedMin: 0,
 							suggestedMax: (Math.max(...precipitation) > .15 ? Math.max(...precipitation) : .15) + .05

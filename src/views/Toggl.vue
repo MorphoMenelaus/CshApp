@@ -208,7 +208,7 @@ h4 {
 #toggl-user {
 	width: 95%;
 	max-width: 50em;
-	margin: 15px auto;
+	/* margin: 15px auto; */
 	background-color: #c1c1c1;
 	color: #333;
 	border-radius: 12px;

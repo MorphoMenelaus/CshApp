@@ -10,10 +10,10 @@
 						<label for="description">What are you working on?</label>
 						<input id="description" v-model="description" />
 					</div>
-					<div class="form-group">
+					<!-- <div class="form-group">
 						<label for="created_with">Created with</label>
 						<input id="created_with" v-model="created_with" />
-					</div>
+					</div> -->
 					<div class="form-group">
 						<label for="tagsString">Tags</label>
 						<input id="tagsString" v-model="tagsString" />
@@ -63,7 +63,7 @@ export default {
 			togglRecall: {},
 			workspace_id: null,
 			elapsedTime: 0,
-			created_with: "",
+			created_with: "CSH App",
 			description: "",
 			tagsString: "",
 			tags: [],
@@ -95,7 +95,7 @@ export default {
 		reset() {
 			this.startInstance = {};
 			this.description = "";
-			this.created_with = "";
+			// this.created_with = "";
 			this.tags = [];
 			this.started = false;
 			if (this.togglRecall?.startInstance)

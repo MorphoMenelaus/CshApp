@@ -1,6 +1,8 @@
 <template>
 	<div>
-		<TimeTracker v-if="project?.client_id" :appState="appState" :project="project" :openTracker="openTracker" />
+		<Transition name="fade">
+			<TimeTracker v-if="project?.client_id" :appState="appState" :project="project" :openTracker="openTracker" />
+		</Transition>
 		<table>
 			<thead>
 				<tr class="header-row">
@@ -15,11 +17,12 @@
 			</thead>
 			<tbody>
 				<tr class="data-row" v-for="(item, index) in projects" :key="index">
-					<td @click="appState?.togglStarted?.project_id === item.id ? project = item : null"
-						:title="appState?.togglStarted?.project_id !== item.id ? `A project is already running` : `Select ${item.name}`">
-						<div :class="appState?.togglStarted?.project_id !== item.id ? 'disabled' : ''"
+					<td @click="!appState?.togglStarted?.started ? project = item : null"
+						:title="projectStarted && openTracker?.project_id !== item.id ? `A project is already running` : `Select ${item.name}`">
+						<div :class="projectStarted && openTracker?.project_id !== item.id ? 'disabled' : ''"
 							:style="`background-color: ${item.color}`">{{ item.name }}</div>
-						<span class="running" v-if="appState?.togglStarted?.project_id === item.id">Started</span>
+						<span class="running"
+							v-if="projectStarted && openTracker?.project_id === item.id">Started</span>
 					</td>
 					<td>
 						<div>{{ item.client_name }}</div>
@@ -65,11 +68,16 @@ export default {
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
 			openTracker: {},
-			project: {}
+			project: {},
+			projectStarted: false,
 		};
 	},
 	watch: {
 		project() { },
+		openTracker() {
+			this.projectStarted = Object.keys(this.openTracker).length > 0 ? true : false;
+			console.log(`projectStarted: ${this.projectStarted}`);
+		},
 	},
 	methods: {
 		async getCurrentTimeEntries() {
@@ -106,6 +114,8 @@ export default {
 					this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
+
+				this.projectStarted = data?.currentEntries;
 
 				if (!data?.currentEntries) return;
 
@@ -174,6 +184,12 @@ td:first-child div {
 		inset 2px 2px 6px rgb(255 255 255 / 80%);
 	cursor: pointer;
 	user-select: none;
+	transition: transform .2s ease;
+}
+
+td:first-child div:not(.disabled):hover {
+	filter: brightness(1.5);
+	transform: scale(1.015);
 }
 
 td:first-child .disabled {
@@ -184,7 +200,7 @@ td:first-child .disabled {
 
 .running {
 	position: absolute;
-	top: 12px;
+	top: 10px;
 	right: 15px;
 	background-color: green;
 	border-radius: 10px;
