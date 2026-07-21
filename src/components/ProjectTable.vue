@@ -17,12 +17,12 @@
 			</thead>
 			<tbody>
 				<tr class="data-row" v-for="(item, index) in projects" :key="index">
-					<td @click="!appState?.togglStarted?.started ? project = item : null"
-						:title="projectStarted && openTracker?.project_id !== item.id ? `A project is already running` : `Select ${item.name}`">
-						<div :class="projectStarted && openTracker?.project_id !== item.id ? 'disabled' : ''"
+					<td @click="!projectOpen ? project = item : null"
+						:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`">
+						<div :class="projectOpen && project?.id !== item.id ? 'disabled' : ''"
 							:style="`background-color: ${item.color}`">{{ item.name }}</div>
 						<span class="running"
-							v-if="projectStarted && openTracker?.project_id === item.id">Started</span>
+							v-if="projectOpen && !openTracker?.stop && project?.id === item.id">Started</span>
 					</td>
 					<td>
 						<div>{{ item.client_name }}</div>
@@ -67,17 +67,29 @@ export default {
 		return {
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
-			openTracker: {},
+			openTracker: null,
 			project: {},
-			projectStarted: false,
+			startInstance: {},
+			projectOpen: false,
+
+			// projectStarted: false,
 		};
 	},
 	watch: {
 		project() { },
 		openTracker() {
-			this.projectStarted = Object.keys(this.openTracker).length > 0 ? true : false;
-			console.log(`projectStarted: ${this.projectStarted}`);
+			this.projectOpen = (this.openTracker && Object.keys(this.openTracker).length > 0) ? true : false;
 		},
+		appState: {
+			handler(val) {
+				if (val?.startInstance) {
+					this.startInstance = val.startInstance;
+					this.openTracker = val.startInstance;
+				}
+				console.log(val?.startInstance);
+			},
+			deep: true
+		}
 	},
 	methods: {
 		async getCurrentTimeEntries() {
@@ -115,21 +127,19 @@ export default {
 					return;
 				}
 
-				this.projectStarted = data?.currentEntries;
+				this.openTracker = data?.currentEntries;
+				this.togglStore.delete("openTracker");
+				if (!this.openTracker) return;
 
-				if (!data?.currentEntries) return;
-
-				this.openTracker = data.currentEntries;
-				console.log(this.projects.filter(proj => proj.id === this.openTracker.project_id)[0]);
 				this.project = this.projects.filter(proj => proj.id === this.openTracker.project_id)[0];
-
 				this.togglStore.add("project", this.project);
+				this.togglStore.add("openTracker", this.openTracker);
+
+				console.log(this.project);
 
 				let updateAppState = this.appState;
-				updateAppState.togglStarted = {
-					started: true,
-					project_id: this.project.id
-				}
+				updateAppState.openTracker = this.openTracker;
+				updateAppState.project = this.project;
 				this.eventBus.emit("updateAppState", updateAppState);
 
 			} catch (error) {
@@ -145,6 +155,17 @@ export default {
 	},
 	mounted() {
 		this.getCurrentTimeEntries();
+
+		let store = this.togglStore.get();
+		this.project = store?.project;
+		this.openTracker = store?.openTracker;
+		this.startInstance = store?.startInstance;
+		this.projectOpen = (this.openTracker && Object.keys(this.openTracker).length > 0) ? true : false;
+
+		let updateAppState = this.appState;
+		updateAppState.openTracker = this?.openTracker;
+		updateAppState.project = this?.project;
+		this.eventBus.emit("updateAppState", updateAppState);
 	},
 	created() {
 		this.eventBus.on("deselectTogglProject", () => {
@@ -198,9 +219,17 @@ td:first-child .disabled {
 	cursor: not-allowed;
 }
 
+tr.header-row {
+	background-color: #000;
+}
+
+tr.header-row * {
+	border-radius: unset;
+}
+
 .running {
 	position: absolute;
-	top: 10px;
+	top: 12px;
 	right: 15px;
 	background-color: green;
 	border-radius: 10px;

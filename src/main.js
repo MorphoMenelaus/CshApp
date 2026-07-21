@@ -43,6 +43,18 @@ const timeOptions = {
 	second: "2-digit"
 }
 
+Object.defineProperty(Object.prototype, 'isNullOrEmpty', {
+	value: function () {
+		console.log(this);
+		if (typeof this === 'undefined') return true;
+		let isObject = typeof this === 'object' && this !== null && !Array.isArray(this);
+		return !isObject || Object.keys(this).length === 0;
+	},
+	enumerable: false,
+	configurable: true,
+	writable: true
+});
+
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.baseUrl = baseUrl;

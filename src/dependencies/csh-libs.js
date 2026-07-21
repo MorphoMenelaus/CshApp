@@ -97,6 +97,7 @@ class Storage {
 			default:
 				localStorage.removeItem(this.parentKey);
 		}
+		return true;
 	}
 }
 

@@ -1,38 +1,34 @@
 <template>
 	<div>
-		<!-- <div>{{ project }}</div> -->
 		<div class="proj-container">
 			<h1>Timer: {{ hours }}:{{ minutes }}:{{ seconds }}</h1>
 			<div id="start-stop">
 				<h3 class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}</h3>
-				<div class="input-container" v-if="!started">
+				<div class="input-container" v-if="!startInstance?.start">
 					<div class="form-group">
 						<label for="description">What are you working on?</label>
-						<input id="description" v-model="description" />
+						<input id="description" v-model="description" placeholder="Description" />
 					</div>
-					<!-- <div class="form-group">
-						<label for="created_with">Created with</label>
-						<input id="created_with" v-model="created_with" />
-					</div> -->
 					<div class="form-group">
 						<label for="tagsString">Tags</label>
 						<input id="tagsString" v-model="tagsString" />
 					</div>
-					<button class="btn small" @click="reset()">Change Project</button>
+					<button class="btn small" @click="reset()">Deselect Project</button>
 				</div>
+				<button v-if="startInstance?.stop" class="btn small" @click="reset()">Reset</button>
 				<div class="btn-container">
-					<button class="btn start" :title="`Start Timer ${started ? '(disabled)' : ''}`" :disabled="started"
-						@click="startTime()">Start</button>
-					<button class="btn stop" :title="`Stop Timer ${started ? '' : '(disabled)'}`" :disabled="!started"
-						@click="stopTime()">Stop</button>
+					<button class="btn start" :title="`Start Timer ${startInstance?.start ? '(disabled)' : ''}`"
+						:disabled="startInstance?.start" @click="startTime()">Start</button>
+					<button class="btn stop" :title="`Stop Timer ${startInstance?.start ? '' : '(disabled)'}`"
+						:disabled="!startInstance?.start || startInstance.stop" @click="stopTime()">Stop</button>
 				</div>
 			</div>
 		</div>
 		<div id="project">
 			<div class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}
-				<span class="running" v-if="started">Started</span>
+				<span class="running" v-if="!startInstance.isNullOrEmpty() && !startInstance?.stop">Started</span>
 			</div>
-			<div class="descrip" v-if="startInstance?.start">
+			<div class="descrip" v-if="!startInstance.isNullOrEmpty()">
 				<div>{{ startInstance.description }}</div>
 				<div>Started: {{ new Date(startInstance.start).toLocaleString() }}</div>
 			</div>
@@ -42,7 +38,6 @@
 				<div>Hours: {{ (project.actual_seconds / 60 / 60).toFixed(2) }}</div>
 			</div>
 		</div>
-		<!-- <div v-if="startInstance?.id">{{ startInstance }}</div> -->
 	</div>
 </template>
 
@@ -61,7 +56,6 @@ export default {
 			serverStatus: Object.assign({}, this.appNotify),
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
-			workspace_id: null,
 			elapsedTime: 0,
 			created_with: "CSH App",
 			description: "",
@@ -75,9 +69,9 @@ export default {
 			stop: null, // Must be null for a continuous entry.
 			startInstance: {},
 			interval: null,
-			started: false,
-			seconds: "00",
-			minutes: "00",
+			// started: false,
+			seconds: 0,
+			minutes: 0,
 			hours: 0,
 		};
 	},
@@ -95,11 +89,11 @@ export default {
 		reset() {
 			this.startInstance = {};
 			this.description = "";
-			// this.created_with = "";
 			this.tags = [];
-			this.started = false;
-			if (this.togglRecall?.startInstance)
-				this.togglStore.delete("startInstance");
+			this.togglStore.add("startInstance", this.startInstance);
+			let updateAppState = this.appState;
+			updateAppState.startInstance = this.startInstance;
+			this.eventBus.emit("updateAppState", updateAppState);
 			this.eventBus.emit("deselectTogglProject");
 		},
 		async startTime() {
@@ -114,6 +108,14 @@ export default {
 				this.eventBus.emit("updateAppState", refreshResponse.appState);
 			};
 
+			if (!this.description) {
+				this.serverStatus.message = "Description field is required";
+				this.serverStatus.success = false;
+				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.eventBus.emit("showHideLoader", false);
+				return;
+			}
+
 			try {
 
 				this.start = new Date().toISOString();
@@ -124,7 +126,7 @@ export default {
 					description: this.description,
 					tags: this.tags,
 					billable: this.billable,
-					workspace_id: this.workspace_id,
+					workspace_id: this.project.workspace_id,
 					duration: this.duration,
 					start: this.start,
 					stop: this.stop
@@ -158,19 +160,14 @@ export default {
 					return;
 				}
 
-				this.started = true;
+				this.startInstance = data.startInstance;
+				this.startInstance = { ...this.openTracker, ...this.startInstance };
+				this.togglStore.add("startInstance", this.startInstance);
 
 				let updateAppState = this.appState;
-				updateAppState.togglStarted = {
-					started: this.started,
-					project_id: this.project.id
-				}
+				updateAppState.startInstance = this.startInstance;
 				this.eventBus.emit("updateAppState", updateAppState);
 
-				this.startInstance = data.startInstance;
-				this.togglStore.add("startInstance", data.startInstance);
-
-				this.start = this.startInstance.start;
 				this.setInterval();
 
 				this.serverStatus.code = data?.code;
@@ -178,7 +175,7 @@ export default {
 				this.serverStatus.success = data?.success;
 				this.eventBus.emit("updateStatus", this.serverStatus);
 			} catch (error) {
-				this.started = false;
+				// this.started = false;
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
@@ -203,7 +200,7 @@ export default {
 			try {
 
 				let body = {
-					"workspace_id": this.workspace_id,
+					"workspace_id": this.project.workspace_id,
 					"time_entry_id": this.startInstance.id
 				};
 
@@ -235,14 +232,14 @@ export default {
 					return;
 				}
 
-				clearInterval(this.interval);
-				this.start = 0;
-				this.started = false;
-				this.togglStore.delete("startInstance");
+				this.startInstance.stop = new Date().toISOString();
+				this.togglStore.add("startInstance", this.startInstance);
 
 				let updateAppState = this.appState;
-				delete updateAppState.togglStarted;
+				updateAppState.startInstance = this.startInstance;
 				this.eventBus.emit("updateAppState", updateAppState);
+
+				clearInterval(this.interval);
 
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
@@ -255,7 +252,7 @@ export default {
 				this.serverStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.started = false;
+				// this.started = false;
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
@@ -265,7 +262,7 @@ export default {
 			this.interval = setInterval(this.updateDateTime, 1000);
 		},
 		updateDateTime() {
-			let date = new Date(this.start);
+			let date = !this.startInstance.isNullOrEmpty() ? new Date(this.startInstance.start) : new Date();
 			let now = new Date();
 			let elapsed = now - date;
 
@@ -273,26 +270,19 @@ export default {
 			this.minutes = Math.floor((elapsed / (1000 * 60)) % 60).toString().padStart(2, '0');
 			this.hours = Math.floor(elapsed / (1000 * 60 * 60));
 
-
 			this.elapsedTime = Number((elapsed / 1000).toFixed());
 		},
 	},
 	mounted() {
-		if (Object.keys(this.openTracker).length > 0) {
-			this.startInstance = { ...this.startInstance, ...this.openTracker };
-			this.togglStore.add("startInstance", this.startInstance);
-			this.start = this.openTracker.start;
-			this.started = true;
+		let store = this.togglStore.get();
+		this.startInstance = store?.startInstance;
+
+		let updateAppState = this.appState;
+		updateAppState.startInstance = this?.startInstance;
+		this.eventBus.emit("updateAppState", updateAppState);
+
+		if (this.startInstance && !this.startInstance.stop)
 			this.setInterval();
-		}
-		this.workspace_id = this.project.workspace_id;
-		if (this.togglRecall?.startInstance?.start) {
-			this.startInstance = this.togglRecall.startInstance;
-			this.start = this.togglRecall.startInstance.start;
-			this.description = this.togglRecall.startInstance.description;
-			this.started = true;
-			this.setInterval();
-		}
 	},
 	created() {
 		if (Object.keys(this.togglStore.get()).length === 0)
@@ -396,10 +386,9 @@ export default {
 }
 
 #start-stop .btn.small {
-	justify-self: center;
-	margin-top: 15px;
+	margin: 15px auto 0;
 	font-size: .8em;
-	align-self: center;
+	display: block;
 }
 
 .start {
