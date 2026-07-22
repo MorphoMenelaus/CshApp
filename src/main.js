@@ -45,9 +45,9 @@ const timeOptions = {
 
 Object.defineProperty(Object.prototype, 'isNullOrEmpty', {
 	value: function () {
-		console.log(this);
 		if (typeof this === 'undefined') return true;
 		let isObject = typeof this === 'object' && this !== null && !Array.isArray(this);
+		// console.log(this);
 		return !isObject || Object.keys(this).length === 0;
 	},
 	enumerable: false,

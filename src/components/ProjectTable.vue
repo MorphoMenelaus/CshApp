@@ -82,11 +82,12 @@ export default {
 		},
 		appState: {
 			handler(val) {
-				if (val?.startInstance) {
-					this.startInstance = val.startInstance;
-					this.openTracker = val.startInstance;
-				}
-				console.log(val?.startInstance);
+				// console.log(val);
+				let newInstance = typeof val?.startInstance === 'undefined' ? {} : val.startInstance;
+				newInstance = !newInstance.isNullOrEmpty() ? newInstance : {};
+				this.startInstance = newInstance;
+				this.openTracker = newInstance;
+				// console.log(newInstance);
 			},
 			deep: true
 		}
@@ -135,7 +136,7 @@ export default {
 				this.togglStore.add("project", this.project);
 				this.togglStore.add("openTracker", this.openTracker);
 
-				console.log(this.project);
+				// console.log(this.project);
 
 				let updateAppState = this.appState;
 				updateAppState.openTracker = this.openTracker;

@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="proj-container">
-			<h1>Timer: {{ hours }}:{{ minutes }}:{{ seconds }}</h1>
+			<h1 v-if="startInstance?.start">Timer: {{ hours }}:{{ minutes }}:{{ seconds }}</h1>
 			<div id="start-stop">
 				<h3 class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}</h3>
 				<div class="input-container" v-if="!startInstance?.start">
@@ -26,9 +26,9 @@
 		</div>
 		<div id="project">
 			<div class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}
-				<span class="running" v-if="!startInstance.isNullOrEmpty() && !startInstance?.stop">Started</span>
+				<span class="running" v-if="startInstance && !startInstance?.stop">Started</span>
 			</div>
-			<div class="descrip" v-if="!startInstance.isNullOrEmpty()">
+			<div class="descrip" v-if="startInstance">
 				<div>{{ startInstance.description }}</div>
 				<div>Started: {{ new Date(startInstance.start).toLocaleString() }}</div>
 			</div>
