@@ -202,11 +202,6 @@ export default {
 					this.eventBus.emit("forceLogout");
 				}
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
-
 				this.eventLogList = data;
 
 			} catch (error) {

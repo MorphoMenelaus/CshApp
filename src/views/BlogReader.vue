@@ -50,7 +50,7 @@
 						v-for="(item, index) in postButtons" :key="index" @click="loadPost(item.post_id)">
 						{{ item.post_title }}</button>
 				</div>
-				<div id="posts" v-if="Object.keys(selectedBlog).length > 0">
+				<div id="posts" v-if="!isNullOrEmpty(selectedBlog)">
 					<span v-if="selectedBlog?.post_status == 'hidden'" class="hidden-post">Post is hidden</span>
 					<h1>{{ selectedBlog?.post_title }}</h1>
 					<h3>{{ selectedBlog?.post_author }}</h3>
@@ -361,6 +361,20 @@ h3 {
 	flex-flow: row wrap;
 	justify-content: center;
 }
+
+/* .button-container {
+	display: flex;
+	position: fixed;
+	left: 0;
+	flex-direction: column;
+	background-color: #e7e7e7;
+	padding: 15px;
+	width: 15%;
+	align-items: center;
+	border-radius: 12px;
+	margin-top: 15px;
+	user-select: none;
+} */
 
 .button-container * {
 	padding: 10px 15px;

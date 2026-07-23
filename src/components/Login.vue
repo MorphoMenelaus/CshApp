@@ -276,7 +276,8 @@ export default {
 				if (response.ok) {
 					let updateAppState = {};
 					this.eventBus.emit("updateAppState", updateAppState);
-					this.recall.deleteAll();
+					this.eventBus.emit("initialSetup");
+					localStorage.clear();
 				}
 
 			} catch (e) {

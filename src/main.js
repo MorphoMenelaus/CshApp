@@ -2,7 +2,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { addUserLog, toTitleCase, isUTCtime, refreshAuthTokenAsNeeded, tokenCheck } from "@/dependencies/csh-libs.js";
+import { addUserLog, toTitleCase, isUTCtime, sendAnalyticsEvent, isNullOrEmpty, refreshAuthTokenAsNeeded, tokenCheck } from "@/dependencies/csh-libs.js";
 
 import mitt from 'mitt'
 
@@ -43,13 +43,6 @@ const timeOptions = {
 	second: "2-digit"
 }
 
-const sendAnalyticsEvent = (eventType, method) => {
-	gtag('event', eventType, {
-		'method': method,
-		'page_location': window.location.href
-	});
-}
-
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.baseUrl = baseUrl;
@@ -64,6 +57,7 @@ app.config.globalProperties.addUserLog = addUserLog;
 app.config.globalProperties.refreshAuthTokenAsNeeded = refreshAuthTokenAsNeeded;
 app.config.globalProperties.tokenCheck = tokenCheck;
 app.config.globalProperties.sendAnalyticsEvent = sendAnalyticsEvent;
+app.config.globalProperties.isNullOrEmpty = isNullOrEmpty;
 
 app.provide('sendAnalyticsEvent', sendAnalyticsEvent);
 

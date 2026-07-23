@@ -2,6 +2,7 @@
  * CSH Classes and Utilities v0.0.1
  * (c) 2026 Chris Hardwick
  */
+
 class Storage {
 	/**
 	 * Saves or retrieves localStorage or sessionStorage
@@ -96,6 +97,7 @@ class Storage {
 			default:
 				localStorage.removeItem(this.parentKey);
 		}
+		return true;
 	}
 }
 
@@ -146,6 +148,19 @@ function isUTCtime(str) {
 	return !isNaN(date.getTime());
 }
 
+function sendAnalyticsEvent(eventType, method) {
+	gtag('event', eventType, {
+		'method': method,
+		'page_location': window.location.href
+	});
+}
+
+function isNullOrEmpty(val) {
+	if (typeof val === 'undefined') return true;
+	let isObject = typeof val === 'object' && val !== null && !Array.isArray(val);
+	return !isObject || Object.keys(val).length === 0;
+}
+
 async function refreshAuthTokenAsNeeded(appState, forceRefresh = false) {
 	// forceRefresh (optional argument) mostly implemented
 	// to check if tokens are valid at any time for any reason 
@@ -160,8 +175,8 @@ async function refreshAuthTokenAsNeeded(appState, forceRefresh = false) {
 	};
 
 
-	// Server settings for Token expire is 1h
-	// Give it 1 minute of wiggle room on expire time (60000ms)
+	// Server settings for Token expiration is 1h
+	// Give it 20 seconds of wiggle room on expire time (20000ms)
 	// Better to refresh a minute early than to cause a race condition error
 	let expireMS = appState?.accessTokenExpiration - 20000;
 	let currTime = new Date().getTime();
@@ -299,6 +314,8 @@ export {
 	addUserLog,
 	toTitleCase,
 	isUTCtime,
+	sendAnalyticsEvent,
+	isNullOrEmpty,
 	refreshAuthTokenAsNeeded,
 	tokenCheck
 }

@@ -148,6 +148,9 @@ export default {
 	},
 	async created() {
 		this.initialSetup();
+		this.eventBus.on("initialSetup", () => {
+			this.initialSetup();
+		});
 		this.eventBus.on("EscapeKeydown", () => {
 			this.currentComponent = null;
 		});

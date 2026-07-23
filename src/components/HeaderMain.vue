@@ -35,7 +35,7 @@
 import MainNavbar from "@/components/MainNavbar.vue";
 
 export default {
-	name: "FooterMain",
+	name: "HeaderMain",
 	components: {
 		MainNavbar
 	},
@@ -199,7 +199,8 @@ h1 {
 	bottom: 0;
 	width: 100vw;
 	/* height: calc(100vh - 140px); */
-	background: rgb(0 0 0 / 75%);
+	background-color: rgb(0 0 0 / 50%);
+	transition: background-color .3 ease-in-out;
 	z-index: 10000;
 }
 
