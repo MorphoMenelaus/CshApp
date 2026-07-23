@@ -2,7 +2,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { addUserLog, toTitleCase, isUTCtime, sendAnalyticsEvent, refreshAuthTokenAsNeeded, tokenCheck } from "@/dependencies/csh-libs.js";
+import { addUserLog, toTitleCase, isUTCtime, sendAnalyticsEvent, isNullOrEmpty, refreshAuthTokenAsNeeded, tokenCheck } from "@/dependencies/csh-libs.js";
 
 import mitt from 'mitt'
 
@@ -43,18 +43,6 @@ const timeOptions = {
 	second: "2-digit"
 }
 
-Object.defineProperty(Object.prototype, 'isNullOrEmpty', {
-	value: function () {
-		if (typeof this === 'undefined') return true;
-		let isObject = typeof this === 'object' && this !== null && !Array.isArray(this);
-		// console.log(this);
-		return !isObject || Object.keys(this).length === 0;
-	},
-	enumerable: false,
-	configurable: true,
-	writable: true
-});
-
 // Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.baseUrl = baseUrl;
@@ -69,6 +57,7 @@ app.config.globalProperties.addUserLog = addUserLog;
 app.config.globalProperties.refreshAuthTokenAsNeeded = refreshAuthTokenAsNeeded;
 app.config.globalProperties.tokenCheck = tokenCheck;
 app.config.globalProperties.sendAnalyticsEvent = sendAnalyticsEvent;
+app.config.globalProperties.isNullOrEmpty = isNullOrEmpty;
 
 app.provide('sendAnalyticsEvent', sendAnalyticsEvent);
 

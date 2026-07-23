@@ -71,20 +71,18 @@ export default {
 			project: {},
 			startInstance: {},
 			projectOpen: false,
-
-			// projectStarted: false,
 		};
 	},
 	watch: {
 		project() { },
 		openTracker() {
-			this.projectOpen = (this.openTracker && Object.keys(this.openTracker).length > 0) ? true : false;
+			this.projectOpen = !this.isNullOrEmpty(this?.openTracker);
 		},
 		appState: {
 			handler(val) {
 				// console.log(val);
 				let newInstance = typeof val?.startInstance === 'undefined' ? {} : val.startInstance;
-				newInstance = !newInstance.isNullOrEmpty() ? newInstance : {};
+				newInstance = !this.isNullOrEmpty(newInstance) ? newInstance : {};
 				this.startInstance = newInstance;
 				this.openTracker = newInstance;
 				// console.log(newInstance);
@@ -161,7 +159,7 @@ export default {
 		this.project = store?.project;
 		this.openTracker = store?.openTracker;
 		this.startInstance = store?.startInstance;
-		this.projectOpen = (this.openTracker && Object.keys(this.openTracker).length > 0) ? true : false;
+		this.projectOpen = !this.isNullOrEmpty(this?.openTracker);
 
 		let updateAppState = this.appState;
 		updateAppState.openTracker = this?.openTracker;
@@ -239,6 +237,7 @@ tr.header-row * {
 	line-height: 1.4em;
 	color: #fff;
 	font-weight: 500;
+	user-select: none;
 }
 
 @media (max-width: 767px) {}

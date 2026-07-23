@@ -11,7 +11,7 @@
 					</div>
 					<div class="form-group">
 						<label for="tagsString">Tags</label>
-						<input id="tagsString" v-model="tagsString" />
+						<input id="tagsString" v-model="tagsString" placeholder="Comma separated tags" />
 					</div>
 					<button class="btn small" @click="reset()">Deselect Project</button>
 				</div>
@@ -26,9 +26,9 @@
 		</div>
 		<div id="project">
 			<div class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}
-				<span class="running" v-if="startInstance && !startInstance?.stop">Started</span>
+				<span class="running" v-if="!isNullOrEmpty(startInstance) && !startInstance?.stop">Started</span>
 			</div>
-			<div class="descrip" v-if="startInstance">
+			<div class="descrip" v-if="!isNullOrEmpty(startInstance)">
 				<div>{{ startInstance.description }}</div>
 				<div>Started: {{ new Date(startInstance.start).toLocaleString() }}</div>
 			</div>
@@ -70,9 +70,9 @@ export default {
 			startInstance: {},
 			interval: null,
 			// started: false,
-			seconds: 0,
-			minutes: 0,
-			hours: 0,
+			seconds: "00",
+			minutes: "00",
+			hours: "0",
 		};
 	},
 	watch: {
@@ -91,6 +91,7 @@ export default {
 			this.description = "";
 			this.tags = [];
 			this.togglStore.add("startInstance", this.startInstance);
+			this.togglStore.delete("project");
 			let updateAppState = this.appState;
 			updateAppState.startInstance = this.startInstance;
 			this.eventBus.emit("updateAppState", updateAppState);
@@ -262,7 +263,7 @@ export default {
 			this.interval = setInterval(this.updateDateTime, 1000);
 		},
 		updateDateTime() {
-			let date = !this.startInstance.isNullOrEmpty() ? new Date(this.startInstance.start) : new Date();
+			let date = !this.isNullOrEmpty(this.startInstance) ? new Date(this.startInstance.start) : new Date();
 			let now = new Date();
 			let elapsed = now - date;
 
@@ -285,7 +286,7 @@ export default {
 			this.setInterval();
 	},
 	created() {
-		if (Object.keys(this.togglStore.get()).length === 0)
+		if (this.isNullOrEmpty(this.togglStore.get()))
 			this.togglStore.save({});
 		this.togglRecall = this.togglStore.get();
 	},
@@ -418,6 +419,7 @@ export default {
 	padding: 0 10px;
 	font-weight: 500;
 	line-height: 1.4em;
+	user-select: none;
 	/* margin-left: 15px; */
 }
 

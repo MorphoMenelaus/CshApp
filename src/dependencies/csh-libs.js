@@ -155,6 +155,12 @@ function sendAnalyticsEvent(eventType, method) {
 	});
 }
 
+function isNullOrEmpty(val) {
+	if (typeof val === 'undefined') return true;
+	let isObject = typeof val === 'object' && val !== null && !Array.isArray(val);
+	return !isObject || Object.keys(val).length === 0;
+}
+
 async function refreshAuthTokenAsNeeded(appState, forceRefresh = false) {
 	// forceRefresh (optional argument) mostly implemented
 	// to check if tokens are valid at any time for any reason 
@@ -309,6 +315,7 @@ export {
 	toTitleCase,
 	isUTCtime,
 	sendAnalyticsEvent,
+	isNullOrEmpty,
 	refreshAuthTokenAsNeeded,
 	tokenCheck
 }

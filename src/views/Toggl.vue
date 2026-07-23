@@ -22,10 +22,9 @@
 				</Transition>
 			</div>
 
-
 			<ProjectTable v-if="projects?.length > 0" :appState="appState" :projects="projects" />
 
-			<!-- <TimeEntries :appState="appState" :isMobile="isMobile" /> -->
+			<!-- <TimeEntries :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" /> -->
 
 		</div>
 	</div>
@@ -40,7 +39,8 @@ export default {
 	name: "TogglPOC",
 	props: {
 		appState: Object,
-		isMobile: Boolean
+		isMobile: Boolean,
+		windowWidth: Number
 	},
 	components: {
 		// TimeEntries,
@@ -176,7 +176,7 @@ export default {
 	},
 	created() {
 		this.togglRecall = this.togglStore.get();
-		if (Object.keys(this.togglRecall).length === 0) {
+		if (this.isNullOrEmpty(this.togglRecall)) {
 			this.togglStore.save({});
 		}
 		if (!this.togglRecall?.projects) {
