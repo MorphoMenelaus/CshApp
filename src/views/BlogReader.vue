@@ -50,7 +50,7 @@
 						v-for="(item, index) in postButtons" :key="index" @click="loadPost(item.post_id)">
 						{{ item.post_title }}</button>
 				</div>
-				<div id="posts" v-if="!isNullOrEmpty(selectedBlog)">
+				<div id="posts" v-if="!isObjNullOrEmpty(selectedBlog)">
 					<span v-if="selectedBlog?.post_status == 'hidden'" class="hidden-post">Post is hidden</span>
 					<h1>{{ selectedBlog?.post_title }}</h1>
 					<h3>{{ selectedBlog?.post_author }}</h3>

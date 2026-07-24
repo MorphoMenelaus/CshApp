@@ -176,7 +176,7 @@ export default {
 	},
 	created() {
 		this.togglRecall = this.togglStore.get();
-		if (this.isNullOrEmpty(this.togglRecall)) {
+		if (this.isObjNullOrEmpty(this.togglRecall)) {
 			this.togglStore.save({});
 		}
 		if (!this.togglRecall?.projects) {

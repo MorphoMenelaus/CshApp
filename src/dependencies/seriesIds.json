@@ -1,0 +1,26 @@
+[
+	{
+		"series_id": "DJIA",
+		"desciption": "Dow Jones Industrial Average"
+	},
+	{
+		"series_id": "NASDAQCOM",
+		"desciption": "NASDAQ Composite"
+	},
+	{
+		"series_id": "SP500",
+		"desciption": "S&P 500"
+	},
+	{
+		"series_id": "DCOILWTICO",
+		"desciption": "Crude Oil Prices: West Texas Intermediate (WTI) - Cushing, Oklahoma"
+	},
+	{
+		"series_id": "CBBTCUSD",
+		"desciption": "Coinbase Bitcoin"
+	},
+	{
+		"series_id": "CBETHUSD",
+		"desciption": "Coinbase Ethereum"
+	}
+]
