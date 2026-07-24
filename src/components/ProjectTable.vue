@@ -19,10 +19,10 @@
 				<tr class="data-row" v-for="(item, index) in projects" :key="index">
 					<td @click="!projectOpen ? project = item : null"
 						:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`">
-						<div :class="projectOpen && project?.id !== item.id ? 'disabled' : ''"
+						<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''"
 							:style="`background-color: ${item.color}`">{{ item.name }}</div>
 						<span class="running"
-							v-if="projectOpen && !openTracker?.stop && project?.id === item.id">Started</span>
+							v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
 					</td>
 					<td>
 						<div>{{ item.client_name }}</div>
@@ -52,6 +52,7 @@
 <script>
 import { onBeforeUnmount } from "vue";
 import { Storage } from "@/dependencies/csh-libs.js";
+import { trackerModel } from "@/dependencies/models.js";
 import TimeTracker from "@/components/TimeTracker.vue";
 
 export default {
@@ -65,27 +66,23 @@ export default {
 	},
 	data() {
 		return {
+			serverStatus: Object.assign({}, this.appNotify),
+			timeTracker: Object.assign({}, trackerModel),
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
-			openTracker: null,
+			openTracker: this.timeTracker,
 			project: {},
-			startInstance: {},
 			projectOpen: false,
 		};
 	},
 	watch: {
 		project() { },
 		openTracker() {
-			this.projectOpen = !this.isNullOrEmpty(this?.openTracker);
+			this.projectOpen = this.openTracker?.duration < 0;
 		},
 		appState: {
 			handler(val) {
-				// console.log(val);
-				let newInstance = typeof val?.startInstance === 'undefined' ? {} : val.startInstance;
-				newInstance = !this.isNullOrEmpty(newInstance) ? newInstance : {};
-				this.startInstance = newInstance;
-				this.openTracker = newInstance;
-				// console.log(newInstance);
+				this.openTracker = !this.isObjNullOrEmpty(val?.openTracker) ? val.openTracker : this.timeTracker;
 			},
 			deep: true
 		}
@@ -126,15 +123,30 @@ export default {
 					return;
 				}
 
-				this.openTracker = data?.currentEntries;
+				if (this.isObjNullOrEmpty(data?.currentEntries)) {
+					let updateAppState = this.appState;
+					updateAppState.openTracker = this.timeTracker;
+					updateAppState.project = {};
+					this.eventBus.emit("updateAppState", updateAppState);
+					this.togglStore.delete("project");
+					this.togglStore.delete("openTracker");
+					return;
+				}
+
+				const currEnt = data?.currentEntries;
+
+				const mergedTracker = Object.keys(this.timeTracker).reduce((prop, key) => {
+					// Use source value if available; otherwise, keep model default
+					prop[key] = key in currEnt ? currEnt[key] : this.timeTracker[key];
+					return prop;
+				}, {});
+
+				this.openTracker = mergedTracker;
 				this.togglStore.delete("openTracker");
-				if (!this.openTracker) return;
 
 				this.project = this.projects.filter(proj => proj.id === this.openTracker.project_id)[0];
 				this.togglStore.add("project", this.project);
 				this.togglStore.add("openTracker", this.openTracker);
-
-				// console.log(this.project);
 
 				let updateAppState = this.appState;
 				updateAppState.openTracker = this.openTracker;
@@ -158,8 +170,7 @@ export default {
 		let store = this.togglStore.get();
 		this.project = store?.project;
 		this.openTracker = store?.openTracker;
-		this.startInstance = store?.startInstance;
-		this.projectOpen = !this.isNullOrEmpty(this?.openTracker);
+		this.projectOpen = this.openTracker?.duration < 0;
 
 		let updateAppState = this.appState;
 		updateAppState.openTracker = this?.openTracker;

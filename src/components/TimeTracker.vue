@@ -20,17 +20,17 @@
 					<button class="btn start" :title="`Start Timer ${startInstance?.start ? '(disabled)' : ''}`"
 						:disabled="startInstance?.start" @click="startTime()">Start</button>
 					<button class="btn stop" :title="`Stop Timer ${startInstance?.start ? '' : '(disabled)'}`"
-						:disabled="!startInstance?.start || startInstance.stop" @click="stopTime()">Stop</button>
+						:disabled="!startInstance?.start || startInstance?.stop" @click="stopTime()">Stop</button>
 				</div>
 			</div>
 		</div>
 		<div id="project">
 			<div class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}
-				<span class="running" v-if="!isNullOrEmpty(startInstance) && !startInstance?.stop">Started</span>
+				<span class="running" v-if="startInstance?.project_id && !startInstance?.stop">Started</span>
 			</div>
-			<div class="descrip" v-if="!isNullOrEmpty(startInstance)">
-				<div>{{ startInstance.description }}</div>
-				<div>Started: {{ new Date(startInstance.start).toLocaleString() }}</div>
+			<div class="descrip" v-if="startInstance?.project_id">
+				<div>{{ startInstance?.description }}</div>
+				<div>Started: {{ new Date(startInstance?.start).toLocaleString() }}</div>
 			</div>
 			<div class="descrip" v-else>
 				<div>{{ project.client_name }}</div>
@@ -43,6 +43,7 @@
 
 <script>
 import { Storage } from "@/dependencies/csh-libs.js";
+import { trackerModel } from "@/dependencies/models.js";
 
 export default {
 	name: "TimeTracker",
@@ -54,22 +55,16 @@ export default {
 	data() {
 		return {
 			serverStatus: Object.assign({}, this.appNotify),
+			timeTracker: Object.assign({}, trackerModel),
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
+			startInstance: this.timeTracker,
 			elapsedTime: 0,
 			created_with: "CSH App",
 			description: "",
 			tagsString: "",
 			tags: [],
-			billable: false,
-			// To create a time entry that started and continues to be running, the duration field must be negative.
-			// https://engineering.toggl.com/docs/track/tracking/
-			duration: -1,
-			start: null, // "2026-07-19T12:18:30.315Z" formated time
-			stop: null, // Must be null for a continuous entry.
-			startInstance: {},
 			interval: null,
-			// started: false,
 			seconds: "00",
 			minutes: "00",
 			hours: "0",
@@ -87,13 +82,13 @@ export default {
 	},
 	methods: {
 		reset() {
-			this.startInstance = {};
+			this.startInstance = this.timeTracker;
 			this.description = "";
 			this.tags = [];
-			this.togglStore.add("startInstance", this.startInstance);
+			this.togglStore.delete("openTracker");
 			this.togglStore.delete("project");
 			let updateAppState = this.appState;
-			updateAppState.startInstance = this.startInstance;
+			updateAppState.openTracker = this.timeTracker;
 			this.eventBus.emit("updateAppState", updateAppState);
 			this.eventBus.emit("deselectTogglProject");
 		},
@@ -119,18 +114,18 @@ export default {
 
 			try {
 
-				this.start = new Date().toISOString();
-
 				let body = {
 					project_id: this.project.id,
 					created_with: this.created_with,
 					description: this.description,
 					tags: this.tags,
-					billable: this.billable,
+					billable: false,
 					workspace_id: this.project.workspace_id,
-					duration: this.duration,
-					start: this.start,
-					stop: this.stop
+					// To start a time entry and continuous run, the duration field must be negative.
+					// https://engineering.toggl.com/docs/track/tracking/
+					duration: -1,
+					start: new Date().toISOString(),
+					stop: null // Must be null for a continuous run.
 				};
 
 				let headerObj = new Headers();
@@ -161,12 +156,22 @@ export default {
 					return;
 				}
 
-				this.startInstance = data.startInstance;
-				this.startInstance = { ...this.openTracker, ...this.startInstance };
-				this.togglStore.add("startInstance", this.startInstance);
+				if (this.isObjNullOrEmpty(data?.startInstance)) return;
+
+				const currEnt = data?.startInstance;
+
+				const mergedTracker = Object.keys(this.timeTracker).reduce((prop, key) => {
+					// Use source value if available; otherwise, keep model default
+					prop[key] = key in currEnt ? currEnt[key] : this.timeTracker[key];
+					return prop;
+				}, {});
+
+				this.startInstance = mergedTracker;
+				this.togglStore.delete("openTracker");
+				this.togglStore.add("openTracker", this.openTracker);
 
 				let updateAppState = this.appState;
-				updateAppState.startInstance = this.startInstance;
+				updateAppState.openTracker = this.startInstance;
 				this.eventBus.emit("updateAppState", updateAppState);
 
 				this.setInterval();
@@ -234,10 +239,12 @@ export default {
 				}
 
 				this.startInstance.stop = new Date().toISOString();
-				this.togglStore.add("startInstance", this.startInstance);
+				let dateCompare = new Date(this.startInstance.start).getTime() + new Date().getTime();
+				this.startInstance.duration = dateCompare;
+				this.togglStore.add("openTracker", this.startInstance);
 
 				let updateAppState = this.appState;
-				updateAppState.startInstance = this.startInstance;
+				updateAppState.openTracker = this.startInstance;
 				this.eventBus.emit("updateAppState", updateAppState);
 
 				clearInterval(this.interval);
@@ -253,7 +260,6 @@ export default {
 				this.serverStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				// this.started = false;
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
@@ -263,7 +269,7 @@ export default {
 			this.interval = setInterval(this.updateDateTime, 1000);
 		},
 		updateDateTime() {
-			let date = !this.isNullOrEmpty(this.startInstance) ? new Date(this.startInstance.start) : new Date();
+			let date = !this.isObjNullOrEmpty(this.startInstance) ? new Date(this.startInstance?.start) : new Date();
 			let now = new Date();
 			let elapsed = now - date;
 
@@ -276,17 +282,18 @@ export default {
 	},
 	mounted() {
 		let store = this.togglStore.get();
-		this.startInstance = store?.startInstance;
+		this.startInstance = !this.isObjNullOrEmpty(store?.openTracker) ? store.openTracker : this.timeTracker;
 
-		let updateAppState = this.appState;
-		updateAppState.startInstance = this?.startInstance;
-		this.eventBus.emit("updateAppState", updateAppState);
+		if (this.startInstance?.id && this.openTracker?.id) {
+			this.startInstance = this.openTracker;
+			this.updateDateTime();
+		}
 
-		if (this.startInstance && !this.startInstance.stop)
+		if (this.startInstance?.id && !this.startInstance?.stop)
 			this.setInterval();
 	},
 	created() {
-		if (this.isNullOrEmpty(this.togglStore.get()))
+		if (this.isObjNullOrEmpty(this.togglStore.get()))
 			this.togglStore.save({});
 		this.togglRecall = this.togglStore.get();
 	},
