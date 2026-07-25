@@ -1,26 +1,47 @@
 [
 	{
 		"series_id": "DJIA",
-		"desciption": "Dow Jones Industrial Average"
+		"desciption": "Dow Jones Industrial Average",
+		"units": "POINT"
 	},
 	{
 		"series_id": "NASDAQCOM",
-		"desciption": "NASDAQ Composite"
+		"desciption": "NASDAQ Composite",
+		"units": "POINT"
 	},
 	{
 		"series_id": "SP500",
-		"desciption": "S&P 500"
+		"desciption": "S&P 500",
+		"units": "POINT"
+	},
+	{
+		"series_id": "NIKKEI225",
+		"desciption": "Nikkei Stock Average, Nikkei 225",
+		"units": "JPY"
 	},
 	{
 		"series_id": "DCOILWTICO",
-		"desciption": "Crude Oil Prices: West Texas Intermediate (WTI) - Cushing, Oklahoma"
+		"desciption": "Crude Oil Prices: West Texas Intermediate (WTI)",
+		"units": "USD"
 	},
 	{
 		"series_id": "CBBTCUSD",
-		"desciption": "Coinbase Bitcoin"
+		"desciption": "Coinbase Bitcoin",
+		"units": "USD"
 	},
 	{
 		"series_id": "CBETHUSD",
-		"desciption": "Coinbase Ethereum"
+		"desciption": "Coinbase Ethereum",
+		"units": "USD"
+	},
+	{
+		"series_id": "IP7108",
+		"desciption": "Gold: Import Price Index (Harmonized System)",
+		"units": "USD"
+	},
+	{
+		"series_id": "IP7106",
+		"desciption": "Silver: Import Price Index (Harmonized System)",
+		"units": "USD"
 	}
 ]

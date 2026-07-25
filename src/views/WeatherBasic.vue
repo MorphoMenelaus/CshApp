@@ -248,7 +248,8 @@ export default {
 						fill: false,
 						cubicInterpolationMode: 'monotone',
 						tension: 0.4,
-						yAxisID: "y1"
+						yAxisID: "y1",
+						order: 3
 					},
 				]
 			};
@@ -263,7 +264,8 @@ export default {
 					borderColor: this.CHART_COLORS.green,
 					fill: false,
 					tension: 0.4,
-					yAxisID: "y2"
+					yAxisID: "y2",
+					order: 2
 				},
 				{
 					type: 'bar',
@@ -272,7 +274,8 @@ export default {
 					backgroundColor: this.CHART_COLORS.purple,
 					borderColor: this.CHART_COLORS.purple,
 					fill: false,
-					yAxisID: "y3"
+					yAxisID: "y3",
+					order: 1
 				},
 			];
 

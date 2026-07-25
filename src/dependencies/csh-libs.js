@@ -1,5 +1,5 @@
 /*!
- * CSH Classes and Utilities v0.0.1
+ * CSH Classes and Utilities v0.0.2
  * (c) 2026 Chris Hardwick
  */
 

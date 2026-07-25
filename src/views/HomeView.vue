@@ -1,6 +1,7 @@
 <script setup>
 import { ref, inject } from 'vue';
 import Disclaimers from "../components/Disclaimers.vue";
+import StockCharts from "../components/StockCharts.vue";
 
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 	console.warn('Global function not found! sendAnalyticsEvent()')
@@ -8,9 +9,12 @@ const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 
 const props = defineProps({
 	appState: Object,
+	isMobile: Boolean,
+	windowWidth: Number
 })
 
 let lessText = ref(false);
+let showStocks = ref(false);
 
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
@@ -25,6 +29,10 @@ const showDetails = (id) => {
 	lessText.value = lessText?.value ? false : true;
 	// scrollToId(id);
 	sendAnalyticsEvent('show_details', 'accomplishments');
+}
+const showStockDetails = (id) => {
+	showStocks.value = showStocks?.value ? false : true;
+	sendAnalyticsEvent('stock_charts', 'details');
 }
 </script>
 
@@ -88,7 +96,7 @@ const showDetails = (id) => {
 				<div class="btn-link-container">
 					<Button id="scroll-anchor" class="btn" @click="showDetails('scroll-anchor')">{{ lessText ? 'Fewer' :
 						'More'
-					}} Details <span :class="lessText ? 'rotated' : ''">▽</span></Button>
+					}} Details <span class="arrow" :class="lessText ? 'rotated' : ''">▽</span></Button>
 					<RouterLink to="/resume" class="btn linkedin">Full Resume</RouterLink>
 					<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
 						title="Chris Hardwick | Linkedin Profile" target="_blank"
@@ -110,6 +118,20 @@ const showDetails = (id) => {
 					<h1>No results found. Please refresh your browser.</h1>
 				</div>
 			</div>
+
+			<div id="stocks-container">
+				<h2 v-if="!showStocks">Current Market Charts</h2>
+				<Button id="stocks-anchor" class="btn" @click="showStockDetails('scroll-anchor')">
+					{{ showStocks ? 'Close' : 'Open' }} Stocks Chart
+					<span :class="showStocks ? 'rotated' : ''">▽</span>
+				</Button>
+				<Transition name="slide-down">
+					<div v-if="showStocks" id="latest-stocks">
+						<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" />
+					</div>
+				</Transition>
+			</div>
+
 			<Disclaimers />
 		</div>
 		<div id="copyright">
@@ -121,13 +143,16 @@ const showDetails = (id) => {
 <style scoped>
 .btn span {
 	display: inline-block;
+	position: relative;
+	right: -5px;
 	margin-left: 10px;
 	font-weight: bold;
+	transform: rotate(-90deg);
 	transition: transform .4s ease-in-out;
 }
 
-.rotated {
-	transform: rotate(180deg);
+span.rotated {
+	transform: rotate(0deg);
 }
 
 #copyright {
@@ -198,8 +223,15 @@ p {
 	font-weight: normal;
 }
 
+#stocks-container {
+	margin-top: 30px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 
-#latest-summary {
+#latest-summary,
+#stocks-container {
 	background-color: #e7e7e7;
 	padding: 15px;
 	/* font-size: 1.25em; */
@@ -207,7 +239,8 @@ p {
 	border-radius: 12px;
 }
 
-.uiDarkMode #latest-summary {
+.uiDarkMode #latest-summary,
+.uiDarkMode #stocks-container {
 	background-color: #000;
 }
 
@@ -316,6 +349,10 @@ p {
 	padding: 3px 15px 2px;
 	border: 1px #000 solid;
 	box-shadow: 1px 1px 0px #000;
+}
+
+.text-center {
+	text-align: center;
 }
 
 @media (max-width: 767px) {
