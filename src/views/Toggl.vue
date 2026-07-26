@@ -22,7 +22,7 @@
 				</Transition>
 			</div>
 
-			<ProjectTable v-if="projects?.length > 0" :appState="appState" :projects="projects" />
+			<ProjectTable v-if="projects?.length > 0" :appState="appState" :projects="projects" :isMobile="isMobile" />
 
 			<!-- <TimeEntries :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" /> -->
 
@@ -213,6 +213,10 @@ h4 {
 	color: #333;
 	border-radius: 12px;
 	border: 1px #333 solid;
+}
+
+.mobile #toggl-user {
+	width: 100%;
 }
 
 .btn-group {

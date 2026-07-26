@@ -330,6 +330,10 @@ export default {
 	border-radius: 12px;
 }
 
+.mobile #project {
+	flex-direction: column;
+}
+
 .proj-container {
 	flex-direction: column;
 	align-items: center;
@@ -345,6 +349,14 @@ export default {
 	top: 115px;
 	right: 15px;
 	z-index: 500;
+}
+
+.mobile .proj-container {
+	position: absolute;
+	top: 15px;
+	right: 0;
+	left: 0;
+	width: 95%;
 }
 
 .input-container {
@@ -379,8 +391,16 @@ export default {
 	padding: 0 15px;
 }
 
+.mobile .descrip {
+	flex-direction: column;
+}
+
 #start-stop {
 	width: 100%;
+}
+
+.mobile #start-stop {
+	font-size: 80%;
 }
 
 #start-stop input {
@@ -390,6 +410,10 @@ export default {
 #start-stop .btn {
 	font-size: 2em;
 	margin: 0 15px;
+}
+
+.mobile #start-stop .btn {
+	font-size: 1em;
 }
 
 #start-stop .btn.small {
@@ -428,16 +452,4 @@ export default {
 	user-select: none;
 	/* margin-left: 15px; */
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>
