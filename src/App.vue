@@ -112,7 +112,6 @@ export default {
 			}
 		},
 		async getAppRolesData() {
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -141,8 +140,6 @@ export default {
 
 			} catch (error) {
 				console.error('Error reading data:', error);
-			} finally {
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
@@ -154,7 +151,6 @@ export default {
 		this.eventBus.on("EscapeKeydown", () => {
 			this.currentComponent = null;
 		});
-		// this.createNewStorage();
 		this.eventBus.on("updateAppState", (payload) => {
 			this.appState = payload;
 			this.recall.save(this.appState);

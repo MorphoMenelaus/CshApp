@@ -38,20 +38,11 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
-
 export default {
 	name: "MovieDetails",
 	props: {
 		isMobile: Boolean,
 		selectedMovie: Object
-	},
-	data() {
-		return {
-			// movie: this.selectedMovie,
-		};
-	},
-	watch: {
 	},
 	methods: {
 		cancel() {
@@ -70,14 +61,6 @@ export default {
 				String(seconds).padStart(2, '0')
 			].join(':');
 		}
-	},
-	mounted() {
-	},
-	created() {
-		// this.eventBus.on("EscapeKeyDown", this.cancel());
-		// onBeforeUnmount(() => {
-		// 	this.eventBus.off("EscapeKeyDown");
-		// });
 	},
 };
 </script>
@@ -169,16 +152,4 @@ img.poster {
 	justify-content: center;
 	margin: 30px auto 15px;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

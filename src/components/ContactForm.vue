@@ -2,9 +2,6 @@
 
 	<div id="contact">
 		<div class="wrapper" v-if="!messageSent">
-			<!-- <div class="btn-container">
-				<button @click="eventBus.emit('contactEmail', false)" class="close-modal" title="Close This Dialog">✕</button>
-			</div> -->
 			<div id="form-header">
 				<h2>I'd love to hear from you</h2>
 				<h4 style="text-align: center;">Please, let me know what you think.</h4>
@@ -146,7 +143,6 @@ export default {
 					this.serverStatus.message = data?.message;
 					this.serverStatus.success = data?.success;
 					this.eventBus.emit("updateStatus", (this.serverStatus));
-					// this.eventBus.emit("contactEmail", false);
 					this.sendAnalyticsEvent('contact_form_send', 'contact_modal');
 					this.messageSent = true;
 				}

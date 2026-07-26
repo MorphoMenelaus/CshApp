@@ -343,8 +343,6 @@ export default {
 				verified: this.verified
 			};
 
-			// let hasEmpty = Object.values(body).some(val => !val);
-
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");

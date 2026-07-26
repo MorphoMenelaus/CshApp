@@ -118,8 +118,6 @@
 import { onBeforeUnmount } from "vue";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
-// Test placeholderData
-// import placeholderData from "@/dependencies/movies.json";
 
 export default {
 	name: "MovieDatabase",
@@ -154,8 +152,6 @@ export default {
 			orderDir: "DESC",
 			contains: "",
 			movieList: [],
-			// Test placeholderData
-			// movieList: placeholderData,
 			currentComponent: null,
 			selectedMovie: {},
 			favoritesList: [],
@@ -277,8 +273,6 @@ export default {
 			this.currentComponent = "EditMovieDetails";
 		},
 		async setFavorite(movieId) {
-			// this.eventBus.emit("showHideLoader", true);
-
 			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
 			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
 			if (!refreshResponse?.success) {
@@ -322,12 +316,10 @@ export default {
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
+				if (this.serverStatus.code !== 200) this.eventBus.emit("updateStatus", (this.serverStatus));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
-			} finally {
-				// this.addUserLog(this.appState, "Update Movie Details");
 			}
 		},
 		async removeFavorite(movieId) {
@@ -374,17 +366,13 @@ export default {
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
+				if (this.serverStatus.code !== 200) this.eventBus.emit("updateStatus", (this.serverStatus));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
-			} finally {
-				// this.addUserLog(this.appState, "Update Movie Details");
 			}
 		},
 		async getFavoriteList() {
-			// this.eventBus.emit("showHideLoader", true);
-
 			if (!this.appState?.permissions?.verified) {
 				return;
 			}
@@ -430,8 +418,6 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
-			} finally {
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async getMovieByFavorites() {
@@ -488,7 +474,6 @@ export default {
 			this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
-			// headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL("/api/movies/", this.baseUrl);
 
