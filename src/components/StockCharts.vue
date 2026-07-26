@@ -179,7 +179,7 @@ export default {
 				datasets: [
 					{
 						type: 'line',
-						label: "USD",
+						label: this.seriesDetails.units,
 						data: extractedValues,
 						backgroundColor: this.CHART_COLORS.blue,
 						borderColor: this.CHART_COLORS.blue,
@@ -266,6 +266,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+/* #latest-stocks {
+	overflow: hidden;
+} */
+
 #markets {
 	position: relative;
 }

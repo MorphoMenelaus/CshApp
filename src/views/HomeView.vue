@@ -120,11 +120,15 @@ const showStockDetails = (id) => {
 			</div>
 
 			<div id="stocks-container">
-				<h2 v-if="!showStocks">Current Market Charts</h2>
-				<Button id="stocks-anchor" class="btn" @click="showStockDetails('scroll-anchor')">
-					{{ showStocks ? 'Close' : 'Open' }} Stocks Chart
-					<span :class="showStocks ? 'rotated' : ''">▽</span>
-				</Button>
+				<div id="charts-header">
+					<h2 class="julius-sans" @click="showStockDetails('scroll-anchor')"
+						:title="`${showStocks ? 'Close' : 'Open'} Stocks Chart`">Current Market Charts</h2>
+					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>
+					<Button id="stocks-anchor" class="btn" @click="showStockDetails('scroll-anchor')">
+						{{ showStocks ? 'Close' : 'Open' }} Stocks Chart
+						<span :class="showStocks ? 'rotated' : ''">▽</span>
+					</Button>
+				</div>
 				<Transition name="slide-down">
 					<div v-if="showStocks" id="latest-stocks">
 						<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" />
@@ -272,6 +276,26 @@ p {
 	font-size: 1.25em;
 	width: 50%;
 	padding: 0 30px;
+}
+
+#charts-header {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	width: 95%;
+}
+
+#charts-header h2 {
+	cursor: pointer;
+	transition: color .25s ease-in-out;
+}
+
+#charts-header h2:hover {
+	color: #4c88ff;
+}
+
+#latest-stocks {
+	overflow: hidden;
 }
 
 .mobile #skills-list {
