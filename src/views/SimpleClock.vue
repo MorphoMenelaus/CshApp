@@ -143,7 +143,6 @@ export default {
 		limit() {
 			this.currentPage = 1;
 			this.offset = null;
-			// this.limit = this.limit;
 			this.getClockLog();
 		},
 		eventLogList() {
@@ -153,12 +152,6 @@ export default {
 		}
 	},
 	methods: {
-		// handleLogStringFormat(str, event = "") {
-		// 	if (this.isUTCtime(str)) str = new Date(str).toLocaleString();
-		// 	if (event === "isWakeupEvent") str = str === 1 ? true : false;
-		// 	return str;
-		// },
-		// convertUTCtoLocale() { },
 		charCounter() {
 			let currCount = this.notes.length;
 			if (this.charRemaining <= this.maxlength)
@@ -274,7 +267,6 @@ export default {
 				this.serverStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				// this.addUserLog(this.appState, "Add Entry to Simple Clock Log");
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},

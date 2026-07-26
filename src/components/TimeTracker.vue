@@ -181,7 +181,6 @@ export default {
 				this.serverStatus.success = data?.success;
 				this.eventBus.emit("updateStatus", this.serverStatus);
 			} catch (error) {
-				// this.started = false;
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;

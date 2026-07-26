@@ -59,9 +59,6 @@ export default {
 		};
 	},
 	watch: {
-		// isMobile() {
-		// 	this.mobileMenuShow = !this.isMobile;
-		// }
 	},
 	methods: {
 		closeDialogs(link_name = 'unkown') {

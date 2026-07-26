@@ -58,10 +58,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import { ref } from "vue";
-// import router from "@/router";
-
 export default {
 	name: "DisplayUsers",
 	props: {
@@ -82,7 +78,6 @@ export default {
 				{ text: "20", value: "20" },
 				{ text: "50", value: "50" },
 			],
-			// serverMessage: "Loading...",
 			responseStatus: "",
 			usersList: [],
 			usersLabels: [

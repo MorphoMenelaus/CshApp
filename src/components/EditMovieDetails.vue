@@ -210,7 +210,6 @@ export default {
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
-				// this.addUserLog(this.appState, "Update Movie Details");
 				this.eventBus.emit("showHideLoader", false);
 				this.disableBtn = false;
 				this.addUserLog(this.appState, `Update Movie Details. MovieId: ${this.selectedMovie.movieId}`);

@@ -9,38 +9,44 @@
 					data more readable.</p>
 				<small>No promises or guarantees of forecasts.</small>
 			</div>
-			<div class="input-container">
-				<label for="forecastDays">Forecast</label>
-				<select id="forecastDays" v-model="forecastDays">
-					<option v-for="(item, index) in forecastDaysOptions" :key="index" :value="item.value">{{ item.text
-					}}
-					</option>
-				</select>
-				<label for="location">City</label>
-				<select id="location" v-model="location">
-					<option v-for="(item, index) in locationOptions" :key="index" :value="item">{{ item.city }}
-					</option>
-				</select>
-				<small v-if="!isMobile">Latitude: {{ location.lat }} | Longitude: {{ location.long }}<br /><span
-						:title="`${weatherData?.elevation} meters above sea level`">
-						Elevation: {{
-							weatherData?.elevation }}m asl
-					</span></small>
-			</div>
-			<div v-if="weatherDateTime" class="weather-time">
-				<span>Last refreshed: {{ weatherDateTime.toLocaleString() }}</span>
-				<button v-if="weatherRefreshButton" class="btn" @click="getWeatherData()">Refresh Data</button>
-			</div>
-			<div id="weather">
-				<canvas id="weather-graph" :width="chartWidth" :height="chartHeight"></canvas>
-			</div>
-			<div class="attribution">
-				<span>REST API weather data by </span>
-				<a class="link" href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank">
-					Open-Meteo.com
-				</a>&nbsp;|&nbsp;
-				<a class="link" href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE"
-					title="Read licence here" target="_blank">Licence here</a>
+			<div id="weather-box">
+				<div class="input-container">
+					<label for="forecastDays">Forecast</label>
+					<select id="forecastDays" v-model="forecastDays">
+						<option v-for="(item, index) in forecastDaysOptions" :key="index" :value="item.value">
+							{{ item.text }}
+						</option>
+					</select>
+					<label for="location">City</label>
+					<select id="location" v-model="location">
+						<option v-for="(item, index) in locationOptions" :key="index" :value="item">{{ item.city }}
+						</option>
+					</select>
+					<small v-if="!isMobile">Latitude: {{ location.lat }} | Longitude: {{ location.long }}<br /><span
+							:title="`${weatherData?.elevation} meters above sea level`">
+							Elevation: {{ weatherData?.elevation }}m asl
+						</span></small>
+				</div>
+				<div v-if="weatherDateTime" class="weather-time">
+					<small>Last refreshed: {{ weatherDateTime.toLocaleString() }}</small>
+					<button v-if="weatherRefreshButton" class="btn" @click="getWeatherData()">Refresh Data</button>
+				</div>
+				<div id="weather">
+					<Transition name="fade">
+						<div v-if="showHideLoader" id="loading-icon" class="loading">
+							<div class="spinner-pulse"></div>
+						</div>
+					</Transition>
+					<canvas id="weather-graph"></canvas>
+				</div>
+				<div class="attribution">
+					<small>REST API weather data by </small>
+					<a class="link" href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank">
+						Open-Meteo.com
+					</a>&nbsp;|&nbsp;
+					<a class="link" href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE"
+						title="Read licence here" target="_blank">Licence here</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -49,6 +55,27 @@
 <script>
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
+
+const verticalLinePlugin = {
+	id: 'verticalLine',
+	afterDraw: (chart) => {
+		if (chart.tooltip?._active && chart.tooltip._active.length) {
+			const { ctx, chartArea: { top, bottom } } = chart;
+			const activePoint = chart.tooltip._active[0];
+			const x = activePoint.element.x;
+
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(x, top);
+			ctx.lineTo(x, bottom);
+			ctx.lineWidth = 1.5;
+			ctx.strokeStyle = '#f00';
+			ctx.setLineDash([6, 6]);
+			ctx.stroke();
+			ctx.restore();
+		}
+	}
+};
 
 const defaultMult = .25;
 
@@ -63,11 +90,10 @@ export default {
 	data() {
 		return {
 			serverStatus: Object.assign({}, this.appNotify),
+			showHideLoader: false,
 			chartElem: null,
 			weatherChart: null,
 			multiplier: defaultMult,
-			chartWidth: this.windowWidth,
-			chartHeight: this.windowWidth * defaultMult,
 			dateOptions: {
 				month: 'numeric',
 				day: 'numeric',
@@ -116,37 +142,10 @@ export default {
 			this.getWeatherData();
 		},
 		windowWidth() {
-			this.setGraphSizeRatio();
 			this.drawChart();
-			if (this.isMobile)
-				this.forecastDays = 1;
-			this.chartWidth = this.windowWidth;
-			this.chartHeight = this.windowWidth * this.multiplier;
 		},
 	},
 	methods: {
-		setGraphSizeRatio() {
-			let width = this.windowWidth;
-			switch (true) {
-				case width < 768:
-					this.multiplier = 1;
-					break;
-				case width < 1024:
-					this.multiplier = .7;
-					break;
-				case width < 1200:
-					this.multiplier = .6;
-					break;
-				case width < 1800:
-					this.multiplier = .5;
-					break;
-				case width < 2400:
-					this.multiplier = .4;
-					break;
-				default:
-					this.multiplier = 1;
-			};
-		},
 		refreshButton() {
 			this.weatherRefreshButton = true;
 		},
@@ -165,7 +164,7 @@ export default {
 			this.weatherData.hourly.time = newTimeArr;
 		},
 		async getWeatherData() {
-			this.eventBus.emit("showHideLoader", true);
+			this.eventBus.emit("showStockLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -222,7 +221,7 @@ export default {
 				this.serverStatus.success = false;
 				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.eventBus.emit("showStockLoader", false);
 			}
 		},
 		drawChart() {
@@ -248,7 +247,8 @@ export default {
 						fill: false,
 						cubicInterpolationMode: 'monotone',
 						tension: 0.4,
-						yAxisID: "y1"
+						yAxisID: "y1",
+						order: 3
 					},
 				]
 			};
@@ -263,7 +263,8 @@ export default {
 					borderColor: this.CHART_COLORS.green,
 					fill: false,
 					tension: 0.4,
-					yAxisID: "y2"
+					yAxisID: "y2",
+					order: 2
 				},
 				{
 					type: 'bar',
@@ -272,7 +273,8 @@ export default {
 					backgroundColor: this.CHART_COLORS.purple,
 					borderColor: this.CHART_COLORS.purple,
 					fill: false,
-					yAxisID: "y3"
+					yAxisID: "y3",
+					order: 1
 				},
 			];
 
@@ -287,6 +289,9 @@ export default {
 					responsive: true,
 					maintainAspectRatio: false,
 					plugins: {
+						tooltip: {
+							enabled: true // Keeps default hover text visible
+						},
 						title: {
 							display: true,
 							text: `${this.forecastDayText} Weather for ${this.location.city}`,
@@ -297,6 +302,7 @@ export default {
 						},
 					},
 					interaction: {
+						mode: 'index', // Snaps line to the closest date point
 						intersect: false,
 					},
 					scales: {
@@ -339,6 +345,7 @@ export default {
 						}
 					}
 				},
+				plugins: [verticalLinePlugin]
 			}
 
 			Chart.defaults.font.size = this.isMobile ? 12 : 18;
@@ -346,9 +353,6 @@ export default {
 		},
 		setupForGraph() {
 			this.forecastDayText = this.forecastDaysOptions.filter(item => item.value === this.forecastDays)[0].text;
-			this.setGraphSizeRatio();
-			this.chartWidth = this.windowWidth;
-			this.chartHeight = this.windowWidth * this.multiplier;
 			this.chartElem = document.getElementById('weather-graph');
 		}
 	},
@@ -358,6 +362,12 @@ export default {
 		this.getWeatherData();
 	},
 	created() {
+		this.eventBus.on("showStockLoader", payload => {
+			this.showHideLoader = payload;
+		});
+		onBeforeUnmount(() => {
+			this.eventBus.off("showStockLoader");
+		});
 	},
 };
 </script>
@@ -382,32 +392,70 @@ small {
 #description-box {
 	background-color: rgb(191 191 191 / 75%);
 	color: #000;
-	width: 95%;
+	/* width: 95%; */
 	margin: 30px auto 15px;
 	border-radius: 12px;
 	padding: 5px 15px 45px;
 	border: 1px #000 solid;
 }
 
+#description-box p {
+	width: 80%;
+	margin: auto;
+}
+
 .uiDarkMode #description-box {
-	background-color: rgb(100 100 100 / 75%);
+	background-color: #333;
 	color: #c1c1c1;
 }
 
 #weather-container {
-	margin: auto;
-	padding: unset;
+	width: 98%;
+	margin: 15px auto;
+	padding-bottom: 45px;
 }
 
 #weather {
-	background-color: #eee;
-	padding: unset;
-	margin: auto;
+	position: relative;
+	background-color: #dbdbdb;
+	border: 1px solid #ababab;
 	border-radius: 12px;
+	margin: 15px 0;
+	padding: 15px;
 }
 
 .uiDarkMode #weather {
 	background-color: #ccc;
+}
+
+#weather-box {
+	background-color: #e7e7e7;
+	padding: 15px;
+	border-radius: 12px;
+	border: 1px solid #555;
+}
+
+.uiDarkMode #weather-box {
+	background-color: #000;
+}
+
+#weather-graph {
+	padding: unset;
+	background-color: #eee;
+	border-radius: 12px;
+	margin: auto;
+}
+
+canvas#weather-graph {
+	width: 100%;
+	height: calc(100vw / 3);
+	max-height: 800px;
+	border: 1px #000 solid;
+}
+
+.mobile canvas#weather-graph {
+	height: calc(100vh / 2);
+	max-height: 400px;
 }
 
 .input-container {
@@ -419,7 +467,7 @@ small {
 	align-items: center;
 	width: 100%;
 	max-width: 35em;
-	margin: auto auto 15px;
+	margin: 15px auto;
 	padding: 5px 15px;
 	display: flex;
 }
@@ -450,6 +498,35 @@ small span {
 	margin-left: 15px;
 }
 
+#loading-icon {
+	position: absolute;
+	top: 5px;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: grid;
+	align-items: center;
+	background-color: rgb(0 0 0 / 20%);
+	backdrop-filter: blur(10px);
+	border-radius: 12px;
+}
+
+.spinner-pulse,
+.spinner-pulse:before,
+.spinner-pulse:after {
+	background-color: #5a87bf;
+	width: 30px;
+	height: 30px;
+}
+
+.spinner-pulse:before {
+	left: -40px;
+}
+
+.spinner-pulse:after {
+	left: 40px;
+}
+
 @media (max-width: 767px) {
 	#weather {
 		margin-bottom: 60px;
@@ -462,7 +539,7 @@ small span {
 
 @media (min-width: 768px) {
 	#description-box {
-		width: 90%;
+		/* width: 90%; */
 		padding: 5px 30px 45px;
 
 	}
@@ -470,11 +547,11 @@ small span {
 
 @media (min-width: 992px) {
 	#description-box {
-		width: 85%;
+		/* width: 85%; */
 	}
 
 	#weather-container {
-		padding: 15px 30px;
+		width: 90%;
 	}
 
 	#weather {
@@ -484,19 +561,29 @@ small span {
 
 @media (min-width: 1024px) {
 	#description-box {
-		width: 80%;
+		/* width: 80%; */
 		padding: 5px 45px 45px;
 	}
 }
 
 @media (min-width: 1200px) {
+	#weather-container {
+		width: 80%;
+	}
+
 	#description-box {
-		width: 75%;
+		/* width: 75%; */
 	}
 }
 
-@media (min-width: 2400px) {
-	#description-box {
+@media (min-width: 1800px) {
+	#weather-container {
+		width: 70%;
+	}
+}
+
+@media (min-width: 2200px) {
+	#weather-container {
 		width: 60%;
 	}
 }
