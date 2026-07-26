@@ -40,12 +40,13 @@
 					<canvas id="weather-graph"></canvas>
 				</div>
 				<div class="attribution">
-					<small>REST API weather data by </small>
-					<a class="link" href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank">
-						Open-Meteo.com
-					</a>&nbsp;|&nbsp;
-					<a class="link" href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE"
-						title="Read licence here" target="_blank">Licence here</a>
+					<small>REST API weather data by
+						<a class="link" href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank">
+							Open-Meteo.com
+						</a>&nbsp;|&nbsp;
+						<a class="link" href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE"
+							title="Read licence here" target="_blank">Licence here</a>
+					</small>
 				</div>
 			</div>
 		</div>
@@ -93,7 +94,6 @@ export default {
 			showHideLoader: false,
 			chartElem: null,
 			weatherChart: null,
-			multiplier: defaultMult,
 			dateOptions: {
 				month: 'numeric',
 				day: 'numeric',

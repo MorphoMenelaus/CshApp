@@ -114,40 +114,36 @@ export default {
 				});
 
 				let response = await fetch(request);
+				const data = await response.json();
 
-				if (response.ok) {
-					const data = await response.json();
-
-					if (data?.code === 403) {
-						this.eventBus.emit("updateStatus", data);
-						this.eventBus.emit("forceLogout");
-					}
-
-					this.serverStatus.code = data?.code;
-					this.serverStatus.message = data?.message;
-					this.serverStatus.success = data?.success;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
-
-					if (data?.success) {
-						// Control the state of both components
-						let payload = {
-							register: false,
-							login: false
-						}
-						this.eventBus.emit("registerUser", payload);
-						this.sendAnalyticsEvent('register_form_send', 'register_modal');
-					}
-
-					this.errState = data?.success;
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
 				}
+
+				this.serverStatus.code = data?.code;
+				this.serverStatus.message = data?.message;
+				this.serverStatus.success = data?.success;
+
+				if (data?.success) {
+					// Control the state of both components
+					let payload = {
+						register: false,
+						login: false
+					}
+					this.eventBus.emit("registerUser", payload);
+					this.sendAnalyticsEvent('register_form_send', 'register_modal');
+				}
+
+				this.errState = data?.success;
 
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
+				this.eventBus.emit("updateStatus", (this.serverStatus));
 				this.eventBus.emit("showHideLoader", false);
 			}
 		},
