@@ -36,6 +36,27 @@ import { onBeforeUnmount } from "vue";
 import seriesIds from '@/dependencies/seriesIds.json';
 import Chart from 'chart.js/auto';
 
+const verticalLinePlugin = {
+	id: 'verticalLine',
+	afterDraw: (chart) => {
+		if (chart.tooltip?._active && chart.tooltip._active.length) {
+			const { ctx, chartArea: { top, bottom } } = chart;
+			const activePoint = chart.tooltip._active[0];
+			const x = activePoint.element.x;
+
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(x, top);
+			ctx.lineTo(x, bottom);
+			ctx.lineWidth = 1.5;
+			ctx.strokeStyle = '#f00';
+			ctx.setLineDash([6, 6]);
+			ctx.stroke();
+			ctx.restore();
+		}
+	}
+};
+
 export default {
 	name: "StockCharts",
 	props: {
@@ -96,6 +117,9 @@ export default {
 		};
 	},
 	watch: {
+		windowWidth() {
+			this.drawChart();
+		},
 		series() {
 			this.seriesDetails = this.seriesOptions.filter(item => item.series_id === this.series)[0];
 			this.selectRanges();
@@ -145,12 +169,14 @@ export default {
 				delete data.stocks.observations;
 				this.stocks = data.stocks;
 
+				this.sendAnalyticsEvent("stocks_chart", this.series);
+
 				this.drawChart();
 
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				if (this.serverStatus.code !== 200) this.eventBus.emit("updateStatus", this.serverStatus);
 
 			} catch (error) {
 				console.error('Error posting data:', error);
@@ -195,7 +221,14 @@ export default {
 				options: {
 					responsive: true,
 					maintainAspectRatio: false,
+					interaction: {
+						mode: 'index', // Snaps line to the closest date point
+						intersect: false
+					},
 					plugins: {
+						tooltip: {
+							enabled: true // Keeps default hover text visible
+						},
 						title: {
 							display: true,
 							text: this.seriesDetails.desciption,
@@ -204,9 +237,6 @@ export default {
 								size: this.isMobile ? 16 : 26
 							}
 						},
-					},
-					interaction: {
-						intersect: false,
 					},
 					scales: {
 						x: {
@@ -217,7 +247,7 @@ export default {
 								// color: this.CHART_COLORS.blue,
 								font: {
 									// weight: 700,
-									size: this.isMobile ? 16 : 26
+									size: this.isMobile ? 14 : 24
 								}
 							},
 						},
@@ -229,7 +259,7 @@ export default {
 								// color: this.CHART_COLORS.blue,
 								font: {
 									// weight: 700,
-									size: this.isMobile ? 16 : 26
+									size: this.isMobile ? 14 : 24
 								}
 							},
 							suggestedMin: Math.min(...extractedValues) - 100,
@@ -237,6 +267,7 @@ export default {
 						},
 					}
 				},
+				plugins: [verticalLinePlugin]
 			}
 
 			Chart.defaults.font.size = this.isMobile ? 12 : 18;
@@ -349,11 +380,13 @@ h2 {
 canvas#stocks-graph {
 	width: 100%;
 	height: calc(100vw / 3);
+	max-height: 800px;
 	border: 1px #000 solid;
 }
 
 .mobile canvas#stocks-graph {
 	height: calc(100vh / 2);
+	max-height: 400px;
 }
 
 .btn.selected {

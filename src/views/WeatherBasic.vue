@@ -50,6 +50,27 @@
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
 
+const verticalLinePlugin = {
+	id: 'verticalLine',
+	afterDraw: (chart) => {
+		if (chart.tooltip?._active && chart.tooltip._active.length) {
+			const { ctx, chartArea: { top, bottom } } = chart;
+			const activePoint = chart.tooltip._active[0];
+			const x = activePoint.element.x;
+
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(x, top);
+			ctx.lineTo(x, bottom);
+			ctx.lineWidth = 1.5;
+			ctx.strokeStyle = '#f00';
+			ctx.setLineDash([6, 6]);
+			ctx.stroke();
+			ctx.restore();
+		}
+	}
+};
+
 const defaultMult = .25;
 
 export default {
@@ -290,6 +311,9 @@ export default {
 					responsive: true,
 					maintainAspectRatio: false,
 					plugins: {
+						tooltip: {
+							enabled: true // Keeps default hover text visible
+						},
 						title: {
 							display: true,
 							text: `${this.forecastDayText} Weather for ${this.location.city}`,
@@ -300,6 +324,7 @@ export default {
 						},
 					},
 					interaction: {
+						mode: 'index', // Snaps line to the closest date point
 						intersect: false,
 					},
 					scales: {
@@ -342,6 +367,7 @@ export default {
 						}
 					}
 				},
+				plugins: [verticalLinePlugin]
 			}
 
 			Chart.defaults.font.size = this.isMobile ? 12 : 18;

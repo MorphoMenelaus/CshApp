@@ -122,10 +122,10 @@ const showStockDetails = (id) => {
 			<div id="stocks-container">
 				<div id="charts-header">
 					<h2 class="julius-sans" @click="showStockDetails('scroll-anchor')"
-						:title="`${showStocks ? 'Close' : 'Open'} Stocks Chart`">Current Market Charts</h2>
+						:title="`${showStocks ? 'Close' : 'Open'} Market Summary Charts`">Market Summary Charts</h2>
 					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>
 					<Button id="stocks-anchor" class="btn" @click="showStockDetails('scroll-anchor')">
-						{{ showStocks ? 'Close' : 'Open' }} Stocks Chart
+						{{ showStocks ? 'Close' : 'Open' }} Market Chart
 						<span :class="showStocks ? 'rotated' : ''">▽</span>
 					</Button>
 				</div>
@@ -176,6 +176,10 @@ h1 {
 
 h2 {
 	font-size: 2em;
+}
+
+#charts-header h2 {
+	font-size: 1.8em;
 }
 
 h3 {
