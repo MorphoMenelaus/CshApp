@@ -222,11 +222,10 @@ async function refreshAuthTokenAsNeeded(appState, forceRefresh = false) {
 		} else {
 			serverResponse = { ...serverResponse, ...data };
 		}
+		return serverResponse;
 	} catch (error) {
 		console.error(error);
 		throw new RefreshTokenError(`Error posting data: ${error}`);
-	} finally {
-		return serverResponse;
 	}
 }
 
@@ -265,11 +264,10 @@ async function tokenCheck(appState) {
 		serverResponse.code = data.code;
 		serverResponse.tokenValid = data.tokenValid;
 		serverResponse.success = data.success;
+		return serverResponse;
 	} catch (error) {
 		console.error(error);
 		throw new TokenCheckError(`Error posting data: ${error}`);
-	} finally {
-		return serverResponse;
 	}
 }
 

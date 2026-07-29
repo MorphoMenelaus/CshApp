@@ -21,17 +21,26 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 const scrollToId = (id) => {
 	const element = document.getElementById(id)
 	if (element) {
-		element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+		element.scrollIntoView({
+			behavior: "smooth", // "auto" (instant) or "smooth"
+			block: "start",     // Vertically aligns to: "start", "center", "end", or "nearest"
+			inline: "nearest"   // Horizontally aligns to: "start", "center", "end", or "nearest"
+		});
 	}
 }
 
 const showDetails = (id) => {
 	lessText.value = lessText?.value ? false : true;
-	// scrollToId(id);
+	setTimeout(() => {
+		scrollToId(id);
+	}, 200);
 	sendAnalyticsEvent('show_details', 'accomplishments');
 }
 const showStockDetails = (id) => {
 	showStocks.value = showStocks?.value ? false : true;
+	setTimeout(() => {
+		scrollToId(id);
+	}, 200);
 	sendAnalyticsEvent('stock_charts', 'details');
 }
 </script>
@@ -94,7 +103,8 @@ const showStockDetails = (id) => {
 					HelpDesk, Cashier, Reporter, and Player all allow for different access and abilities.
 				</p>
 				<div class="btn-link-container">
-					<Button id="scroll-anchor" class="btn" @click="showDetails('scroll-anchor')">{{ lessText ? 'Fewer' :
+					<Button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">{{ lessText ? 'Fewer'
+						:
 						'More'
 					}} Details <span class="arrow" :class="lessText ? 'rotated' : ''">▽</span></Button>
 					<RouterLink to="/resume" class="btn linkedin">Full Resume</RouterLink>
@@ -104,13 +114,11 @@ const showStockDetails = (id) => {
 				</div>
 				<Transition name="slide-down">
 					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
-						<div v-if="lessText" id="latest-details">
-							<div class="details-ul" v-for="(app, index) in appState.appDevDuties" :key="index">
-								<h3 class="julius-sans">{{ app.appName }}:</h3>
-								<ul>
-									<li v-for="(li, index) in app.duties" :key="index">{{ li }}</li>
-								</ul>
-							</div>
+						<div class="details-ul" v-for="(app, index) in appState.appDevDuties" :key="index">
+							<h3 class="julius-sans">{{ app.appName }}:</h3>
+							<ul>
+								<li v-for="(li, index) in app.duties" :key="index">{{ li }}</li>
+							</ul>
 						</div>
 					</div>
 				</Transition>
@@ -121,10 +129,10 @@ const showStockDetails = (id) => {
 
 			<div id="stocks-container">
 				<div id="charts-header">
-					<h2 class="julius-sans" @click="showStockDetails('scroll-anchor')"
+					<h2 class="julius-sans" @click="showStockDetails('latest-stocks')"
 						:title="`${showStocks ? 'Close' : 'Open'} Market Summary Charts`">Market Summary Charts</h2>
 					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>
-					<Button id="stocks-anchor" class="btn" @click="showStockDetails('scroll-anchor')">
+					<Button id="stocks-anchor" class="btn" @click="showStockDetails('latest-stocks')">
 						{{ showStocks ? 'Close' : 'Open' }} Market Chart
 						<span :class="showStocks ? 'rotated' : ''">▽</span>
 					</Button>
@@ -200,11 +208,6 @@ p {
 	/* z-index: -1; */
 	position: absolute;
 	inset: 0;
-}
-
-#view.mobile {
-	/* margin: 0;
-	padding: 0; */
 }
 
 #main-home-layout {
