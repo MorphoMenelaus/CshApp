@@ -37,7 +37,12 @@
 							<div class="spinner-pulse"></div>
 						</div>
 					</Transition>
-					<canvas id="weather-graph"></canvas>
+					<canvas id="weather-graph" v-if="!weatherData?.error"></canvas>
+					<div v-else id="weather-error">
+						<h1>Weather service API not responding.</h1>
+						<h2>Please, check again later.</h2>
+						<h3>{{ weatherData?.reason }}</h3>
+					</div>
 				</div>
 				<div class="attribution">
 					<small>REST API weather data by
@@ -54,6 +59,7 @@
 </template>
 
 <script>
+import { onBeforeUnmount } from "vue";
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
 
@@ -77,8 +83,6 @@ const verticalLinePlugin = {
 		}
 	}
 };
-
-const defaultMult = .25;
 
 export default {
 	name: "WeatherBasic",
@@ -195,6 +199,9 @@ export default {
 					this.eventBus.emit("forceLogout");
 				}
 
+				this.weatherData = data;
+				this.weatherData.forecastTimecode = new Date().getTime();
+
 				if (data?.error) {
 					console.error('Error getting data:', data?.reason);
 					this.serverStatus.code = 503;
@@ -203,9 +210,6 @@ export default {
 					this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
-
-				this.weatherData = data;
-				this.weatherData.forecastTimecode = new Date().getTime();
 
 				this.weatherDateTime = new Date();
 				this.setRefreshTimer();
@@ -437,6 +441,11 @@ small {
 
 .uiDarkMode #weather-box {
 	background-color: #000;
+}
+
+#weather-error {
+	color: #000;
+	text-align: center;
 }
 
 #weather-graph {

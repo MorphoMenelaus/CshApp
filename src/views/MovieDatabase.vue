@@ -544,10 +544,11 @@ export default {
 		this.dialog = document.getElementById("not-allowed");
 	},
 	created() {
-		this.eventBus.on("movieUpdated", () => {
+		this.eventBus.on("movieUpdated", (refresh = true) => {
 			this.currentComponent = null;
 			this.selectedMovie = null;
-			this.refreshMoviesWithFaves();
+			if (refresh)
+				this.refreshMoviesWithFaves();
 		});
 		this.eventBus.on("EscapeKeydown", () => {
 			this.currentComponent = null;
