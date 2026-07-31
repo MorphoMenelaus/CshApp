@@ -1,5 +1,5 @@
 /*!
- * CSH Classes and Utilities v0.0.2
+ * CSH Classes and Utilities v0.1.0
  * (c) 2026 Chris Hardwick
  */
 
@@ -161,6 +161,16 @@ function isObjNullOrEmpty(val) {
 	return !isObject || Object.keys(val).length === 0;
 }
 
+function dispatchEvent(name, payload = {}) {
+	// Custom window event with payload
+	const event = new CustomEvent(name, {
+		detail: payload,
+		bubbles: true,
+		cancelable: true
+	});
+	window.dispatchEvent(event);
+}
+
 async function refreshAuthTokenAsNeeded(appState, forceRefresh = false) {
 	// forceRefresh (optional argument) mostly implemented
 	// to check if tokens are valid at any time for any reason 
@@ -230,6 +240,7 @@ async function refreshAuthTokenAsNeeded(appState, forceRefresh = false) {
 }
 
 async function tokenCheck(appState) {
+	// Check if the refresh token is valid and is no more than a week old.
 	let serverResponse = {
 		code: null,
 		tokenValid: false,
@@ -268,6 +279,131 @@ async function tokenCheck(appState) {
 	} catch (error) {
 		console.error(error);
 		throw new TokenCheckError(`Error posting data: ${error}`);
+	}
+}
+
+async function accessTokenCheck(appState) {
+	// Check if the access token is valid and not expired.
+	let serverResponse = {
+		code: null,
+		tokenValid: false,
+		success: false,
+	}
+
+	if (!appState?.accessToken) {
+		throw new TokenCheckError("Invalid or missing arguments");
+	};
+
+	let body = {
+		accessToken: appState?.accessToken,
+	};
+
+	try {
+
+		let headerObj = new Headers();
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL('/api/auth/tokenexpired', window.location.origin);
+
+		let request = new Request(
+			requestUrl.toString(), {
+			method: 'POST',
+			headers: headerObj,
+			body: JSON.stringify(body)
+		});
+
+		let response = await fetch(request);
+		const data = await response.json();
+
+		serverResponse.code = data.code;
+		serverResponse.tokenValid = data.tokenValid;
+		serverResponse.success = data.success;
+		return serverResponse;
+	} catch (error) {
+		console.error(error);
+		throw new TokenCheckError(`Error posting data: ${error}`);
+	}
+}
+
+async function refreshAccessToken(appState) {
+
+	try {
+
+		let body = {
+			accessToken: appState?.accessToken,
+			refreshToken: appState?.refreshToken,
+		};
+
+		let headerObj = new Headers();
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL('/api/auth/refresh', window.location.origin);
+
+		let request = new Request(
+			requestUrl.toString(), {
+			method: 'POST',
+			headers: headerObj,
+			body: JSON.stringify(body)
+		});
+
+		const response = await fetch(request);
+		const data = await response.json();
+
+		if (data?.code === 403) {
+			dispatchEvent("forceLogout", data);
+		}
+
+		let accessToken = null;
+		if (data?.success) {
+			accessToken = data.authorization.accessToken;
+			let updateAppState = appState;
+			updateAppState.accessToken = data.authorization.accessToken;
+			updateAppState.accessTokenExpiration = data.authorization.accessTokenExpiration;
+			updateAppState.refreshToken = data.authorization.refreshToken;
+			updateAppState.isLoggedOn = true;
+			// Custom window event to update the appState of the parent App.vue
+			dispatchEvent("appStateChange", updateAppState);
+		} else {
+			accessToken = data;
+		}
+		return accessToken;
+	} catch (error) {
+		console.error(error);
+		throw new RefreshTokenError(`Error posting data: ${error}`);
+	} finally {
+		refreshTokenPromise = null;
+	}
+}
+
+let refreshTokenPromise = null;
+
+async function tokenInterceptFetch(request) {
+
+	const appState = JSON.parse(localStorage.getItem("cshApp")) || {};
+	if (isObjNullOrEmpty(appState)) {
+		throw new RefreshTokenError("Invalid or missing appState");
+	};
+
+	try {
+		let tokenCheck = await accessTokenCheck(appState);
+
+		let response = null;
+		if (tokenCheck.tokenValid) {
+			response = await fetch(request);
+		} else {
+
+			if (!refreshTokenPromise) {
+				refreshTokenPromise = refreshAccessToken(appState);
+			}
+
+			const newaccessToken = await refreshTokenPromise;
+
+			request.headers.set("Authorization", `Bearer ${newaccessToken}`);
+			response = await fetch(request);
+		}
+		return response;
+	} catch (error) {
+		// Refresh failed -> Force Logout
+		// handleLogout();
+		return Promise.reject(error);
 	}
 }
 
@@ -315,5 +451,8 @@ export {
 	sendAnalyticsEvent,
 	isObjNullOrEmpty,
 	refreshAuthTokenAsNeeded,
-	tokenCheck
+	tokenCheck,
+	accessTokenCheck,
+	refreshAccessToken,
+	tokenInterceptFetch
 }

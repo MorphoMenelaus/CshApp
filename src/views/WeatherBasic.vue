@@ -46,11 +46,11 @@
 				</div>
 				<div class="attribution">
 					<small>REST API weather data by
-						<a class="link" href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank">
+						<a href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank">
 							Open-Meteo.com
 						</a>&nbsp;|&nbsp;
-						<a class="link" href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE"
-							title="Read licence here" target="_blank">Licence here</a>
+						<a href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE" title="Read licence here"
+							target="_blank">Licence here</a>
 					</small>
 				</div>
 			</div>
@@ -194,10 +194,10 @@ export default {
 				let response = await fetch(request);
 				let data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				this.weatherData = data;
 				this.weatherData.forecastTimecode = new Date().getTime();

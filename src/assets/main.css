@@ -81,7 +81,7 @@ table {
 	font-size: .9em;
 }
 
-a,
+/* a, */
 .green {
 	text-decoration: none;
 	color: hsla(160, 100%, 37%, 1);
@@ -92,8 +92,13 @@ a,
 .link {
 	text-decoration: underline;
 	color: #4c88ff;
+	/* color: rgb(0, 0, 238); */
 	cursor: pointer;
 	user-select: none;
+}
+
+.link:visited {
+	color: purple;
 }
 
 .link:hover {

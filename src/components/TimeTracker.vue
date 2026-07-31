@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { Storage } from "@/dependencies/csh-libs.js";
+import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import { trackerModel } from "@/dependencies/models.js";
 
 export default {
@@ -95,14 +95,14 @@ export default {
 		async startTime() {
 			this.eventBus.emit("showHideLoader", true);
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			if (!this.description) {
 				this.serverStatus.message = "Description field is required";
@@ -140,13 +140,15 @@ export default {
 					body: JSON.stringify(body)
 				});
 
-				const response = await fetch(request);
+				// const response = await fetch(request);
+				// const data = await response.json();
+				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				if (data.code === 402) {
 					this.serverStatus.code = 402;
@@ -193,14 +195,14 @@ export default {
 		async stopTime() {
 			this.eventBus.emit("showHideLoader", true);
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			try {
 
@@ -221,13 +223,15 @@ export default {
 					body: JSON.stringify(body)
 				});
 
-				const response = await fetch(request);
+				// const response = await fetch(request);
+				// const data = await response.json();
+				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				if (data.code === 402) {
 					this.serverStatus.code = 402;

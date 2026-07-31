@@ -186,12 +186,23 @@ h2 {
 	font-size: 2em;
 }
 
-#charts-header h2 {
-	font-size: 1.8em;
-}
-
 h3 {
 	font-size: 1.5em;
+}
+
+#charts-header h2 {
+	font-size: 1.8em;
+	font-weight: bold;
+	cursor: pointer;
+	transition: color .25s ease-in-out;
+}
+
+.uiDarkMode #charts-header h2 {
+	font-weight: normal;
+}
+
+#charts-header h2:hover {
+	color: #4c88ff;
 }
 
 p {
@@ -290,15 +301,6 @@ p {
 	justify-content: space-around;
 	align-items: center;
 	width: 95%;
-}
-
-#charts-header h2 {
-	cursor: pointer;
-	transition: color .25s ease-in-out;
-}
-
-#charts-header h2:hover {
-	color: #4c88ff;
 }
 
 #latest-stocks {

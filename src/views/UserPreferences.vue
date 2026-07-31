@@ -139,6 +139,7 @@
 
 <script>
 import { onBeforeUnmount } from "vue";
+import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
 import DeleteUser from "@/components/DeleteUser.vue";
@@ -231,14 +232,14 @@ export default {
 				return;
 			}
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -256,13 +257,15 @@ export default {
 			});
 
 			try {
-				let response = await fetch(request);
+				// let response = await fetch(request);
+				// const data = await response.json();
+				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				if (data?.success)
 					this.usersList = data.users;
@@ -274,14 +277,14 @@ export default {
 		async getUser() {
 			this.eventBus.emit("showHideLoader", true);
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -299,14 +302,16 @@ export default {
 			});
 
 			try {
-				let response = await fetch(request);
 
+				// let response = await fetch(request);
+				// const data = await response.json();
+				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				if (data?.success)
 					this.populateFields(data.user);
@@ -320,14 +325,14 @@ export default {
 		async updateUser() {
 			this.eventBus.emit("showHideLoader", true);
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			let body = {
 				email: this.email,
@@ -356,13 +361,15 @@ export default {
 			});
 
 			try {
-				let response = await fetch(request);
+				// let response = await fetch(request);
+				// const data = await response.json();
+				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				if (data.success && this.user.userName === this.appState.userName) {
 					let updateAppState = this.appState;

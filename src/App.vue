@@ -100,6 +100,14 @@ export default {
 			this.appState = this.recall.get();
 			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		},
+		handleStateUpdateEvent(e) {
+			this.updateAppState(e.detail)
+		},
+		updateAppState(newState) {
+			this.appState = newState;
+			this.recall.save(this.appState);
+			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
+		},
 		async getServerVersion() {
 			try {
 				const response = await fetch('/api/serverInfo');
@@ -152,9 +160,12 @@ export default {
 			this.currentComponent = null;
 		});
 		this.eventBus.on("updateAppState", (payload) => {
-			this.appState = payload;
-			this.recall.save(this.appState);
-			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
+			this.updateAppState(payload);
+		});
+		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
+		window.addEventListener("forceLogout", (e) => {
+			this.eventBus.emit("updateStatus", e.detail);
+			this.eventBus.emit("forceLogout");
 		});
 		this.eventBus.on("registerUser", (payload) => {
 			this.currentComponent = payload.register ? "Register" : null;
