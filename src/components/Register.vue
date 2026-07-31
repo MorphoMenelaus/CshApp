@@ -116,10 +116,10 @@ export default {
 				let response = await fetch(request);
 				const data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;

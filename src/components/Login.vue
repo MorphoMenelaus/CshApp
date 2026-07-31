@@ -9,7 +9,7 @@
 			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify
 				Account</RouterLink>
 			<RouterLink v-if="appState?.permissions.verified" to="/userpreferences" title="User Preferences"
-				class="preferences">Preferences
+				class="preferences green">Preferences
 			</RouterLink>
 		</div>
 		<div v-else>

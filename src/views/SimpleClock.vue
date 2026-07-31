@@ -96,6 +96,8 @@
 </template>
 
 <script>
+import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+
 export default {
 	name: "SimpleClock",
 	props: {
@@ -160,14 +162,14 @@ export default {
 		async getClockLog() {
 			this.eventBus.emit("showHideLoader", true);
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -187,15 +189,18 @@ export default {
 			});
 
 			try {
-				let response = await fetch(request);
-				let data = await response.json();
+				// let response = await fetch(request);
+				// let data = await response.json();
+				const response = await tokenInterceptFetch(request);
+				const data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
-				this.eventLogList = data;
+				// this.eventLogList = data;
+				this.eventLogList = data?.clockLogs;
 
 			} catch (error) {
 				console.error('Error posting data:', error);
@@ -210,14 +215,14 @@ export default {
 		async logSimpleClock() {
 			this.eventBus.emit("showHideLoader", true);
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			let data;
 			try {
@@ -243,13 +248,13 @@ export default {
 					body: JSON.stringify(body)
 				});
 
-				const response = await fetch(request);
+				const response = await tokenInterceptFetch(request);
 				data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;

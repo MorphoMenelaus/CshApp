@@ -88,7 +88,7 @@
 
 <script>
 import { onBeforeUnmount } from "vue";
-import { Storage } from "@/dependencies/csh-libs.js";
+import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import { trackerModel } from "@/dependencies/models.js";
 import TimeTracker from "@/components/TimeTracker.vue";
 
@@ -138,14 +138,14 @@ export default {
 		async getCurrentTimeEntries() {
 			this.eventBus.emit("showHideLoader", true);
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -159,8 +159,10 @@ export default {
 			});
 
 			try {
-				let response = await fetch(request);
-				let data = await response.json();
+				// let response = await fetch(request);
+				// let data = await response.json();
+				const response = await tokenInterceptFetch(request);
+				const data = await response.json();
 
 				if (data.code === 402) {
 					this.serverStatus.code = 402;

@@ -5,11 +5,10 @@
 		<p>
 			This site is protected by reCAPTCHA and the Google
 			<strong>
-				<a class="link" title="Privacy Policy" target="_blank"
-					href="https://policies.google.com/privacy">Privacy Policy</a>
+				<a title="Privacy Policy" target="_blank" href="https://policies.google.com/privacy">Privacy Policy</a>
 			</strong> and
 			<strong>
-				<a class="link" title="Terms of Service" target="_blank" href="https://policies.google.com/terms">Terms
+				<a title="Terms of Service" target="_blank" href="https://policies.google.com/terms">Terms
 					of Service</a>
 			</strong> apply.
 		</p>
@@ -31,16 +30,4 @@ strong {
 	padding: 15px 30px;
 	width: fit-content;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

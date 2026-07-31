@@ -107,6 +107,8 @@
 </template>
 
 <script>
+import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+
 export default {
 	name: "EditMovieDetails",
 	props: {
@@ -149,14 +151,14 @@ export default {
 			this.eventBus.emit("showHideLoader", true);
 			this.disableBtn = true;
 
-			const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			if (!refreshResponse?.success) {
-				this.eventBus.emit("updateStatus", refreshResponse);
-				return;
-			} else if (refreshResponse?.code !== 304) {
-				this.eventBus.emit("updateAppState", refreshResponse.appState);
-			};
+			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
+			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
+			// if (!refreshResponse?.success) {
+			// 	this.eventBus.emit("updateStatus", refreshResponse);
+			// 	return;
+			// } else if (refreshResponse?.code !== 304) {
+			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
+			// };
 
 			let body = {
 				title: this.title,
@@ -190,13 +192,15 @@ export default {
 			});
 
 			try {
-				let response = await fetch(request);
+				// let response = await fetch(request);
+				// const data = await response.json();
+				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
-				}
+				// if (data?.code === 403) {
+				// 	this.eventBus.emit("updateStatus", data);
+				// 	this.eventBus.emit("forceLogout");
+				// }
 
 				if (data.success) {
 					this.eventBus.emit("movieUpdated");

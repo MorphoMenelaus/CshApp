@@ -375,6 +375,7 @@ h2 {
 
 #series {
 	margin-left: 10px;
+	font-weight: bold;
 }
 
 canvas#stocks-graph {
