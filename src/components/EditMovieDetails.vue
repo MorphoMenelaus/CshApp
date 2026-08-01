@@ -151,15 +151,6 @@ export default {
 			this.eventBus.emit("showHideLoader", true);
 			this.disableBtn = true;
 
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			// if (!refreshResponse?.success) {
-			// 	this.eventBus.emit("updateStatus", refreshResponse);
-			// 	return;
-			// } else if (refreshResponse?.code !== 304) {
-			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
-			// };
-
 			let body = {
 				title: this.title,
 				original_title: this.original_title,
@@ -192,15 +183,8 @@ export default {
 			});
 
 			try {
-				// let response = await fetch(request);
-				// const data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
-
-				// if (data?.code === 403) {
-				// 	this.eventBus.emit("updateStatus", data);
-				// 	this.eventBus.emit("forceLogout");
-				// }
 
 				if (data.success) {
 					this.eventBus.emit("movieUpdated");

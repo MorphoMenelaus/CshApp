@@ -118,6 +118,7 @@ button {
 	color: #fff;
 	padding: 5px 15px;
 	border-radius: 6px;
+	text-decoration: none;
 }
 
 .btn:hover {

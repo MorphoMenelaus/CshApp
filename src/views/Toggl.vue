@@ -64,15 +64,6 @@ export default {
 		async getUserData() {
 			this.eventBus.emit("showHideLoader", true);
 
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			// if (!refreshResponse?.success) {
-			// 	this.eventBus.emit("updateStatus", refreshResponse);
-			// 	return;
-			// } else if (refreshResponse?.code !== 304) {
-			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
-			// };
-
 			try {
 
 				let headerObj = new Headers();
@@ -115,15 +106,6 @@ export default {
 		},
 		async getProjects() {
 			this.eventBus.emit("showHideLoader", true);
-
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			// if (!refreshResponse?.success) {
-			// 	this.eventBus.emit("updateStatus", refreshResponse);
-			// 	return;
-			// } else if (refreshResponse?.code !== 304) {
-			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
-			// };
 
 			try {
 				let headerObj = new Headers();

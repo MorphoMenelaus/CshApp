@@ -133,15 +133,6 @@ export default {
 		async getBlogPosts() {
 			this.eventBus.emit("showHideLoader", true);
 
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			// if (!refreshResponse?.success) {
-			// 	this.eventBus.emit("updateStatus", refreshResponse);
-			// 	return;
-			// } else if (refreshResponse?.code !== 304) {
-			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
-			// };
-
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -164,15 +155,8 @@ export default {
 			});
 
 			try {
-				// let response = await fetch(request);
-				// let data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
-
-				// if (data?.code === 403) {
-				// 	this.eventBus.emit("updateStatus", data);
-				// 	this.eventBus.emit("forceLogout");
-				// }
 
 				this.blogList = data.posts;
 

@@ -274,14 +274,6 @@ export default {
 			this.currentComponent = "EditMovieDetails";
 		},
 		async setFavorite(movieId) {
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			// if (!refreshResponse?.success) {
-			// 	this.eventBus.emit("updateStatus", refreshResponse);
-			// 	return;
-			// } else if (refreshResponse?.code !== 304) {
-			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
-			// };
 
 			let body = {
 				userId: this.appState.user.userId,
@@ -301,15 +293,8 @@ export default {
 			});
 
 			try {
-				// let response = await fetch(request);
-				// const data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
-
-				// if (data?.code === 403) {
-				// 	this.eventBus.emit("updateStatus", data);
-				// 	this.eventBus.emit("forceLogout");
-				// }
 
 				if (data.success) {
 					this.eventBus.emit("favoriteUpdated");
@@ -326,15 +311,6 @@ export default {
 			}
 		},
 		async removeFavorite(movieId) {
-
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			// if (!refreshResponse?.success) {
-			// 	this.eventBus.emit("updateStatus", refreshResponse);
-			// 	return;
-			// } else if (refreshResponse?.code !== 304) {
-			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
-			// };
 
 			let body = {
 				movieId: movieId
@@ -353,16 +329,8 @@ export default {
 			});
 
 			try {
-				// let response = await fetch(request);
-				// const data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
-
-
-				// if (data?.code === 403) {
-				// 	this.eventBus.emit("updateStatus", data);
-				// 	this.eventBus.emit("forceLogout");
-				// }
 
 				if (data.success) {
 					this.eventBus.emit("favoriteUpdated");
@@ -383,15 +351,6 @@ export default {
 				return;
 			}
 
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			// if (!refreshResponse?.success) {
-			// 	this.eventBus.emit("updateStatus", refreshResponse);
-			// 	return;
-			// } else if (refreshResponse?.code !== 304) {
-			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
-			// };
-
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -408,15 +367,8 @@ export default {
 			});
 
 			try {
-				// let response = await fetch(request);
-				// let data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
-
-				// if (data?.code === 403) {
-				// 	this.eventBus.emit("updateStatus", data);
-				// 	this.eventBus.emit("forceLogout");
-				// }
 
 				this.favoritesList = data?.userFavorites || [];
 
@@ -430,15 +382,6 @@ export default {
 		},
 		async getMovieByFavorites() {
 			this.eventBus.emit("showHideLoader", true);
-
-			// const refreshResponse = await this.refreshAuthTokenAsNeeded(this.appState);
-			// if (refreshResponse?.code === 403) this.eventBus.emit("forceLogout");
-			// if (!refreshResponse?.success) {
-			// 	this.eventBus.emit("updateStatus", refreshResponse);
-			// 	return;
-			// } else if (refreshResponse?.code !== 304) {
-			// 	this.eventBus.emit("updateAppState", refreshResponse.appState);
-			// };
 
 			let body = {
 				movieIds: this.favoritesList
@@ -457,15 +400,8 @@ export default {
 			});
 
 			try {
-				// let response = await fetch(request);
-				// let data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
-
-				// if (data?.code === 403) {
-				// 	this.eventBus.emit("updateStatus", data);
-				// 	this.eventBus.emit("forceLogout");
-				// }
 
 				this.movieFavorites = data.movies;
 
@@ -506,10 +442,10 @@ export default {
 				let response = await fetch(request);
 				let data = await response.json();
 
-				// if (data?.code === 403) {
-				// 	this.eventBus.emit("updateStatus", data);
-				// 	this.eventBus.emit("forceLogout");
-				// }
+				if (data?.code === 403) {
+					this.eventBus.emit("updateStatus", data);
+					this.eventBus.emit("forceLogout");
+				}
 
 				this.movieList = data.movies;
 
@@ -563,7 +499,6 @@ export default {
 		this.eventBus.on("EscapeKeydown", () => {
 			this.currentComponent = null;
 			this.selectedMovie = null;
-			this.refreshMoviesWithFaves();
 		});
 		onBeforeUnmount(() => {
 			this.eventBus.off("movieUpdated");
