@@ -1,5 +1,5 @@
 /*!
- * CSH Classes and Utilities v0.1.0
+ * CSH Classes and Utilities v0.2.0
  * (c) 2026 Chris Hardwick
  */
 
@@ -171,82 +171,8 @@ function dispatchEvent(name, payload = {}) {
 	window.dispatchEvent(event);
 }
 
-async function refreshAuthTokenAsNeeded(appState, forceRefresh = false) {
-	// forceRefresh (optional argument) mostly implemented
-	// to check if tokens are valid at any time for any reason 
-	let serverResponse = {
-		code: null,
-		message: null,
-		success: true,
-	}
-
-	if (!appState) {
-		throw new RefreshTokenError("Invalid or missing appState");
-	};
-
-
-	// Server settings for Token expiration is 1h
-	// Give it 20 seconds of wiggle room on expire time (20000ms)
-	// Better to refresh a minute early than to cause a race condition error
-	let expireMS = appState?.accessTokenExpiration - 20000;
-	let currTime = new Date().getTime();
-	if (currTime < expireMS && !forceRefresh) {
-		serverResponse.code = 304;
-		serverResponse.message = "Access Token unchanged";
-		serverResponse.success = true;
-		return serverResponse;
-	}
-
-	let body = {
-		accessToken: appState?.accessToken,
-		refreshToken: appState?.refreshToken,
-	};
-
-	try {
-
-		let headerObj = new Headers();
-		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL('/api/auth/refresh', window.location.origin);
-
-		let request = new Request(
-			requestUrl.toString(), {
-			method: 'POST',
-			headers: headerObj,
-			body: JSON.stringify(body)
-		});
-
-		let response = await fetch(request);
-		const data = await response.json();
-
-		if (data?.success) {
-			let updateAppState = appState;
-			updateAppState.accessToken = data.authorization.accessToken;
-			updateAppState.accessTokenExpiration = data.authorization.accessTokenExpiration;
-			updateAppState.refreshToken = data.authorization.refreshToken;
-			updateAppState.isLoggedOn = true;
-
-			serverResponse.code = data.code;
-			serverResponse.message = data.message;
-			serverResponse.success = data.success;
-			serverResponse.appState = updateAppState;
-		} else {
-			serverResponse = { ...serverResponse, ...data };
-		}
-		return serverResponse;
-	} catch (error) {
-		console.error(error);
-		throw new RefreshTokenError(`Error posting data: ${error}`);
-	}
-}
-
 async function tokenCheck(appState) {
-	// Check if the refresh token is valid and is no more than a week old.
-	let serverResponse = {
-		code: null,
-		tokenValid: false,
-		success: false,
-	}
-
+	// Check if the refresh token is valid and is no older that the max allowed by the server.
 	if (!appState?.accessToken || !appState?.refreshToken) {
 		throw new TokenCheckError("Invalid or missing arguments");
 	};
@@ -272,9 +198,11 @@ async function tokenCheck(appState) {
 		let response = await fetch(request);
 		const data = await response.json();
 
-		serverResponse.code = data.code;
-		serverResponse.tokenValid = data.tokenValid;
-		serverResponse.success = data.success;
+		let serverResponse = {
+			code: data.code,
+			tokenValid: data.tokenValid,
+			success: data.success,
+		}
 		return serverResponse;
 	} catch (error) {
 		console.error(error);
@@ -284,12 +212,6 @@ async function tokenCheck(appState) {
 
 async function accessTokenCheck(appState) {
 	// Check if the access token is valid and not expired.
-	let serverResponse = {
-		code: null,
-		tokenValid: false,
-		success: false,
-	}
-
 	if (!appState?.accessToken) {
 		throw new TokenCheckError("Invalid or missing arguments");
 	};
@@ -314,9 +236,11 @@ async function accessTokenCheck(appState) {
 		let response = await fetch(request);
 		const data = await response.json();
 
-		serverResponse.code = data.code;
-		serverResponse.tokenValid = data.tokenValid;
-		serverResponse.success = data.success;
+		let serverResponse = {
+			code: data.code,
+			tokenValid: data.tokenValid,
+			success: data.success,
+		}
 		return serverResponse;
 	} catch (error) {
 		console.error(error);
@@ -327,7 +251,6 @@ async function accessTokenCheck(appState) {
 async function refreshAccessToken(appState) {
 
 	try {
-
 		let body = {
 			accessToken: appState?.accessToken,
 			refreshToken: appState?.refreshToken,
@@ -450,7 +373,6 @@ export {
 	isUTCtime,
 	sendAnalyticsEvent,
 	isObjNullOrEmpty,
-	refreshAuthTokenAsNeeded,
 	tokenCheck,
 	accessTokenCheck,
 	refreshAccessToken,

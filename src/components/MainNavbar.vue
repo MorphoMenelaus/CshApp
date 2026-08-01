@@ -156,6 +156,7 @@ export default {
 	color: #fff;
 	box-shadow: unset;
 	font-size: 1.75em;
+	text-decoration: none;
 }
 
 a.home-icon {
