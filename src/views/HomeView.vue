@@ -90,11 +90,11 @@ const showStockDetails = (id) => {
 				<h3>Web Application Developer | Makrö Gaming Studios</h3>
 				<p>
 					I developed a full suite of Single Page Applications using the Vue 3 framework to accompany the
-					video slots game application ecosystem for Makrö Gaming Studios. I placed a strong emphasis on
-					responsive clean design, interactivity and readability in order to present and effortlessly manage
-					potentially complex functionality and data. The apps consist of an Admin App, Cashier App, Player
-					App and Report App to facilitate all the behind-the-scenes functions and player facing needs in
-					order to support the game client and the site administrators mostly through REST API calls to the
+					video slots online game application ecosystem for Makrö Gaming Studios. I placed a strong emphasis
+					on responsive clean design, interactivity and readability in order to present and effortlessly
+					manage potentially complex functionality and data. The apps consist of an Admin App, Cashier App,
+					Player App and Report App to facilitate all the behind-the-scenes functions and player facing needs
+					in order to support the game client and the site administrators mostly through REST API calls to the
 					game server.
 				</p>
 				<p>

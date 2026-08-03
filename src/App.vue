@@ -34,7 +34,7 @@ import FooterMain from "@/components/FooterMain.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
-import { Storage } from "@/dependencies/csh-libs.js";
+import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
 
 
 export default {
@@ -100,8 +100,8 @@ export default {
 			this.appState = this.recall.get();
 			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		},
-		handleStateUpdateEvent(e) {
-			this.updateAppState(e.detail)
+		handleStateUpdateEvent() {
+			this.updateAppState(stateUpdateService.getState());
 		},
 		updateAppState(newState) {
 			this.appState = newState;
