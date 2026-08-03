@@ -209,6 +209,7 @@ export default {
 						data: extractedValues,
 						backgroundColor: this.CHART_COLORS.blue,
 						borderColor: this.CHART_COLORS.blue,
+						spanGaps: true,
 						fill: false,
 						yAxisID: "y1"
 					},

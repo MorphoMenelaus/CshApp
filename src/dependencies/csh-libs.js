@@ -1,5 +1,5 @@
 /*!
- * CSH Classes and Utilities v0.2.0
+ * CSH Classes and Utilities v0.2.1
  * (c) 2026 Chris Hardwick
  */
 
@@ -161,7 +161,7 @@ function isObjNullOrEmpty(val) {
 	return !isObject || Object.keys(val).length === 0;
 }
 
-function dispatchEvent(name, payload = {}) {
+function dispatchCustomEvent(name, payload = {}) {
 	// Custom window event with payload
 	const event = new CustomEvent(name, {
 		detail: payload,
@@ -169,6 +169,18 @@ function dispatchEvent(name, payload = {}) {
 		cancelable: true
 	});
 	window.dispatchEvent(event);
+}
+
+let appStateUpdate = "";
+const stateUpdateService = {
+	setState(state) {
+		appStateUpdate = state;
+		// Custom window event tells the parent App.vue to update the appState in the Vue instance
+		dispatchCustomEvent("appStateChange");
+	},
+	getState() {
+		return appStateUpdate;
+	}
 }
 
 async function tokenCheck(appState) {
@@ -271,7 +283,7 @@ async function refreshAccessToken(appState) {
 		const data = await response.json();
 
 		if (data?.code === 403) {
-			dispatchEvent("forceLogout", data);
+			dispatchCustomEvent("forceLogout", data);
 		}
 
 		let accessToken = null;
@@ -282,8 +294,7 @@ async function refreshAccessToken(appState) {
 			updateAppState.accessTokenExpiration = data.authorization.accessTokenExpiration;
 			updateAppState.refreshToken = data.authorization.refreshToken;
 			updateAppState.isLoggedOn = true;
-			// Custom window event to update the appState of the parent App.vue
-			dispatchEvent("appStateChange", updateAppState);
+			stateUpdateService.setState(updateAppState);
 		} else {
 			accessToken = data;
 		}
@@ -324,8 +335,7 @@ async function tokenInterceptFetch(request) {
 		}
 		return response;
 	} catch (error) {
-		// Refresh failed -> Force Logout
-		// handleLogout();
+		dispatchCustomEvent("forceLogout", error);
 		return Promise.reject(error);
 	}
 }
@@ -373,6 +383,7 @@ export {
 	isUTCtime,
 	sendAnalyticsEvent,
 	isObjNullOrEmpty,
+	stateUpdateService,
 	tokenCheck,
 	accessTokenCheck,
 	refreshAccessToken,
