@@ -56,14 +56,14 @@ const showStockDetails = (id) => {
 		<div id="main-home-layout">
 			<div id="title-block">
 				<div>
-					<h1 id="name-title" class="julius-sans">Chris Hardwick</h1>
+					<h1 id="name-title" class="julius-sans stroke">Chris Hardwick</h1>
 					<div class="tagline-box">
 						<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
 						<h3>Web Application Developer</h3>
 						<h3>Front-End Web Developer</h3>
 					</div>
 				</div>
-				<div id="skills-list">
+				<div id="skills-list" class="stroke">
 					<ul>
 						<li>Vue 3</li>
 						<li>Vuex</li>
