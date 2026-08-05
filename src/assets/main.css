@@ -81,6 +81,19 @@ table {
 	font-size: .9em;
 }
 
+.uiDarkMode .stroke,
+.text-stroke {
+	text-shadow:
+		1px 1px 0px #000,
+		-1px -1px 0px #000,
+		1px -1px 0px #000,
+		-1px 1px 0px #000;
+}
+
+.uiDarkMode .stroke {
+	color: #aaa;
+}
+
 /* a, */
 .green {
 	text-decoration: none;

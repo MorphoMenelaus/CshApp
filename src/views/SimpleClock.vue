@@ -138,7 +138,7 @@ export default {
 			charRemaining: 512,
 			eventType: "",
 			isWakeupEvent: 0,
-			notes: ""
+			notes: "",
 		};
 	},
 	watch: {

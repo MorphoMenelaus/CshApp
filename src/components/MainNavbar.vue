@@ -12,7 +12,8 @@
 			</div>
 		</div>
 		<Transition name="slide-down">
-			<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow">
+			<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow" @touchstart="handleTouchStart"
+				@touchend="handleTouchEnd">
 				<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="closeDialogs('home_icon')">
 					<img src="/favicon.ico" alt="CSH App">
 				</RouterLink>
@@ -55,7 +56,8 @@ export default {
 	},
 	data() {
 		return {
-			mobileMenuShow: false
+			mobileMenuShow: false,
+			startY: 0
 		};
 	},
 	watch: {
@@ -77,7 +79,18 @@ export default {
 		showHideNav() {
 			this.mobileMenuShow = this.mobileMenuShow ? false : true;
 			// this.mobileMenuShow = this.isMobile && this.mobileMenuShow ? false : true;
-		}
+		},
+		handleTouchStart(event) {
+			this.startY = event.touches[0].clientY;
+		},
+		handleTouchEnd(event) {
+			let endY = event.changedTouches[0].clientY;
+			let diff = this.startY - endY;
+
+			if (diff > 50) {
+				this.mobileMenuShow = false;
+			}
+		},
 	},
 	created() {
 		this.eventBus.on("closeMainNav", () => {
@@ -137,6 +150,7 @@ export default {
 	display: flex;
 	align-items: center;
 	font-size: 18px;
+	user-select: none;
 }
 
 .mobile .home-title {
