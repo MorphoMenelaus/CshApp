@@ -22,25 +22,26 @@
 				</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
-					to="/blog-reader" @click="closeDialogs('blog')" title="Blog">Blog
+					to="/blog-reader" @click="closeDialogs('blog')" title="Blog Reader">Blog
 				</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
 					to="/displayusers" @click="closeDialogs('users')" title="Display Users">Users
 				</RouterLink>
 				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs"
-					@click="closeDialogs('user_logs')" title="Display User">User
+					@click="closeDialogs('user_logs')" title="Display User Logs">User
 					Logs</RouterLink>
-				<RouterLink to="/resume" @click="closeDialogs('resume')">Resume</RouterLink>
+				<RouterLink to="/resume" @click="closeDialogs('resume')" title="Chris Hardwick Resume">Resume
+				</RouterLink>
 				<RouterLink to="/weather" @click="closeDialogs('weather')" title="Weather">Weather</RouterLink>
 				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/toggl"
-					@click="closeDialogs('toggl')" title="Toggl">Toggl
+					@click="closeDialogs('toggl')" title="Toggl Time Tracker">Toggl
 				</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
 					to="/simpleclock" @click="closeDialogs('simple_clock')" title="Simple Clock">Simple Clock
 				</RouterLink>
-				<RouterLink to="/about" @click="closeDialogs('about')">About</RouterLink>
+				<RouterLink to="/about" @click="closeDialogs('about')" title="About Chris Hardwick">About</RouterLink>
 			</nav>
 		</Transition>
 	</div>
