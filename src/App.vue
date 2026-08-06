@@ -1,5 +1,10 @@
 <template>
 
+	<div v-if="isMobileLandscape" class="rotate-warning">
+		<h2>For best user experience,<br />landscape view is not supported on mobile devices.</h2>
+		<p>Please rotate your mobile device to portrait view.</p>
+	</div>
+
 	<div v-if="!appState?.isLoggedOn || appState?.userName == 'guest'" id="dark-mode-check">
 		<label for="uiDarkMode" title="Toggle dark mode">Dark Mode</label>
 		<input id="uiDarkMode" title="Toggle dark mode" type="checkbox" v-model="uiDarkMode" />
@@ -63,8 +68,9 @@ export default {
 			guestLoginDoc: false,
 			currentComponent: null,
 			isMobile: window.innerWidth < 1024,
+			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 768,
 			windowWidth: window.innerWidth,
-			uiDarkMode: false
+			uiDarkMode: false,
 		};
 	},
 	watch: {
@@ -77,6 +83,9 @@ export default {
 		}
 	},
 	methods: {
+		checkOrientation() {
+			this.isMobileLandscape = screen.orientation.type.includes("landscape") && window.innerHeight < 768;
+		},
 		async initialSetup() {
 			this.getServerVersion();
 			this.recallAppState();
@@ -152,6 +161,7 @@ export default {
 		},
 	},
 	async created() {
+		this.checkOrientation();
 		this.initialSetup();
 		this.eventBus.on("initialSetup", () => {
 			this.initialSetup();
@@ -176,6 +186,7 @@ export default {
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
 			this.windowWidth = window.innerWidth;
+			this.checkOrientation();
 		});
 		window.addEventListener("keydown", (down) => {
 			if (down.key === "Escape")
@@ -191,6 +202,7 @@ export default {
 				this.recallAppState();
 			}
 		});
+		screen.orientation.addEventListener("change", this.checkOrientation);
 	},
 	mounted() {
 	},
@@ -269,6 +281,20 @@ nav a {
 
 nav a:first-of-type {
 	border: 0;
+}
+
+.rotate-warning {
+	position: fixed;
+	inset: 0;
+	background: #000;
+	color: #fff;
+	z-index: 999999;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 15px;
 }
 
 @media (min-width: 1024px) {

@@ -22,9 +22,9 @@ const scrollToId = (id) => {
 	const element = document.getElementById(id)
 	if (element) {
 		element.scrollIntoView({
-			behavior: "smooth", // "auto" (instant) or "smooth"
-			block: "start",     // Vertically aligns to: "start", "center", "end", or "nearest"
-			inline: "nearest"   // Horizontally aligns to: "start", "center", "end", or "nearest"
+			behavior: "smooth",
+			block: "start",
+			inline: "nearest"
 		});
 	}
 }
