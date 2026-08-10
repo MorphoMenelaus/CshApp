@@ -37,6 +37,7 @@
 							<div class="spinner-pulse"></div>
 						</div>
 					</Transition>
+					<span class="mobile-message" v-if="isMobile">Tap graph for details</span>
 					<canvas id="weather-graph" v-if="!weatherData?.error"></canvas>
 					<div v-else id="weather-error">
 						<h1>Weather service API not responding.</h1>
@@ -121,7 +122,7 @@ export default {
 				{ text: "5 Day", value: 5 },
 				{ text: "7 Day", value: 7 },
 			],
-			forecastDays: this.isMobile ? 1 : 7,
+			forecastDays: this.isMobile ? 3 : 7,
 			forecastDayText: "",
 			dataSet: [],
 			weatherData: {},
@@ -254,37 +255,29 @@ export default {
 						yAxisID: "y1",
 						order: 3
 					},
+					{
+						type: 'line',
+						label: 'Precip. Probability',
+						data: precipProbData,
+						backgroundColor: this.CHART_COLORS.green,
+						borderColor: this.CHART_COLORS.green,
+						fill: false,
+						tension: 0.4,
+						yAxisID: "y2",
+						order: 2
+					},
+					{
+						type: 'bar',
+						label: 'Precipitation Inches',
+						data: precipitation,
+						backgroundColor: this.CHART_COLORS.purple,
+						borderColor: this.CHART_COLORS.purple,
+						fill: false,
+						yAxisID: "y3",
+						order: 1
+					},
 				]
 			};
-
-			// dataSetsExtended conditionally added. Added when windowWidth is big enought.
-			const dataSetsExtended = [
-				{
-					type: 'line',
-					label: 'Precip. Probability',
-					data: precipProbData,
-					backgroundColor: this.CHART_COLORS.green,
-					borderColor: this.CHART_COLORS.green,
-					fill: false,
-					tension: 0.4,
-					yAxisID: "y2",
-					order: 2
-				},
-				{
-					type: 'bar',
-					label: 'Precipitation Inches',
-					data: precipitation,
-					backgroundColor: this.CHART_COLORS.purple,
-					borderColor: this.CHART_COLORS.purple,
-					fill: false,
-					yAxisID: "y3",
-					order: 1
-				},
-			];
-
-			if (!this.isMobile) {
-				data.datasets = [...data.datasets, ...dataSetsExtended];
-			}
 
 			const chartConfig = {
 				// type: 'line',
@@ -318,7 +311,7 @@ export default {
 							},
 						},
 						y1: {
-							display: true,
+							display: this.isMobile ? false : true,
 							title: {
 								display: true,
 								text: 'Temperature °F',
@@ -534,6 +527,20 @@ small span {
 
 .spinner-pulse:after {
 	left: 40px;
+}
+
+.mobile-message {
+	display: grid;
+	justify-content: center;
+	margin: 0 auto 15px;
+	padding: 0px 10px;
+	width: fit-content;
+	font-weight: 500;
+	font-size: .8em;
+	text-transform: uppercase;
+	background: #92bdff;
+	border-radius: 8px;
+	border: 1px #b1b1b1 solid;
 }
 
 @media (max-width: 767px) {

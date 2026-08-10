@@ -8,7 +8,7 @@
 			</div>
 
 			<div class="btn-container top">
-				<a class="btn" href="/pdf/ChrisHardwickResume2026-nc.pdf" title="Download Chris Hardwick Resume PDF"
+				<a class="btn" href="/pdf/ChrisHardwickResume2026-08nc.pdf" title="Download Chris Hardwick Resume PDF"
 					download="ChrisHardwickResume2026.pdf" @click="sendAnalyticsEvent('download', 'resume_link')">
 					Download PDF
 				</a>
