@@ -1,6 +1,6 @@
 <template>
 
-	<div v-if="isMobileLandscape" class="rotate-warning">
+	<div v-if="isMobileLandscape" class="rotate-warning background-img">
 		<h2>For best user experience,<br />landscape view is not supported on mobile devices.</h2>
 		<p>Please rotate your mobile device to portrait view.</p>
 	</div>
@@ -71,6 +71,9 @@ export default {
 			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 768,
 			windowWidth: window.innerWidth,
 			uiDarkMode: false,
+			isHidden: false,
+			lastScrollTop: 0,
+			threshold: 50
 		};
 	},
 	watch: {
@@ -159,6 +162,20 @@ export default {
 				console.error('Error reading data:', error);
 			}
 		},
+		handleScroll(e) {
+			// Not implemented yet.
+			// Will require some layout and CSS changes
+			const currentScrollTop = e.target.scrollTop;
+
+			if (Math.abs(currentScrollTop - this.lastScrollTop) <= this.threshold) return;
+
+			if (currentScrollTop > this.lastScrollTop && currentScrollTop > this.threshold) {
+				this.isHidden = true; // Scrolling down
+			} else {
+				this.isHidden = false; // Scrolling up
+			}
+			this.lastScrollTop = currentScrollTop;
+		},
 	},
 	async created() {
 		this.checkOrientation();
@@ -205,6 +222,8 @@ export default {
 		screen.orientation.addEventListener("change", this.checkOrientation);
 	},
 	mounted() {
+		// let app = document.getElementById("app");
+		// app.addEventListener("scroll", this.handleScroll, { passive: true });
 	},
 };
 </script>
@@ -286,7 +305,7 @@ nav a:first-of-type {
 .rotate-warning {
 	position: fixed;
 	inset: 0;
-	background: #000;
+	background-color: #1a1a1a;
 	color: #fff;
 	z-index: 999999;
 	display: flex;
@@ -295,6 +314,7 @@ nav a:first-of-type {
 	justify-content: center;
 	text-align: center;
 	padding: 15px;
+	background-position-y: top;
 }
 
 @media (min-width: 1024px) {

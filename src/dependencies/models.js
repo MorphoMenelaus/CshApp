@@ -15,6 +15,26 @@ const trackerModel = {
 	pid: null
 }
 
+const candidateProfile = {
+	id: Number,
+	name: String,
+	title: String,
+	location: String,
+	email: String,
+	phone: String,
+	websiteA: String,
+	websiteB: String,
+	websiteC: String,
+	github: String,
+	linkedin: String,
+	summary: String,
+	status: String,
+	experienceStart: Date,
+	featuredQuote: String,
+	skills: Array
+}
+
 export {
-	trackerModel
+	trackerModel,
+	candidateProfile
 }

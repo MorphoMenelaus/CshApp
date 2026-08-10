@@ -17,8 +17,9 @@
 				</select>
 			</div>
 			<div class="btn-group">
-				<button v-for="(item, index) in dateRanges" :key="index" :value="item.value" class="btn"
-					@click="selectDateRange(item)" :class="selectedDate.value == item.value ? 'selected' : ''">
+				<button v-for="(item, index) in dateRanges" :key="index" :value="item.value" :title="item.title"
+					class="btn" @click="selectDateRange(item)"
+					:class="selectedDate.value == item.value ? 'selected' : ''">
 					{{ item.text }}</button>
 			</div>
 		</div>
@@ -100,12 +101,12 @@ export default {
 			startMin: this.endDate,
 			endMax: this.startDate,
 			dateRanges: [
-				{ text: "30 Day", value: 1 },
-				{ text: "60 Day", value: 2 },
-				{ text: "90 Day", value: 3 },
-				{ text: "6 Mo.", value: 6 },
-				{ text: "12 Mo.", value: 12 },
-				{ text: "24 Mo.", value: 24 }
+				{ title: "Date Ramge: 30 Day", text: "30 Day", value: 1 },
+				{ title: "Date Ramge: 60 Day", text: "60 Day", value: 2 },
+				{ title: "Date Ramge: 90 Day", text: "90 Day", value: 3 },
+				{ title: "Date Ramge: 6 Month", text: "6 Mo.", value: 6 },
+				{ title: "Date Ramge: 1 Year", text: "12 Mo.", value: 12 },
+				{ title: "Date Ramge: 2 Year", text: "24 Mo.", value: 24 }
 			],
 			selectedDate: this.isMobile ? { text: "60 Day", value: 2 } : { text: "6 Mo.", value: 6 },
 			limit: 500,

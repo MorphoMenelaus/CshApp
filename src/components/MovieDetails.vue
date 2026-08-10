@@ -93,7 +93,7 @@ p {
 
 .card {
 	display: flex;
-	width: 80%;
+	width: 90%;
 	flex-flow: row;
 	margin: auto;
 	background-color: #c7c7c7;
@@ -151,5 +151,29 @@ img.poster {
 	width: 100%;
 	justify-content: center;
 	margin: 30px auto 15px;
+}
+
+@media (min-width: 768px) {
+	.card {
+		width: 80%;
+	}
+}
+
+@media (min-width: 992px) {
+	.card {
+		width: 70%;
+	}
+}
+
+@media (min-width: 1200px) {
+	.card {
+		width: 60%;
+	}
+}
+
+@media (min-width: 2200px) {
+	.card {
+		width: 50%;
+	}
 }
 </style>

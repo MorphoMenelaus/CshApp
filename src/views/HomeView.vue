@@ -72,6 +72,7 @@ const showStockDetails = (id) => {
 						<li>HTML5</li>
 						<li>CSS3</li>
 						<li>JavaScript ES6</li>
+						<li>Agile Development</li>
 					</ul>
 					<ul>
 						<li>ChartJS</li>
@@ -107,7 +108,8 @@ const showStockDetails = (id) => {
 						:
 						'More'
 					}} Details <span class="arrow" :class="lessText ? 'rotated' : ''">▽</span></Button>
-					<RouterLink to="/resume" class="btn linkedin">Full Resume</RouterLink>
+					<RouterLink to="/resume" class="btn linkedin">{{ isMobile ? 'Full' : 'Chris Hardwick' }} Resume
+					</RouterLink>
 					<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
 						title="Chris Hardwick | Linkedin Profile" target="_blank"
 						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
@@ -130,10 +132,10 @@ const showStockDetails = (id) => {
 			<div id="stocks-container">
 				<div id="charts-header">
 					<h2 class="julius-sans" @click="showStockDetails('latest-stocks')"
-						:title="`${showStocks ? 'Close' : 'Open'} Market Summary Charts`">Market Summary Charts</h2>
+						:title="`${showStocks ? 'Close' : 'Open'} Market Summary Graphs`">Market Summary Graphs</h2>
 					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>
 					<Button id="stocks-anchor" class="btn" @click="showStockDetails('latest-stocks')">
-						{{ showStocks ? 'Close' : 'Open' }} Market Chart
+						{{ showStocks ? 'Close' : 'Open' }} Market Graphs
 						<span :class="showStocks ? 'rotated' : ''">▽</span>
 					</Button>
 				</div>
