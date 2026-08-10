@@ -279,35 +279,6 @@ export default {
 				]
 			};
 
-			// dataSetsExtended conditionally added. Added when windowWidth is big enought.
-			// const dataSetsExtended = [
-			// 	{
-			// 		type: 'line',
-			// 		label: 'Precip. Probability',
-			// 		data: precipProbData,
-			// 		backgroundColor: this.CHART_COLORS.green,
-			// 		borderColor: this.CHART_COLORS.green,
-			// 		fill: false,
-			// 		tension: 0.4,
-			// 		yAxisID: "y2",
-			// 		order: 2
-			// 	},
-			// 	{
-			// 		type: 'bar',
-			// 		label: 'Precipitation Inches',
-			// 		data: precipitation,
-			// 		backgroundColor: this.CHART_COLORS.purple,
-			// 		borderColor: this.CHART_COLORS.purple,
-			// 		fill: false,
-			// 		yAxisID: "y3",
-			// 		order: 1
-			// 	},
-			// ];
-
-			// if (!this.isMobile) {
-			// 	data.datasets = [...data.datasets, ...dataSetsExtended];
-			// }
-
 			const chartConfig = {
 				// type: 'line',
 				data: data,
