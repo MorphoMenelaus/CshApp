@@ -1,31 +1,28 @@
 <template>
 
-	<div>
-		<h1 class="not-found centered">404</h1>
-		<h2 class="centered">The page that was requested was not found.</h2>
-		<h3 class="centered">
-			<RouterLink to="/" title="Home">Take Me Home!</RouterLink>
+	<div class="centered">
+		<h1>404</h1>
+		<h2>Page Not Found</h2>
+		<h3>
+			<p>The link may be broken, or the file has been moved.</p>
+			<router-link to="/" class="btn">Return to Homepage</router-link>
 		</h3>
 	</div>
 
 </template>
 
-<script>
-export default {
-	name: "NotFound",
-	props: {},
-	components: {},
-	data() {
-		return {};
-	},
-};
-</script>
-
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1.not-found {
+h1 {
 	font-size: 4em;
+}
+
+h2 {
+	font-size: 1.8rem;
+}
+
+p {
+	margin-bottom: 20px;
 }
 
 .centered {

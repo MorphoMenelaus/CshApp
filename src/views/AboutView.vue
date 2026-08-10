@@ -1,3 +1,18 @@
+<script setup>
+import { inject } from 'vue';
+import Disclaimers from "../components/Disclaimers.vue";
+
+const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
+	console.warn('Global function not found! sendAnalyticsEvent()');
+});
+const eventBus = inject('eventBus', () => {
+	console.warn('Global function not found! eventBus');
+});
+
+const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
+
+</script>
+
 <template>
 	<div>
 		<div id="about">
@@ -36,25 +51,6 @@
 		</div>
 	</div>
 </template>
-
-<script>
-import Disclaimers from "../components/Disclaimers.vue";
-
-export default {
-	components: {
-		Disclaimers
-	},
-	data() {
-		return {
-			copyright: `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`
-		}
-	},
-	mounted() {
-	},
-	methods: {
-	},
-};
-</script>
 
 <style scoped>
 #about {
