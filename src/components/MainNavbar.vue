@@ -53,7 +53,7 @@ export default {
 	name: "MainNavbar",
 	props: {
 		appState: Object,
-		isMobile: Boolean
+		isMobile: Boolean,
 	},
 	data() {
 		return {

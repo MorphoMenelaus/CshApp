@@ -27,8 +27,7 @@
 					blend together perfectly with coding precision to create memorable user interfaces.</p>
 				<p>
 					Chris' focus on teamwork and communication makes him a valuable asset for any team wanting to design
-					and complete a project beautifully or can work independently as required.
-				</p>
+					and complete a project beautifully or can work independently as required.</p>
 			</div>
 			<Disclaimers />
 		</div>

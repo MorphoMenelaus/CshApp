@@ -15,6 +15,20 @@
 	</div>
 </template>
 
+<script>
+export default {
+	name: "Disclaimers",
+	data() {
+		return {
+			aiDisclaimer: `Hi! I am Chris' AI assistant, powered by Google Gemini. 
+			I am an experimental chatbot trained to answer questions about Chris' career, skills, and interests. 
+			While I strive for accuracy, AI can occasionally hallucinate or make mistakes. 
+			Please do not share any sensitive personal or confidential information in this chat.`
+		};
+	},
+}
+</script>
+
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 strong {

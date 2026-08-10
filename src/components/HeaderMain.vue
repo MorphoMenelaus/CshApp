@@ -42,7 +42,7 @@ export default {
 	props: {
 		appState: Object,
 		serverVersion: String,
-		isMobile: Boolean
+		isMobile: Boolean,
 	},
 	data() {
 		return {
