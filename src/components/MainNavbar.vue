@@ -49,6 +49,8 @@
 </template>
 
 <script>
+import { inject } from "vue";
+
 export default {
 	name: "MainNavbar",
 	props: {
@@ -57,6 +59,8 @@ export default {
 	},
 	data() {
 		return {
+			loginShowEvent: inject("loginShow"),
+			registerUser: inject('registerUser'),
 			mobileMenuShow: false,
 			startY: 0
 		};
@@ -65,15 +69,9 @@ export default {
 	},
 	methods: {
 		closeDialogs(link_name = 'unkown') {
-
 			this.sendAnalyticsEvent('main_nav', link_name);
-
-			// Control the state of both components
-			let payload = {
-				register: false,
-				login: false
-			}
-			this.eventBus.emit("registerUser", payload);
+			this.loginShowEvent(false);
+			this.registerUser(false);
 			this.eventBus.emit("contactEmail", false);
 			this.mobileMenuShow = false;
 		},

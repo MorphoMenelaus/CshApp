@@ -43,7 +43,6 @@ const timeOptions = {
 	second: "2-digit"
 }
 
-// Global variables
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
 app.config.globalProperties.baseUrl = baseUrl;
 app.config.globalProperties.eventBus = eventBus;

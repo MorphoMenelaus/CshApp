@@ -1,5 +1,9 @@
 <template>
 
+	<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
+		<div class="spinner-comet"></div>
+	</div>
+
 	<div v-if="isMobileLandscape" class="rotate-warning background-img">
 		<h2>For best user experience,<br />landscape view is not supported on mobile devices.</h2>
 		<p>Please rotate your mobile device to portrait view.</p>
@@ -15,9 +19,9 @@
 				title="Click to register">Click to register</span>.<br />Or login with username "guest"</span>
 	</div>
 
-	<HeaderMain :appState="appState" :isMobile="isMobile" />
+	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus" />
 
-	<Login :appState="appState" />
+	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" />
 
 	<RouterView id="view" :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth"
 		:class="isMobile ? 'mobile' : ''" />
@@ -33,14 +37,13 @@
 <script>
 // @ is an alias to /src
 // import { RouterLink, RouterView } from "vue-router";
-// import { inject } from 'vue';
+import { provide, inject } from 'vue';
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
 import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
-
 
 export default {
 	// setup() {
@@ -59,6 +62,10 @@ export default {
 	},
 	data() {
 		return {
+			// sendUpdateStatus: inject("updateStatus"),
+			forceLogout: inject('forceLogout'),
+			sharedUpdateStatus: {},
+			forceLogoutEvent: false,
 			serverStatus: Object.assign({}, this.appNotify),
 			recall: new Storage(),
 			body: document.getElementsByTagName('body'),
@@ -73,7 +80,9 @@ export default {
 			uiDarkMode: false,
 			isHidden: false,
 			lastScrollTop: 0,
-			threshold: 50
+			threshold: 50,
+			showHideLoader: false,
+			loginShow: false,
 		};
 	},
 	watch: {
@@ -94,19 +103,24 @@ export default {
 			this.recallAppState();
 			if (this.appState?.accessToken) {
 				let checkTokens = await this.tokenCheck(this.appState);
-				if (!checkTokens?.tokenValid) this.eventBus.emit("forceLogout");
+				if (!checkTokens?.tokenValid) {
+					let res = {
+						code: 403,
+						message: "Session Expired. Please login again.",
+						success: false
+					};
+					this.sharedUpdateStatus = res;
+					this.forceLogoutEvent = true;
+					// this.forceLogout();
+				}
 			}
 			// The order of this getAppRolesData() call is important.
 			// The recall and access token check should be done first.
 			this.getAppRolesData();
 		},
 		showRegisterUserComponent(login = false, register = false) {
-			// Control the state of both components
-			let payload = {
-				register: register,
-				login: login
-			}
-			this.eventBus.emit("registerUser", payload);
+			this.currentComponent = register ? "Register" : null
+			this.loginShow = login;
 		},
 		recallAppState() {
 			this.appState = this.recall.get();
@@ -178,11 +192,21 @@ export default {
 		},
 	},
 	async created() {
+
+		/* BEGIN NEW EVENT HANDLING SECTION */
+		provide("forceLogout", (bool = true) => this.forceLogoutEvent = bool);
+		provide("updateAppState", this.updateAppState);
+		provide("initialSetup", this.initialSetup);
+		provide("showHideLoader", (bool) => this.showHideLoader = bool);
+		provide("loginShow", (bool) => this.loginShow = bool);
+		provide("registerUser", (bool) => this.currentComponent = bool ? "Register" : null);
+		provide("sendUpdateStatus", (payload) => {
+			this.sharedUpdateStatus = payload;
+		});
+		/* END NEW EVENT HANDLING SECTION */
+
 		this.checkOrientation();
 		this.initialSetup();
-		this.eventBus.on("initialSetup", () => {
-			this.initialSetup();
-		});
 		this.eventBus.on("EscapeKeydown", () => {
 			this.currentComponent = null;
 		});
@@ -192,10 +216,8 @@ export default {
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
 		window.addEventListener("forceLogout", (e) => {
 			this.eventBus.emit("updateStatus", e.detail);
-			this.eventBus.emit("forceLogout");
-		});
-		this.eventBus.on("registerUser", (payload) => {
-			this.currentComponent = payload.register ? "Register" : null;
+			// this.eventBus.emit("forceLogout");
+			this.forceLogout();
 		});
 		this.eventBus.on("contactEmail", (bool) => {
 			this.currentComponent = bool ? "ContactForm" : null;
@@ -315,6 +337,35 @@ nav a:first-of-type {
 	text-align: center;
 	padding: 15px;
 	background-position-y: top;
+}
+
+#loading-icon {
+	display: none;
+	align-content: center;
+	justify-content: center;
+	position: fixed;
+	top: 94px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100vw;
+	background-color: rgb(0 0 0 / 50%);
+	backdrop-filter: blur(5px);
+	transition: background-color .3 ease-in-out;
+	z-index: 15000;
+}
+
+.loader-icon {
+	height: 48px;
+	width: 48px;
+	border: 3px solid;
+	border-radius: 100%;
+	border-color: red white blue black;
+	animation: loader 0.5s linear infinite;
+}
+
+#loading-icon.loading {
+	display: grid;
 }
 
 @media (min-width: 1024px) {

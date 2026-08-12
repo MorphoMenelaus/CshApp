@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { inject } from "vue";
+
 export default {
 	name: "Verify",
 	props: {
@@ -36,6 +38,7 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
 			appNotify: Object.assign({}, this.appNotify),
 			userName: "",
 			verificationCode: "",
@@ -76,7 +79,8 @@ export default {
 
 				if (dataObj?.code === 403) {
 					this.eventBus.emit("updateStatus", dataObj);
-					this.eventBus.emit("forceLogout");
+					this.forceLogout();
+					// this.eventBus.emit("forceLogout");
 				}
 
 				if (dataObj?.success) {
@@ -119,7 +123,8 @@ export default {
 
 				if (dataObj?.code === 403) {
 					this.eventBus.emit("updateStatus", dataObj);
-					this.eventBus.emit("forceLogout");
+					this.forceLogout();
+					// this.eventBus.emit("forceLogout");
 				}
 
 				if (dataObj?.success) {

@@ -1,8 +1,9 @@
 <template>
 	<footer>
 		<div id="serverInfo">
-			<small class="version" v-if="serverVersion">Server Version: {{ serverVersion }}</small>
-			<small class="appVersion" v-if="this.appCurrentVersion">App Version: {{ this.appCurrentVersion }}</small>
+			<small class="version" v-if="serverVersion">Server Version: <span>{{ serverVersion }}</span></small>
+			<small class="appVersion" v-if="this.appCurrentVersion">App Version: <span>{{ this.appCurrentVersion
+			}}</span></small>
 		</div>
 		<div class="center-flex">
 			<h3 id="name-contact" title="Contact Me" @click="openThisModalCloseOthers()">{{ isMobile ? 'CSH' :
@@ -15,26 +16,28 @@
 </template>
 
 <script>
+import { inject } from "vue";
+
 export default {
 	name: 'FooterMain',
 	props: {
 		serverVersion: String,
 		isMobile: Boolean
 	},
+	data() {
+		return {
+			loginShowEvent: inject("loginShow"),
+			registerUser: inject('registerUser'),
+		}
+	},
 	methods: {
 		openThisModalCloseOthers() {
-			// Control the state of both components
-			let payload = {
-				register: false,
-				login: false
-			}
-			this.eventBus.emit("registerUser", payload);
+			this.loginShowEvent(false);
+			this.registerUser(false);
 			this.eventBus.emit("contactEmail", true);
 			this.sendAnalyticsEvent('contact_form_footer', 'contact_modal');
 		}
 	},
-	mounted() {
-	}
 }
 </script>
 
@@ -61,11 +64,15 @@ h3 {
 	position: absolute;
 	display: flex;
 	flex-direction: column;
-	top: 5px;
+	top: 0;
 	left: 0;
 	padding: 5px 15px;
 	z-index: 500;
 	font-size: 18px;
+}
+
+#serverInfo span {
+	user-select: all;
 }
 
 .btn-container {

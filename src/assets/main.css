@@ -120,6 +120,12 @@ table {
 	color: #ff6600;
 }
 
+button,
+.btn {
+	border: 1px rgb(128 128 128) solid !important;
+	box-shadow: none !important;
+}
+
 button.close-modal {
 	font-size: 1.2em;
 	width: 36px;

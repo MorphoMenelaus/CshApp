@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, inject } from 'vue';
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -42,6 +42,7 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			currentPassword: "",
 			password: "",
@@ -99,8 +100,8 @@ export default {
 					this.eventBus.emit("changePassword", true);
 
 				this.errState = data?.success;
-
-				this.eventBus.emit("forceLogout");
+				this.forceLogout();
+				// this.eventBus.emit("forceLogout");
 
 			} catch (error) {
 				console.error('Error posting data:', error);

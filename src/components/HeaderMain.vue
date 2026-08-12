@@ -11,9 +11,9 @@
 			</div>
 		</div>
 
-		<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
+		<!-- <div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
 			<div class="spinner-comet"></div>
-		</div>
+		</div> -->
 
 		<div id="clock" v-if="!isMobile">
 			<div id="time-container">
@@ -43,6 +43,7 @@ export default {
 		appState: Object,
 		serverVersion: String,
 		isMobile: Boolean,
+		sharedUpdateStatus: Object,
 	},
 	data() {
 		return {
@@ -52,14 +53,34 @@ export default {
 			dateLocal: "",
 			timeLocal: "",
 			messageTimeout: 0,
-			showHideLoader: false
 		};
 	},
 	watch: {
+		sharedUpdateStatus: {
+			handler(newVal) {
+				if (newVal && Object.keys(newVal).length > 0) {
+					this.handleUpdateStatus(newVal);
+				}
+			},
+			deep: true,
+		},
 	},
 	created() {
 		this.updateDateTime();
-		this.eventBus.on("updateStatus", (payload) => {
+		// this.eventBus.on("updateStatus", (payload) => {
+		// 	this.handleUpdateStatus(payload);
+		// });
+		// this.eventBus.on("showHideLoader", payload => {
+		// 	this.showHideLoader = payload;
+		// });
+	},
+	mounted() {
+		setInterval(() => {
+			this.updateDateTime();
+		}, 1000);
+	},
+	methods: {
+		handleUpdateStatus(payload) {
 			let notification = Object.assign({}, this.appNotify);
 			notification.code = payload?.code;
 			notification.message = payload?.message;
@@ -68,17 +89,7 @@ export default {
 			notification.expireTime = date.getTime() + 10000;
 			notification.eventTimeDisplay = date.toLocaleTimeString();
 			this.statusArray.push(notification);
-		});
-		this.eventBus.on("showHideLoader", payload => {
-			this.showHideLoader = payload;
-		});
-	},
-	mounted() {
-		setInterval(() => {
-			this.updateDateTime();
-		}, 1000);
-	},
-	methods: {
+		},
 		updateDateTime() {
 			let date = new Date();
 			this.dayLocal = date.toLocaleDateString('en-US', { weekday: 'long' });
@@ -104,7 +115,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 header {
 	color: var(--color-text);
@@ -188,7 +198,7 @@ h1 {
 	background-color: #aaa;
 }
 
-#loading-icon {
+/* #loading-icon {
 	display: none;
 	align-content: center;
 	justify-content: center;
@@ -198,7 +208,6 @@ h1 {
 	right: 0;
 	bottom: 0;
 	width: 100vw;
-	/* height: calc(100vh - 140px); */
 	background-color: rgb(0 0 0 / 50%);
 	transition: background-color .3 ease-in-out;
 	z-index: 10000;
@@ -215,7 +224,7 @@ h1 {
 
 #loading-icon.loading {
 	display: grid;
-}
+} */
 
 @keyframes loader {
 	from {

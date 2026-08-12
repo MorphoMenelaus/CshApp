@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
+import { onBeforeUnmount, inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
@@ -157,6 +157,7 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			admin: this.appState?.permissions?.admin,
 			userId: this.appState?.user?.userId,
@@ -350,7 +351,8 @@ export default {
 		this.getUser();
 		this.eventBus.on("UserDeleted", () => {
 			this.currentComponent = null;
-			this.eventBus.emit("forceLogout");
+			this.forceLogout();
+			// this.eventBus.emit("forceLogout");
 		});
 		this.eventBus.on("cancelDeleteUser", () => {
 			this.currentComponent = null;

@@ -62,6 +62,7 @@
 
 <script>
 // @ is an alias to /src
+import { inject } from 'vue';
 import ResumeTable from "@/components/ResumeTable.vue";
 import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
 import skills from "@/dependencies/skills.json";
@@ -78,6 +79,7 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			resumeArray: [],
 			allDutiesArray: [],
@@ -148,7 +150,8 @@ export default {
 
 				if (data?.code === 403) {
 					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					this.forceLogout();
+					// this.eventBus.emit("forceLogout");
 				}
 
 				if (data?.success) {

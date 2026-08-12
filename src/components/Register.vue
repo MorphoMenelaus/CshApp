@@ -38,11 +38,10 @@
 					<button class="btn" type="submit" @click.prevent="registerHandler" title="Register">
 						Register
 					</button>
-					<button class="btn" type="button" @click="eventBus.emit('registerUser', false)"
-						title="Cancel">Cancel</button>
+					<button class="btn" type="button" @click="registerUser(false)" title="Cancel">Cancel</button>
 				</div>
 				<p style="text-align: center;">Already have an account? <span class="link" title="Login here"
-						@click="removeRegisterUserComponent()">Login here.</span>
+						@click="loginRequest()">Login here.</span>
 				</p>
 			</form>
 		</div>
@@ -52,7 +51,7 @@
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, inject } from 'vue';
 
 export default {
 	name: "RegisterUser",
@@ -61,13 +60,17 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
+			loginShow: inject("loginShow"),
+			registerUser: inject("registerUser"),
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
 			serverStatus: Object.assign({}, this.appNotify),
 			userName: "",
 			password: "",
 			confirmPassword: "",
 			email: "",
 			errState: false,
-			isLoggedOn: false,
 			siteKey: this.reCaptchaSiteKey,
 			token: ""
 		};
@@ -75,16 +78,12 @@ export default {
 	watch: {
 	},
 	methods: {
-		removeRegisterUserComponent() {
-			// Control the state of both components
-			let payload = {
-				register: false,
-				login: true
-			}
-			this.eventBus.emit("registerUser", payload);
+		loginRequest() {
+			this.loginShow(true);
+			this.registerUser(false);
 		},
 		async register() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			try {
 				let body = {
@@ -97,7 +96,7 @@ export default {
 				if (!this.userName || !this.email || !this.password) {
 					this.serverStatus.message = "Please provide a user name, email and password.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", this.serverStatus);
+					this.updateStatus(this.serverStatus);
 					this.errState = true;
 					return this.serverStatus;
 				}
@@ -117,8 +116,9 @@ export default {
 				const data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					this.updateStatus(data);
+					this.forceLogout();
+					// this.eventBus.emit("forceLogout");
 				}
 
 				this.serverStatus.code = data?.code;
@@ -126,12 +126,8 @@ export default {
 				this.serverStatus.success = data?.success;
 
 				if (data?.success) {
-					// Control the state of both components
-					let payload = {
-						register: false,
-						login: false
-					}
-					this.eventBus.emit("registerUser", payload);
+					this.loginShowEvent(false);
+					this.registerUser(false);
 					this.sendAnalyticsEvent('register_form_send', 'register_modal');
 				}
 
@@ -140,11 +136,11 @@ export default {
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
-				this.serverStatus.message = `Error posting data: ${error}`;
+				this.serverStatus.message = `Error posting data: ${error.message}`;
 				this.serverStatus.success = false;
 			} finally {
-				this.eventBus.emit("updateStatus", (this.serverStatus));
-				this.eventBus.emit("showHideLoader", false);
+				this.updateStatus(this.serverStatus);
+				this.showHideLoader(false);
 			}
 		},
 		async registerHandler() {
@@ -167,6 +163,12 @@ export default {
 
 					} catch (error) {
 						console.error("reCAPTCHA execution failed:", error);
+						let res = {
+							code: 400,
+							message: `reCAPTCHA execution failed: ${error?.message}`,
+							success: false
+						};
+						this.updateStatus(res);
 					}
 				});
 
@@ -188,7 +190,7 @@ export default {
 	},
 	created() {
 		this.eventBus.on("EscapeKeydown", () => {
-			this.eventBus.emit('registerUser', false);
+			this.registerUser(false);
 		});
 		onBeforeUnmount(() => {
 			this.eventBus.off("EscapeKeydown");
@@ -197,7 +199,6 @@ export default {
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h2 {
 	text-align: center;

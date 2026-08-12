@@ -67,7 +67,7 @@
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, inject } from 'vue';
 
 export default {
 	name: "ContactForm",
@@ -76,6 +76,7 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			siteKey: this.reCaptchaSiteKey,
 			token: "",
@@ -135,7 +136,8 @@ export default {
 
 				if (data?.code === 403) {
 					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					this.forceLogout();
+					// this.eventBus.emit("forceLogout");
 				}
 
 				this.serverStatus.code = data?.code;

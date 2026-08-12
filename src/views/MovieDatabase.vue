@@ -114,8 +114,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import { onBeforeUnmount } from "vue";
+import { onBeforeUnmount, inject } from 'vue';
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
@@ -133,6 +132,9 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
+			loginShow: inject("loginShow"),
+			registerUser: inject("registerUser"),
 			serverStatus: Object.assign({}, this.appNotify),
 			limit: 10,
 			offset: 0,
@@ -192,12 +194,8 @@ export default {
 	methods: {
 		showRegisterUserComponent(login = false, register = false) {
 			this.dialog.close();
-			// Control the state of both components
-			let payload = {
-				register: register,
-				login: login
-			}
-			this.eventBus.emit("registerUser", payload);
+			this.loginShow(login);
+			this.registerUser(register);
 		},
 		openPermissionsDialog() {
 			this.dialog.showModal()
@@ -444,7 +442,8 @@ export default {
 
 				if (data?.code === 403) {
 					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					this.forceLogout();
+					// this.eventBus.emit("forceLogout");
 				}
 
 				this.movieList = data.movies;

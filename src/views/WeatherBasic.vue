@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
+import { onBeforeUnmount, inject } from "vue";
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
 
@@ -95,6 +95,7 @@ export default {
 	components: {},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			showHideLoader: false,
 			chartElem: null,
@@ -197,7 +198,8 @@ export default {
 
 				if (data?.code === 403) {
 					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					this.forceLogout();
+					// this.eventBus.emit("forceLogout");
 				}
 
 				this.weatherData = data;
