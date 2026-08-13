@@ -42,24 +42,29 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
+			closeChangePassword: inject('closeChangePassword'),
 			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			currentPassword: "",
 			password: "",
 			confirmPassword: "",
 			errState: false,
-			isLoggedOn: false,
-			siteKey: this.reCaptchaSiteKey
+			// isLoggedOn: false,
+			// siteKey: this.reCaptchaSiteKey
 		};
 	},
 	watch: {
 	},
 	methods: {
 		closePopup() {
-			this.eventBus.emit("closeChangePassword");
+			this.closeChangePassword();
+			// this.eventBus.emit("closeChangePassword");
 		},
 		async changePassword() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			try {
 				let body = {
@@ -71,7 +76,8 @@ export default {
 				if (!this.currentPassword || !this.password) {
 					this.serverStatus.message = "Please provide current password and new password.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", this.serverStatus);
+					this.updateStatus(this.serverStatus);
+					// this.eventBus.emit("updateStatus", this.serverStatus);
 					this.errState = true;
 					return this.serverStatus;
 				}
@@ -94,13 +100,14 @@ export default {
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 
 				if (data?.success)
 					this.eventBus.emit("changePassword", true);
 
 				this.errState = data?.success;
-				this.forceLogout();
+				this.forceLogout("Password changed successfully. Please log in again.");
 				// this.eventBus.emit("forceLogout");
 
 			} catch (error) {
@@ -108,21 +115,27 @@ export default {
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.addUserLog(this.appState, "User Changed Password");
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
 	mounted() {
 	},
 	created() {
-		this.eventBus.on("EscapeKeydown", () => {
-			this.closePopup();
+		window.addEventListener("keydown", (down) => {
+			if (down.key === "Escape")
+				this.closePopup();
 		});
 		onBeforeUnmount(() => {
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", (down) => {
+				if (down.key === "Escape")
+					this.closePopup();
+			});
 		});
 	},
 };

@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import { trackerModel } from "@/dependencies/models.js";
 
@@ -54,6 +55,9 @@ export default {
 	},
 	data() {
 		return {
+			showHideLoader: inject('showHideLoader'),
+			updateAppState: inject("updateAppState"),
+			updateStatus: inject('sendUpdateStatus'),
 			serverStatus: Object.assign({}, this.appNotify),
 			timeTracker: Object.assign({}, trackerModel),
 			togglStore: new Storage("togglStore"),
@@ -89,17 +93,21 @@ export default {
 			this.togglStore.delete("project");
 			let updateAppState = this.appState;
 			updateAppState.openTracker = this.timeTracker;
-			this.eventBus.emit("updateAppState", updateAppState);
+			this.updateAppState(updateAppState);
+			// this.eventBus.emit("updateAppState", updateAppState);
 			this.eventBus.emit("deselectTogglProject");
 		},
 		async startTime() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			if (!this.description) {
 				this.serverStatus.message = "Description field is required";
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
-				this.eventBus.emit("showHideLoader", false);
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 				return;
 			}
 
@@ -138,7 +146,8 @@ export default {
 					this.serverStatus.code = 402;
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
+					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -158,26 +167,31 @@ export default {
 
 				let updateAppState = this.appState;
 				updateAppState.openTracker = this.startInstance;
-				this.eventBus.emit("updateAppState", updateAppState);
+				this.updateAppState(updateAppState);
+				// this.eventBus.emit("updateAppState", updateAppState);
 
 				this.setInterval();
 
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", this.serverStatus);
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", this.serverStatus);
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async stopTime() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			try {
 
@@ -205,7 +219,8 @@ export default {
 					this.serverStatus.code = 402;
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
+					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -216,22 +231,26 @@ export default {
 
 				let updateAppState = this.appState;
 				updateAppState.openTracker = this.startInstance;
-				this.eventBus.emit("updateAppState", updateAppState);
+				this.updateAppState(updateAppState);
+				// this.eventBus.emit("updateAppState", updateAppState);
 
 				clearInterval(this.interval);
 
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", this.serverStatus);
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", this.serverStatus);
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		setInterval() {

@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount, inject } from "vue";
+import { inject } from "vue";
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
 
@@ -95,6 +95,7 @@ export default {
 	components: {},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
 			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			showHideLoader: false,
@@ -170,7 +171,7 @@ export default {
 			this.weatherData.hourly.time = newTimeArr;
 		},
 		async getWeatherData() {
-			this.eventBus.emit("showStockLoader", true);
+			this.showHideLoader = true;
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -210,7 +211,8 @@ export default {
 					this.serverStatus.code = 503;
 					this.serverStatus.message = data?.reason;
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
+					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -226,9 +228,10 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showStockLoader", false);
+				this.showHideLoader = false;
 			}
 		},
 		drawChart() {
@@ -359,14 +362,6 @@ export default {
 		this.location = locations.filter(loc => loc.city === this.locationDefault)[0];
 		this.setupForGraph();
 		this.getWeatherData();
-	},
-	created() {
-		this.eventBus.on("showStockLoader", payload => {
-			this.showHideLoader = payload;
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("showStockLoader");
-		});
 	},
 };
 </script>

@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount, inject } from "vue";
+import { inject, provide } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
@@ -149,7 +149,8 @@ export default {
 	name: "UserPreferences",
 	props: {
 		appState: Object,
-		isMobile: Boolean
+		isMobile: Boolean,
+		forceLogoutEvent: Boolean,
 	},
 	components: {
 		ChangePassword,
@@ -157,6 +158,9 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject("showHideLoader"),
+			updateAppState: inject("updateAppState"),
 			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			admin: this.appState?.permissions?.admin,
@@ -196,6 +200,12 @@ export default {
 		},
 		location() {
 			this.locationDefault = this.location.city;
+		},
+		forceLogoutEvent() {
+			if (this.forceLogoutEvent) {
+				this.currentComponent = null;
+				this.forceLogout();
+			}
 		}
 	},
 	methods: {
@@ -260,7 +270,8 @@ export default {
 			}
 		},
 		async getUser() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -288,11 +299,12 @@ export default {
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async updateUser() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let body = {
 				email: this.email,
@@ -327,7 +339,8 @@ export default {
 				if (data.success && this.user.userName === this.appState.userName) {
 					let updateAppState = this.appState;
 					updateAppState.user = data.user;
-					this.eventBus.emit("updateAppState", updateAppState);
+					this.updateAppState(updateAppState);
+					// this.eventBus.emit("updateAppState", updateAppState);
 				}
 
 				this.getUser();
@@ -335,13 +348,15 @@ export default {
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
 				this.addUserLog(this.appState, "Update User Preferences");
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		}
 	},
@@ -349,22 +364,24 @@ export default {
 	},
 	created() {
 		this.getUser();
-		this.eventBus.on("UserDeleted", () => {
-			this.currentComponent = null;
-			this.forceLogout();
-			// this.eventBus.emit("forceLogout");
-		});
-		this.eventBus.on("cancelDeleteUser", () => {
-			this.currentComponent = null;
-		});
-		this.eventBus.on("closeChangePassword", () => {
-			this.currentComponent = null;
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("UserDeleted");
-			this.eventBus.off("cancelDeleteUser");
-			this.eventBus.off("closeChangePassword")
-		});
+		// this.eventBus.on("UserDeleted", () => {
+		// 	this.currentComponent = null;
+		// 	this.forceLogout();
+		// 	this.eventBus.emit("forceLogout");
+		// });
+		provide('cancelDeleteUser', (bool) => this.currentComponent = bool ? "DeleteUser" : null);
+		// this.eventBus.on("cancelDeleteUser", () => {
+		// 	this.currentComponent = null;
+		// });
+		provide('closeChangePassword', (bool) => this.currentComponent = bool ? "ChangePassword" : null);
+		// this.eventBus.on("closeChangePassword", () => {
+		// 	this.currentComponent = null;
+		// });
+		// onBeforeUnmount(() => {
+		// 	this.eventBus.off("UserDeleted");
+		// 	this.eventBus.off("cancelDeleteUser");
+		// 	this.eventBus.off("closeChangePassword")
+		// });
 	},
 };
 </script>

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
+import { inject } from "vue";
 import seriesIds from '@/dependencies/seriesIds.json';
 import Chart from 'chart.js/auto';
 
@@ -68,14 +68,15 @@ export default {
 	components: {},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
 			serverStatus: Object.assign({}, this.appNotify),
 			showHideLoader: false,
 			chartElem: null,
 			startDate: new Date().toISOString().split('T')[0],
 			endDate: new Date().toISOString().split('T')[0],
-			currentDate: new Date().toISOString().split('T')[0],
-			chartWidth: this.windowWidth,
-			chartHeight: this.windowWidth / 2,
+			// currentDate: new Date().toISOString().split('T')[0],
+			// chartWidth: this.windowWidth,
+			// chartHeight: this.windowWidth / 2,
 			seriesOptions: seriesIds,
 			limitOptions: [
 				{ text: "50", value: 50 },
@@ -141,7 +142,7 @@ export default {
 			this.limit = 30 * monthOffset;
 		},
 		async getStocksData() {
-			this.eventBus.emit("showStockLoader", true);
+			this.showHideLoader = true;
 
 			try {
 
@@ -177,16 +178,18 @@ export default {
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200) this.eventBus.emit("updateStatus", this.serverStatus);
+				if (this.serverStatus.code !== 200) this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", this.serverStatus);
 
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showStockLoader", false);
+				this.showHideLoader = false;
 			}
 		},
 		drawChart() {
@@ -284,14 +287,6 @@ export default {
 		this.setupForGraph();
 		this.selectRanges();
 		this.getStocksData();
-	},
-	created() {
-		this.eventBus.on("showStockLoader", payload => {
-			this.showHideLoader = payload;
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("showStockLoader");
-		});
 	},
 };
 </script>

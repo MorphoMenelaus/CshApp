@@ -62,7 +62,7 @@
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount, provide, inject } from "vue";
+import { provide, inject } from "vue";
 import router from "@/router";
 import { Storage } from "@/dependencies/csh-libs.js";
 import DeleteUser from "@/components/DeleteUser.vue";
@@ -97,15 +97,15 @@ export default {
 			accessToken: "",
 			accessTokenExpiration: "",
 			refreshToken: "",
-			userPermissions: {
-				userId: "",
-				globalPermissions: "",
-				sitePermissions: {},
-			},
+			// userPermissions: {
+			// 	userId: "",
+			// 	globalPermissions: "",
+			// 	sitePermissions: {},
+			// },
 			sitePermissions: {},
-			isSiteAdmin: false,
+			// isSiteAdmin: false,
 			userName: "",
-			displayName: "",
+			// displayName: "",
 			password: "",
 			userId: "",
 			dialog: null
@@ -122,7 +122,7 @@ export default {
 			if (this.forceLogoutEvent) {
 				let res = {
 					code: 403,
-					message: "Session Expired. Please login again.",
+					message: this.forceLogoutEvent,
 					success: false
 				};
 				console.log("forceLogoutEvent triggered in Login.vue", res);
@@ -191,7 +191,7 @@ export default {
 					this.appNotify.code = 200;
 					this.appNotify.message = "Access Token acquired: Login Success";
 					this.appNotify.success = true;
-					this.forceLogout(false);
+					this.forceLogout(null);
 					this.loginRequest(false);
 					router.push("/");
 				} else {
@@ -259,17 +259,17 @@ export default {
 	},
 	created() {
 		provide("forceLogout", this.logout);
-		this.eventBus.on("UserDeleted", () => {
-			this.logout();
-		});
-		this.eventBus.on("forceLogout", () => {
-			console.log("forceLogout triggered in eventBus on Login.vue");
-			this.logout();
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("UserDeleted");
-			this.eventBus.off("forceLogout");
-		});
+		// this.eventBus.on("UserDeleted", () => {
+		// 	this.logout();
+		// });
+		// this.eventBus.on("forceLogout", () => {
+		// 	console.log("forceLogout triggered in eventBus on Login.vue");
+		// 	this.logout();
+		// });
+		// onBeforeUnmount(() => {
+		// 	this.eventBus.off("UserDeleted");
+		// 	this.eventBus.off("forceLogout");
+		// });
 	},
 };
 </script>

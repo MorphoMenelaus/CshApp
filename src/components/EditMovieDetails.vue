@@ -107,6 +107,7 @@
 </template>
 
 <script>
+import { inject } from 'vue';
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -118,11 +119,14 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
+			movieUpdated: inject("movieUpdated"),
 			serverStatus: Object.assign({}, this.appNotify),
 			dialog: null,
 			disableBtn: false,
 			movie: {},
-			currentComponent: null,
+			// currentComponent: null,
 			title: this.selectedMovie.title,
 			original_title: this.selectedMovie.original_title,
 			tagline: this.selectedMovie.tagline,
@@ -148,7 +152,8 @@ export default {
 			this.dialog.showModal()
 		},
 		async updateMovie() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 			this.disableBtn = true;
 
 			let body = {
@@ -187,34 +192,36 @@ export default {
 				const data = await response.json();
 
 				if (data.success) {
-					this.eventBus.emit("movieUpdated");
+					this.movieUpdated(true);
+					// this.eventBus.emit("movieUpdated");
 				}
 
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 				this.disableBtn = false;
 				this.addUserLog(this.appState, `Update Movie Details. MovieId: ${this.selectedMovie.movieId}`);
 			}
 		},
 		cancel() {
-			// Event is movieUpdated but it can work as a cancel as well
-			// The event handler only closes conponent and refreshes movie list
-			this.eventBus.emit("movieUpdated", false);
+			// Event is movieUpdated() but it can work as a cancel as well
+			// false only closes component and true closes and refreshes movie list
+			this.movieUpdated(false);
+			// this.eventBus.emit("movieUpdated", false);
 		}
 	},
 	mounted() {
 		this.dialog = document.getElementById("confirmEdit");
 	},
-	created() {
-	},
-}; 
+};
 </script>
 
 

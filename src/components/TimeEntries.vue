@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -60,6 +61,8 @@ export default {
 	components: {},
 	data() {
 		return {
+			showHideLoader: inject('showHideLoader'),
+			updateStatus: inject('sendUpdateStatus'),
 			serverStatus: Object.assign({}, this.appNotify),
 			startDate: new Date().toISOString().split('T')[0],
 			endDate: new Date().toISOString().split('T')[0],
@@ -70,7 +73,8 @@ export default {
 	},
 	methods: {
 		async getTimeEntries() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -101,15 +105,13 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
-	},
-	mounted() {
-	},
-	created() {
 	},
 };
 </script>

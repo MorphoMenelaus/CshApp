@@ -52,7 +52,7 @@ export default {
 			dayLocal: "",
 			dateLocal: "",
 			timeLocal: "",
-			messageTimeout: 0,
+			// messageTimeout: 0,
 		};
 	},
 	watch: {

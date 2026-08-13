@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount, inject } from 'vue';
+import { onBeforeUnmount, inject, provide } from 'vue';
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
@@ -132,6 +132,8 @@ export default {
 	},
 	data() {
 		return {
+			showHideLoader: inject("showHideLoader"),
+			updateStatus: inject("sendUpdateStatus"),
 			forceLogout: inject('forceLogout'),
 			loginShow: inject("loginShow"),
 			registerUser: inject("registerUser"),
@@ -147,10 +149,10 @@ export default {
 				{ text: "Director", value: "tags_director" },
 				{ text: "Genre", value: "tags_genre" },
 			],
-			orderDirOptions: [
-				{ text: "Descending", value: "DESC" },
-				{ text: "Ascending", value: "ASC" },
-			],
+			// orderDirOptions: [
+			// 	{ text: "Descending", value: "DESC" },
+			// 	{ text: "Ascending", value: "ASC" },
+			// ],
 			sortBy: "year",
 			orderDir: "DESC",
 			contains: "",
@@ -295,14 +297,14 @@ export default {
 				const data = await response.json();
 
 				if (data.success) {
-					this.eventBus.emit("favoriteUpdated");
 					this.getFavoriteList();
 				}
 
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200) this.eventBus.emit("updateStatus", (this.serverStatus));
+				if (this.serverStatus.code !== 200)
+					this.updateStatus(this.serverStatus);
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
@@ -331,14 +333,14 @@ export default {
 				const data = await response.json();
 
 				if (data.success) {
-					this.eventBus.emit("favoriteUpdated");
 					this.getFavoriteList();
 				}
 
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200) this.eventBus.emit("updateStatus", (this.serverStatus));
+				if (this.serverStatus.code !== 200)
+					this.updateStatus(this.serverStatus);
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
@@ -375,11 +377,13 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			}
 		},
 		async getMovieByFavorites() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let body = {
 				movieIds: this.favoritesList
@@ -408,14 +412,17 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.scrollToTop();
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async getMovieList() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -441,7 +448,8 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
+					this.updateStatus(data);
+					// this.eventBus.emit("updateStatus", data);
 					this.forceLogout();
 					// this.eventBus.emit("forceLogout");
 				}
@@ -455,10 +463,12 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.scrollToTop();
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async refreshMoviesWithFaves() {
@@ -481,6 +491,12 @@ export default {
 			this.currentPage++;
 			this.getMovieList();
 		},
+		closeModal(refresh = true) {
+			this.currentComponent = null;
+			this.selectedMovie = null;
+			if (refresh)
+				this.refreshMoviesWithFaves();
+		},
 	},
 	mounted() {
 		this.limit = this.columns * 2;
@@ -489,19 +505,28 @@ export default {
 		this.dialog = document.getElementById("not-allowed");
 	},
 	created() {
-		this.eventBus.on("movieUpdated", (refresh = true) => {
-			this.currentComponent = null;
-			this.selectedMovie = null;
-			if (refresh)
-				this.refreshMoviesWithFaves();
+		provide("movieUpdated", this.closeModal);
+		// this.eventBus.on("movieUpdated", (refresh = true) => {
+		// 	this.currentComponent = null;
+		// 	this.selectedMovie = null;
+		// 	if (refresh)
+		// 		this.refreshMoviesWithFaves();
+		// });
+		window.addEventListener("keydown", (down) => {
+			if (down.key === "Escape")
+				this.closeModal();
 		});
-		this.eventBus.on("EscapeKeydown", () => {
-			this.currentComponent = null;
-			this.selectedMovie = null;
-		});
+		// this.eventBus.on("EscapeKeydown", () => {
+		// 	this.currentComponent = null;
+		// 	this.selectedMovie = null;
+		// });
 		onBeforeUnmount(() => {
-			this.eventBus.off("movieUpdated");
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", (down) => {
+				if (down.key === "Escape")
+					this.closeModal();
+			});
+			// this.eventBus.off("movieUpdated");
+			// this.eventBus.off("EscapeKeydown");
 		});
 	},
 };

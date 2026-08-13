@@ -8,6 +8,9 @@ const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 const eventBus = inject('eventBus', () => {
 	console.warn('Global function not found! eventBus');
 });
+const contactEmail = inject('contactEmail', () => {
+	console.warn('Global function not found! contactEmail()');
+});
 
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
@@ -28,7 +31,7 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 				<a class="btn" href="https://hardwick.design/" title="Chris Hardwick | Hardwick Web Design"
 					target="_blank" @click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')">Personal
 					Website</a>
-				<a class="btn" @click="eventBus.emit('contactEmail', true)" title="Contact Me">Contact Me</a>
+				<a class="btn" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
 			</div>
 			<div id="profile">
 				<h2 class="julius-sans profile">Professional Profile</h2>

@@ -42,7 +42,7 @@
 					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">
 						Send
 					</button>
-					<button class="btn" type="button" @click="eventBus.emit('contactEmail', false)"
+					<button class="btn" type="button" @click="contactEmail(false)"
 						title="Cancel">Cancel</button>
 				</div>
 			</form>
@@ -56,7 +56,7 @@
 				<h3>I'll get back to you as soon as I can.</h3>
 			</div>
 			<div style="display: flex;">
-				<button class="btn" type="button" @click="eventBus.emit('contactEmail', false)"
+				<button class="btn" type="button" @click="contactEmail(false)"
 					title="Cancel">Close</button>
 			</div>
 		</div>
@@ -76,6 +76,9 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
+			contactEmail: inject("contactEmail"),
 			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			siteKey: this.reCaptchaSiteKey,
@@ -100,7 +103,8 @@ export default {
 				this.charRemaining = this.maxlength - currCount;
 		},
 		async sendEmail() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			try {
 				let body = {
@@ -115,7 +119,8 @@ export default {
 				if (!this.name || !this.email || !this.subject || !this.message) {
 					this.serverStatus.message = "Please fill in all required fields.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", this.serverStatus);
+					this.updateStatus(this.serverStatus);
+					// this.eventBus.emit("updateStatus", this.serverStatus);
 					this.errState = true;
 					return this.serverStatus;
 				}
@@ -135,7 +140,7 @@ export default {
 				const data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
+					this.updateStatus(data);
 					this.forceLogout();
 					// this.eventBus.emit("forceLogout");
 				}
@@ -156,8 +161,10 @@ export default {
 				this.serverStatus.message = `Error posting data: ${error.message}`;
 				this.serverStatus.success = false;
 			} finally {
-				this.eventBus.emit("updateStatus", (this.serverStatus));
-				this.eventBus.emit("showHideLoader", false);
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async contactHandler() {
@@ -200,11 +207,15 @@ export default {
 		}
 	},
 	created() {
-		this.eventBus.on("EscapeKeydown", () => {
-			this.eventBus.emit('contactEmail', false);
+		window.addEventListener("keydown", (down) => {
+			if (down.key === "Escape")
+				this.contactEmail(false);
 		});
 		onBeforeUnmount(() => {
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", (down) => {
+				if (down.key === "Escape")
+					this.contactEmail(false);
+			});
 		});
 	},
 };

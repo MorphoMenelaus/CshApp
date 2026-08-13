@@ -26,6 +26,7 @@ export default {
 	},
 	data() {
 		return {
+			contactEmail: inject("contactEmail"),
 			loginShowEvent: inject("loginShow"),
 			registerUser: inject('registerUser'),
 		}
@@ -34,7 +35,8 @@ export default {
 		openThisModalCloseOthers() {
 			this.loginShowEvent(false);
 			this.registerUser(false);
-			this.eventBus.emit("contactEmail", true);
+			this.contactEmail(true);
+			// this.eventBus.emit("contactEmail", true);
 			this.sendAnalyticsEvent('contact_form_footer', 'contact_modal');
 		}
 	},

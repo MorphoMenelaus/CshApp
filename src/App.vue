@@ -24,7 +24,7 @@
 	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" />
 
 	<RouterView id="view" :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth"
-		:class="isMobile ? 'mobile' : ''" />
+		:forceLogoutEvent="forceLogoutEvent" :class="isMobile ? 'mobile' : ''" />
 
 	<FooterMain :serverVersion="serverVersion" :isMobile="isMobile" />
 
@@ -62,17 +62,17 @@ export default {
 	},
 	data() {
 		return {
-			// sendUpdateStatus: inject("updateStatus"),
+			// updateStatus: inject("updateStatus"),
 			forceLogout: inject('forceLogout'),
 			sharedUpdateStatus: {},
-			forceLogoutEvent: false,
-			serverStatus: Object.assign({}, this.appNotify),
+			forceLogoutEvent: null,
+			// serverStatus: Object.assign({}, this.appNotify),
 			recall: new Storage(),
 			body: document.getElementsByTagName('body'),
 			serverVersion: "",
 			appState: {},
 			appDevDuties: [],
-			guestLoginDoc: false,
+			// guestLoginDoc: false,
 			currentComponent: null,
 			isMobile: window.innerWidth < 1024,
 			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 768,
@@ -166,10 +166,10 @@ export default {
 				let response = await fetch(request);
 				let data = await response.json();
 				if (data?.success) {
-					this.appDevDuties = data.appDevDuties;
-					let updateAppState = this.appState;
-					updateAppState.appDevDuties = data.appDevDuties;
-					this.eventBus.emit("updateAppState", updateAppState);
+					// this.appDevDuties = data.appDevDuties;
+					// let updateAppState = this.appState;
+					this.appState.appDevDuties = this.appDevDuties = data.appDevDuties;
+					// this.eventBus.emit("updateAppState", updateAppState);
 				}
 
 			} catch (error) {
@@ -192,56 +192,63 @@ export default {
 		},
 	},
 	async created() {
-
 		/* BEGIN NEW EVENT HANDLING SECTION */
-		provide("forceLogout", (bool = true) => this.forceLogoutEvent = bool);
+		let defaultReason = "Session Expired. Please login again.";
+		provide("forceLogout", (reason = defaultReason) => this.forceLogoutEvent = reason);
 		provide("updateAppState", this.updateAppState);
 		provide("initialSetup", this.initialSetup);
 		provide("showHideLoader", (bool) => this.showHideLoader = bool);
 		provide("loginShow", (bool) => this.loginShow = bool);
 		provide("registerUser", (bool) => this.currentComponent = bool ? "Register" : null);
+		provide("contactEmail", (bool) => this.currentComponent = bool ? "ContactForm" : null);
 		provide("sendUpdateStatus", (payload) => {
 			this.sharedUpdateStatus = payload;
 		});
 		/* END NEW EVENT HANDLING SECTION */
 
-		this.checkOrientation();
-		this.initialSetup();
-		this.eventBus.on("EscapeKeydown", () => {
-			this.currentComponent = null;
-		});
-		this.eventBus.on("updateAppState", (payload) => {
-			this.updateAppState(payload);
-		});
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
 		window.addEventListener("forceLogout", (e) => {
-			this.eventBus.emit("updateStatus", e.detail);
-			// this.eventBus.emit("forceLogout");
-			this.forceLogout();
+			this.forceLogoutEvent = e?.detail?.message || "Session Expired. Please login again.";
 		});
-		this.eventBus.on("contactEmail", (bool) => {
-			this.currentComponent = bool ? "ContactForm" : null;
+		window.addEventListener("keydown", (down) => {
+			if (down.key === "Escape")
+				this.currentComponent = null;
 		});
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
 			this.windowWidth = window.innerWidth;
 			this.checkOrientation();
 		});
-		window.addEventListener("keydown", (down) => {
-			if (down.key === "Escape")
-				this.eventBus.emit("EscapeKeydown");
-		});
-		let body = document.getElementsByTagName('body')[0];
-		body.addEventListener("click", (event) => {
-			if (event.target.id !== "nav-container" && event.target.id !== "hamburger")
-				this.eventBus.emit("closeMainNav");
-		}, true);
 		window.addEventListener('storage', (event) => {
 			if (event.key === this.recall.getstorageKey()) {
 				this.recallAppState();
 			}
 		});
 		screen.orientation.addEventListener("change", this.checkOrientation);
+
+
+		this.checkOrientation();
+		this.initialSetup();
+		// this.eventBus.on("EscapeKeydown", () => {
+		// 	this.currentComponent = null;
+		// });
+		// this.eventBus.on("updateAppState", (payload) => {
+		// 	this.updateAppState(payload);
+		// });
+		// window.addEventListener("forceLogout", (e) => {
+		// 	this.forceLogoutEvent = e?.detail?.message || "Session Expired. Please login again.";
+		// 	this.eventBus.emit("updateStatus", e.detail);
+		// 	this.eventBus.emit("forceLogout");
+		// 	this.forceLogout();
+		// });
+		// this.eventBus.on("contactEmail", (bool) => {
+		// 	this.currentComponent = bool ? "ContactForm" : null;
+		// });
+		// let body = document.getElementsByTagName('body')[0];
+		// body.addEventListener("click", (event) => {
+		// 	if (event.target.id !== "nav-container" && event.target.id !== "hamburger")
+		// 		this.eventBus.emit("closeMainNav");
+		// }, true);
 	},
 	mounted() {
 		// let app = document.getElementById("app");

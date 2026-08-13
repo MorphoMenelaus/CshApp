@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import ProjectTable from "@/components/ProjectTable.vue";
 // import TimeEntries from "@/components/TimeEntries.vue";
@@ -48,12 +49,14 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
 			showAcountDetails: false,
-			startDate: "",
-			endDate: "",
+			// startDate: "",
+			// endDate: "",
 			toggleUser: null,
 			projects: [],
 		};
@@ -62,7 +65,8 @@ export default {
 	},
 	methods: {
 		async getUserData() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			try {
 
@@ -84,7 +88,8 @@ export default {
 					this.serverStatus.code = 402;
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
+					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -99,13 +104,15 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async getProjects() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			try {
 				let headerObj = new Headers();
@@ -126,7 +133,8 @@ export default {
 					this.serverStatus.code = 402;
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
+					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -142,9 +150,11 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},

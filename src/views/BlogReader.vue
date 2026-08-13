@@ -66,7 +66,7 @@
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount } from "vue";
+import { onBeforeUnmount, inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -78,6 +78,8 @@ export default {
 	components: {},
 	data() {
 		return {
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
 			limit: 10,
 			offset: 0,
@@ -131,7 +133,8 @@ export default {
 			this.selectedBlog = this.blogList.filter(post => post_id === post.post_id)[0];
 		},
 		async getBlogPosts() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -174,9 +177,11 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		previousPage() {

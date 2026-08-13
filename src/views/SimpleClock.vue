@@ -96,6 +96,7 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -107,8 +108,10 @@ export default {
 	components: {},
 	data() {
 		return {
+			showHideLoader: inject("showHideLoader"),
+			updateStatus: inject("sendUpdateStatus"),
 			serverStatus: Object.assign({}, this.appNotify),
-			limit: 5,
+			limit: 10,
 			offset: 0,
 			currentPage: 1,
 			boolOptions: [
@@ -160,7 +163,8 @@ export default {
 				this.charRemaining = this.maxlength - currCount;
 		},
 		async getClockLog() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -190,13 +194,15 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async logSimpleClock() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let data;
 			try {
@@ -228,7 +234,8 @@ export default {
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", this.serverStatus);
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", this.serverStatus);
 
 				this.isWakeupEvent = false;
 				this.notes = "";
@@ -239,9 +246,11 @@ export default {
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
+				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		updateDateTime() {

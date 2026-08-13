@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -69,6 +70,7 @@ export default {
 	components: {},
 	data() {
 		return {
+			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
 			limit: 5,
 			offset: 0,
@@ -80,18 +82,18 @@ export default {
 				{ text: "20", value: "20" },
 				{ text: "50", value: "50" },
 			],
-			responseStatus: "",
+			// responseStatus: "",
 			usersList: [],
-			usersLabels: [
-				"userId",
-				"userCreated",
-				"userName",
-				"admin",
-				"siteAdmin",
-				"siteEditor",
-				"isContributor",
-				"userNotes",
-			],
+			// usersLabels: [
+			// 	"userId",
+			// 	"userCreated",
+			// 	"userName",
+			// 	"admin",
+			// 	"siteAdmin",
+			// 	"siteEditor",
+			// 	"isContributor",
+			// 	"userNotes",
+			// ],
 		};
 	},
 	watch: {
@@ -111,7 +113,8 @@ export default {
 	},
 	methods: {
 		async getUsers() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -140,7 +143,8 @@ export default {
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		previousPage() {
@@ -158,8 +162,6 @@ export default {
 	},
 	mounted() {
 		this.getUsers();
-	},
-	created() {
 	},
 };
 </script>

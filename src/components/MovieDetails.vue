@@ -38,17 +38,25 @@
 </template>
 
 <script>
+import { inject } from 'vue';
+
 export default {
 	name: "MovieDetails",
 	props: {
 		isMobile: Boolean,
 		selectedMovie: Object
 	},
+	data() {
+		return {
+			movieUpdated: inject("movieUpdated"),
+		}
+	},
 	methods: {
 		cancel() {
 			// Event is movieUpdated but it can work as a cancel as well
 			// The event handler only closes conponent and refreshes movie list
-			this.eventBus.emit("movieUpdated", false);
+			this.movieUpdated(false);
+			// this.eventBus.emit("movieUpdated", false);
 		},
 		formatDuration(ms) {
 			const seconds = Math.floor((ms / 1000) % 60);

@@ -59,6 +59,7 @@ export default {
 	},
 	data() {
 		return {
+			contactEmail: inject("contactEmail"),
 			loginShowEvent: inject("loginShow"),
 			registerUser: inject('registerUser'),
 			mobileMenuShow: false,
@@ -72,7 +73,8 @@ export default {
 			this.sendAnalyticsEvent('main_nav', link_name);
 			this.loginShowEvent(false);
 			this.registerUser(false);
-			this.eventBus.emit("contactEmail", false);
+			this.contactEmail(false);
+			// this.eventBus.emit("contactEmail", false);
 			this.mobileMenuShow = false;
 		},
 		showHideNav() {
@@ -92,9 +94,9 @@ export default {
 		},
 	},
 	created() {
-		this.eventBus.on("closeMainNav", () => {
-			this.mobileMenuShow = false;
-		});
+		// this.eventBus.on("closeMainNav", () => {
+		// 	this.mobileMenuShow = false;
+		// });
 	},
 };
 </script>

@@ -2,10 +2,6 @@
 
 	<div id="register">
 		<div class="wrapper">
-			<!-- <div class="btn-container">
-				<button @click="eventBus.emit('registerUser', false)" class="close-modal"
-					title="Close This Dialog">✕</button>
-			</div> -->
 			<div id="form-header">
 				<h2>Register</h2>
 				<p>Please fill out this form to create an account.</p>
@@ -60,6 +56,7 @@ export default {
 	},
 	data() {
 		return {
+			registerUser: inject("registerUser"),
 			forceLogout: inject('forceLogout'),
 			loginShow: inject("loginShow"),
 			registerUser: inject("registerUser"),
@@ -189,11 +186,19 @@ export default {
 		}
 	},
 	created() {
-		this.eventBus.on("EscapeKeydown", () => {
-			this.registerUser(false);
+		window.addEventListener("keydown", (down) => {
+			if (down.key === "Escape")
+				this.registerUser(false);
 		});
+		// this.eventBus.on("EscapeKeydown", () => {
+		// 	this.registerUser(false);
+		// });
 		onBeforeUnmount(() => {
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", (down) => {
+				if (down.key === "Escape")
+					this.registerUser(false);
+			});
+			// this.eventBus.off("EscapeKeydown");
 		});
 	},
 };

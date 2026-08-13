@@ -38,6 +38,7 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
 			forceLogout: inject('forceLogout'),
 			appNotify: Object.assign({}, this.appNotify),
 			userName: "",
@@ -59,7 +60,7 @@ export default {
 					this.appNotify.message =
 						"Please provide a user name and verification code.";
 					this.appNotify.success = false;
-					this.eventBus.emit("updateStatus", this.appNotify);
+					this.updateStatus(this.appNotify);
 					return this.appNotify;
 				}
 
@@ -78,7 +79,8 @@ export default {
 				const dataObj = await response.json();
 
 				if (dataObj?.code === 403) {
-					this.eventBus.emit("updateStatus", dataObj);
+					this.updateStatus(dataObj);
+					// this.eventBus.emit("updateStatus", dataObj);
 					this.forceLogout();
 					// this.eventBus.emit("forceLogout");
 				}
@@ -94,7 +96,7 @@ export default {
 					this.appNotify.success = dataObj.success;
 				}
 
-				this.eventBus.emit("updateStatus", this.appNotify);
+				this.updateStatus(this.appNotify);
 
 			} catch (e) {
 				console.error(e);
@@ -122,7 +124,8 @@ export default {
 				const dataObj = await response.json();
 
 				if (dataObj?.code === 403) {
-					this.eventBus.emit("updateStatus", dataObj);
+					this.updateStatus(dataObj);
+					// this.eventBus.emit("updateStatus", dataObj);
 					this.forceLogout();
 					// this.eventBus.emit("forceLogout");
 				}
@@ -137,7 +140,7 @@ export default {
 					this.appNotify.success = dataObj.success;
 				}
 
-				this.eventBus.emit("updateStatus", this.appNotify);
+				this.updateStatus(this.appNotify);
 
 			} catch (e) {
 				console.error(e);

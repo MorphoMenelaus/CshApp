@@ -57,7 +57,7 @@
 
 <script>
 // @ is an alias to /src
-// import { ref } from "vue";
+import { inject } from "vue";
 // import router from "@/router";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
@@ -70,8 +70,9 @@ export default {
 	components: {},
 	data() {
 		return {
+			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
-			limit: 5,
+			limit: 10,
 			offset: 0,
 			currentPage: 1,
 			limitOptions: [
@@ -83,13 +84,13 @@ export default {
 			],
 			responseStatus: "",
 			logs: [],
-			labels: [
-				"entryId",
-				"userId",
-				"userName",
-				"actionPerformed",
-				"dateTime",
-			],
+			// labels: [
+			// 	"entryId",
+			// 	"userId",
+			// 	"userName",
+			// 	"actionPerformed",
+			// 	"dateTime",
+			// ],
 		};
 	},
 	watch: {
@@ -102,7 +103,8 @@ export default {
 	},
 	methods: {
 		async getUserLogs() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
+			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -135,7 +137,8 @@ export default {
 				console.error('Error fetching data:', error)
 				this.eventBus.emit("getUserLogs", error);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
+				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		previousPage() {
@@ -153,8 +156,6 @@ export default {
 	},
 	mounted() {
 		this.getUserLogs();
-	},
-	created() {
 	},
 };
 </script>
