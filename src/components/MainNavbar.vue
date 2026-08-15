@@ -192,7 +192,8 @@ a.home-icon {
 	left: 0;
 	width: 100%;
 	margin: auto;
-	z-index: 1;
+	/* z-index: 1; */
+	z-index: 15000;
 }
 
 nav {

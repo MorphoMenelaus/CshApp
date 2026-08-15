@@ -49,6 +49,7 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
@@ -82,6 +83,9 @@ export default {
 				});
 
 				let response = await tokenInterceptFetch(request);
+				if (!response.ok)
+					this.forceLogout();
+
 				let data = await response.json();
 
 				if (data.code === 402) {
@@ -127,6 +131,9 @@ export default {
 				});
 
 				let response = await tokenInterceptFetch(request);
+				if (!response.ok)
+					this.forceLogout();
+
 				let data = await response.json();
 
 				if (data.code === 402) {

@@ -95,7 +95,7 @@ export default {
 			updateAppState.openTracker = this.timeTracker;
 			this.updateAppState(updateAppState);
 			// this.eventBus.emit("updateAppState", updateAppState);
-			this.eventBus.emit("deselectTogglProject");
+			// this.eventBus.emit("deselectTogglProject");
 		},
 		async startTime() {
 			this.showHideLoader(true);

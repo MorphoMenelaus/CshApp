@@ -64,8 +64,8 @@
 // @ is an alias to /src
 import { provide, inject } from "vue";
 import router from "@/router";
-import { Storage } from "@/dependencies/csh-libs.js";
-import DeleteUser from "@/components/DeleteUser.vue";
+// import { Storage } from "@/dependencies/csh-libs.js";
+// import DeleteUser from "@/components/DeleteUser.vue";
 
 const user = import.meta.env.VITE_APP_GUEST_USER;
 const password = import.meta.env.VITE_APP_GUEST_PASS;
@@ -81,9 +81,9 @@ export default {
 		loginShow: Boolean,
 		forceLogoutEvent: Boolean
 	},
-	components: {
-		DeleteUser
-	},
+	// components: {
+	// 	DeleteUser
+	// },
 	data() {
 		return {
 			forceLogout: inject('forceLogout'),
@@ -118,18 +118,28 @@ export default {
 				this.login();
 			}
 		},
-		forceLogoutEvent() {
-			if (this.forceLogoutEvent) {
-				let res = {
-					code: 403,
-					message: this.forceLogoutEvent,
-					success: false
-				};
-				console.log("forceLogoutEvent triggered in Login.vue", res);
-				this.updateStatus(res);
-				this.logout();
-			}
-		}
+		forceLogoutEvent: {
+			handler(res) {
+				// console.log("forceLogoutEvent triggered in Login.vue", res);
+				if (res?.forced) {
+					this.updateStatus(res);
+					this.logout();
+				}
+			},
+			deep: true,
+		},
+		// forceLogoutEvent() {
+		// 	if (this.forceLogoutEvent) {
+		// 		let res = {
+		// 			code: 403,
+		// 			message: this.forceLogoutEvent,
+		// 			success: false
+		// 		};
+		// 		console.log("forceLogoutEvent triggered in Login.vue", res);
+		// 		this.updateStatus(res);
+		// 		this.logout();
+		// 	}
+		// }
 	},
 	methods: {
 		loginRequest(bool) {
@@ -191,7 +201,7 @@ export default {
 					this.appNotify.code = 200;
 					this.appNotify.message = "Access Token acquired: Login Success";
 					this.appNotify.success = true;
-					this.forceLogout(null);
+					this.forceLogout({});
 					this.loginRequest(false);
 					router.push("/");
 				} else {
@@ -274,7 +284,6 @@ export default {
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 .login-status,
 #login {

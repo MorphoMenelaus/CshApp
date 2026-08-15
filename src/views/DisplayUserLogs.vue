@@ -132,10 +132,10 @@ export default {
 					this.logs = data.logs;
 				}
 
-				this.eventBus.emit("getUserLogs", this.logs);
+				// this.eventBus.emit("getUserLogs", this.logs);
 			} catch (error) {
 				console.error('Error fetching data:', error)
-				this.eventBus.emit("getUserLogs", error);
+				// this.eventBus.emit("getUserLogs", error);
 			} finally {
 				this.showHideLoader(false);
 				// this.eventBus.emit("showHideLoader", false);

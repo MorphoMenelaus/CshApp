@@ -198,8 +198,9 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.forceLogout();
+					// this.eventBus.emit("updateStatus", data);
+					data.forced = true;
+					this.forceLogout(data);
 					// this.eventBus.emit("forceLogout");
 				}
 
@@ -559,9 +560,9 @@ small span {
 }
 
 @media (min-width: 992px) {
-	#description-box {
-		/* width: 85%; */
-	}
+	/* #description-box {
+		width: 85%;
+	} */
 
 	#weather-container {
 		width: 90%;
@@ -584,9 +585,9 @@ small span {
 		width: 80%;
 	}
 
-	#description-box {
-		/* width: 75%; */
-	}
+	/* #description-box {
+		width: 75%;
+	} */
 }
 
 @media (min-width: 1800px) {

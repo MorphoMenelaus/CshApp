@@ -42,8 +42,7 @@
 					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">
 						Send
 					</button>
-					<button class="btn" type="button" @click="contactEmail(false)"
-						title="Cancel">Cancel</button>
+					<button class="btn" type="button" @click="contactEmail(false)" title="Cancel">Cancel</button>
 				</div>
 			</form>
 		</div>
@@ -56,8 +55,7 @@
 				<h3>I'll get back to you as soon as I can.</h3>
 			</div>
 			<div style="display: flex;">
-				<button class="btn" type="button" @click="contactEmail(false)"
-					title="Cancel">Close</button>
+				<button class="btn" type="button" @click="contactEmail(false)" title="Cancel">Close</button>
 			</div>
 		</div>
 
@@ -141,7 +139,8 @@ export default {
 
 				if (data?.code === 403) {
 					this.updateStatus(data);
-					this.forceLogout();
+					data.forced = true;
+					this.forceLogout(data);
 					// this.eventBus.emit("forceLogout");
 				}
 
@@ -194,6 +193,10 @@ export default {
 				console.error("Email failed:", err);
 			}
 		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.closePopup();
+		},
 	},
 	mounted() {
 		this.sendAnalyticsEvent('contact_form_load', 'contact_modal');
@@ -207,21 +210,14 @@ export default {
 		}
 	},
 	created() {
-		window.addEventListener("keydown", (down) => {
-			if (down.key === "Escape")
-				this.contactEmail(false);
-		});
+		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", (down) => {
-				if (down.key === "Escape")
-					this.contactEmail(false);
-			});
+			window.removeEventListener("keydown", this.keyDown);
 		});
 	},
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h2 {
 	text-align: center;

@@ -17,7 +17,7 @@ export default {
 			// ** Deep watch example
 			// ** Watches for changes to all properties of an object
 			// handler(val, oldVal) {
-			// 	// doSomething();
+			// 	doSomething();
 			// },
 			// deep: true,
 		},
@@ -31,10 +31,6 @@ export default {
 	mounted() {
 	},
 	created() {
-		// this.eventBus.emit("eventTest", "Component Created");
-		// onBeforeUnmount(() => {
-		// 	this.eventBus.off("eventTest");
-		// });
 	},
 };
 </script>

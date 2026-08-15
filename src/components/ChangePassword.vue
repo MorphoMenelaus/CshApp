@@ -8,7 +8,7 @@
 			<h1>Password Change</h1>
 			<p style="margin: 15px 0;"><span class="warning">Warning!</span> After changing your password you will have
 				to log in again.</p>
-			<form @submit.prevent="changePassword" method="post">
+			<form method="post">
 				<div class="form-group" :class="errState && !currentPassword.length > 0 ? 'err' : ''">
 					<label>Current Password</label>
 					<input v-model.trim="currentPassword" type="password" name="currentPassword" class="form-control">
@@ -22,7 +22,7 @@
 					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
 				</div>
 				<div class="button-container">
-					<button class="btn" type='submit' title="Change password">Submit</button>
+					<button class="btn" type='button' title="Change password" @click="changePassword()">Submit</button>
 					<button @click="closePopup()" class="btn cancel" title="Cancel">Cancel</button>
 				</div>
 			</form>
@@ -63,24 +63,31 @@ export default {
 			// this.eventBus.emit("closeChangePassword");
 		},
 		async changePassword() {
-			this.showHideLoader(true);
 			// this.eventBus.emit("showHideLoader", true);
 
+			if (!this.currentPassword || !this.password) {
+				this.serverStatus.message = "Please provide current password and new password.";
+				this.serverStatus.success = false;
+				this.updateStatus(this.serverStatus);
+				return;
+			}
+
+			if (this.password !== this.confirmPassword) {
+				this.serverStatus.message = "New Password and Confirm Password do not match.";
+				this.serverStatus.success = false;
+				this.updateStatus(this.serverStatus);
+				this.showHideLoader(false);
+				return;
+			}
+
 			try {
+				this.showHideLoader(true);
+
 				let body = {
 					userId: this.appState.user.userId,
 					currentPassword: this.currentPassword,
 					password: this.password,
 				};
-
-				if (!this.currentPassword || !this.password) {
-					this.serverStatus.message = "Please provide current password and new password.";
-					this.serverStatus.success = false;
-					this.updateStatus(this.serverStatus);
-					// this.eventBus.emit("updateStatus", this.serverStatus);
-					this.errState = true;
-					return this.serverStatus;
-				}
 
 				let headerObj = new Headers();
 				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -100,14 +107,23 @@ export default {
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
-				this.updateStatus(this.serverStatus);
+				// this.updateStatus(this.serverStatus);
 				// this.eventBus.emit("updateStatus", (this.serverStatus));
 
-				if (data?.success)
-					this.eventBus.emit("changePassword", true);
+				if (this.serverStatus.code === 401) {
+					this.updateStatus(this.serverStatus);
+					this.showHideLoader(false);
+					return;
+				}
 
-				this.errState = data?.success;
-				this.forceLogout("Password changed successfully. Please log in again.");
+				if (this.serverStatus.success) {
+					this.addUserLog(this.appState, "User Changed Password");
+					this.forceLogout(data);
+				}
+				// 	this.eventBus.emit("changePassword", true);
+
+				// this.errState = data?.success;
+				// this.forceLogout(data);
 				// this.eventBus.emit("forceLogout");
 
 			} catch (error) {
@@ -118,30 +134,26 @@ export default {
 				this.updateStatus(this.serverStatus);
 				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
-				this.addUserLog(this.appState, "User Changed Password");
 				this.showHideLoader(false);
 				// this.eventBus.emit("showHideLoader", false);
 			}
+		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.closePopup();
 		},
 	},
 	mounted() {
 	},
 	created() {
-		window.addEventListener("keydown", (down) => {
-			if (down.key === "Escape")
-				this.closePopup();
-		});
+		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", (down) => {
-				if (down.key === "Escape")
-					this.closePopup();
-			});
+			window.removeEventListener("keydown", this.keyDown);
 		});
 	},
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
 	text-align: center;

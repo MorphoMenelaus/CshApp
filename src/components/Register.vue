@@ -56,7 +56,6 @@ export default {
 	},
 	data() {
 		return {
-			registerUser: inject("registerUser"),
 			forceLogout: inject('forceLogout'),
 			loginShow: inject("loginShow"),
 			registerUser: inject("registerUser"),
@@ -113,8 +112,9 @@ export default {
 				const data = await response.json();
 
 				if (data?.code === 403) {
-					this.updateStatus(data);
-					this.forceLogout();
+					// this.updateStatus(data);
+					data.forced = true;
+					this.forceLogout(data);
 					// this.eventBus.emit("forceLogout");
 				}
 
@@ -173,6 +173,10 @@ export default {
 				console.error("Registration failed:", err);
 			}
 		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.closePopup();
+		},
 	},
 	mounted() {
 		this.sendAnalyticsEvent('register_form_load', 'register_modal');
@@ -186,18 +190,12 @@ export default {
 		}
 	},
 	created() {
-		window.addEventListener("keydown", (down) => {
-			if (down.key === "Escape")
-				this.registerUser(false);
-		});
+		window.addEventListener("keydown", this.keyDown);
 		// this.eventBus.on("EscapeKeydown", () => {
 		// 	this.registerUser(false);
 		// });
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", (down) => {
-				if (down.key === "Escape")
-					this.registerUser(false);
-			});
+			window.removeEventListener("keydown", this.keyDown);
 			// this.eventBus.off("EscapeKeydown");
 		});
 	},

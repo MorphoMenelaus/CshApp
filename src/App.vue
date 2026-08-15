@@ -65,7 +65,7 @@ export default {
 			// updateStatus: inject("updateStatus"),
 			forceLogout: inject('forceLogout'),
 			sharedUpdateStatus: {},
-			forceLogoutEvent: null,
+			forceLogoutEvent: {},
 			// serverStatus: Object.assign({}, this.appNotify),
 			recall: new Storage(),
 			body: document.getElementsByTagName('body'),
@@ -109,8 +109,8 @@ export default {
 						message: "Session Expired. Please login again.",
 						success: false
 					};
-					this.sharedUpdateStatus = res;
-					this.forceLogoutEvent = true;
+					// this.sharedUpdateStatus = res;
+					this.forceLogoutEvent = res;
 					// this.forceLogout();
 				}
 			}
@@ -166,9 +166,10 @@ export default {
 				let response = await fetch(request);
 				let data = await response.json();
 				if (data?.success) {
-					// this.appDevDuties = data.appDevDuties;
-					// let updateAppState = this.appState;
-					this.appState.appDevDuties = this.appDevDuties = data.appDevDuties;
+					this.appDevDuties = data.appDevDuties;
+					let updateAppState = this.appState;
+					updateAppState.appDevDuties = this.appDevDuties = data.appDevDuties;
+					this.updateAppState(updateAppState);
 					// this.eventBus.emit("updateAppState", updateAppState);
 				}
 
@@ -193,23 +194,25 @@ export default {
 	},
 	async created() {
 		/* BEGIN NEW EVENT HANDLING SECTION */
-		let defaultReason = "Session Expired. Please login again.";
-		provide("forceLogout", (reason = defaultReason) => this.forceLogoutEvent = reason);
+		let defaultStatus = {
+			code: 403,
+			message: "Session Expired. Please login again.",
+			success: false,
+			forced: true
+		};
+		provide("forceLogout", (status = defaultStatus) => this.forceLogoutEvent = status);
 		provide("updateAppState", this.updateAppState);
 		provide("initialSetup", this.initialSetup);
 		provide("showHideLoader", (bool) => this.showHideLoader = bool);
 		provide("loginShow", (bool) => this.loginShow = bool);
 		provide("registerUser", (bool) => this.currentComponent = bool ? "Register" : null);
 		provide("contactEmail", (bool) => this.currentComponent = bool ? "ContactForm" : null);
-		provide("sendUpdateStatus", (payload) => {
-			this.sharedUpdateStatus = payload;
-		});
+		provide("sendUpdateStatus", (payload) => this.sharedUpdateStatus = payload);
 		/* END NEW EVENT HANDLING SECTION */
 
+		screen.orientation.addEventListener("change", this.checkOrientation);
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
-		window.addEventListener("forceLogout", (e) => {
-			this.forceLogoutEvent = e?.detail?.message || "Session Expired. Please login again.";
-		});
+		window.addEventListener("forceLogout", (e) => this.forceLogoutEvent = e?.detail);
 		window.addEventListener("keydown", (down) => {
 			if (down.key === "Escape")
 				this.currentComponent = null;
@@ -224,7 +227,6 @@ export default {
 				this.recallAppState();
 			}
 		});
-		screen.orientation.addEventListener("change", this.checkOrientation);
 
 
 		this.checkOrientation();

@@ -200,12 +200,12 @@ export default {
 	mounted() {
 		this.getBlogPosts();
 	},
-	created() {
-		this.eventBus.emit("eventTest", "Component Created");
-		onBeforeUnmount(() => {
-			this.eventBus.off("eventTest");
-		});
-	},
+	// created() {
+	// 	this.eventBus.emit("eventTest", "Component Created");
+	// 	onBeforeUnmount(() => {
+	// 		this.eventBus.off("eventTest");
+	// 	});
+	// },
 };
 </script>
 

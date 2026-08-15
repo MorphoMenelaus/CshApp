@@ -53,7 +53,7 @@
 
 		<div class="user-lists-container">
 
-			<div v-if="eventLogList.length > 0">
+			<div v-if="eventLogList?.length > 0">
 				<div id="non-mobile" v-if="!isMobile">
 					<table v-if="eventLogList && eventLogList.length > 0">
 						<thead>
@@ -75,7 +75,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div id="mobile" v-if="isMobile">
+				<div id="mobile" v-if="isMobile && eventLogList?.length > 0">
 					<table v-for="(item, index) in eventLogList" :key="index">
 						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
 							<th>{{ this.toTitleCase(key) }}</th>
@@ -151,9 +151,11 @@ export default {
 			this.getClockLog();
 		},
 		eventLogList() {
-			this.eventLogList.forEach(event => {
-				event.isWakeupEvent = event?.isWakeupEvent === 1 ? true : false;
-			});
+			if (this.eventLogList?.length > 0) {
+				this.eventLogList.forEach(event => {
+					event.isWakeupEvent = event?.isWakeupEvent === 1 ? true : false;
+				});
+			}
 		}
 	},
 	methods: {
@@ -266,7 +268,7 @@ export default {
 			this.getClockLog();
 		},
 		nextPage() {
-			if (this.eventLogList.length < this.limit) return;
+			if (this.eventLogList?.length < this.limit) return;
 			this.offset = this.offset + this.limit;
 			this.currentPage++;
 			this.getClockLog();

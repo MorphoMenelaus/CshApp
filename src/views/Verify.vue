@@ -79,9 +79,10 @@ export default {
 				const dataObj = await response.json();
 
 				if (dataObj?.code === 403) {
-					this.updateStatus(dataObj);
+					// this.updateStatus(dataObj);
 					// this.eventBus.emit("updateStatus", dataObj);
-					this.forceLogout();
+					dataObj.forced = true;
+					this.forceLogout(dataObj);
 					// this.eventBus.emit("forceLogout");
 				}
 
@@ -124,9 +125,10 @@ export default {
 				const dataObj = await response.json();
 
 				if (dataObj?.code === 403) {
-					this.updateStatus(dataObj);
+					// this.updateStatus(dataObj);
 					// this.eventBus.emit("updateStatus", dataObj);
-					this.forceLogout();
+					dataObj.forced = true;
+					this.forceLogout(dataObj);
 					// this.eventBus.emit("forceLogout");
 				}
 
@@ -159,7 +161,6 @@ export default {
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2,

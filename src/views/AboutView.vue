@@ -5,9 +5,9 @@ import Disclaimers from "../components/Disclaimers.vue";
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 	console.warn('Global function not found! sendAnalyticsEvent()');
 });
-const eventBus = inject('eventBus', () => {
-	console.warn('Global function not found! eventBus');
-});
+// const eventBus = inject('eventBus', () => {
+// 	console.warn('Global function not found! eventBus');
+// });
 const contactEmail = inject('contactEmail', () => {
 	console.warn('Global function not found! contactEmail()');
 });

@@ -62,16 +62,16 @@ export default {
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data.success)
+				if (data.success) {
+					this.serverStatus = data;
+					this.serverStatus.message = data?.success ? "Your account has been deleted." : data?.message;
+					this.serverStatus.forced = true;
+					this.forceLogout(this.serverStatus);
 					this.addUserLog(this.appState, "User Deleted Account");
-
-				this.serverStatus.code = data?.code;
-				this.serverStatus.message = data?.message;
-				this.serverStatus.success = data?.success;
-				this.updateStatus(this.serverStatus);
+				}
+				// this.updateStatus(this.serverStatus);
 				// this.eventBus.emit("updateStatus", this.serverStatus);
 
-				this.forceLogout("Your account has been deleted.");
 				// this.eventBus.emit("UserDeleted");
 			} catch (error) {
 				console.error('Error posting data:', error);
@@ -84,25 +84,22 @@ export default {
 				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.closePopup();
+		},
 	},
 	mounted() {
 	},
 	created() {
-		window.addEventListener("keydown", (down) => {
-			if (down.key === "Escape")
-				this.cancelDeleteUser();
-		});
+		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", (down) => {
-				if (down.key === "Escape")
-					cancelDeleteUser();
-			});
+			window.removeEventListener("keydown", this.keyDown);
 		});
 	},
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h2 {
 	text-align: center;

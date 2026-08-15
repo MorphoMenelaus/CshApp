@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import { inject } from 'vue';
 import MainNavbar from "@/components/MainNavbar.vue";
 
 export default {
@@ -47,6 +48,7 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
 			appNotify: Object.assign({}, this.appNotify),
 			statusArray: [],
 			dayLocal: "",
@@ -60,6 +62,7 @@ export default {
 			handler(newVal) {
 				if (newVal && Object.keys(newVal).length > 0) {
 					this.handleUpdateStatus(newVal);
+					this.updateStatus({});
 				}
 			},
 			deep: true,
@@ -96,11 +99,11 @@ export default {
 			this.dateLocal = date.toLocaleDateString("en-US");
 			this.timeLocal = date.toLocaleTimeString();
 			if (this.statusArray.length > 0) this.removeStaleEvents();
-			this.eventBus.emit("updateDateTime", {
-				dayLocal: this.dayLocal,
-				dateLocal: this.dateLocal,
-				timeLocal: this.timeLocal
-			});
+			// this.eventBus.emit("updateDateTime", {
+			// 	dayLocal: this.dayLocal,
+			// 	dateLocal: this.dateLocal,
+			// 	timeLocal: this.timeLocal
+			// });
 		},
 		removeStaleEvents() {
 			let currentTime = new Date().getTime();

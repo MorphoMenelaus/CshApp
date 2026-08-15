@@ -201,12 +201,15 @@ export default {
 		location() {
 			this.locationDefault = this.location.city;
 		},
-		forceLogoutEvent() {
-			if (this.forceLogoutEvent) {
+		forceLogoutEvent: {
+			handler(res) {
+				// console.log("forceLogoutEvent triggered in UserPreferences.vue", res);
 				this.currentComponent = null;
-				this.forceLogout();
-			}
-		}
+				res.forced = true;
+				this.forceLogout(res);
+			},
+			deep: true,
+		},
 	},
 	methods: {
 		goBack() {

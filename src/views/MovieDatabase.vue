@@ -448,9 +448,10 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					this.updateStatus(data);
+					// this.updateStatus(data);
 					// this.eventBus.emit("updateStatus", data);
-					this.forceLogout();
+					data.forced = true;
+					this.forceLogout(data);
 					// this.eventBus.emit("forceLogout");
 				}
 
@@ -497,6 +498,10 @@ export default {
 			if (refresh)
 				this.refreshMoviesWithFaves();
 		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.closePopup();
+		},
 	},
 	mounted() {
 		this.limit = this.columns * 2;
@@ -512,19 +517,13 @@ export default {
 		// 	if (refresh)
 		// 		this.refreshMoviesWithFaves();
 		// });
-		window.addEventListener("keydown", (down) => {
-			if (down.key === "Escape")
-				this.closeModal();
-		});
+		window.addEventListener("keydown", this.keyDown);
 		// this.eventBus.on("EscapeKeydown", () => {
 		// 	this.currentComponent = null;
 		// 	this.selectedMovie = null;
 		// });
 		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", (down) => {
-				if (down.key === "Escape")
-					this.closeModal();
-			});
+			window.removeEventListener("keydown", this.keyDown);
 			// this.eventBus.off("movieUpdated");
 			// this.eventBus.off("EscapeKeydown");
 		});

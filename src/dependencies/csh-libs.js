@@ -280,6 +280,9 @@ async function refreshAccessToken(appState) {
 		});
 
 		const response = await fetch(request);
+		if (!response.ok)
+			dispatchCustomEvent("forceLogout");
+
 		const data = await response.json();
 
 		if (data?.code === 403) {

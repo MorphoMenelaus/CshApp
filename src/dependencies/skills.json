@@ -10,9 +10,12 @@
 	"NodeJS Server Application",
 	"Node.js backend",
 	"REST API",
+	"RESTful API",
+	"JSON",
 	"HTML5",
 	"CSS3",
 	"JavaScript ES6",
+	"TypeScript",
 	"Chart.js",
 	"ChartJS",
 	"jQuery",
@@ -26,6 +29,7 @@
 	"Single Page Applications",
 	"SPA",
 	"Wordpress CMS",
+	"Template Design",
 	"Magento CMS",
 	"MariaDB",
 	"Responsive Web Design",
@@ -42,5 +46,7 @@
 	"GitHub Source and Version Control",
 	"Git version control",
 	"Agile Development",
+	"Scrum",
+	"Kanban",
 	"Jira project management and collaboration"
 ]

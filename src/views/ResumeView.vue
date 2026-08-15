@@ -153,9 +153,10 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					this.updateStatus(data);
+					// this.updateStatus(data);
 					// this.eventBus.emit("updateStatus", data);
-					this.forceLogout();
+					data.forced = true;
+					this.forceLogout(data);
 					// this.eventBus.emit("forceLogout");
 				}
 
