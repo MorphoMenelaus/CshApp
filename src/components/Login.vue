@@ -20,7 +20,7 @@
 	<Transition name="fade">
 		<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''"
 			v-if="!appState?.isLoggedOn && loginShow" @click="handleClick($event)">
-			<form class="input-section">
+			<form class="input-section" :class="isMobile ? 'mobile' : ''">
 				<div id="form-header">
 					<h1>Chris Hardwick's SPA</h1>
 					<h2>Welcome</h2>
@@ -75,6 +75,7 @@ export default {
 	name: "Login",
 	props: {
 		appState: Object,
+		isMobile: Boolean,
 		loginShow: Boolean,
 		forceLogoutEvent: Object,
 	},
@@ -108,7 +109,7 @@ export default {
 		},
 		forceLogoutEvent: {
 			handler(res) {
-				console.log("forceLogoutEvent triggered in Login.vue", res);
+				// console.log("forceLogoutEvent triggered in Login.vue", res);
 				if (res?.forced) {
 					this.updateStatus(res);
 					this.logout();
@@ -195,6 +196,7 @@ export default {
 			}
 		},
 		openConfirmDialog() {
+			this.mobileDropdownEvent(true);
 			this.dialog.showModal()
 		},
 		async logout() {
@@ -350,7 +352,11 @@ h2 {
 	background: rgb(49 59 100 / 90%);
 	border-radius: 8px;
 	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
-	overflow: hidden;
+	overflow: hidden auto;
+}
+
+.input-section.mobile {
+	max-height: calc(100vh - 150px);
 }
 
 .uiDarkMode .input-section[data-v-3bd1a200] {

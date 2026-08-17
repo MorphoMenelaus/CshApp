@@ -307,10 +307,14 @@ label[for="casinoId"] {
 	border-radius: 8px;
 	display: flex;
 	flex-direction: column;
-	overflow: hidden;
+	overflow: hidden auto;
 	box-shadow: 2px 2px 6px #000;
 	width: 90%;
 	margin: auto;
+}
+
+.mobile .wrapper {
+	max-height: calc(100vh - 150px);
 }
 
 .wrapper .form-group {
@@ -319,12 +323,6 @@ label[for="casinoId"] {
 	flex-direction: column;
 	margin-bottom: 15px;
 }
-
-/* .btn-container {
-	position: absolute;
-	top: -45px;
-	right: -15px;
-} */
 
 #register button {
 	display: block;

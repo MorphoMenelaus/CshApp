@@ -22,7 +22,7 @@
 	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus"
 		:mobileDropdownClose="mobileDropdownClose" />
 
-	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" />
+	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" :isMobile="isMobile" />
 
 	<RouterView id="view" :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth"
 		:forceLogoutEvent="forceLogoutEvent" :class="isMobile ? 'mobile' : ''" />
@@ -30,7 +30,7 @@
 	<FooterMain :serverVersion="serverVersion" :isMobile="isMobile" />
 
 	<Transition name="fade">
-		<component :is="currentComponent" :appState="appState" />
+		<component :is="currentComponent" :appState="appState" :class="isMobile ? 'mobile' : ''" />
 	</Transition>
 
 </template>
@@ -84,7 +84,6 @@ export default {
 		},
 		currentComponent() {
 			this.mobileDropdownClose = this.currentComponent ? true : false;
-			console.log(this.currentComponent);
 		}
 	},
 	methods: {
@@ -97,7 +96,6 @@ export default {
 			if (this.appState?.accessToken) {
 				let checkTokens = await this.tokenCheck(this.appState);
 				if (!checkTokens?.tokenValid) {
-					console.log(checkTokens);
 					let res = {
 						code: 403,
 						message: "Refresh Token Expired. Please login again.",
