@@ -74,9 +74,6 @@ export default {
 			chartElem: null,
 			startDate: new Date().toISOString().split('T')[0],
 			endDate: new Date().toISOString().split('T')[0],
-			// currentDate: new Date().toISOString().split('T')[0],
-			// chartWidth: this.windowWidth,
-			// chartHeight: this.windowWidth / 2,
 			seriesOptions: seriesIds,
 			limitOptions: [
 				{ text: "50", value: 50 },
@@ -179,7 +176,6 @@ export default {
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
 				if (this.serverStatus.code !== 200) this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", this.serverStatus);
 
 			} catch (error) {
 				console.error('Error posting data:', error);
@@ -187,7 +183,6 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader = false;
 			}
@@ -291,13 +286,7 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* #latest-stocks {
-	overflow: hidden;
-} */
-
 #markets {
 	position: relative;
 }

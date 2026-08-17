@@ -82,18 +82,7 @@ export default {
 				{ text: "20", value: "20" },
 				{ text: "50", value: "50" },
 			],
-			// responseStatus: "",
 			usersList: [],
-			// usersLabels: [
-			// 	"userId",
-			// 	"userCreated",
-			// 	"userName",
-			// 	"admin",
-			// 	"siteAdmin",
-			// 	"siteEditor",
-			// 	"isContributor",
-			// 	"userNotes",
-			// ],
 		};
 	},
 	watch: {
@@ -114,7 +103,6 @@ export default {
 	methods: {
 		async getUsers() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -144,7 +132,6 @@ export default {
 				console.error('Error fetching data:', error)
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		previousPage() {
@@ -166,8 +153,6 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #view {
 	padding-bottom: 80px;
@@ -249,16 +234,4 @@ th {
 td {
 	border-bottom: 1px #aaa solid;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

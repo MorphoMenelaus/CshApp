@@ -11,10 +11,6 @@
 			</div>
 		</div>
 
-		<!-- <div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
-			<div class="spinner-comet"></div>
-		</div> -->
-
 		<div id="clock" v-if="!isMobile">
 			<div id="time-container">
 				<span id="time">{{ timeLocal }}</span>
@@ -25,7 +21,7 @@
 			</div>
 		</div>
 
-		<MainNavbar :appState="appState" :isMobile="isMobile" />
+		<MainNavbar :appState="appState" :isMobile="isMobile" :allowMobileDropdown="allowMobileDropdown" />
 
 	</header>
 
@@ -45,6 +41,7 @@ export default {
 		serverVersion: String,
 		isMobile: Boolean,
 		sharedUpdateStatus: Object,
+		allowMobileDropdown: Boolean
 	},
 	data() {
 		return {
@@ -54,7 +51,6 @@ export default {
 			dayLocal: "",
 			dateLocal: "",
 			timeLocal: "",
-			// messageTimeout: 0,
 		};
 	},
 	watch: {
@@ -70,12 +66,6 @@ export default {
 	},
 	created() {
 		this.updateDateTime();
-		// this.eventBus.on("updateStatus", (payload) => {
-		// 	this.handleUpdateStatus(payload);
-		// });
-		// this.eventBus.on("showHideLoader", payload => {
-		// 	this.showHideLoader = payload;
-		// });
 	},
 	mounted() {
 		setInterval(() => {
@@ -99,11 +89,6 @@ export default {
 			this.dateLocal = date.toLocaleDateString("en-US");
 			this.timeLocal = date.toLocaleTimeString();
 			if (this.statusArray.length > 0) this.removeStaleEvents();
-			// this.eventBus.emit("updateDateTime", {
-			// 	dayLocal: this.dayLocal,
-			// 	dateLocal: this.dateLocal,
-			// 	timeLocal: this.timeLocal
-			// });
 		},
 		removeStaleEvents() {
 			let currentTime = new Date().getTime();
@@ -200,34 +185,6 @@ h1 {
 .close-notification:hover {
 	background-color: #aaa;
 }
-
-/* #loading-icon {
-	display: none;
-	align-content: center;
-	justify-content: center;
-	position: fixed;
-	top: 94px;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	width: 100vw;
-	background-color: rgb(0 0 0 / 50%);
-	transition: background-color .3 ease-in-out;
-	z-index: 10000;
-}
-
-.loader-icon {
-	height: 48px;
-	width: 48px;
-	border: 3px solid;
-	border-radius: 100%;
-	border-color: red white blue black;
-	animation: loader 0.5s linear infinite;
-}
-
-#loading-icon.loading {
-	display: grid;
-} */
 
 @keyframes loader {
 	from {

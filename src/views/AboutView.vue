@@ -5,9 +5,6 @@ import Disclaimers from "../components/Disclaimers.vue";
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 	console.warn('Global function not found! sendAnalyticsEvent()');
 });
-// const eventBus = inject('eventBus', () => {
-// 	console.warn('Global function not found! eventBus');
-// });
 const contactEmail = inject('contactEmail', () => {
 	console.warn('Global function not found! contactEmail()');
 });
@@ -57,18 +54,9 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 
 <style scoped>
 #about {
-	/* position: absolute;
-	top: 84px;
-	right: 0;
-	bottom: 0;
-	left: 0; */
-	/* height: calc(100vh - 150px); */
 	width: 100%;
 	margin: 15px auto;
-	/* padding: 15px 30px 100px; */
-	/* background-color: var(--vt-c-white-mute); */
 	color: var(--vt-c-text-light-2);
-	/* z-index: -1; */
 	font-size: 18px;
 }
 
@@ -80,7 +68,6 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 
 
 .uiDarkMode #about {
-	/* background-color: #181818; */
 	color: #aaa;
 }
 
@@ -92,7 +79,6 @@ h3 {
 
 h1 {
 	font-size: 4em;
-	/* font-weight: bold; */
 }
 
 .uiDarkMode #about h1 {
@@ -108,7 +94,6 @@ h3 {
 }
 
 p {
-	/* text-indent: 30px; */
 	margin: 0 auto 15px;
 	padding: 0 30px 15px;
 }
@@ -123,7 +108,6 @@ h2.profile {
 }
 
 #profile {
-	/* background-color: #ccc; */
 	color: #000;
 	border: 1px solid #555;
 	border-radius: 12px;
@@ -148,7 +132,6 @@ h2.profile {
 
 .btn-container .btn {
 	font-size: .75em;
-	/* line-height: 1.5em; */
 	padding: 5px 15px;
 	border: 1px #000 solid;
 }
@@ -213,26 +196,6 @@ h2.profile {
 
 @media (min-width: 1200px) {
 	#about {
-		width: 85%;
-	}
-}
-
-@media (min-width: 1024px) {
-	/* .about {
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-	} */
-}
-
-@media (min-width: 992px) {
-	#about {
-		width: 90%;
-	}
-}
-
-@media (min-width: 1200px) {
-	#about {
 		width: 80%;
 	}
 }
@@ -249,4 +212,3 @@ h2.profile {
 	}
 }
 </style>
-``

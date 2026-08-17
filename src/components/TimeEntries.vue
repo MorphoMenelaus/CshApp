@@ -74,7 +74,6 @@ export default {
 	methods: {
 		async getTimeEntries() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -93,8 +92,6 @@ export default {
 			});
 
 			try {
-				// let response = await fetch(request);
-				// let data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
@@ -106,18 +103,14 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2,
@@ -138,16 +131,4 @@ h4 {
 	justify-content: center;
 	margin: 15px;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

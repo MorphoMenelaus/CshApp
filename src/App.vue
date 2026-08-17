@@ -19,7 +19,8 @@
 				title="Click to register">Click to register</span>.<br />Or login with username "guest"</span>
 	</div>
 
-	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus" />
+	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus"
+		:allowMobileDropdown="allowMobileDropdown" />
 
 	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" />
 
@@ -35,8 +36,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import { RouterLink, RouterView } from "vue-router";
 import { provide, inject } from 'vue';
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
@@ -46,13 +45,6 @@ import ContactForm from "@/components/ContactForm.vue";
 import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
 
 export default {
-	// setup() {
-	// 	const baseUrl = inject('baseUrl');
-	// 	return {
-	// 		baseUrl
-	// 	}
-	// },
-	// inject: ['baseUrl'],
 	components: {
 		HeaderMain,
 		FooterMain,
@@ -62,17 +54,14 @@ export default {
 	},
 	data() {
 		return {
-			// updateStatus: inject("updateStatus"),
-			forceLogout: inject('forceLogout'),
 			sharedUpdateStatus: {},
 			forceLogoutEvent: {},
-			// serverStatus: Object.assign({}, this.appNotify),
+			allowMobileDropdown: true,
 			recall: new Storage(),
 			body: document.getElementsByTagName('body'),
 			serverVersion: "",
 			appState: {},
 			appDevDuties: [],
-			// guestLoginDoc: false,
 			currentComponent: null,
 			isMobile: window.innerWidth < 1024,
 			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 768,
@@ -92,6 +81,10 @@ export default {
 			} else {
 				this.body[0].classList.remove("uiDarkMode");
 			}
+		},
+		currentComponent() {
+			this.allowMobileDropdown = this.currentComponent ? true : false;
+			console.log(this.currentComponent);
 		}
 	},
 	methods: {
@@ -104,14 +97,14 @@ export default {
 			if (this.appState?.accessToken) {
 				let checkTokens = await this.tokenCheck(this.appState);
 				if (!checkTokens?.tokenValid) {
+					console.log(checkTokens);
 					let res = {
 						code: 403,
-						message: "Session Expired. Please login again.",
-						success: false
+						message: "Refresh Token Expired. Please login again.",
+						success: false,
+						forced: true
 					};
-					// this.sharedUpdateStatus = res;
 					this.forceLogoutEvent = res;
-					// this.forceLogout();
 				}
 			}
 			// The order of this getAppRolesData() call is important.
@@ -136,7 +129,7 @@ export default {
 		},
 		async getServerVersion() {
 			try {
-				const response = await fetch('/api/serverInfo');
+				const response = await fetch(`${this.baseUrl}/api/serverInfo`);
 				if (response?.ok) {
 					let data = await response.json();
 					this.serverVersion = data?.version || "";
@@ -170,7 +163,6 @@ export default {
 					let updateAppState = this.appState;
 					updateAppState.appDevDuties = this.appDevDuties = data.appDevDuties;
 					this.updateAppState(updateAppState);
-					// this.eventBus.emit("updateAppState", updateAppState);
 				}
 
 			} catch (error) {
@@ -228,38 +220,12 @@ export default {
 			}
 		});
 
-
 		this.checkOrientation();
 		this.initialSetup();
-		// this.eventBus.on("EscapeKeydown", () => {
-		// 	this.currentComponent = null;
-		// });
-		// this.eventBus.on("updateAppState", (payload) => {
-		// 	this.updateAppState(payload);
-		// });
-		// window.addEventListener("forceLogout", (e) => {
-		// 	this.forceLogoutEvent = e?.detail?.message || "Session Expired. Please login again.";
-		// 	this.eventBus.emit("updateStatus", e.detail);
-		// 	this.eventBus.emit("forceLogout");
-		// 	this.forceLogout();
-		// });
-		// this.eventBus.on("contactEmail", (bool) => {
-		// 	this.currentComponent = bool ? "ContactForm" : null;
-		// });
-		// let body = document.getElementsByTagName('body')[0];
-		// body.addEventListener("click", (event) => {
-		// 	if (event.target.id !== "nav-container" && event.target.id !== "hamburger")
-		// 		this.eventBus.emit("closeMainNav");
-		// }, true);
-	},
-	mounted() {
-		// let app = document.getElementById("app");
-		// app.addEventListener("scroll", this.handleScroll, { passive: true });
 	},
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 span.link {
 	font-weight: bold;
@@ -277,10 +243,6 @@ span.link {
 	/* color: #000; */
 	z-index: 1;
 }
-
-/* .uiDarkMode #dark-mode-check {
-	color: #ddd;
-} */
 
 .register-link {
 	right: 15px;

@@ -46,7 +46,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import { onBeforeUnmount, inject } from 'vue';
 
 export default {
@@ -115,7 +114,6 @@ export default {
 					// this.updateStatus(data);
 					data.forced = true;
 					this.forceLogout(data);
-					// this.eventBus.emit("forceLogout");
 				}
 
 				this.serverStatus.code = data?.code;
@@ -123,7 +121,7 @@ export default {
 				this.serverStatus.success = data?.success;
 
 				if (data?.success) {
-					this.loginShowEvent(false);
+					this.loginShow(false);
 					this.registerUser(false);
 					this.sendAnalyticsEvent('register_form_send', 'register_modal');
 				}
@@ -141,6 +139,14 @@ export default {
 			}
 		},
 		async registerHandler() {
+
+			if (this.password !== this.confirmPassword) {
+				this.serverStatus.message = "New Password and Confirm Password do not match.";
+				this.serverStatus.success = false;
+				this.updateStatus(this.serverStatus);
+				return;
+			}
+
 			try {
 				// Ensure the reCAPTCHA API has finished loading globally
 				if (!window.grecaptcha || !window.grecaptcha.enterprise) {
@@ -191,12 +197,8 @@ export default {
 	},
 	created() {
 		window.addEventListener("keydown", this.keyDown);
-		// this.eventBus.on("EscapeKeydown", () => {
-		// 	this.registerUser(false);
-		// });
 		onBeforeUnmount(() => {
 			window.removeEventListener("keydown", this.keyDown);
-			// this.eventBus.off("EscapeKeydown");
 		});
 	},
 };

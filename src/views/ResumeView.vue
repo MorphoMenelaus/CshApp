@@ -61,7 +61,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import { inject } from 'vue';
 import ResumeTable from "@/components/ResumeTable.vue";
 import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
@@ -131,7 +130,6 @@ export default {
 		},
 		async getResumeData() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -153,11 +151,8 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					// this.updateStatus(data);
-					// this.eventBus.emit("updateStatus", data);
 					data.forced = true;
 					this.forceLogout(data);
-					// this.eventBus.emit("forceLogout");
 				}
 
 				if (data?.success) {
@@ -171,10 +166,8 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
@@ -215,13 +208,7 @@ export default {
 }
 </style>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* h2 {
-	text-align: center;
-	font-weight: 500;
-} */
-
 .btn {
 	margin: 15px auto;
 	display: block;
@@ -268,7 +255,6 @@ export default {
 
 .name {
 	font-size: 3.5em;
-	/* font-weight: bold; */
 }
 
 .center {

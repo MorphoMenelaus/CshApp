@@ -4,8 +4,7 @@
 		<div id="movie-header">
 			<h1>Movie Database</h1>
 			<p class="movie-intro">A searchable, sortable list of more than 1500 movies in my database, containing cast,
-				crew, ratings, etc...
-				Not a complete list of all movies ever made, obviously.</p>
+				crew, ratings, etc... Not a complete list of all movies ever made, obviously.</p>
 			<p class="movie-intro">Favorites can be saved to your account, if you have an account on this site.</p>
 		</div>
 
@@ -109,7 +108,6 @@
 			</dialog>
 		</div>
 
-
 	</div>
 </template>
 
@@ -149,10 +147,6 @@ export default {
 				{ text: "Director", value: "tags_director" },
 				{ text: "Genre", value: "tags_genre" },
 			],
-			// orderDirOptions: [
-			// 	{ text: "Descending", value: "DESC" },
-			// 	{ text: "Ascending", value: "ASC" },
-			// ],
 			sortBy: "year",
 			orderDir: "DESC",
 			contains: "",
@@ -378,12 +372,10 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			}
 		},
 		async getMovieByFavorites() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let body = {
 				movieIds: this.favoritesList
@@ -413,16 +405,13 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.scrollToTop();
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async getMovieList() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -448,11 +437,8 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					// this.updateStatus(data);
-					// this.eventBus.emit("updateStatus", data);
 					data.forced = true;
 					this.forceLogout(data);
-					// this.eventBus.emit("forceLogout");
 				}
 
 				this.movieList = data.movies;
@@ -465,11 +451,9 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.scrollToTop();
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async refreshMoviesWithFaves() {
@@ -511,28 +495,14 @@ export default {
 	},
 	created() {
 		provide("movieUpdated", this.closeModal);
-		// this.eventBus.on("movieUpdated", (refresh = true) => {
-		// 	this.currentComponent = null;
-		// 	this.selectedMovie = null;
-		// 	if (refresh)
-		// 		this.refreshMoviesWithFaves();
-		// });
 		window.addEventListener("keydown", this.keyDown);
-		// this.eventBus.on("EscapeKeydown", () => {
-		// 	this.currentComponent = null;
-		// 	this.selectedMovie = null;
-		// });
 		onBeforeUnmount(() => {
 			window.removeEventListener("keydown", this.keyDown);
-			// this.eventBus.off("movieUpdated");
-			// this.eventBus.off("EscapeKeydown");
 		});
 	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2 {
@@ -653,11 +623,6 @@ label[for="limitOptions"] {
 #paging .flex-row * {
 	margin: auto 3px;
 }
-
-/* .mobile .order,
-.mobile label[for="sortByOptions"] {
-	display: none;
-} */
 
 .clear-field {
 	padding: 4px;

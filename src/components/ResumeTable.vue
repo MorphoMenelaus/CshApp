@@ -31,13 +31,10 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #pseudo-table {
 	border: 1px #666 solid;
 	border-radius: 12px;
-	/* color: #666; */
-	/* color: rgb(0 0 0 / 70%); */
 	color: #222;
 }
 

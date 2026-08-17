@@ -44,7 +44,6 @@ export default {
 			if (!confirmDelete) return false;
 
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -69,10 +68,6 @@ export default {
 					this.forceLogout(this.serverStatus);
 					this.addUserLog(this.appState, "User Deleted Account");
 				}
-				// this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", this.serverStatus);
-
-				// this.eventBus.emit("UserDeleted");
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
@@ -81,7 +76,6 @@ export default {
 				this.updateStatus(this.serverStatus);
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		keyDown(e) {

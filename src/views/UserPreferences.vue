@@ -150,7 +150,7 @@ export default {
 	props: {
 		appState: Object,
 		isMobile: Boolean,
-		forceLogoutEvent: Boolean,
+		forceLogoutEvent: Object,
 	},
 	components: {
 		ChangePassword,
@@ -188,7 +188,6 @@ export default {
 			charRemaining: 1024,
 			location: locations.filter(loc => loc.city === this.locationDefault)[0],
 			locationOptions: locations.toSorted((a, b) => a.city.localeCompare(b.city)),
-
 		};
 	},
 	watch: {
@@ -203,7 +202,6 @@ export default {
 		},
 		forceLogoutEvent: {
 			handler(res) {
-				// console.log("forceLogoutEvent triggered in UserPreferences.vue", res);
 				this.currentComponent = null;
 				res.forced = true;
 				this.forceLogout(res);
@@ -274,7 +272,6 @@ export default {
 		},
 		async getUser() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -303,7 +300,6 @@ export default {
 				console.error('Error fetching data:', error)
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async updateUser() {
@@ -343,7 +339,6 @@ export default {
 					let updateAppState = this.appState;
 					updateAppState.user = data.user;
 					this.updateAppState(updateAppState);
-					// this.eventBus.emit("updateAppState", updateAppState);
 				}
 
 				this.getUser();
@@ -352,14 +347,12 @@ export default {
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
 				this.addUserLog(this.appState, "Update User Preferences");
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		}
 	},
@@ -367,30 +360,12 @@ export default {
 	},
 	created() {
 		this.getUser();
-		// this.eventBus.on("UserDeleted", () => {
-		// 	this.currentComponent = null;
-		// 	this.forceLogout();
-		// 	this.eventBus.emit("forceLogout");
-		// });
 		provide('cancelDeleteUser', (bool) => this.currentComponent = bool ? "DeleteUser" : null);
-		// this.eventBus.on("cancelDeleteUser", () => {
-		// 	this.currentComponent = null;
-		// });
 		provide('closeChangePassword', (bool) => this.currentComponent = bool ? "ChangePassword" : null);
-		// this.eventBus.on("closeChangePassword", () => {
-		// 	this.currentComponent = null;
-		// });
-		// onBeforeUnmount(() => {
-		// 	this.eventBus.off("UserDeleted");
-		// 	this.eventBus.off("cancelDeleteUser");
-		// 	this.eventBus.off("closeChangePassword")
-		// });
 	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #view {
 	padding-bottom: 90px;
@@ -450,6 +425,10 @@ h3,
 
 .form-group * {
 	margin: 5px 0 0;
+}
+
+.mobile .form-group small {
+	margin-top: 0;
 }
 
 input {
@@ -533,12 +512,6 @@ button.btn {
 	color: #f00;
 	font-weight: bold;
 }
-
-/* .btn.back {
-	position: absolute;
-	top: 0;
-	left: 15px;
-} */
 
 @media (max-width: 767px) {
 	.fields {

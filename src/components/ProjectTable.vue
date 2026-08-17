@@ -140,7 +140,6 @@ export default {
 		},
 		async getCurrentTimeEntries() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -164,7 +163,6 @@ export default {
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
 					this.updateStatus(this.serverStatus);
-					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -173,7 +171,6 @@ export default {
 					updateAppState.openTracker = this.timeTracker;
 					updateAppState.project = {};
 					this.updateAppState(updateAppState);
-					// this.eventBus.emit("updateAppState", updateAppState);
 					this.togglStore.delete("project");
 					this.togglStore.delete("openTracker");
 					return;
@@ -198,7 +195,6 @@ export default {
 				updateAppState.openTracker = this.openTracker;
 				updateAppState.project = this.project;
 				this.updateAppState(updateAppState);
-				// this.eventBus.emit("updateAppState", updateAppState);
 
 			} catch (error) {
 				console.error('Error posting data:', error);
@@ -206,10 +202,8 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
@@ -225,13 +219,10 @@ export default {
 		updateAppState.openTracker = this?.openTracker;
 		updateAppState.project = this?.project;
 		this.updateAppState(updateAppState);
-		// this.eventBus.emit("updateAppState", updateAppState);
 	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .header-row {
 	text-transform: uppercase;
@@ -266,7 +257,6 @@ td:first-child div:not(.disabled):hover {
 }
 
 td:first-child .disabled {
-	/* filter: brightness(0.75); */
 	color: #444;
 	cursor: not-allowed;
 }
@@ -296,16 +286,4 @@ tr.header-row * {
 	font-weight: 500;
 	user-select: none;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

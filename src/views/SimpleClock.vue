@@ -166,7 +166,6 @@ export default {
 		},
 		async getClockLog() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -197,10 +196,8 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async logSimpleClock() {
@@ -237,7 +234,6 @@ export default {
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", this.serverStatus);
 
 				this.isWakeupEvent = false;
 				this.notes = "";
@@ -249,10 +245,8 @@ export default {
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		updateDateTime() {
@@ -286,7 +280,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
 	text-align: center;
@@ -311,7 +304,6 @@ h1 {
 }
 
 #clock {
-	/* position: relative; */
 	width: 15em;
 	margin: 30px auto;
 	padding: 15px;

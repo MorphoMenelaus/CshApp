@@ -56,7 +56,6 @@ export default {
 			// Event is movieUpdated but it can work as a cancel as well
 			// The event handler only closes conponent and refreshes movie list
 			this.movieUpdated(false);
-			// this.eventBus.emit("movieUpdated", false);
 		},
 		formatDuration(ms) {
 			const seconds = Math.floor((ms / 1000) % 60);
@@ -73,8 +72,6 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 p {
 	margin: 30px auto;
@@ -163,19 +160,19 @@ img.poster {
 
 @media (min-width: 768px) {
 	.card {
-		width: 80%;
+		width: 85%;
 	}
 }
 
 @media (min-width: 992px) {
 	.card {
-		width: 70%;
+		width: 75%;
 	}
 }
 
 @media (min-width: 1200px) {
 	.card {
-		width: 60%;
+		width: 65%;
 	}
 }
 

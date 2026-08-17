@@ -94,20 +94,15 @@ export default {
 			let updateAppState = this.appState;
 			updateAppState.openTracker = this.timeTracker;
 			this.updateAppState(updateAppState);
-			// this.eventBus.emit("updateAppState", updateAppState);
-			// this.eventBus.emit("deselectTogglProject");
 		},
 		async startTime() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			if (!this.description) {
 				this.serverStatus.message = "Description field is required";
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 				return;
 			}
 
@@ -147,7 +142,6 @@ export default {
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
 					this.updateStatus(this.serverStatus);
-					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -168,7 +162,6 @@ export default {
 				let updateAppState = this.appState;
 				updateAppState.openTracker = this.startInstance;
 				this.updateAppState(updateAppState);
-				// this.eventBus.emit("updateAppState", updateAppState);
 
 				this.setInterval();
 
@@ -176,22 +169,18 @@ export default {
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", this.serverStatus);
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async stopTime() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			try {
 
@@ -220,7 +209,6 @@ export default {
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
 					this.updateStatus(this.serverStatus);
-					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -232,7 +220,6 @@ export default {
 				let updateAppState = this.appState;
 				updateAppState.openTracker = this.startInstance;
 				this.updateAppState(updateAppState);
-				// this.eventBus.emit("updateAppState", updateAppState);
 
 				clearInterval(this.interval);
 
@@ -240,17 +227,14 @@ export default {
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", this.serverStatus);
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		setInterval() {
@@ -290,8 +274,6 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .small {
 	font-size: 1em;
@@ -378,7 +360,6 @@ export default {
 }
 
 .descrip div {
-	/* flex: 1 0 auto; */
 	padding: 0 15px;
 }
 
@@ -441,6 +422,5 @@ export default {
 	font-weight: 500;
 	line-height: 1.4em;
 	user-select: none;
-	/* margin-left: 15px; */
 }
 </style>

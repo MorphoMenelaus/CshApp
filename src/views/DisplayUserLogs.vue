@@ -56,9 +56,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import { inject } from "vue";
-// import router from "@/router";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -84,27 +82,18 @@ export default {
 			],
 			responseStatus: "",
 			logs: [],
-			// labels: [
-			// 	"entryId",
-			// 	"userId",
-			// 	"userName",
-			// 	"actionPerformed",
-			// 	"dateTime",
-			// ],
 		};
 	},
 	watch: {
 		limit() {
 			this.currentPage = 1;
 			this.offset = null;
-			// this.limit = this.limit;
 			this.getUserLogs();
 		},
 	},
 	methods: {
 		async getUserLogs() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -132,13 +121,10 @@ export default {
 					this.logs = data.logs;
 				}
 
-				// this.eventBus.emit("getUserLogs", this.logs);
 			} catch (error) {
 				console.error('Error fetching data:', error)
-				// this.eventBus.emit("getUserLogs", error);
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		previousPage() {
@@ -160,8 +146,6 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #view {
 	padding-bottom: 90px;
@@ -234,16 +218,4 @@ th {
 td {
 	border-bottom: 1px #aaa solid;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

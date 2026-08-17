@@ -27,23 +27,21 @@ export default {
 	data() {
 		return {
 			contactEmail: inject("contactEmail"),
-			loginShowEvent: inject("loginShow"),
+			loginShow: inject("loginShow"),
 			registerUser: inject('registerUser'),
 		}
 	},
 	methods: {
 		openThisModalCloseOthers() {
-			this.loginShowEvent(false);
+			this.loginShow(false);
 			this.registerUser(false);
 			this.contactEmail(true);
-			// this.eventBus.emit("contactEmail", true);
 			this.sendAnalyticsEvent('contact_form_footer', 'contact_modal');
 		}
 	},
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 footer {
 	position: fixed;

@@ -102,7 +102,6 @@ export default {
 		},
 		async sendEmail() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			try {
 				let body = {
@@ -118,7 +117,6 @@ export default {
 					this.serverStatus.message = "Please fill in all required fields.";
 					this.serverStatus.success = false;
 					this.updateStatus(this.serverStatus);
-					// this.eventBus.emit("updateStatus", this.serverStatus);
 					this.errState = true;
 					return this.serverStatus;
 				}
@@ -141,7 +139,6 @@ export default {
 					this.updateStatus(data);
 					data.forced = true;
 					this.forceLogout(data);
-					// this.eventBus.emit("forceLogout");
 				}
 
 				this.serverStatus.code = data?.code;
@@ -161,9 +158,7 @@ export default {
 				this.serverStatus.success = false;
 			} finally {
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async contactHandler() {

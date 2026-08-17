@@ -153,7 +153,6 @@ export default {
 		},
 		async updateMovie() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 			this.disableBtn = true;
 
 			let body = {
@@ -193,20 +192,17 @@ export default {
 
 				if (data.success) {
 					this.movieUpdated(true);
-					// this.eventBus.emit("movieUpdated");
 				}
 
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 				this.disableBtn = false;
 				this.addUserLog(this.appState, `Update Movie Details. MovieId: ${this.selectedMovie.movieId}`);
 			}
@@ -215,7 +211,6 @@ export default {
 			// Event is movieUpdated() but it can work as a cancel as well
 			// false only closes component and true closes and refreshes movie list
 			this.movieUpdated(false);
-			// this.eventBus.emit("movieUpdated", false);
 		}
 	},
 	mounted() {
@@ -224,8 +219,6 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #view {
 	padding-bottom: 90px;

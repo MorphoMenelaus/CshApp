@@ -61,11 +61,8 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import { provide, inject } from "vue";
 import router from "@/router";
-// import { Storage } from "@/dependencies/csh-libs.js";
-// import DeleteUser from "@/components/DeleteUser.vue";
 
 const user = import.meta.env.VITE_APP_GUEST_USER;
 const password = import.meta.env.VITE_APP_GUEST_PASS;
@@ -79,11 +76,8 @@ export default {
 	props: {
 		appState: Object,
 		loginShow: Boolean,
-		forceLogoutEvent: Boolean
+		forceLogoutEvent: Object,
 	},
-	// components: {
-	// 	DeleteUser
-	// },
 	data() {
 		return {
 			forceLogout: inject('forceLogout'),
@@ -97,15 +91,8 @@ export default {
 			accessToken: "",
 			accessTokenExpiration: "",
 			refreshToken: "",
-			// userPermissions: {
-			// 	userId: "",
-			// 	globalPermissions: "",
-			// 	sitePermissions: {},
-			// },
 			sitePermissions: {},
-			// isSiteAdmin: false,
 			userName: "",
-			// displayName: "",
 			password: "",
 			userId: "",
 			dialog: null
@@ -120,7 +107,7 @@ export default {
 		},
 		forceLogoutEvent: {
 			handler(res) {
-				// console.log("forceLogoutEvent triggered in Login.vue", res);
+				console.log("forceLogoutEvent triggered in Login.vue", res);
 				if (res?.forced) {
 					this.updateStatus(res);
 					this.logout();
@@ -128,22 +115,11 @@ export default {
 			},
 			deep: true,
 		},
-		// forceLogoutEvent() {
-		// 	if (this.forceLogoutEvent) {
-		// 		let res = {
-		// 			code: 403,
-		// 			message: this.forceLogoutEvent,
-		// 			success: false
-		// 		};
-		// 		console.log("forceLogoutEvent triggered in Login.vue", res);
-		// 		this.updateStatus(res);
-		// 		this.logout();
-		// 	}
-		// }
 	},
 	methods: {
 		loginRequest(bool) {
 			this.loginShowEvent(bool);
+			this.registerUser(false);
 		},
 		showRegisterUserComponent(login = false, register = false) {
 			this.loginRequest(login);
@@ -161,7 +137,6 @@ export default {
 					this.appNotify.message =
 						"Please provide a user name and password.";
 					this.appNotify.success = false;
-					// this.eventBus.emit("updateStatus", this.appNotify);
 					this.updateStatus(this.appNotify);
 					return this.appNotify;
 				}
@@ -183,7 +158,6 @@ export default {
 				if (dataObj?.code === 403) {
 					this.updateStatus(dataObj);
 					this.logout();
-					// this.eventBus.emit("forceLogout");
 				}
 
 				if (dataObj?.success) {
@@ -269,17 +243,6 @@ export default {
 	},
 	created() {
 		provide("forceLogout", this.logout);
-		// this.eventBus.on("UserDeleted", () => {
-		// 	this.logout();
-		// });
-		// this.eventBus.on("forceLogout", () => {
-		// 	console.log("forceLogout triggered in eventBus on Login.vue");
-		// 	this.logout();
-		// });
-		// onBeforeUnmount(() => {
-		// 	this.eventBus.off("UserDeleted");
-		// 	this.eventBus.off("forceLogout");
-		// });
 	},
 };
 </script>
@@ -347,7 +310,6 @@ h2 {
 	bottom: 45px;
 	left: 0;
 	background-color: rgb(0 0 0 / 80%);
-	/* z-index: 500200; */
 	z-index: 10000;
 }
 
@@ -437,6 +399,12 @@ h2 {
 	padding: 15px;
 	color: #ddd;
 	box-shadow: 1px 1;
+}
+
+@media (max-width: 767px) {
+	#login {
+		top: 90px;
+	}
 }
 
 @media (min-width: 768px) {

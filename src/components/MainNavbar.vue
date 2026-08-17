@@ -56,11 +56,12 @@ export default {
 	props: {
 		appState: Object,
 		isMobile: Boolean,
+		allowMobileDropdown: Boolean
 	},
 	data() {
 		return {
 			contactEmail: inject("contactEmail"),
-			loginShowEvent: inject("loginShow"),
+			loginShow: inject("loginShow"),
 			registerUser: inject('registerUser'),
 			mobileMenuShow: false,
 			startY: 0
@@ -71,15 +72,13 @@ export default {
 	methods: {
 		closeDialogs(link_name = 'unkown') {
 			this.sendAnalyticsEvent('main_nav', link_name);
-			this.loginShowEvent(false);
+			this.loginShow(false);
 			this.registerUser(false);
 			this.contactEmail(false);
-			// this.eventBus.emit("contactEmail", false);
 			this.mobileMenuShow = false;
 		},
 		showHideNav() {
 			this.mobileMenuShow = this.mobileMenuShow ? false : true;
-			// this.mobileMenuShow = this.isMobile && this.mobileMenuShow ? false : true;
 		},
 		handleTouchStart(event) {
 			this.startY = event.touches[0].clientY;
@@ -93,15 +92,9 @@ export default {
 			}
 		},
 	},
-	created() {
-		// this.eventBus.on("closeMainNav", () => {
-		// 	this.mobileMenuShow = false;
-		// });
-	},
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .mobile nav {
 	position: absolute;
@@ -208,19 +201,6 @@ nav {
 	background-color: #313b64;
 	font-size: 18px;
 }
-
-/* #nav {
-	position: relative;
-	top: 0;
-	width: 20%;
-	height: calc(100vh - 150px);
-	background-color: #bccfe5;
-	float: left;
-	box-shadow: 1px 0px 6px rgb(0 0 0 / 50%);
-	overflow: hidden auto;
-	list-style: none;
-	padding: 0;
-} */
 
 nav a.router-link-exact-active {
 	/* color: #100f2e; */

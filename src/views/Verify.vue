@@ -79,11 +79,8 @@ export default {
 				const dataObj = await response.json();
 
 				if (dataObj?.code === 403) {
-					// this.updateStatus(dataObj);
-					// this.eventBus.emit("updateStatus", dataObj);
 					dataObj.forced = true;
 					this.forceLogout(dataObj);
-					// this.eventBus.emit("forceLogout");
 				}
 
 				if (dataObj?.success) {
@@ -125,11 +122,8 @@ export default {
 				const dataObj = await response.json();
 
 				if (dataObj?.code === 403) {
-					// this.updateStatus(dataObj);
-					// this.eventBus.emit("updateStatus", dataObj);
 					dataObj.forced = true;
 					this.forceLogout(dataObj);
-					// this.eventBus.emit("forceLogout");
 				}
 
 				if (dataObj?.success) {
@@ -148,8 +142,6 @@ export default {
 				console.error(e);
 			}
 		},
-	},
-	mounted() {
 	},
 	created() {
 		let urlParams = new URLSearchParams(window.location.search);

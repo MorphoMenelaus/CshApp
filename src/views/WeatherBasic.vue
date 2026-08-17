@@ -198,10 +198,8 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					// this.eventBus.emit("updateStatus", data);
 					data.forced = true;
 					this.forceLogout(data);
-					// this.eventBus.emit("forceLogout");
 				}
 
 				this.weatherData = data;
@@ -213,7 +211,6 @@ export default {
 					this.serverStatus.message = data?.reason;
 					this.serverStatus.success = false;
 					this.updateStatus(this.serverStatus);
-					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -230,7 +227,6 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader = false;
 			}
@@ -367,8 +363,6 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
 	margin: 15px auto;
@@ -584,10 +578,6 @@ small span {
 	#weather-container {
 		width: 80%;
 	}
-
-	/* #description-box {
-		width: 75%;
-	} */
 }
 
 @media (min-width: 1800px) {

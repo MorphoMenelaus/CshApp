@@ -51,8 +51,6 @@ export default {
 			password: "",
 			confirmPassword: "",
 			errState: false,
-			// isLoggedOn: false,
-			// siteKey: this.reCaptchaSiteKey
 		};
 	},
 	watch: {
@@ -60,10 +58,8 @@ export default {
 	methods: {
 		closePopup() {
 			this.closeChangePassword();
-			// this.eventBus.emit("closeChangePassword");
 		},
 		async changePassword() {
-			// this.eventBus.emit("showHideLoader", true);
 
 			if (!this.currentPassword || !this.password) {
 				this.serverStatus.message = "Please provide current password and new password.";
@@ -107,8 +103,6 @@ export default {
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
-				// this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 
 				if (this.serverStatus.code === 401) {
 					this.updateStatus(this.serverStatus);
@@ -120,11 +114,6 @@ export default {
 					this.addUserLog(this.appState, "User Changed Password");
 					this.forceLogout(data);
 				}
-				// 	this.eventBus.emit("changePassword", true);
-
-				// this.errState = data?.success;
-				// this.forceLogout(data);
-				// this.eventBus.emit("forceLogout");
 
 			} catch (error) {
 				console.error('Error posting data:', error);
@@ -132,10 +121,8 @@ export default {
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		keyDown(e) {
@@ -190,7 +177,6 @@ form {
 	padding: 30px;
 	position: relative;
 	top: 0;
-	/* left: 10vw; */
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	border-radius: 12px;
@@ -226,9 +212,11 @@ label[for="casinoId"] {
 }
 
 #change-password {
-	position: absolute;
+	position: fixed;
+	top: 90px;
+	/* position: absolute;
+	top: 0; */
 	left: 0;
-	top: 0;
 	display: grid;
 	align-items: center;
 	justify-content: center;
@@ -239,6 +227,11 @@ label[for="casinoId"] {
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	z-index: 10000;
+}
+
+.mobile #change-password>div {
+	width: 90%;
+	margin: auto;
 }
 
 .button-container {

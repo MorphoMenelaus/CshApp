@@ -24,8 +24,6 @@
 
 			<ProjectTable v-if="projects?.length > 0" :appState="appState" :projects="projects" :isMobile="isMobile" />
 
-			<!-- <TimeEntries :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" /> -->
-
 		</div>
 	</div>
 </template>
@@ -34,7 +32,6 @@
 import { inject } from "vue";
 import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import ProjectTable from "@/components/ProjectTable.vue";
-// import TimeEntries from "@/components/TimeEntries.vue";
 
 export default {
 	name: "TogglPOC",
@@ -44,7 +41,6 @@ export default {
 		windowWidth: Number
 	},
 	components: {
-		// TimeEntries,
 		ProjectTable
 	},
 	data() {
@@ -56,8 +52,6 @@ export default {
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
 			showAcountDetails: false,
-			// startDate: "",
-			// endDate: "",
 			toggleUser: null,
 			projects: [],
 		};
@@ -67,7 +61,6 @@ export default {
 	methods: {
 		async getUserData() {
 			this.showHideLoader(true);
-			// this.eventBus.emit("showHideLoader", true);
 
 			try {
 
@@ -93,7 +86,6 @@ export default {
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
 					this.updateStatus(this.serverStatus);
-					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -109,10 +101,8 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 		async getProjects() {
@@ -141,7 +131,6 @@ export default {
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
 					this.updateStatus(this.serverStatus);
-					// this.eventBus.emit("updateStatus", (this.serverStatus));
 					return;
 				}
 
@@ -158,10 +147,8 @@ export default {
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
 				this.updateStatus(this.serverStatus);
-				// this.eventBus.emit("updateStatus", (this.serverStatus));
 			} finally {
 				this.showHideLoader(false);
-				// this.eventBus.emit("showHideLoader", false);
 			}
 		},
 	},
@@ -190,8 +177,6 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2,
@@ -258,8 +243,4 @@ h4 {
 		width: 70%;
 	}
 }
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

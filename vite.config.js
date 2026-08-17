@@ -11,6 +11,7 @@ const packageJson = JSON.parse(readFileSync('./package.json', 'utf-8'))
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');
 	const staging = env.VITE_API_STAGING_URL;
+	const onsiteServer = env?.VITE_API_ONSITE_SERVER_URL || "";
 
 	return {
 		plugins: [
@@ -20,6 +21,7 @@ export default defineConfig(({ mode }) => {
 		base: './',
 		define: {
 			APP_VERSION: JSON.stringify(packageJson.version),
+			API_ONSITE: JSON.stringify(onsiteServer),
 			__VUE_PROD_DEVTOOLS__: `window.location.origin === '${staging}'`
 		},
 		resolve: {
