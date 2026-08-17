@@ -8,7 +8,7 @@
 			<h1>Password Change</h1>
 			<p style="margin: 15px 0;"><span class="warning">Warning!</span> After changing your password you will have
 				to log in again.</p>
-			<form @submit.prevent="changePassword" method="post">
+			<form method="post">
 				<div class="form-group" :class="errState && !currentPassword.length > 0 ? 'err' : ''">
 					<label>Current Password</label>
 					<input v-model.trim="currentPassword" type="password" name="currentPassword" class="form-control">
@@ -22,7 +22,7 @@
 					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
 				</div>
 				<div class="button-container">
-					<button class="btn" type='submit' title="Change password">Submit</button>
+					<button class="btn" type='button' title="Change password" @click="changePassword()">Submit</button>
 					<button @click="closePopup()" class="btn cancel" title="Cancel">Cancel</button>
 				</div>
 			</form>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, inject } from 'vue';
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -42,38 +42,48 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
+			closeChangePassword: inject('closeChangePassword'),
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			currentPassword: "",
 			password: "",
 			confirmPassword: "",
 			errState: false,
-			isLoggedOn: false,
-			siteKey: this.reCaptchaSiteKey
 		};
 	},
 	watch: {
 	},
 	methods: {
 		closePopup() {
-			this.eventBus.emit("closeChangePassword");
+			this.closeChangePassword();
 		},
 		async changePassword() {
-			this.eventBus.emit("showHideLoader", true);
+
+			if (!this.currentPassword || !this.password) {
+				this.serverStatus.message = "Please provide current password and new password.";
+				this.serverStatus.success = false;
+				this.updateStatus(this.serverStatus);
+				return;
+			}
+
+			if (this.password !== this.confirmPassword) {
+				this.serverStatus.message = "New Password and Confirm Password do not match.";
+				this.serverStatus.success = false;
+				this.updateStatus(this.serverStatus);
+				this.showHideLoader(false);
+				return;
+			}
 
 			try {
+				this.showHideLoader(true);
+
 				let body = {
 					userId: this.appState.user.userId,
 					currentPassword: this.currentPassword,
 					password: this.password,
 				};
-
-				if (!this.currentPassword || !this.password) {
-					this.serverStatus.message = "Please provide current password and new password.";
-					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", this.serverStatus);
-					this.errState = true;
-					return this.serverStatus;
-				}
 
 				let headerObj = new Headers();
 				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -93,41 +103,44 @@ export default {
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
 
-				if (data?.success)
-					this.eventBus.emit("changePassword", true);
+				if (this.serverStatus.code === 401) {
+					this.updateStatus(this.serverStatus);
+					this.showHideLoader(false);
+					return;
+				}
 
-				this.errState = data?.success;
-
-				this.eventBus.emit("forceLogout");
+				if (this.serverStatus.success) {
+					this.addUserLog(this.appState, "User Changed Password");
+					this.forceLogout(data);
+				}
 
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.addUserLog(this.appState, "User Changed Password");
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
+		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.closePopup();
 		},
 	},
 	mounted() {
 	},
 	created() {
-		this.eventBus.on("EscapeKeydown", () => {
-			this.closePopup();
-		});
+		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", this.keyDown);
 		});
 	},
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
 	text-align: center;
@@ -164,7 +177,6 @@ form {
 	padding: 30px;
 	position: relative;
 	top: 0;
-	/* left: 10vw; */
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	border-radius: 12px;
@@ -200,9 +212,11 @@ label[for="casinoId"] {
 }
 
 #change-password {
-	position: absolute;
+	position: fixed;
+	top: 90px;
+	/* position: absolute;
+	top: 0; */
 	left: 0;
-	top: 0;
 	display: grid;
 	align-items: center;
 	justify-content: center;
@@ -213,6 +227,11 @@ label[for="casinoId"] {
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	z-index: 10000;
+}
+
+.mobile #change-password>div {
+	width: 90%;
+	margin: auto;
 }
 
 .button-container {

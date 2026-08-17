@@ -53,7 +53,7 @@
 
 		<div class="user-lists-container">
 
-			<div v-if="eventLogList.length > 0">
+			<div v-if="eventLogList?.length > 0">
 				<div id="non-mobile" v-if="!isMobile">
 					<table v-if="eventLogList && eventLogList.length > 0">
 						<thead>
@@ -75,7 +75,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div id="mobile" v-if="isMobile">
+				<div id="mobile" v-if="isMobile && eventLogList?.length > 0">
 					<table v-for="(item, index) in eventLogList" :key="index">
 						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
 							<th>{{ this.toTitleCase(key) }}</th>
@@ -96,6 +96,7 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -107,8 +108,10 @@ export default {
 	components: {},
 	data() {
 		return {
+			showHideLoader: inject("showHideLoader"),
+			updateStatus: inject("sendUpdateStatus"),
 			serverStatus: Object.assign({}, this.appNotify),
-			limit: 5,
+			limit: 10,
 			offset: 0,
 			currentPage: 1,
 			boolOptions: [
@@ -148,9 +151,11 @@ export default {
 			this.getClockLog();
 		},
 		eventLogList() {
-			this.eventLogList.forEach(event => {
-				event.isWakeupEvent = event?.isWakeupEvent === 1 ? true : false;
-			});
+			if (this.eventLogList?.length > 0) {
+				this.eventLogList.forEach(event => {
+					event.isWakeupEvent = event?.isWakeupEvent === 1 ? true : false;
+				});
+			}
 		}
 	},
 	methods: {
@@ -160,7 +165,7 @@ export default {
 				this.charRemaining = this.maxlength - currCount;
 		},
 		async getClockLog() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -190,13 +195,13 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 		async logSimpleClock() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let data;
 			try {
@@ -228,7 +233,7 @@ export default {
 				this.serverStatus.code = data?.code;
 				this.serverStatus.message = data?.message;
 				this.serverStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", this.serverStatus);
+				this.updateStatus(this.serverStatus);
 
 				this.isWakeupEvent = false;
 				this.notes = "";
@@ -239,9 +244,9 @@ export default {
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 		updateDateTime() {
@@ -257,7 +262,7 @@ export default {
 			this.getClockLog();
 		},
 		nextPage() {
-			if (this.eventLogList.length < this.limit) return;
+			if (this.eventLogList?.length < this.limit) return;
 			this.offset = this.offset + this.limit;
 			this.currentPage++;
 			this.getClockLog();
@@ -275,7 +280,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
 	text-align: center;
@@ -300,7 +304,6 @@ h1 {
 }
 
 #clock {
-	/* position: relative; */
 	width: 15em;
 	margin: 30px auto;
 	padding: 15px;

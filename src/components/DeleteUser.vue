@@ -7,7 +7,7 @@
 			<p>This action cannot be undone.</p>
 			<div class="button-container">
 				<button class="btn delete" @click="deleteUser()">Delete</button>
-				<button class="btn" @click="eventBus.emit('cancelDeleteUser')">Cancel</button>
+				<button class="btn" @click="cancelDeleteUser()">Cancel</button>
 			</div>
 		</div>
 	</div>
@@ -16,7 +16,7 @@
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, inject } from 'vue';
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -26,6 +26,10 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
+			cancelDeleteUser: inject("cancelDeleteUser"),
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 		};
 	},
@@ -39,7 +43,7 @@ export default {
 			);
 			if (!confirmDelete) return false;
 
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -57,40 +61,39 @@ export default {
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data.success)
+				if (data.success) {
+					this.serverStatus = data;
+					this.serverStatus.message = data?.success ? "Your account has been deleted." : data?.message;
+					this.serverStatus.forced = true;
+					this.forceLogout(this.serverStatus);
 					this.addUserLog(this.appState, "User Deleted Account");
-
-				this.serverStatus.code = data?.code;
-				this.serverStatus.message = data?.message;
-				this.serverStatus.success = data?.success;
-				this.eventBus.emit("updateStatus", this.serverStatus);
-
-				this.eventBus.emit("UserDeleted");
+				}
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error deleting user: ${error}`;
 				this.serverStatus.success = true;
-				this.eventBus.emit("updateStatus", this.serverStatus);
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
+		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.closePopup();
 		},
 	},
 	mounted() {
 	},
 	created() {
-		this.eventBus.on("EscapeKeydown", () => {
-			this.eventBus.emit("cancelDeleteUser");
-		});
+		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", this.keyDown);
 		});
 	},
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h2 {
 	text-align: center;

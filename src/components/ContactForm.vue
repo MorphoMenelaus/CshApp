@@ -1,6 +1,6 @@
 <template>
 
-	<div id="contact">
+	<div id="contact" @click="handleClick($event)">
 		<div class="wrapper" v-if="!messageSent">
 			<div id="form-header">
 				<h2>I'd love to hear from you</h2>
@@ -42,8 +42,7 @@
 					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">
 						Send
 					</button>
-					<button class="btn" type="button" @click="eventBus.emit('contactEmail', false)"
-						title="Cancel">Cancel</button>
+					<button class="btn" type="button" @click="contactEmail(false)" title="Cancel">Cancel</button>
 				</div>
 			</form>
 		</div>
@@ -56,8 +55,7 @@
 				<h3>I'll get back to you as soon as I can.</h3>
 			</div>
 			<div style="display: flex;">
-				<button class="btn" type="button" @click="eventBus.emit('contactEmail', false)"
-					title="Cancel">Close</button>
+				<button class="btn" type="button" @click="contactEmail(false)" title="Cancel">Close</button>
 			</div>
 		</div>
 
@@ -67,7 +65,7 @@
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, inject } from 'vue';
 
 export default {
 	name: "ContactForm",
@@ -76,6 +74,10 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
+			contactEmail: inject("contactEmail"),
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			siteKey: this.reCaptchaSiteKey,
 			token: "",
@@ -99,7 +101,7 @@ export default {
 				this.charRemaining = this.maxlength - currCount;
 		},
 		async sendEmail() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			try {
 				let body = {
@@ -114,7 +116,7 @@ export default {
 				if (!this.name || !this.email || !this.subject || !this.message) {
 					this.serverStatus.message = "Please fill in all required fields.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", this.serverStatus);
+					this.updateStatus(this.serverStatus);
 					this.errState = true;
 					return this.serverStatus;
 				}
@@ -134,8 +136,9 @@ export default {
 				const data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					this.updateStatus(data);
+					data.forced = true;
+					this.forceLogout(data);
 				}
 
 				this.serverStatus.code = data?.code;
@@ -154,8 +157,8 @@ export default {
 				this.serverStatus.message = `Error posting data: ${error.message}`;
 				this.serverStatus.success = false;
 			} finally {
-				this.eventBus.emit("updateStatus", (this.serverStatus));
-				this.eventBus.emit("showHideLoader", false);
+				this.updateStatus(this.serverStatus);
+				this.showHideLoader(false);
 			}
 		},
 		async contactHandler() {
@@ -185,6 +188,14 @@ export default {
 				console.error("Email failed:", err);
 			}
 		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.contactEmail(false);
+		},
+		handleClick(event) {
+			if (event.target.id === "contact")
+				this.contactEmail(false);
+		},
 	},
 	mounted() {
 		this.sendAnalyticsEvent('contact_form_load', 'contact_modal');
@@ -198,17 +209,14 @@ export default {
 		}
 	},
 	created() {
-		this.eventBus.on("EscapeKeydown", () => {
-			this.eventBus.emit('contactEmail', false);
-		});
+		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", this.keyDown);
 		});
 	},
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h2 {
 	text-align: center;
@@ -339,7 +347,8 @@ label[for="casinoId"] {
 	top: -16px;
 	padding: 15px;
 	color: #ddd;
-	box-shadow: 1px 1;
+	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
+	border-bottom: 1px #fff solid;
 }
 
 textarea#message {

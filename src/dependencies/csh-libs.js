@@ -1,5 +1,5 @@
 /*!
- * CSH Classes and Utilities v0.2.1
+ * CSH Classes and Utilities v0.3.1
  * (c) 2026 Chris Hardwick
  */
 
@@ -101,6 +101,16 @@ class Storage {
 	}
 }
 
+let onsiteServerUrl = "";
+const onsiteUrlService = {
+	set(url) {
+		onsiteServerUrl = url;
+	},
+	get() {
+		return onsiteServerUrl;
+	}
+}
+
 async function addUserLog(appState = null, actionPerformed = null) {
 
 	if (!appState || !actionPerformed) {
@@ -117,7 +127,7 @@ async function addUserLog(appState = null, actionPerformed = null) {
 		let headerObj = new Headers();
 		headerObj.append("Authorization", `Bearer ${appState.accessToken}`);
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL("/api/userlogs", window.location.origin);
+		let requestUrl = new URL("/api/userlogs", onsiteServerUrl || window.location.origin);
 
 		let request = new Request(
 			requestUrl.toString(), {
@@ -198,7 +208,7 @@ async function tokenCheck(appState) {
 
 		let headerObj = new Headers();
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL('/api/auth/tokencheck', window.location.origin);
+		let requestUrl = new URL('/api/auth/tokencheck', onsiteServerUrl || window.location.origin);
 
 		let request = new Request(
 			requestUrl.toString(), {
@@ -236,7 +246,7 @@ async function accessTokenCheck(appState) {
 
 		let headerObj = new Headers();
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL('/api/auth/tokenexpired', window.location.origin);
+		let requestUrl = new URL('/api/auth/tokenexpired', onsiteServerUrl || window.location.origin);
 
 		let request = new Request(
 			requestUrl.toString(), {
@@ -270,7 +280,7 @@ async function refreshAccessToken(appState) {
 
 		let headerObj = new Headers();
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL('/api/auth/refresh', window.location.origin);
+		let requestUrl = new URL('/api/auth/refresh', onsiteServerUrl || window.location.origin);
 
 		let request = new Request(
 			requestUrl.toString(), {
@@ -280,9 +290,22 @@ async function refreshAccessToken(appState) {
 		});
 
 		const response = await fetch(request);
+
+		if (!response.ok) {
+			let res = {
+				code: response.status,
+				message: response.message ? response.message : "Account is already logged into on another device",
+				success: response.ok,
+				forced: true
+			}
+			dispatchCustomEvent("forceLogout", res);
+			return res;
+		}
+
 		const data = await response.json();
 
 		if (data?.code === 403) {
+			data.forced = true;
 			dispatchCustomEvent("forceLogout", data);
 		}
 
@@ -378,6 +401,7 @@ class TokenCheckError extends Error {
 
 export {
 	Storage,
+	onsiteUrlService,
 	addUserLog,
 	toTitleCase,
 	isUTCtime,
@@ -387,5 +411,5 @@ export {
 	tokenCheck,
 	accessTokenCheck,
 	refreshAccessToken,
-	tokenInterceptFetch
+	tokenInterceptFetch,
 }

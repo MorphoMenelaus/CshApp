@@ -24,16 +24,14 @@
 
 			<ProjectTable v-if="projects?.length > 0" :appState="appState" :projects="projects" :isMobile="isMobile" />
 
-			<!-- <TimeEntries :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" /> -->
-
 		</div>
 	</div>
 </template>
 
 <script>
+import { inject } from "vue";
 import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import ProjectTable from "@/components/ProjectTable.vue";
-// import TimeEntries from "@/components/TimeEntries.vue";
 
 export default {
 	name: "TogglPOC",
@@ -43,17 +41,17 @@ export default {
 		windowWidth: Number
 	},
 	components: {
-		// TimeEntries,
 		ProjectTable
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
 			showAcountDetails: false,
-			startDate: "",
-			endDate: "",
 			toggleUser: null,
 			projects: [],
 		};
@@ -62,7 +60,7 @@ export default {
 	},
 	methods: {
 		async getUserData() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			try {
 
@@ -78,13 +76,16 @@ export default {
 				});
 
 				let response = await tokenInterceptFetch(request);
+				if (!response.ok)
+					this.forceLogout();
+
 				let data = await response.json();
 
 				if (data.code === 402) {
 					this.serverStatus.code = 402;
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
 					return;
 				}
 
@@ -99,13 +100,13 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 		async getProjects() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			try {
 				let headerObj = new Headers();
@@ -120,13 +121,16 @@ export default {
 				});
 
 				let response = await tokenInterceptFetch(request);
+				if (!response.ok)
+					this.forceLogout();
+
 				let data = await response.json();
 
 				if (data.code === 402) {
 					this.serverStatus.code = 402;
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
 					return;
 				}
 
@@ -142,9 +146,9 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 	},
@@ -173,8 +177,6 @@ export default {
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2,
@@ -241,8 +243,4 @@ h4 {
 		width: 70%;
 	}
 }
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

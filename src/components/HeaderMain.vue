@@ -11,10 +11,6 @@
 			</div>
 		</div>
 
-		<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
-			<div class="spinner-comet"></div>
-		</div>
-
 		<div id="clock" v-if="!isMobile">
 			<div id="time-container">
 				<span id="time">{{ timeLocal }}</span>
@@ -25,13 +21,14 @@
 			</div>
 		</div>
 
-		<MainNavbar :appState="appState" :isMobile="isMobile" />
+		<MainNavbar :appState="appState" :isMobile="isMobile" :mobileDropdownClose="mobileDropdownClose" />
 
 	</header>
 
 </template>
 
 <script>
+import { inject } from 'vue';
 import MainNavbar from "@/components/MainNavbar.vue";
 
 export default {
@@ -43,23 +40,40 @@ export default {
 		appState: Object,
 		serverVersion: String,
 		isMobile: Boolean,
+		sharedUpdateStatus: Object,
+		mobileDropdownClose: Boolean
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
 			appNotify: Object.assign({}, this.appNotify),
 			statusArray: [],
 			dayLocal: "",
 			dateLocal: "",
 			timeLocal: "",
-			messageTimeout: 0,
-			showHideLoader: false
 		};
 	},
 	watch: {
+		sharedUpdateStatus: {
+			handler(newVal) {
+				if (newVal && Object.keys(newVal).length > 0) {
+					this.handleUpdateStatus(newVal);
+					this.updateStatus({});
+				}
+			},
+			deep: true,
+		},
 	},
 	created() {
 		this.updateDateTime();
-		this.eventBus.on("updateStatus", (payload) => {
+	},
+	mounted() {
+		setInterval(() => {
+			this.updateDateTime();
+		}, 1000);
+	},
+	methods: {
+		handleUpdateStatus(payload) {
 			let notification = Object.assign({}, this.appNotify);
 			notification.code = payload?.code;
 			notification.message = payload?.message;
@@ -68,28 +82,13 @@ export default {
 			notification.expireTime = date.getTime() + 10000;
 			notification.eventTimeDisplay = date.toLocaleTimeString();
 			this.statusArray.push(notification);
-		});
-		this.eventBus.on("showHideLoader", payload => {
-			this.showHideLoader = payload;
-		});
-	},
-	mounted() {
-		setInterval(() => {
-			this.updateDateTime();
-		}, 1000);
-	},
-	methods: {
+		},
 		updateDateTime() {
 			let date = new Date();
 			this.dayLocal = date.toLocaleDateString('en-US', { weekday: 'long' });
 			this.dateLocal = date.toLocaleDateString("en-US");
 			this.timeLocal = date.toLocaleTimeString();
 			if (this.statusArray.length > 0) this.removeStaleEvents();
-			this.eventBus.emit("updateDateTime", {
-				dayLocal: this.dayLocal,
-				dateLocal: this.dateLocal,
-				timeLocal: this.timeLocal
-			});
 		},
 		removeStaleEvents() {
 			let currentTime = new Date().getTime();
@@ -104,7 +103,6 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 header {
 	color: var(--color-text);
@@ -186,35 +184,6 @@ h1 {
 
 .close-notification:hover {
 	background-color: #aaa;
-}
-
-#loading-icon {
-	display: none;
-	align-content: center;
-	justify-content: center;
-	position: fixed;
-	top: 94px;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	width: 100vw;
-	/* height: calc(100vh - 140px); */
-	background-color: rgb(0 0 0 / 50%);
-	transition: background-color .3 ease-in-out;
-	z-index: 10000;
-}
-
-.loader-icon {
-	height: 48px;
-	width: 48px;
-	border: 3px solid;
-	border-radius: 100%;
-	border-color: red white blue black;
-	animation: loader 0.5s linear infinite;
-}
-
-#loading-icon.loading {
-	display: grid;
 }
 
 @keyframes loader {

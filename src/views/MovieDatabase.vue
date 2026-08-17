@@ -4,8 +4,7 @@
 		<div id="movie-header">
 			<h1>Movie Database</h1>
 			<p class="movie-intro">A searchable, sortable list of more than 1500 movies in my database, containing cast,
-				crew, ratings, etc...
-				Not a complete list of all movies ever made, obviously.</p>
+				crew, ratings, etc... Not a complete list of all movies ever made, obviously.</p>
 			<p class="movie-intro">Favorites can be saved to your account, if you have an account on this site.</p>
 		</div>
 
@@ -88,8 +87,10 @@
 			</div>
 		</div>
 
-		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie"
-			:favoritesList="favoritesList" :isMobile="isMobile" />
+		<div id="modal-container">
+			<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie"
+				:favoritesList="favoritesList" :isMobile="isMobile" />
+		</div>
 
 		<div id="permissions-dialog-container">
 			<dialog id="not-allowed">
@@ -109,13 +110,11 @@
 			</dialog>
 		</div>
 
-
 	</div>
 </template>
 
 <script>
-// @ is an alias to /src
-import { onBeforeUnmount } from "vue";
+import { onBeforeUnmount, inject, provide } from 'vue';
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
@@ -133,6 +132,11 @@ export default {
 	},
 	data() {
 		return {
+			showHideLoader: inject("showHideLoader"),
+			updateStatus: inject("sendUpdateStatus"),
+			forceLogout: inject('forceLogout'),
+			loginShow: inject("loginShow"),
+			registerUser: inject("registerUser"),
 			serverStatus: Object.assign({}, this.appNotify),
 			limit: 10,
 			offset: 0,
@@ -145,10 +149,6 @@ export default {
 				{ text: "Director", value: "tags_director" },
 				{ text: "Genre", value: "tags_genre" },
 			],
-			orderDirOptions: [
-				{ text: "Descending", value: "DESC" },
-				{ text: "Ascending", value: "ASC" },
-			],
 			sortBy: "year",
 			orderDir: "DESC",
 			contains: "",
@@ -159,6 +159,7 @@ export default {
 			movieFavorites: [],
 			favoritesOnly: false,
 			columns: 1,
+			modalContainer: null,
 		};
 	},
 	watch: {
@@ -192,12 +193,8 @@ export default {
 	methods: {
 		showRegisterUserComponent(login = false, register = false) {
 			this.dialog.close();
-			// Control the state of both components
-			let payload = {
-				register: register,
-				login: login
-			}
-			this.eventBus.emit("registerUser", payload);
+			this.loginShow(login);
+			this.registerUser(register);
 		},
 		openPermissionsDialog() {
 			this.dialog.showModal()
@@ -297,14 +294,14 @@ export default {
 				const data = await response.json();
 
 				if (data.success) {
-					this.eventBus.emit("favoriteUpdated");
 					this.getFavoriteList();
 				}
 
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200) this.eventBus.emit("updateStatus", (this.serverStatus));
+				if (this.serverStatus.code !== 200)
+					this.updateStatus(this.serverStatus);
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
@@ -333,14 +330,14 @@ export default {
 				const data = await response.json();
 
 				if (data.success) {
-					this.eventBus.emit("favoriteUpdated");
 					this.getFavoriteList();
 				}
 
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200) this.eventBus.emit("updateStatus", (this.serverStatus));
+				if (this.serverStatus.code !== 200)
+					this.updateStatus(this.serverStatus);
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
@@ -377,11 +374,11 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			}
 		},
 		async getMovieByFavorites() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let body = {
 				movieIds: this.favoritesList
@@ -410,14 +407,14 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
 				this.scrollToTop();
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 		async getMovieList() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -443,8 +440,8 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					data.forced = true;
+					this.forceLogout(data);
 				}
 
 				this.movieList = data.movies;
@@ -456,10 +453,10 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
 				this.scrollToTop();
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 		async refreshMoviesWithFaves() {
@@ -482,34 +479,40 @@ export default {
 			this.currentPage++;
 			this.getMovieList();
 		},
+		closeModal(refresh = true) {
+			this.currentComponent = null;
+			this.selectedMovie = null;
+			if (refresh)
+				this.refreshMoviesWithFaves();
+		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.currentComponent = null;
+		},
+		clickHandler(e) {
+			if (e.target.id === "movie-details")
+				this.currentComponent = null;
+		}
 	},
 	mounted() {
 		this.limit = this.columns * 2;
 		this.populateLimits();
 		this.getMovieList();
 		this.dialog = document.getElementById("not-allowed");
+		this.modalContainer = document.getElementById("modal-container");
+		this.modalContainer.addEventListener("click", this.clickHandler);
 	},
 	created() {
-		this.eventBus.on("movieUpdated", (refresh = true) => {
-			this.currentComponent = null;
-			this.selectedMovie = null;
-			if (refresh)
-				this.refreshMoviesWithFaves();
-		});
-		this.eventBus.on("EscapeKeydown", () => {
-			this.currentComponent = null;
-			this.selectedMovie = null;
-		});
+		provide("movieUpdated", this.closeModal);
+		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
-			this.eventBus.off("movieUpdated");
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", this.keyDown);
+			this.modalContainer.removeEventListener("click", this.clickHandler);
 		});
 	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2 {
@@ -630,11 +633,6 @@ label[for="limitOptions"] {
 #paging .flex-row * {
 	margin: auto 3px;
 }
-
-/* .mobile .order,
-.mobile label[for="sortByOptions"] {
-	display: none;
-} */
 
 .clear-field {
 	padding: 4px;

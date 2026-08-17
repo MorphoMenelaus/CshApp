@@ -1,11 +1,7 @@
 <template>
 
-	<div id="register">
+	<div id="register" @click="handleClick($event)">
 		<div class="wrapper">
-			<!-- <div class="btn-container">
-				<button @click="eventBus.emit('registerUser', false)" class="close-modal"
-					title="Close This Dialog">✕</button>
-			</div> -->
 			<div id="form-header">
 				<h2>Register</h2>
 				<p>Please fill out this form to create an account.</p>
@@ -38,11 +34,10 @@
 					<button class="btn" type="submit" @click.prevent="registerHandler" title="Register">
 						Register
 					</button>
-					<button class="btn" type="button" @click="eventBus.emit('registerUser', false)"
-						title="Cancel">Cancel</button>
+					<button class="btn" type="button" @click="registerUser(false)" title="Cancel">Cancel</button>
 				</div>
 				<p style="text-align: center;">Already have an account? <span class="link" title="Login here"
-						@click="removeRegisterUserComponent()">Login here.</span>
+						@click="loginRequest()">Login here.</span>
 				</p>
 			</form>
 		</div>
@@ -51,8 +46,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, inject } from 'vue';
 
 export default {
 	name: "RegisterUser",
@@ -61,13 +55,17 @@ export default {
 	},
 	data() {
 		return {
+			forceLogout: inject('forceLogout'),
+			loginShow: inject("loginShow"),
+			registerUser: inject("registerUser"),
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
 			serverStatus: Object.assign({}, this.appNotify),
 			userName: "",
 			password: "",
 			confirmPassword: "",
 			email: "",
 			errState: false,
-			isLoggedOn: false,
 			siteKey: this.reCaptchaSiteKey,
 			token: ""
 		};
@@ -75,16 +73,12 @@ export default {
 	watch: {
 	},
 	methods: {
-		removeRegisterUserComponent() {
-			// Control the state of both components
-			let payload = {
-				register: false,
-				login: true
-			}
-			this.eventBus.emit("registerUser", payload);
+		loginRequest() {
+			this.loginShow(true);
+			this.registerUser(false);
 		},
 		async register() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			try {
 				let body = {
@@ -97,7 +91,7 @@ export default {
 				if (!this.userName || !this.email || !this.password) {
 					this.serverStatus.message = "Please provide a user name, email and password.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", this.serverStatus);
+					this.updateStatus(this.serverStatus);
 					this.errState = true;
 					return this.serverStatus;
 				}
@@ -117,8 +111,9 @@ export default {
 				const data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					// this.updateStatus(data);
+					data.forced = true;
+					this.forceLogout(data);
 				}
 
 				this.serverStatus.code = data?.code;
@@ -126,12 +121,8 @@ export default {
 				this.serverStatus.success = data?.success;
 
 				if (data?.success) {
-					// Control the state of both components
-					let payload = {
-						register: false,
-						login: false
-					}
-					this.eventBus.emit("registerUser", payload);
+					this.loginShow(false);
+					this.registerUser(false);
 					this.sendAnalyticsEvent('register_form_send', 'register_modal');
 				}
 
@@ -140,14 +131,22 @@ export default {
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 400;
-				this.serverStatus.message = `Error posting data: ${error}`;
+				this.serverStatus.message = `Error posting data: ${error.message}`;
 				this.serverStatus.success = false;
 			} finally {
-				this.eventBus.emit("updateStatus", (this.serverStatus));
-				this.eventBus.emit("showHideLoader", false);
+				this.updateStatus(this.serverStatus);
+				this.showHideLoader(false);
 			}
 		},
 		async registerHandler() {
+
+			if (this.password !== this.confirmPassword) {
+				this.serverStatus.message = "New Password and Confirm Password do not match.";
+				this.serverStatus.success = false;
+				this.updateStatus(this.serverStatus);
+				return;
+			}
+
 			try {
 				// Ensure the reCAPTCHA API has finished loading globally
 				if (!window.grecaptcha || !window.grecaptcha.enterprise) {
@@ -167,12 +166,26 @@ export default {
 
 					} catch (error) {
 						console.error("reCAPTCHA execution failed:", error);
+						let res = {
+							code: 400,
+							message: `reCAPTCHA execution failed: ${error?.message}`,
+							success: false
+						};
+						this.updateStatus(res);
 					}
 				});
 
 			} catch (err) {
 				console.error("Registration failed:", err);
 			}
+		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.registerUser(false);
+		},
+		handleClick(event) {
+			if (event.target.id === "register")
+				this.registerUser(false);
 		},
 	},
 	mounted() {
@@ -187,17 +200,14 @@ export default {
 		}
 	},
 	created() {
-		this.eventBus.on("EscapeKeydown", () => {
-			this.eventBus.emit('registerUser', false);
-		});
+		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
-			this.eventBus.off("EscapeKeydown");
+			window.removeEventListener("keydown", this.keyDown);
 		});
 	},
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 h2 {
 	text-align: center;
@@ -330,6 +340,7 @@ label[for="casinoId"] {
 	top: -16px;
 	padding: 15px;
 	color: #ddd;
-	box-shadow: 1px 1;
+	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
+	border-bottom: 1px #fff solid;
 }
 </style>

@@ -5,10 +5,8 @@
 				<h1>Blog</h1>
 				<div class="blog-intro">
 					<p>These are all old blog posts from a blog I had over ten years ago. It was originally a Wordpress
-						site
-						but I found an old backup of that site including the SQL backup files. All are pretty dated and
-						not
-						using the Wordpress themes and styles but kind of amusing to see past posts.</p>
+						site but I found an old backup of that site including the SQL backup files. All are pretty dated
+						and not using the Wordpress themes and styles but kind of amusing to see past posts.</p>
 					<p>Many posts are hidden and will be unhidden as I clean them up a little but even the ones that are
 						unhidden are pretty rough.</p>
 				</div>
@@ -66,7 +64,7 @@
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount } from "vue";
+import { inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -78,6 +76,8 @@ export default {
 	components: {},
 	data() {
 		return {
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
 			limit: 10,
 			offset: 0,
@@ -131,7 +131,7 @@ export default {
 			this.selectedBlog = this.blogList.filter(post => post_id === post.post_id)[0];
 		},
 		async getBlogPosts() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -144,7 +144,6 @@ export default {
 			params.set("sort", this.sortBy);
 			params.set("order", this.orderDir);
 			params.set("status", this.postStatus);
-			// params.set("keyword", this.contains);
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
@@ -174,9 +173,9 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 		previousPage() {
@@ -194,12 +193,6 @@ export default {
 	},
 	mounted() {
 		this.getBlogPosts();
-	},
-	created() {
-		this.eventBus.emit("eventTest", "Component Created");
-		onBeforeUnmount(() => {
-			this.eventBus.off("eventTest");
-		});
 	},
 };
 </script>
@@ -271,7 +264,6 @@ export default {
 /* END Blog styles */
 </style>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2,
@@ -280,12 +272,9 @@ h3 {
 }
 
 #view {
-	/* position: relative; */
 	width: 100%;
 	margin: 15px auto;
 	padding: 15px;
-	/* padding-bottom: 110px; */
-	/* z-index: -1; */
 	position: absolute;
 	inset: 0;
 }
@@ -348,20 +337,6 @@ h3 {
 	flex-flow: row wrap;
 	justify-content: center;
 }
-
-/* .button-container {
-	display: flex;
-	position: fixed;
-	left: 0;
-	flex-direction: column;
-	background-color: #e7e7e7;
-	padding: 15px;
-	width: 15%;
-	align-items: center;
-	border-radius: 12px;
-	margin-top: 15px;
-	user-select: none;
-} */
 
 .button-container * {
 	padding: 10px 15px;

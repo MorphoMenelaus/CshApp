@@ -49,37 +49,43 @@
 </template>
 
 <script>
+import { inject } from "vue";
+
 export default {
 	name: "MainNavbar",
 	props: {
 		appState: Object,
 		isMobile: Boolean,
+		mobileDropdownClose: Boolean
 	},
 	data() {
 		return {
+			mobileDropdownEvent: inject("mobileDropdownEvent"),
+			contactEmail: inject("contactEmail"),
+			loginShow: inject("loginShow"),
+			registerUser: inject('registerUser'),
 			mobileMenuShow: false,
 			startY: 0
 		};
 	},
 	watch: {
+		mobileDropdownClose() {
+			if (this.mobileDropdownClose) {
+				this.mobileMenuShow = false;
+				this.mobileDropdownEvent(false);
+			}
+		}
 	},
 	methods: {
 		closeDialogs(link_name = 'unkown') {
-
 			this.sendAnalyticsEvent('main_nav', link_name);
-
-			// Control the state of both components
-			let payload = {
-				register: false,
-				login: false
-			}
-			this.eventBus.emit("registerUser", payload);
-			this.eventBus.emit("contactEmail", false);
+			this.loginShow(false);
+			this.registerUser(false);
+			this.contactEmail(false);
 			this.mobileMenuShow = false;
 		},
 		showHideNav() {
 			this.mobileMenuShow = this.mobileMenuShow ? false : true;
-			// this.mobileMenuShow = this.isMobile && this.mobileMenuShow ? false : true;
 		},
 		handleTouchStart(event) {
 			this.startY = event.touches[0].clientY;
@@ -93,15 +99,9 @@ export default {
 			}
 		},
 	},
-	created() {
-		this.eventBus.on("closeMainNav", () => {
-			this.mobileMenuShow = false;
-		});
-	},
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .mobile nav {
 	position: absolute;
@@ -192,7 +192,8 @@ a.home-icon {
 	left: 0;
 	width: 100%;
 	margin: auto;
-	z-index: 1;
+	/* z-index: 1; */
+	z-index: 15000;
 }
 
 nav {
@@ -207,19 +208,6 @@ nav {
 	background-color: #313b64;
 	font-size: 18px;
 }
-
-/* #nav {
-	position: relative;
-	top: 0;
-	width: 20%;
-	height: calc(100vh - 150px);
-	background-color: #bccfe5;
-	float: left;
-	box-shadow: 1px 0px 6px rgb(0 0 0 / 50%);
-	overflow: hidden auto;
-	list-style: none;
-	padding: 0;
-} */
 
 nav a.router-link-exact-active {
 	/* color: #100f2e; */

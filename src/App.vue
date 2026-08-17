@@ -1,5 +1,9 @@
 <template>
 
+	<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
+		<div class="spinner-comet"></div>
+	</div>
+
 	<div v-if="isMobileLandscape" class="rotate-warning background-img">
 		<h2>For best user experience,<br />landscape view is not supported on mobile devices.</h2>
 		<p>Please rotate your mobile device to portrait view.</p>
@@ -15,12 +19,13 @@
 				title="Click to register">Click to register</span>.<br />Or login with username "guest"</span>
 	</div>
 
-	<HeaderMain :appState="appState" :isMobile="isMobile" />
+	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus"
+		:mobileDropdownClose="mobileDropdownClose" />
 
-	<Login :appState="appState" />
+	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" />
 
 	<RouterView id="view" :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth"
-		:class="isMobile ? 'mobile' : ''" />
+		:forceLogoutEvent="forceLogoutEvent" :class="isMobile ? 'mobile' : ''" />
 
 	<FooterMain :serverVersion="serverVersion" :isMobile="isMobile" />
 
@@ -31,9 +36,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
-// import { RouterLink, RouterView } from "vue-router";
-// import { inject } from 'vue';
+import { provide, inject } from 'vue';
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
 import Login from "@/components/Login.vue";
@@ -41,15 +44,7 @@ import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
 import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
 
-
 export default {
-	// setup() {
-	// 	const baseUrl = inject('baseUrl');
-	// 	return {
-	// 		baseUrl
-	// 	}
-	// },
-	// inject: ['baseUrl'],
 	components: {
 		HeaderMain,
 		FooterMain,
@@ -59,21 +54,24 @@ export default {
 	},
 	data() {
 		return {
-			serverStatus: Object.assign({}, this.appNotify),
+			sharedUpdateStatus: {},
+			forceLogoutEvent: {},
+			mobileDropdownClose: null,
 			recall: new Storage(),
 			body: document.getElementsByTagName('body'),
 			serverVersion: "",
 			appState: {},
 			appDevDuties: [],
-			guestLoginDoc: false,
 			currentComponent: null,
 			isMobile: window.innerWidth < 1024,
-			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 768,
+			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 600,
 			windowWidth: window.innerWidth,
 			uiDarkMode: false,
 			isHidden: false,
 			lastScrollTop: 0,
-			threshold: 50
+			threshold: 50,
+			showHideLoader: false,
+			loginShow: false,
 		};
 	},
 	watch: {
@@ -83,30 +81,39 @@ export default {
 			} else {
 				this.body[0].classList.remove("uiDarkMode");
 			}
+		},
+		currentComponent() {
+			this.mobileDropdownClose = this.currentComponent ? true : false;
+			console.log(this.currentComponent);
 		}
 	},
 	methods: {
 		checkOrientation() {
-			this.isMobileLandscape = screen.orientation.type.includes("landscape") && window.innerHeight < 768;
+			this.isMobileLandscape = screen.orientation.type.includes("landscape") && window.innerHeight < 600;
 		},
 		async initialSetup() {
 			this.getServerVersion();
 			this.recallAppState();
 			if (this.appState?.accessToken) {
 				let checkTokens = await this.tokenCheck(this.appState);
-				if (!checkTokens?.tokenValid) this.eventBus.emit("forceLogout");
+				if (!checkTokens?.tokenValid) {
+					console.log(checkTokens);
+					let res = {
+						code: 403,
+						message: "Refresh Token Expired. Please login again.",
+						success: false,
+						forced: true
+					};
+					this.forceLogoutEvent = res;
+				}
 			}
 			// The order of this getAppRolesData() call is important.
 			// The recall and access token check should be done first.
 			this.getAppRolesData();
 		},
 		showRegisterUserComponent(login = false, register = false) {
-			// Control the state of both components
-			let payload = {
-				register: register,
-				login: login
-			}
-			this.eventBus.emit("registerUser", payload);
+			this.currentComponent = register ? "Register" : null
+			this.loginShow = login;
 		},
 		recallAppState() {
 			this.appState = this.recall.get();
@@ -122,7 +129,7 @@ export default {
 		},
 		async getServerVersion() {
 			try {
-				const response = await fetch('/api/serverInfo');
+				const response = await fetch(`${this.baseUrl}/api/serverInfo`);
 				if (response?.ok) {
 					let data = await response.json();
 					this.serverVersion = data?.version || "";
@@ -154,8 +161,8 @@ export default {
 				if (data?.success) {
 					this.appDevDuties = data.appDevDuties;
 					let updateAppState = this.appState;
-					updateAppState.appDevDuties = data.appDevDuties;
-					this.eventBus.emit("updateAppState", updateAppState);
+					updateAppState.appDevDuties = this.appDevDuties = data.appDevDuties;
+					this.updateAppState(updateAppState);
 				}
 
 			} catch (error) {
@@ -178,57 +185,48 @@ export default {
 		},
 	},
 	async created() {
-		this.checkOrientation();
-		this.initialSetup();
-		this.eventBus.on("initialSetup", () => {
-			this.initialSetup();
-		});
-		this.eventBus.on("EscapeKeydown", () => {
-			this.currentComponent = null;
-		});
-		this.eventBus.on("updateAppState", (payload) => {
-			this.updateAppState(payload);
-		});
+		/* BEGIN NEW EVENT HANDLING SECTION */
+		let defaultStatus = {
+			code: 403,
+			message: "Session Expired. Please login again.",
+			success: false,
+			forced: true
+		};
+		provide("forceLogout", (status = defaultStatus) => this.forceLogoutEvent = status);
+		provide("updateAppState", this.updateAppState);
+		provide("initialSetup", this.initialSetup);
+		provide("showHideLoader", (bool) => this.showHideLoader = bool);
+		provide("loginShow", (bool) => this.loginShow = bool);
+		provide("registerUser", (bool) => this.currentComponent = bool ? "Register" : null);
+		provide("contactEmail", (bool) => this.currentComponent = bool ? "ContactForm" : null);
+		provide("sendUpdateStatus", (payload) => this.sharedUpdateStatus = payload);
+		provide("mobileDropdownEvent", (bool) => this.mobileDropdownClose = bool);
+		/* END NEW EVENT HANDLING SECTION */
+
+		screen.orientation.addEventListener("change", this.checkOrientation);
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
-		window.addEventListener("forceLogout", (e) => {
-			this.eventBus.emit("updateStatus", e.detail);
-			this.eventBus.emit("forceLogout");
-		});
-		this.eventBus.on("registerUser", (payload) => {
-			this.currentComponent = payload.register ? "Register" : null;
-		});
-		this.eventBus.on("contactEmail", (bool) => {
-			this.currentComponent = bool ? "ContactForm" : null;
+		window.addEventListener("forceLogout", (e) => this.forceLogoutEvent = e?.detail);
+		window.addEventListener("keydown", (down) => {
+			if (down.key === "Escape")
+				this.currentComponent = null;
 		});
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
 			this.windowWidth = window.innerWidth;
 			this.checkOrientation();
 		});
-		window.addEventListener("keydown", (down) => {
-			if (down.key === "Escape")
-				this.eventBus.emit("EscapeKeydown");
-		});
-		let body = document.getElementsByTagName('body')[0];
-		body.addEventListener("click", (event) => {
-			if (event.target.id !== "nav-container" && event.target.id !== "hamburger")
-				this.eventBus.emit("closeMainNav");
-		}, true);
 		window.addEventListener('storage', (event) => {
 			if (event.key === this.recall.getstorageKey()) {
 				this.recallAppState();
 			}
 		});
-		screen.orientation.addEventListener("change", this.checkOrientation);
-	},
-	mounted() {
-		// let app = document.getElementById("app");
-		// app.addEventListener("scroll", this.handleScroll, { passive: true });
+
+		this.checkOrientation();
+		this.initialSetup();
 	},
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 span.link {
 	font-weight: bold;
@@ -246,10 +244,6 @@ span.link {
 	/* color: #000; */
 	z-index: 1;
 }
-
-/* .uiDarkMode #dark-mode-check {
-	color: #ddd;
-} */
 
 .register-link {
 	right: 15px;
@@ -315,6 +309,35 @@ nav a:first-of-type {
 	text-align: center;
 	padding: 15px;
 	background-position-y: top;
+}
+
+#loading-icon {
+	display: none;
+	align-content: center;
+	justify-content: center;
+	position: fixed;
+	top: 94px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100vw;
+	background-color: rgb(0 0 0 / 50%);
+	backdrop-filter: blur(5px);
+	transition: background-color .3 ease-in-out;
+	z-index: 15000;
+}
+
+.loader-icon {
+	height: 48px;
+	width: 48px;
+	border: 3px solid;
+	border-radius: 100%;
+	border-color: red white blue black;
+	animation: loader 0.5s linear infinite;
+}
+
+#loading-icon.loading {
+	display: grid;
 }
 
 @media (min-width: 1024px) {

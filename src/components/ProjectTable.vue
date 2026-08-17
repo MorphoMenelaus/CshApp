@@ -47,47 +47,49 @@
 		</table>
 		<div id="mobile" v-else>
 			<table v-for="(item, index) in projects" :key="index">
-				<tr class="header-row">
-					<th>Project</th>
-					<td @click="!projectOpen ? project = item : null"
-						:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`">
-						<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''"
-							:style="`background-color: ${item.color}`">{{ item.name }}</div>
-						<span class="running"
-							v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
-					</td>
-				</tr>
-				<tr class="header-row">
-					<th>Client</th>
-					<td>{{ item.client_name }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Project Id</th>
-					<td>{{ item.id }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Created</th>
-					<td>{{ new Date(item.created_at).toLocaleString() }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Hours</th>
-					<td>{{ (item.actual_seconds / 60 / 60).toFixed(2) }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Status</th>
-					<td>{{ item.status }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Start Date</th>
-					<td>{{ item.start_date }}</td>
-				</tr>
+				<tbody>
+					<tr class="header-row">
+						<th>Project</th>
+						<td @click="!projectOpen ? project = item : null"
+							:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`">
+							<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''"
+								:style="`background-color: ${item.color}`">{{ item.name }}</div>
+							<span class="running"
+								v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
+						</td>
+					</tr>
+					<tr class="header-row">
+						<th>Client</th>
+						<td>{{ item.client_name }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Project Id</th>
+						<td>{{ item.id }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Created</th>
+						<td>{{ new Date(item.created_at).toLocaleString() }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Hours</th>
+						<td>{{ (item.actual_seconds / 60 / 60).toFixed(2) }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Status</th>
+						<td>{{ item.status }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Start Date</th>
+						<td>{{ item.start_date }}</td>
+					</tr>
+				</tbody>
 			</table>
 		</div>
 	</div>
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
+import { inject } from "vue";
 import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import { trackerModel } from "@/dependencies/models.js";
 import TimeTracker from "@/components/TimeTracker.vue";
@@ -104,10 +106,13 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
+			updateAppState: inject("updateAppState"),
 			serverStatus: Object.assign({}, this.appNotify),
 			timeTracker: Object.assign({}, trackerModel),
 			togglStore: new Storage("togglStore"),
-			togglRecall: {},
+			// togglRecall: {},
 			openTracker: this.timeTracker,
 			project: {},
 			projectOpen: false,
@@ -136,7 +141,7 @@ export default {
 			});
 		},
 		async getCurrentTimeEntries() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -159,7 +164,7 @@ export default {
 					this.serverStatus.code = 402;
 					this.serverStatus.message = "Hourly API quota reached. Resets in 12 min.";
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
 					return;
 				}
 
@@ -167,7 +172,7 @@ export default {
 					let updateAppState = this.appState;
 					updateAppState.openTracker = this.timeTracker;
 					updateAppState.project = {};
-					this.eventBus.emit("updateAppState", updateAppState);
+					this.updateAppState(updateAppState);
 					this.togglStore.delete("project");
 					this.togglStore.delete("openTracker");
 					return;
@@ -191,16 +196,16 @@ export default {
 				let updateAppState = this.appState;
 				updateAppState.openTracker = this.openTracker;
 				updateAppState.project = this.project;
-				this.eventBus.emit("updateAppState", updateAppState);
+				this.updateAppState(updateAppState);
 
 			} catch (error) {
 				console.error('Error posting data:', error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 	},
@@ -215,21 +220,11 @@ export default {
 		let updateAppState = this.appState;
 		updateAppState.openTracker = this?.openTracker;
 		updateAppState.project = this?.project;
-		this.eventBus.emit("updateAppState", updateAppState);
-	},
-	created() {
-		this.eventBus.on("deselectTogglProject", () => {
-			this.project = {};
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("deselectTogglProject");
-		});
+		this.updateAppState(updateAppState);
 	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .header-row {
 	text-transform: uppercase;
@@ -264,7 +259,6 @@ td:first-child div:not(.disabled):hover {
 }
 
 td:first-child .disabled {
-	/* filter: brightness(0.75); */
 	color: #444;
 	cursor: not-allowed;
 }
@@ -294,16 +288,4 @@ tr.header-row * {
 	font-weight: 500;
 	user-select: none;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

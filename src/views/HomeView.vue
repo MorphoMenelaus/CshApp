@@ -104,10 +104,10 @@ const showStockDetails = (id) => {
 					HelpDesk, Cashier, Reporter, and Player all allow for different access and abilities.
 				</p>
 				<div class="btn-link-container">
-					<Button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">{{ lessText ? 'Fewer'
+					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">{{ lessText ? 'Fewer'
 						:
 						'More'
-					}} Details <span class="arrow" :class="lessText ? 'rotated' : ''">▽</span></Button>
+					}} Details <span class="arrow" :class="lessText ? 'rotated' : ''">▽</span></button>
 					<RouterLink to="/resume" class="btn linkedin">{{ isMobile ? 'Full' : 'Chris Hardwick' }} Resume
 					</RouterLink>
 					<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
@@ -134,10 +134,10 @@ const showStockDetails = (id) => {
 					<h2 class="julius-sans" @click="showStockDetails('latest-stocks')"
 						:title="`${showStocks ? 'Close' : 'Open'} Market Summary Graphs`">Market Summary Graphs</h2>
 					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>
-					<Button id="stocks-anchor" class="btn" @click="showStockDetails('latest-stocks')">
+					<button id="stocks-anchor" class="btn" @click="showStockDetails('latest-stocks')">
 						{{ showStocks ? 'Close' : 'Open' }} Market Graphs
 						<span :class="showStocks ? 'rotated' : ''">▽</span>
-					</Button>
+					</button>
 				</div>
 				<Transition name="slide-down">
 					<div v-if="showStocks" id="latest-stocks">
@@ -241,10 +241,6 @@ p {
 #name-title {
 	font-size: 4em;
 	/* font-weight: bold; */
-}
-
-.uiDarkMode #name-title {
-	font-weight: normal;
 }
 
 #stocks-container {
@@ -374,6 +370,14 @@ p {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+}
+
+.mobile .btn-link-container>* {
+	margin: 5px 10px;
+}
+
+.mobile .btn span {
+	right: 0;
 }
 
 .linkedin {

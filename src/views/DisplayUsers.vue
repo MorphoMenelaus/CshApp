@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -69,6 +70,7 @@ export default {
 	components: {},
 	data() {
 		return {
+			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
 			limit: 5,
 			offset: 0,
@@ -80,18 +82,7 @@ export default {
 				{ text: "20", value: "20" },
 				{ text: "50", value: "50" },
 			],
-			responseStatus: "",
 			usersList: [],
-			usersLabels: [
-				"userId",
-				"userCreated",
-				"userName",
-				"admin",
-				"siteAdmin",
-				"siteEditor",
-				"isContributor",
-				"userNotes",
-			],
 		};
 	},
 	watch: {
@@ -111,7 +102,7 @@ export default {
 	},
 	methods: {
 		async getUsers() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -140,7 +131,7 @@ export default {
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 		previousPage() {
@@ -159,13 +150,9 @@ export default {
 	mounted() {
 		this.getUsers();
 	},
-	created() {
-	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #view {
 	padding-bottom: 80px;
@@ -247,16 +234,4 @@ th {
 td {
 	border-bottom: 1px #aaa solid;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>

@@ -4,8 +4,6 @@
 		<div v-if="appState?.isLoggedOn">
 			<span>{{ appState.userName }}</span>
 			<button class="btn" type="button" @click="openConfirmDialog()">Logout</button>
-			<!-- <span v-if="userName !== 'guest'" id="delete-button" class="link"
-				@click="currentComponent = 'DeleteUser'">Delete Account</span> -->
 			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify
 				Account</RouterLink>
 			<RouterLink v-if="appState?.permissions.verified" to="/userpreferences" title="User Preferences"
@@ -13,7 +11,7 @@
 			</RouterLink>
 		</div>
 		<div v-else>
-			<button class="btn" type="button" @click="showRegisterUserComponent(true, false)">Login</button>
+			<button class="btn" type="button" @click="loginRequest(true)">Login</button>
 			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to
 					register</span>.</span>
 		</div>
@@ -38,7 +36,7 @@
 				</div>
 				<div class="login-buttons">
 					<button class="btn login-btn" type="button" @click="login()">Login</button>
-					<button class="btn" type="button" @click="loginShow = false">Cancel</button>
+					<button class="btn" type="button" @click="loginRequest(false)">Cancel</button>
 				</div>
 				<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to
 						register</span>.</span>
@@ -60,16 +58,11 @@
 		</dialog>
 	</div>
 
-	<component :is="currentComponent" :appState="appState" />
-
 </template>
 
 <script>
-// @ is an alias to /src
-import { onBeforeUnmount } from "vue";
+import { provide, inject } from "vue";
 import router from "@/router";
-import { Storage } from "@/dependencies/csh-libs.js";
-import DeleteUser from "@/components/DeleteUser.vue";
 
 const user = import.meta.env.VITE_APP_GUEST_USER;
 const password = import.meta.env.VITE_APP_GUEST_PASS;
@@ -82,32 +75,27 @@ export default {
 	name: "Login",
 	props: {
 		appState: Object,
-	},
-	components: {
-		DeleteUser
+		loginShow: Boolean,
+		forceLogoutEvent: Object,
 	},
 	data() {
 		return {
+			mobileDropdownEvent: inject("mobileDropdownEvent"),
+			forceLogout: inject('forceLogout'),
+			updateAppState: inject('updateAppState'),
+			initialSetup: inject('initialSetup'),
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject('showHideLoader'),
+			loginShowEvent: inject("loginShow"),
+			registerUser: inject('registerUser'),
 			appNotify: Object.assign({}, this.appNotify),
-			recall: new Storage(),
-			loginShow: false,
-			activeSession: {},
 			accessToken: "",
 			accessTokenExpiration: "",
 			refreshToken: "",
-			userPermissions: {
-				userId: "",
-				globalPermissions: "",
-				sitePermissions: {},
-			},
 			sitePermissions: {},
-			isSiteAdmin: false,
 			userName: "",
-			displayName: "",
 			password: "",
 			userId: "",
-			usersList: [],
-			currentComponent: null,
 			dialog: null
 		};
 	},
@@ -118,20 +106,29 @@ export default {
 				this.login();
 			}
 		},
-		loginShow() {
+		forceLogoutEvent: {
+			handler(res) {
+				console.log("forceLogoutEvent triggered in Login.vue", res);
+				if (res?.forced) {
+					this.updateStatus(res);
+					this.logout();
+				}
+			},
+			deep: true,
 		},
 	},
 	methods: {
+		loginRequest(bool) {
+			this.loginShowEvent(bool);
+			this.registerUser(false);
+			this.mobileDropdownEvent(true);
+		},
 		showRegisterUserComponent(login = false, register = false) {
-			// Control the state of both components
-			let payload = {
-				register: register,
-				login: login
-			}
-			this.eventBus.emit("registerUser", payload);
+			this.loginRequest(login);
+			this.registerUser(register);
 		},
 		async login() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 			try {
 				let body = {
 					userName: this.userName,
@@ -142,7 +139,7 @@ export default {
 					this.appNotify.message =
 						"Please provide a user name and password.";
 					this.appNotify.success = false;
-					this.eventBus.emit("updateStatus", this.appNotify);
+					this.updateStatus(this.appNotify);
 					return this.appNotify;
 				}
 
@@ -161,8 +158,8 @@ export default {
 				const dataObj = await response.json();
 
 				if (dataObj?.code === 403) {
-					this.eventBus.emit("updateStatus", dataObj);
-					this.eventBus.emit("forceLogout");
+					this.updateStatus(dataObj);
+					this.logout();
 				}
 
 				if (dataObj?.success) {
@@ -174,83 +171,34 @@ export default {
 					updateAppState.user = dataObj.authorization.user
 					updateAppState.permissions = dataObj.authorization.user.permissions;
 					updateAppState.isLoggedOn = true;
-					this.eventBus.emit("updateAppState", updateAppState);
+					this.updateAppState(updateAppState);
+
 
 					this.appNotify.code = 200;
 					this.appNotify.message = "Access Token acquired: Login Success";
 					this.appNotify.success = true;
+					this.forceLogout({});
+					this.loginRequest(false);
 					router.push("/");
-					this.loginShow = false;
 				} else {
 					this.appNotify.code = dataObj.code;
 					this.appNotify.message = dataObj.message;
 					this.appNotify.success = dataObj.success;
 				}
 
-				this.eventBus.emit("updateStatus", this.appNotify);
+				this.updateStatus(this.appNotify);
 
 			} catch (e) {
 				console.error(e);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
-			}
-		},
-		async refreshAuthentication() {
-
-			let body = {
-				accessToken: this.appState?.accessToken,
-				refreshToken: this.appState?.refreshToken,
-			};
-
-			try {
-
-				let headerObj = new Headers();
-				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL('/api/auth/refresh', this.baseUrl);
-
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'POST',
-					headers: headerObj,
-					body: JSON.stringify(body)
-				});
-
-				let response = await fetch(request);
-				const dataObj = await response.json();
-
-				if (dataObj?.code === 403) {
-					this.eventBus.emit("updateStatus", dataObj);
-					this.eventBus.emit("forceLogout");
-				}
-
-				if (dataObj?.success) {
-					let updateAppState = this.appState;
-					updateAppState.accessToken = dataObj.authorization.accessToken;
-					updateAppState.accessTokenExpiration = dataObj.authorization.accessTokenExpiration;
-					updateAppState.refreshToken = dataObj.authorization.refreshToken;
-					updateAppState.isLoggedOn = true;
-					this.eventBus.emit("updateAppState", updateAppState);
-
-					this.appNotify.code = 200;
-					this.appNotify.message = "Access Token refeshed";
-					this.appNotify.success = true;
-				} else {
-					this.appNotify.code = dataObj.code;
-					this.appNotify.message = dataObj.message;
-					this.appNotify.success = dataObj.success;
-				}
-
-				this.eventBus.emit("updateStatus", this.appNotify);
-
-			} catch (e) {
-				console.error(e);
+				this.showHideLoader(false);
 			}
 		},
 		openConfirmDialog() {
 			this.dialog.showModal()
 		},
 		async logout() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let body = {
 				userName: this.appState.userName,
@@ -275,55 +223,37 @@ export default {
 
 				if (response.ok) {
 					let updateAppState = {};
-					this.eventBus.emit("updateAppState", updateAppState);
-					this.eventBus.emit("initialSetup");
+					this.updateAppState(updateAppState);
+					this.initialSetup();
 					localStorage.clear();
 				}
 
 			} catch (e) {
 				console.error(e);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 				router.push("/");
 			}
 		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.loginShowEvent(false);
+		},
 		handleClick(event) {
 			if (event.target.id === "login")
-				this.loginShow = false;
+				this.loginShowEvent(false);
 		},
 	},
 	mounted() {
 		this.dialog = document.getElementById("confirmDialog");
 	},
 	created() {
-		this.eventBus.on("EscapeKeydown", () => {
-			this.loginShow = false;
-		});
-		this.eventBus.on("cancelDeleteUser", () => {
-			this.currentComponent = null;
-		});
-		this.eventBus.on("UserDeleted", () => {
-			this.currentComponent = null;
-			this.logout();
-		});
-		this.eventBus.on("forceLogout", () => {
-			this.logout();
-		});
-		this.eventBus.on("registerUser", (payload) => {
-			this.loginShow = payload.login;
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("EscapeKeydown");
-			this.eventBus.off("cancelDeleteUser");
-			this.eventBus.off("UserDeleted");
-			this.eventBus.off("forceLogout");
-			this.eventBus.off("registerUser");
-		});
+		provide("forceLogout", this.logout);
+		window.addEventListener("keydown", this.keyDown);
 	},
 };
 </script>
 
-<!-- scoped attribute to limit CSS to this component only -->
 <style scoped>
 .login-status,
 #login {
@@ -387,7 +317,6 @@ h2 {
 	bottom: 45px;
 	left: 0;
 	background-color: rgb(0 0 0 / 80%);
-	/* z-index: 500200; */
 	z-index: 10000;
 }
 
@@ -476,7 +405,14 @@ h2 {
 	top: -46px;
 	padding: 15px;
 	color: #ddd;
-	box-shadow: 1px 1;
+	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
+	border-bottom: 1px #fff solid;
+}
+
+@media (max-width: 767px) {
+	#login {
+		top: 90px;
+	}
 }
 
 @media (min-width: 768px) {

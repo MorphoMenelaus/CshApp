@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
+import { inject } from "vue";
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
 
@@ -95,6 +95,8 @@ export default {
 	components: {},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			showHideLoader: false,
 			chartElem: null,
@@ -169,7 +171,7 @@ export default {
 			this.weatherData.hourly.time = newTimeArr;
 		},
 		async getWeatherData() {
-			this.eventBus.emit("showStockLoader", true);
+			this.showHideLoader = true;
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -196,8 +198,8 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					data.forced = true;
+					this.forceLogout(data);
 				}
 
 				this.weatherData = data;
@@ -208,7 +210,7 @@ export default {
 					this.serverStatus.code = 503;
 					this.serverStatus.message = data?.reason;
 					this.serverStatus.success = false;
-					this.eventBus.emit("updateStatus", (this.serverStatus));
+					this.updateStatus(this.serverStatus);
 					return;
 				}
 
@@ -224,9 +226,9 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showStockLoader", false);
+				this.showHideLoader = false;
 			}
 		},
 		drawChart() {
@@ -358,19 +360,9 @@ export default {
 		this.setupForGraph();
 		this.getWeatherData();
 	},
-	created() {
-		this.eventBus.on("showStockLoader", payload => {
-			this.showHideLoader = payload;
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("showStockLoader");
-		});
-	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1 {
 	margin: 15px auto;
@@ -562,9 +554,9 @@ small span {
 }
 
 @media (min-width: 992px) {
-	#description-box {
-		/* width: 85%; */
-	}
+	/* #description-box {
+		width: 85%;
+	} */
 
 	#weather-container {
 		width: 90%;
@@ -585,10 +577,6 @@ small span {
 @media (min-width: 1200px) {
 	#weather-container {
 		width: 80%;
-	}
-
-	#description-box {
-		/* width: 75%; */
 	}
 }
 

@@ -3,7 +3,7 @@
 		<div id="layout-container">
 
 			<div id="resume-header">
-				<h1 class="julius-sans center name">Chris Hardwick</h1>
+				<h1 class="julius-sans center name stroke">Chris Hardwick</h1>
 				<h2>Resume</h2>
 			</div>
 
@@ -15,7 +15,7 @@
 				<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
 					title="Chris Hardwick | Linkedin Profile" target="_blank"
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
-				<button class="btn" @click="eventBus.emit('contactEmail', true)">Contact Me</button>
+				<button class="btn" @click="contactEmail(true)">Contact Me</button>
 			</div>
 			<div>
 				<div class="form-group">
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import { inject } from 'vue';
 import ResumeTable from "@/components/ResumeTable.vue";
 import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
 import skills from "@/dependencies/skills.json";
@@ -78,6 +78,10 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
+			contactEmail: inject('contactEmail'),
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			resumeArray: [],
 			allDutiesArray: [],
@@ -125,7 +129,7 @@ export default {
 			this.allDutiesArray = newArr;
 		},
 		async getResumeData() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -147,8 +151,8 @@ export default {
 				let data = await response.json();
 
 				if (data?.code === 403) {
-					this.eventBus.emit("updateStatus", data);
-					this.eventBus.emit("forceLogout");
+					data.forced = true;
+					this.forceLogout(data);
 				}
 
 				if (data?.success) {
@@ -161,9 +165,9 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 	},
@@ -204,13 +208,7 @@ export default {
 }
 </style>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* h2 {
-	text-align: center;
-	font-weight: 500;
-} */
-
 .btn {
 	margin: 15px auto;
 	display: block;
@@ -257,7 +255,6 @@ export default {
 
 .name {
 	font-size: 3.5em;
-	/* font-weight: bold; */
 }
 
 .center {

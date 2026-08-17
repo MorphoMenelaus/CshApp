@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount } from "vue";
+import { inject, provide } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
@@ -149,7 +149,8 @@ export default {
 	name: "UserPreferences",
 	props: {
 		appState: Object,
-		isMobile: Boolean
+		isMobile: Boolean,
+		forceLogoutEvent: Object,
 	},
 	components: {
 		ChangePassword,
@@ -157,6 +158,10 @@ export default {
 	},
 	data() {
 		return {
+			updateStatus: inject('sendUpdateStatus'),
+			showHideLoader: inject("showHideLoader"),
+			updateAppState: inject("updateAppState"),
+			forceLogout: inject('forceLogout'),
 			serverStatus: Object.assign({}, this.appNotify),
 			admin: this.appState?.permissions?.admin,
 			userId: this.appState?.user?.userId,
@@ -183,7 +188,6 @@ export default {
 			charRemaining: 1024,
 			location: locations.filter(loc => loc.city === this.locationDefault)[0],
 			locationOptions: locations.toSorted((a, b) => a.city.localeCompare(b.city)),
-
 		};
 	},
 	watch: {
@@ -195,7 +199,15 @@ export default {
 		},
 		location() {
 			this.locationDefault = this.location.city;
-		}
+		},
+		forceLogoutEvent: {
+			handler(res) {
+				this.currentComponent = null;
+				res.forced = true;
+				this.forceLogout(res);
+			},
+			deep: true,
+		},
 	},
 	methods: {
 		goBack() {
@@ -259,7 +271,7 @@ export default {
 			}
 		},
 		async getUser() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -287,11 +299,11 @@ export default {
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
 		async updateUser() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let body = {
 				email: this.email,
@@ -326,7 +338,7 @@ export default {
 				if (data.success && this.user.userName === this.appState.userName) {
 					let updateAppState = this.appState;
 					updateAppState.user = data.user;
-					this.eventBus.emit("updateAppState", updateAppState);
+					this.updateAppState(updateAppState);
 				}
 
 				this.getUser();
@@ -334,13 +346,13 @@ export default {
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 
 			} catch (error) {
 				console.error('Error fetching data:', error)
 			} finally {
 				this.addUserLog(this.appState, "Update User Preferences");
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		}
 	},
@@ -348,27 +360,12 @@ export default {
 	},
 	created() {
 		this.getUser();
-		this.eventBus.on("UserDeleted", () => {
-			this.currentComponent = null;
-			this.eventBus.emit("forceLogout");
-		});
-		this.eventBus.on("cancelDeleteUser", () => {
-			this.currentComponent = null;
-		});
-		this.eventBus.on("closeChangePassword", () => {
-			this.currentComponent = null;
-		});
-		onBeforeUnmount(() => {
-			this.eventBus.off("UserDeleted");
-			this.eventBus.off("cancelDeleteUser");
-			this.eventBus.off("closeChangePassword")
-		});
+		provide('cancelDeleteUser', (bool) => this.currentComponent = bool ? "DeleteUser" : null);
+		provide('closeChangePassword', (bool) => this.currentComponent = bool ? "ChangePassword" : null);
 	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #view {
 	padding-bottom: 90px;
@@ -428,6 +425,10 @@ h3,
 
 .form-group * {
 	margin: 5px 0 0;
+}
+
+.mobile .form-group small {
+	margin-top: 0;
 }
 
 input {
@@ -511,12 +512,6 @@ button.btn {
 	color: #f00;
 	font-weight: bold;
 }
-
-/* .btn.back {
-	position: absolute;
-	top: 0;
-	left: 15px;
-} */
 
 @media (max-width: 767px) {
 	.fields {

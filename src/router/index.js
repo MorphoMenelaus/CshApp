@@ -96,7 +96,7 @@ const router = createRouter({
 	},
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
 	const defaultTitle = 'Hardwick Web Development';
 	document.title = to.meta.title || defaultTitle;
 	// 	let hide = false;
@@ -105,7 +105,7 @@ router.beforeEach((to, from, next) => {
 	// 	} else {
 	// 		hide = true;
 	// 	}
-	next();
+	// next();
 });
 
 export default router

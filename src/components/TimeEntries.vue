@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -60,6 +61,8 @@ export default {
 	components: {},
 	data() {
 		return {
+			showHideLoader: inject('showHideLoader'),
+			updateStatus: inject('sendUpdateStatus'),
 			serverStatus: Object.assign({}, this.appNotify),
 			startDate: new Date().toISOString().split('T')[0],
 			endDate: new Date().toISOString().split('T')[0],
@@ -70,7 +73,7 @@ export default {
 	},
 	methods: {
 		async getTimeEntries() {
-			this.eventBus.emit("showHideLoader", true);
+			this.showHideLoader(true);
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
@@ -89,8 +92,6 @@ export default {
 			});
 
 			try {
-				// let response = await fetch(request);
-				// let data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
@@ -101,21 +102,15 @@ export default {
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
-				this.eventBus.emit("updateStatus", (this.serverStatus));
+				this.updateStatus(this.serverStatus);
 			} finally {
-				this.eventBus.emit("showHideLoader", false);
+				this.showHideLoader(false);
 			}
 		},
-	},
-	mounted() {
-	},
-	created() {
 	},
 };
 </script>
 
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2,
@@ -136,16 +131,4 @@ h4 {
 	justify-content: center;
 	margin: 15px;
 }
-
-@media (max-width: 767px) {}
-
-@media (min-width: 768px) and (max-width: 991px) {}
-
-@media (min-width: 768px) {}
-
-@media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
-
-@media (min-width: 1200px) {}
 </style>
