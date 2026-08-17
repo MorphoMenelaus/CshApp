@@ -21,7 +21,7 @@
 			</div>
 		</div>
 
-		<MainNavbar :appState="appState" :isMobile="isMobile" :allowMobileDropdown="allowMobileDropdown" />
+		<MainNavbar :appState="appState" :isMobile="isMobile" :mobileDropdownClose="mobileDropdownClose" />
 
 	</header>
 
@@ -41,7 +41,7 @@ export default {
 		serverVersion: String,
 		isMobile: Boolean,
 		sharedUpdateStatus: Object,
-		allowMobileDropdown: Boolean
+		mobileDropdownClose: Boolean
 	},
 	data() {
 		return {

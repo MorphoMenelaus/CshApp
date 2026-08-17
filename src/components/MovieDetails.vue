@@ -2,8 +2,10 @@
 	<div>
 		<div id="movie-details" :class="isMobile ? 'mobile' : ''">
 			<div class="card">
-				<div class="img-box">
-					<img class="poster" :src="`./media-poster/${selectedMovie.slug}.jpg`" />
+				<div class="img-box-container">
+					<div class="img-box">
+						<img class="poster" :src="`./media-poster/${selectedMovie.slug}.jpg`" />
+					</div>
 				</div>
 				<div class="details-box">
 					<h1>{{ selectedMovie.title }}</h1>
@@ -97,45 +99,63 @@ p {
 }
 
 .card {
-	display: flex;
-	width: 90%;
-	flex-flow: row;
+	max-height: calc(100vh - 190px);
 	margin: auto;
-	background-color: #c7c7c7;
 	padding: 30px;
+	background-color: #c7c7c7;
 	border-radius: 15px;
 	color: #000;
+	overflow: hidden auto;
+	display: grid;
+	grid-template-columns: 1fr 2fr;
 }
 
 .mobile .card {
+	display: block;
 	flex-direction: column;
 	width: 90%;
 	margin: 15px auto;
 }
 
-.img-box {
-	display: flex;
-	padding-right: 30px;
+.img-box-container {
+	margin-right: 30px;
+	overflow: hidden;
+}
+
+.mobile .img-box-container {
+	margin-right: unset;
+	align-content: unset;
+}
+
+.details-box {
+	flex: 1 1 auto;
+	height: 100%;
 }
 
 .details-box small {
 	display: block;
 }
 
+.img-box {
+	display: flex;
+	justify-content: center;
+	margin-top: 10px;
+}
+
 .mobile .img-box {
-	padding: unset;
 	align-items: center;
+	padding: unset;
 	margin: auto;
 }
 
 img.poster {
+	/* width: 100%; */
+	width: fit-content;
+	max-height: 600px;
+	object-fit: contain;
+	overflow: hidden;
 	border: 1px solid #999;
 	border-radius: 14px;
-	overflow: hidden;
-}
-
-.mobile img.poster {
-	width: 100%;
 }
 
 .year-block,
@@ -173,6 +193,7 @@ img.poster {
 @media (min-width: 1200px) {
 	.card {
 		width: 65%;
+		max-height: 75%;
 	}
 }
 

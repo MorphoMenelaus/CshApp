@@ -1,6 +1,6 @@
 <template>
 
-	<div id="contact">
+	<div id="contact" @click="handleClick($event)">
 		<div class="wrapper" v-if="!messageSent">
 			<div id="form-header">
 				<h2>I'd love to hear from you</h2>
@@ -190,7 +190,11 @@ export default {
 		},
 		keyDown(e) {
 			if (e.key === "Escape")
-				this.closePopup();
+				this.contactEmail(false);
+		},
+		handleClick(event) {
+			if (event.target.id === "contact")
+				this.contactEmail(false);
 		},
 	},
 	mounted() {
@@ -343,7 +347,8 @@ label[for="casinoId"] {
 	top: -16px;
 	padding: 15px;
 	color: #ddd;
-	box-shadow: 1px 1;
+	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
+	border-bottom: 1px #fff solid;
 }
 
 textarea#message {

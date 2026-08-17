@@ -3,7 +3,7 @@
 		<div id="layout-container">
 
 			<div id="resume-header">
-				<h1 class="julius-sans center name">Chris Hardwick</h1>
+				<h1 class="julius-sans center name stroke">Chris Hardwick</h1>
 				<h2>Resume</h2>
 			</div>
 

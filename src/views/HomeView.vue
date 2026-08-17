@@ -243,10 +243,6 @@ p {
 	/* font-weight: bold; */
 }
 
-.uiDarkMode #name-title {
-	font-weight: normal;
-}
-
 #stocks-container {
 	margin-top: 30px;
 	display: flex;

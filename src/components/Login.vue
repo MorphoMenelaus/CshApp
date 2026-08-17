@@ -80,6 +80,7 @@ export default {
 	},
 	data() {
 		return {
+			mobileDropdownEvent: inject("mobileDropdownEvent"),
 			forceLogout: inject('forceLogout'),
 			updateAppState: inject('updateAppState'),
 			initialSetup: inject('initialSetup'),
@@ -120,6 +121,7 @@ export default {
 		loginRequest(bool) {
 			this.loginShowEvent(bool);
 			this.registerUser(false);
+			this.mobileDropdownEvent(true);
 		},
 		showRegisterUserComponent(login = false, register = false) {
 			this.loginRequest(login);
@@ -233,6 +235,10 @@ export default {
 				router.push("/");
 			}
 		},
+		keyDown(e) {
+			if (e.key === "Escape")
+				this.loginShowEvent(false);
+		},
 		handleClick(event) {
 			if (event.target.id === "login")
 				this.loginShowEvent(false);
@@ -243,6 +249,7 @@ export default {
 	},
 	created() {
 		provide("forceLogout", this.logout);
+		window.addEventListener("keydown", this.keyDown);
 	},
 };
 </script>
@@ -398,7 +405,8 @@ h2 {
 	top: -46px;
 	padding: 15px;
 	color: #ddd;
-	box-shadow: 1px 1;
+	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
+	border-bottom: 1px #fff solid;
 }
 
 @media (max-width: 767px) {

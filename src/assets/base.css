@@ -108,6 +108,11 @@ body.uiDarkMode {
 	font-style: normal;
 }
 
+h1.julius-sans {
+	font-weight: bold;
+	color: var(--vt-c-text-light-2);
+}
+
 .btn,
 button {
 	cursor: pointer;

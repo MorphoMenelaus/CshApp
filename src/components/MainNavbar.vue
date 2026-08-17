@@ -56,10 +56,11 @@ export default {
 	props: {
 		appState: Object,
 		isMobile: Boolean,
-		allowMobileDropdown: Boolean
+		mobileDropdownClose: Boolean
 	},
 	data() {
 		return {
+			mobileDropdownEvent: inject("mobileDropdownEvent"),
 			contactEmail: inject("contactEmail"),
 			loginShow: inject("loginShow"),
 			registerUser: inject('registerUser'),
@@ -68,6 +69,12 @@ export default {
 		};
 	},
 	watch: {
+		mobileDropdownClose() {
+			if (this.mobileDropdownClose) {
+				this.mobileMenuShow = false;
+				this.mobileDropdownEvent(false);
+			}
+		}
 	},
 	methods: {
 		closeDialogs(link_name = 'unkown') {

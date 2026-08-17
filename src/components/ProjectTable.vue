@@ -47,40 +47,42 @@
 		</table>
 		<div id="mobile" v-else>
 			<table v-for="(item, index) in projects" :key="index">
-				<tr class="header-row">
-					<th>Project</th>
-					<td @click="!projectOpen ? project = item : null"
-						:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`">
-						<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''"
-							:style="`background-color: ${item.color}`">{{ item.name }}</div>
-						<span class="running"
-							v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
-					</td>
-				</tr>
-				<tr class="header-row">
-					<th>Client</th>
-					<td>{{ item.client_name }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Project Id</th>
-					<td>{{ item.id }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Created</th>
-					<td>{{ new Date(item.created_at).toLocaleString() }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Hours</th>
-					<td>{{ (item.actual_seconds / 60 / 60).toFixed(2) }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Status</th>
-					<td>{{ item.status }}</td>
-				</tr>
-				<tr class="header-row">
-					<th>Start Date</th>
-					<td>{{ item.start_date }}</td>
-				</tr>
+				<tbody>
+					<tr class="header-row">
+						<th>Project</th>
+						<td @click="!projectOpen ? project = item : null"
+							:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`">
+							<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''"
+								:style="`background-color: ${item.color}`">{{ item.name }}</div>
+							<span class="running"
+								v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
+						</td>
+					</tr>
+					<tr class="header-row">
+						<th>Client</th>
+						<td>{{ item.client_name }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Project Id</th>
+						<td>{{ item.id }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Created</th>
+						<td>{{ new Date(item.created_at).toLocaleString() }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Hours</th>
+						<td>{{ (item.actual_seconds / 60 / 60).toFixed(2) }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Status</th>
+						<td>{{ item.status }}</td>
+					</tr>
+					<tr class="header-row">
+						<th>Start Date</th>
+						<td>{{ item.start_date }}</td>
+					</tr>
+				</tbody>
 			</table>
 		</div>
 	</div>

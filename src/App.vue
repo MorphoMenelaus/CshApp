@@ -20,7 +20,7 @@
 	</div>
 
 	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus"
-		:allowMobileDropdown="allowMobileDropdown" />
+		:mobileDropdownClose="mobileDropdownClose" />
 
 	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" />
 
@@ -56,7 +56,7 @@ export default {
 		return {
 			sharedUpdateStatus: {},
 			forceLogoutEvent: {},
-			allowMobileDropdown: true,
+			mobileDropdownClose: null,
 			recall: new Storage(),
 			body: document.getElementsByTagName('body'),
 			serverVersion: "",
@@ -64,7 +64,7 @@ export default {
 			appDevDuties: [],
 			currentComponent: null,
 			isMobile: window.innerWidth < 1024,
-			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 768,
+			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 600,
 			windowWidth: window.innerWidth,
 			uiDarkMode: false,
 			isHidden: false,
@@ -83,13 +83,13 @@ export default {
 			}
 		},
 		currentComponent() {
-			this.allowMobileDropdown = this.currentComponent ? true : false;
+			this.mobileDropdownClose = this.currentComponent ? true : false;
 			console.log(this.currentComponent);
 		}
 	},
 	methods: {
 		checkOrientation() {
-			this.isMobileLandscape = screen.orientation.type.includes("landscape") && window.innerHeight < 768;
+			this.isMobileLandscape = screen.orientation.type.includes("landscape") && window.innerHeight < 600;
 		},
 		async initialSetup() {
 			this.getServerVersion();
@@ -200,6 +200,7 @@ export default {
 		provide("registerUser", (bool) => this.currentComponent = bool ? "Register" : null);
 		provide("contactEmail", (bool) => this.currentComponent = bool ? "ContactForm" : null);
 		provide("sendUpdateStatus", (payload) => this.sharedUpdateStatus = payload);
+		provide("mobileDropdownEvent", (bool) => this.mobileDropdownClose = bool);
 		/* END NEW EVENT HANDLING SECTION */
 
 		screen.orientation.addEventListener("change", this.checkOrientation);

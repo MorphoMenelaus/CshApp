@@ -1,6 +1,6 @@
 <template>
 
-	<div id="register">
+	<div id="register" @click="handleClick($event)">
 		<div class="wrapper">
 			<div id="form-header">
 				<h2>Register</h2>
@@ -181,7 +181,11 @@ export default {
 		},
 		keyDown(e) {
 			if (e.key === "Escape")
-				this.closePopup();
+				this.registerUser(false);
+		},
+		handleClick(event) {
+			if (event.target.id === "register")
+				this.registerUser(false);
 		},
 	},
 	mounted() {
@@ -336,6 +340,7 @@ label[for="casinoId"] {
 	top: -16px;
 	padding: 15px;
 	color: #ddd;
-	box-shadow: 1px 1;
+	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
+	border-bottom: 1px #fff solid;
 }
 </style>

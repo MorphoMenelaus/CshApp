@@ -87,8 +87,10 @@
 			</div>
 		</div>
 
-		<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie"
-			:favoritesList="favoritesList" :isMobile="isMobile" />
+		<div id="modal-container">
+			<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie"
+				:favoritesList="favoritesList" :isMobile="isMobile" />
+		</div>
 
 		<div id="permissions-dialog-container">
 			<dialog id="not-allowed">
@@ -157,6 +159,7 @@ export default {
 			movieFavorites: [],
 			favoritesOnly: false,
 			columns: 1,
+			modalContainer: null,
 		};
 	},
 	watch: {
@@ -484,20 +487,27 @@ export default {
 		},
 		keyDown(e) {
 			if (e.key === "Escape")
-				this.closePopup();
+				this.currentComponent = null;
 		},
+		clickHandler(e) {
+			if (e.target.id === "movie-details")
+				this.currentComponent = null;
+		}
 	},
 	mounted() {
 		this.limit = this.columns * 2;
 		this.populateLimits();
 		this.getMovieList();
 		this.dialog = document.getElementById("not-allowed");
+		this.modalContainer = document.getElementById("modal-container");
+		this.modalContainer.addEventListener("click", this.clickHandler);
 	},
 	created() {
 		provide("movieUpdated", this.closeModal);
 		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
 			window.removeEventListener("keydown", this.keyDown);
+			this.modalContainer.removeEventListener("click", this.clickHandler);
 		});
 	},
 };

@@ -16,7 +16,7 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 <template>
 	<div>
 		<div id="about">
-			<h1 class="julius-sans">Chris Hardwick</h1>
+			<h1 class="julius-sans stroke">Chris Hardwick</h1>
 			<div class="tagline-box">
 				<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
 				<h3>Web Application Developer</h3>
@@ -79,10 +79,6 @@ h3 {
 
 h1 {
 	font-size: 4em;
-}
-
-.uiDarkMode #about h1 {
-	font-weight: normal;
 }
 
 h2 {
