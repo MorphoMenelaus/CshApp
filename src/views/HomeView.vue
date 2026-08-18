@@ -292,6 +292,11 @@ p {
 	font-size: 1.25em;
 	width: 50%;
 	padding: 0 30px;
+	color: rgb(25 25 25);
+}
+
+.uiDarkMode #skills-list {
+	color: inherit;
 }
 
 #charts-header {

@@ -256,7 +256,12 @@ span.link {
 }
 
 #dark-mode-check label {
+	font-weight: 500;
 	cursor: pointer;
+}
+
+.uiDarkMode #dark-mode-check label {
+	font-weight: normal;
 }
 
 header {

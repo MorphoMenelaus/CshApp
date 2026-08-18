@@ -179,13 +179,18 @@ export default {
 
 <style>
 #filtered {
-	background-color: #c1c1c1;
+	background: linear-gradient(#eafbea, #dff7ff 50%);
 	color: #000;
 	padding: 5px 15px 10px;
 	border-radius: 12px;
 	margin: 15px auto;
 	border: 2px rgb(255 255 0 / 50%) solid;
 	overflow: hidden;
+}
+
+.uiDarkMode #filtered {
+	background-image: none;
+	background-color: #c1c1c1;
 }
 
 #filtered h2 {
@@ -282,6 +287,7 @@ export default {
 	flex-direction: row;
 	justify-self: center;
 	justify-content: space-evenly;
+	align-items: baseline;
 	width: 100%;
 	margin: auto;
 	font-size: 18px;
