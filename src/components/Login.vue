@@ -7,7 +7,7 @@
 			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify
 				Account</RouterLink>
 			<RouterLink v-if="appState?.permissions.verified" to="/userpreferences" title="User Preferences"
-				class="preferences green">Preferences
+				class="preferences green" @click="showRegisterUserComponent(false, false)">Preferences
 			</RouterLink>
 		</div>
 		<div v-else>
@@ -109,7 +109,6 @@ export default {
 		},
 		forceLogoutEvent: {
 			handler(res) {
-				// console.log("forceLogoutEvent triggered in Login.vue", res);
 				if (res?.forced) {
 					this.updateStatus(res);
 					this.logout();

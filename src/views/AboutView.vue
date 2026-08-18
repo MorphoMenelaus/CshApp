@@ -101,6 +101,7 @@ p {
 h2.profile {
 	margin: 15px auto 0;
 	font-size: 1.5em;
+	font-weight: bold;
 }
 
 #profile {
@@ -137,6 +138,7 @@ h2.profile {
 	flex-direction: row;
 	justify-self: center;
 	justify-content: space-evenly;
+	align-items: baseline;
 	width: 100%;
 	margin: auto;
 	font-size: 18px;

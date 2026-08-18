@@ -379,7 +379,8 @@ small {
 }
 
 #description-box {
-	background-color: rgb(191 191 191 / 75%);
+	/* background-color: rgb(191 191 191 / 75%); */
+	background-color: rgb(231 231 231);
 	color: #000;
 	/* width: 95%; */
 	margin: 30px auto 15px;
@@ -389,7 +390,7 @@ small {
 }
 
 #description-box p {
-	width: 80%;
+	width: 95%;
 	margin: auto;
 }
 
@@ -454,7 +455,8 @@ canvas#weather-graph {
 
 .input-container {
 	color: #000;
-	background-color: #e7e7e7;
+	/* background-color: #e7e7e7; */
+	background-color: #dbdbdb;
 	border: 1px solid #7f7f7f;
 	border-radius: 12px;
 	justify-content: space-evenly;
@@ -550,6 +552,10 @@ small span {
 		/* width: 90%; */
 		padding: 5px 30px 45px;
 
+	}
+
+	#description-box p {
+		width: 80%;
 	}
 }
 

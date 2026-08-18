@@ -486,8 +486,10 @@ export default {
 				this.refreshMoviesWithFaves();
 		},
 		keyDown(e) {
-			if (e.key === "Escape")
+			if (e.key === "Escape") {
 				this.currentComponent = null;
+				this.dialog.close();
+			}
 		},
 		clickHandler(e) {
 			if (e.target.id === "movie-details")
@@ -520,7 +522,8 @@ h2 {
 }
 
 #movie-header {
-	background-color: #c1c1c1;
+	/* background-color: #c1c1c1; */
+	background-color: #e7e7e7;
 	color: #000;
 	width: fit-content;
 	margin: 15px auto auto;
