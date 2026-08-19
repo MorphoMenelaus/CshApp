@@ -33,6 +33,11 @@
 		<component :is="currentComponent" :appState="appState" :class="isMobile ? 'mobile' : ''" />
 	</Transition>
 
+	<!-- <GeminiChat :appState="appState" /> -->
+	<div id="ai-button" v-if="appState?.isLoggedOn && appState?.permissions.admin">
+		<button class="btn" @click="currentComponent = 'GeminiChat'">AI Answers</button>
+	</div>
+
 </template>
 
 <script>
@@ -42,6 +47,7 @@ import FooterMain from "@/components/FooterMain.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
+import GeminiChat from "@/components/GeminiChat.vue";
 import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -50,7 +56,8 @@ export default {
 		FooterMain,
 		Login,
 		Register,
-		ContactForm
+		ContactForm,
+		GeminiChat,
 	},
 	data() {
 		return {
@@ -199,6 +206,7 @@ export default {
 		provide("contactEmail", (bool) => this.currentComponent = bool ? "ContactForm" : null);
 		provide("sendUpdateStatus", (payload) => this.sharedUpdateStatus = payload);
 		provide("mobileDropdownEvent", (bool) => this.mobileDropdownClose = bool);
+		provide("closeChat", () => this.currentComponent = null);
 		/* END NEW EVENT HANDLING SECTION */
 
 		screen.orientation.addEventListener("change", this.checkOrientation);
@@ -341,6 +349,11 @@ nav a:first-of-type {
 
 #loading-icon.loading {
 	display: grid;
+}
+
+#ai-button {
+	position: fixed;
+	bottom: 75px;
 }
 
 @media (min-width: 1024px) {

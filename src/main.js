@@ -59,5 +59,6 @@ app.config.globalProperties.sendAnalyticsEvent = sendAnalyticsEvent;
 app.config.globalProperties.isObjNullOrEmpty = isObjNullOrEmpty;
 
 app.provide('sendAnalyticsEvent', sendAnalyticsEvent);
+app.provide('baseUrl', baseUrl);
 
 app.mount('#app')

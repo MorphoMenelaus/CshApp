@@ -321,7 +321,8 @@ p {
 	left: -15px;
 	width: calc(100% + 30px);
 	padding: 15px;
-	background-color: #c1c1c1;
+	/* background-color: #c1c1c1; */
+	background-color: #d5d5d5;
 	color: #444;
 	font-size: 1.25em;
 	font-weight: bold;
