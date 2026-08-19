@@ -8,7 +8,8 @@ const closeChat = inject("closeChat")
 
 
 const props = defineProps({
-	appState: Object
+	appState: Object,
+	isMobile: Boolean
 });
 
 // console.log(appState);
@@ -83,7 +84,7 @@ const clear = () => {
 					<div class="form-group">
 						<label for="question">Question:</label>
 						<textarea id="question" title="Question" v-model="question" type="text" name="Question"
-							class="form-control" placeholder="What's on your mind..."></textarea>
+							class="form-control" placeholder="Tell me what's on your mind..."></textarea>
 					</div>
 					<div class="button-container">
 						<button class="btn" @click="askQuestion()">Submit</button>
@@ -94,7 +95,8 @@ const clear = () => {
 			</div>
 			<Transition name="slide-up">
 				<div id="answer" v-if="answer">
-					<h2 class="output-header">AI Output</h2>
+					<h2 class="output-header">AI Output <small v-if="isMobile" class="link"
+							@click="clear()">Clear</small></h2>
 					<div v-html="answer" class="output"></div>
 				</div>
 			</Transition>
@@ -110,7 +112,7 @@ h2 {
 
 #chat {
 	position: fixed;
-	top: 120px;
+	top: 105px;
 	width: 100vw;
 	height: 100vh;
 	display: grid;
@@ -120,6 +122,10 @@ h2 {
 
 #chat-container {
 	position: fixed;
+	left: 0;
+	right: 0;
+	width: 95%;
+	max-width: 30em;
 	justify-self: center;
 	background: aliceblue;
 	color: #333;
@@ -155,8 +161,7 @@ label {
 }
 
 textarea {
-	min-width: 25em;
-	min-height: 5em;
+	min-height: 2em;
 	background-color: #cdb2f5;
 	color: #000;
 	padding: 5px;
@@ -172,38 +177,60 @@ textarea {
 }
 
 #answer {
-	position: absolute;
-	max-height: 50vh;
-	bottom: 180px;
+	position: fixed;
+	max-height: 70vh;
+	bottom: 45px;
 	color: #000;
+	overflow: hidden auto;
+	left: 0;
+	right: 0;
 }
 
 .output-header {
-	background-color: #ffffff;
-	width: fit-content;
-	padding: 5px 30px;
-	border-radius: 8px 8px 0 0;
 	margin: auto;
+	padding: 5px 30px;
+	width: fit-content;
+	background-color: #ffffff;
+	border-radius: 8px 8px 0 0;
+	border: 1px #000 solid;
+	border-bottom-width: 0;
 }
 
 .output {
 	background-color: #d7d7d7;
-	width: 80%;
+	width: 100%;
 	margin: auto;
 	padding: 30px;
-	overflow: hidden auto;
+	/* overflow: hidden auto; */
 	border-radius: 12px 12px 0 0;
+	border: 1px rgb(0 0 0 / 50%) solid;
 }
 
 @media (max-width: 767px) {}
 
-@media (min-width: 768px) and (max-width: 991px) {}
+@media (min-width: 768px) {
+	#chat {
+		top: 120px;
+	}
 
-@media (min-width: 768px) {}
+	textarea {
+		min-height: 5em;
+	}
+
+	#answer {
+		position: absolute;
+		max-height: 50vh;
+		bottom: 180px;
+		left: unset;
+		right: unset;
+	}
+
+	.output[data-v-0e02bc1f] {
+		width: 80%;
+	}
+}
 
 @media (min-width: 992px) {}
-
-@media (min-width: 992px) and (max-width: 1199px) {}
 
 @media (min-width: 1200px) {}
 </style>

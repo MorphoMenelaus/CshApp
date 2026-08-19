@@ -24,13 +24,13 @@
 
 	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" :isMobile="isMobile" />
 
-	<RouterView id="view" :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth"
-		:forceLogoutEvent="forceLogoutEvent" :class="isMobile ? 'mobile' : ''" />
+	<RouterView id="view" :serverVersion="serverVersion" :appState="appState" :isMobile="isMobile"
+		:windowWidth="windowWidth" :forceLogoutEvent="forceLogoutEvent" :class="isMobile ? 'mobile' : ''" />
 
-	<FooterMain :serverVersion="serverVersion" :isMobile="isMobile" />
+	<FooterMain :isMobile="isMobile" />
 
 	<Transition name="fade">
-		<component :is="currentComponent" :appState="appState" :class="isMobile ? 'mobile' : ''" />
+		<component :is="currentComponent" :appState="appState" :isMobile="isMobile" :class="isMobile ? 'mobile' : ''" />
 	</Transition>
 
 	<!-- <GeminiChat :appState="appState" /> -->
@@ -238,6 +238,14 @@ span.link {
 	font-weight: bold;
 }
 
+.register-link .link {
+	color: #0740d9;
+}
+
+.register-link .link:hover {
+	color: #ff6600;
+}
+
 #dark-mode-check {
 	position: absolute;
 	top: 15px;
@@ -353,7 +361,7 @@ nav a:first-of-type {
 
 #ai-button {
 	position: fixed;
-	bottom: 75px;
+	bottom: 60px;
 }
 
 @media (min-width: 1024px) {
@@ -382,6 +390,10 @@ nav a:first-of-type {
 
 		padding: 1rem 0;
 		margin-top: 1rem;
+	}
+
+	#ai-button {
+		bottom: 75px;
 	}
 }
 </style>

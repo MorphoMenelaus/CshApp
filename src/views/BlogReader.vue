@@ -2,8 +2,8 @@
 	<div>
 		<div id="blogs">
 			<div>
-				<h1>Blog</h1>
 				<div class="blog-intro">
+					<h1>Blog</h1>
 					<p>These are all old blog posts from a blog I had over ten years ago. It was originally a Wordpress
 						site but I found an old backup of that site including the SQL backup files. All are pretty dated
 						and not using the Wordpress themes and styles but kind of amusing to see past posts.</p>
@@ -305,10 +305,10 @@ h3 {
 }
 
 .blog-intro {
-	background-color: rgb(77 77 77);
-	color: #ddd;
+	background-color: #e7e7e7;
+	color: #000;
 	font-size: 1em;
-	padding: 30px;
+	padding: 15px 30px 30px;
 	border-radius: 12px;
 	border: 1px #999 solid;
 	margin: 30px auto 45px;

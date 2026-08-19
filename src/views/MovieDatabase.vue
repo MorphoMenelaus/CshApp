@@ -526,7 +526,7 @@ h2 {
 	background-color: #e7e7e7;
 	color: #000;
 	width: fit-content;
-	margin: 15px auto auto;
+	margin: 30px auto auto;
 	padding: 15px 0 30px;
 	border-radius: 12px;
 	border: 1px #aaa solid;

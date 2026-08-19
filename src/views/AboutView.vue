@@ -2,6 +2,13 @@
 import { inject } from 'vue';
 import Disclaimers from "../components/Disclaimers.vue";
 
+const appCurrentVersion = inject('appCurrentVersion');
+
+const props = defineProps({
+	appState: Object,
+	serverVersion: String
+});
+
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 	console.warn('Global function not found! sendAnalyticsEvent()');
 });
@@ -16,6 +23,11 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 <template>
 	<div>
 		<div id="about">
+			<div id="serverInfo" v-if="appState?.isLoggedOn">
+				<small class="version" v-if="serverVersion">Server Version: <span>{{ serverVersion }}</span></small>
+				<small class="appVersion" v-if="appCurrentVersion">App Version: <span>{{ appCurrentVersion
+				}}</span></small>
+			</div>
 			<h1 class="julius-sans stroke">Chris Hardwick</h1>
 			<div class="tagline-box">
 				<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
@@ -159,6 +171,25 @@ h2.profile {
 
 #copyright {
 	text-align: center;
+}
+
+#serverInfo {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	top: 0;
+	right: 0;
+	padding: 5px 15px;
+	z-index: 500;
+	font-size: 18px;
+	text-align: right;
+	background-color: rgb(0 133 255 / 40%);
+	color: #fff;
+	border-radius: 0 0 0 12px;
+}
+
+#serverInfo span {
+	user-select: all;
 }
 
 @media (max-width: 767px) {

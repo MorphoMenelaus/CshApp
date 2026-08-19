@@ -2,6 +2,7 @@
 import { ref, inject } from 'vue';
 import Disclaimers from "../components/Disclaimers.vue";
 import StockCharts from "../components/StockCharts.vue";
+import Available from "@/components/Available.vue";
 
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
 	console.warn('Global function not found! sendAnalyticsEvent()')
@@ -11,7 +12,7 @@ const props = defineProps({
 	appState: Object,
 	isMobile: Boolean,
 	windowWidth: Number
-})
+});
 
 let lessText = ref(false);
 let showStocks = ref(false);
@@ -58,9 +59,11 @@ const showStockDetails = (id) => {
 				<div>
 					<h1 id="name-title" class="julius-sans stroke">Chris Hardwick</h1>
 					<div class="tagline-box">
+						<Available />
 						<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
 						<h3>Web Application Developer</h3>
 						<h3>Front-End Web Developer</h3>
+						<span class="text-center map-pin">Atlanta, GA (Open to Hybrid / Remote)</span>
 					</div>
 				</div>
 				<div id="skills-list" class="stroke">
@@ -347,6 +350,7 @@ p {
 }
 
 .tagline-box {
+	position: relative;
 	border: 1px #555 solid;
 	background-color: #fff;
 	padding: 15px 30px;
@@ -397,7 +401,30 @@ p {
 }
 
 .text-center {
+	display: block;
 	text-align: center;
+}
+
+#available {
+	position: absolute;
+	top: -15px;
+	left: 15px;
+}
+
+.map-pin {
+	position: relative;
+	width: fit-content;
+	margin: auto;
+}
+
+.map-pin::before {
+	content: '';
+	background: url(../icons/map_pin.png) 0 0 / contain no-repeat;
+	width: 18px;
+	height: 26px;
+	position: absolute;
+	top: -4px;
+	left: -20px;
 }
 
 @media (max-width: 767px) {

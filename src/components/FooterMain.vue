@@ -1,16 +1,20 @@
 <template>
 	<footer>
-		<div id="serverInfo">
-			<small class="version" v-if="serverVersion">Server Version: <span>{{ serverVersion }}</span></small>
-			<small class="appVersion" v-if="this.appCurrentVersion">App Version: <span>{{ this.appCurrentVersion
-			}}</span></small>
-		</div>
-		<div class="center-flex">
-			<h3 id="name-contact" title="Contact Me" @click="openThisModalCloseOthers()">{{ isMobile ? 'CSH' :
-				'Chris&nbsp;Hardwick' }}</h3>
-		</div>
-		<div class="btn-container">
-			<button title="Contact Me" class="btn" @click="openThisModalCloseOthers()">Contact Me</button>
+		<div class="flex-between">
+			<h3 id="name-contact" title="Contact Chris Hardwick" @click="openThisModalCloseOthers()">
+				<strong>Chris&nbsp;Hardwick</strong> {{
+					!isMobile ? ' &mdash; Web Application Developer &amp; Frontend Developer' :
+						'' }}
+			</h3>
+			<!-- <small>Powered by Vue 3 &amp; Node/Express</small> -->
+			<div id="footer-contacts">
+				<a v-if="!isMobile" class="footer-link" href="https://www.linkedin.com/in/cs-hardwick" target="_blank"
+					title="Chris Hardwick | Linkedin Profile">Linkedin</a>
+				<a v-if="!isMobile" class="footer-link" href="https://hardwick.design" target="_blank"
+					title="Chris Hardwick | Graphic Designer">Personal Site</a>
+				<span class="footer-link" @click="openThisModalCloseOthers()" title="Contact Chris Hardwick">Contact
+					Me</span>
+			</div>
 		</div>
 	</footer>
 </template>
@@ -21,7 +25,7 @@ import { inject } from "vue";
 export default {
 	name: 'FooterMain',
 	props: {
-		serverVersion: String,
+		// serverVersion: String,
 		isMobile: Boolean
 	},
 	data() {
@@ -60,37 +64,13 @@ h3 {
 	color: #fff;
 }
 
-#serverInfo {
-	position: absolute;
-	display: flex;
-	flex-direction: column;
-	top: 0;
-	left: 0;
-	padding: 5px 15px;
-	z-index: 500;
-	font-size: 18px;
-}
-
-#serverInfo span {
-	user-select: all;
-}
-
-.btn-container {
-	position: absolute;
-	right: 15px;
-	top: 15px;
-	font-size: 18px;
-}
-
-.btn-container button {
-	font-size: 1em;
-}
-
-.center-flex {
+.flex-between {
 	width: 100%;
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: space-between;
+	/* margin-left: 30px; */
+	padding: 0 30px;
 }
 
 #name-contact {
@@ -101,4 +81,33 @@ h3 {
 #name-contact:hover {
 	color: #f60;
 }
+
+#footer-contacts {
+	display: flex;
+	align-items: center;
+}
+
+a.footer-link,
+span.footer-link {
+	color: #7ab5ff;
+	margin-right: 15px;
+	text-decoration: none;
+	padding: 0 15px 0 7px;
+	border-radius: 6px;
+}
+
+a.footer-link:hover,
+span.footer-link:hover {
+	color: #93d329;
+	text-decoration: underline;
+	background-color: unset;
+}
+
+span.footer-link {
+	margin-right: 0;
+	padding-right: 0;
+	cursor: pointer;
+}
+
+@media (min-width: 768px) {}
 </style>
