@@ -113,7 +113,7 @@ header {
 	top: 10px;
 	left: 15px;
 	min-width: 6em;
-	z-index: 1000;
+	z-index: 15100;
 	user-select: none;
 	font-size: 18px;
 }

@@ -376,7 +376,7 @@ h2 {
 	padding: 5px 10px;
 	font-size: 0.625em;
 	background-color: #32373f;
-	border-radius: 0 0 0 0.4em;
+	border-radius: 0 0 0 12px;
 	border: 1px #5b88c0 solid;
 	z-index: 100000;
 }

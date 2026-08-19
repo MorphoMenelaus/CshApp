@@ -24,14 +24,19 @@
 
 	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" :isMobile="isMobile" />
 
-	<RouterView id="view" :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth"
-		:forceLogoutEvent="forceLogoutEvent" :class="isMobile ? 'mobile' : ''" />
+	<RouterView id="view" :serverVersion="serverVersion" :appState="appState" :isMobile="isMobile"
+		:windowWidth="windowWidth" :forceLogoutEvent="forceLogoutEvent" :class="isMobile ? 'mobile' : ''" />
 
-	<FooterMain :serverVersion="serverVersion" :isMobile="isMobile" />
+	<FooterMain :isMobile="isMobile" />
 
 	<Transition name="fade">
-		<component :is="currentComponent" :appState="appState" :class="isMobile ? 'mobile' : ''" />
+		<component :is="currentComponent" :appState="appState" :isMobile="isMobile" :class="isMobile ? 'mobile' : ''" />
 	</Transition>
+
+	<!-- <GeminiChat :appState="appState" /> -->
+	<div id="ai-button" v-if="appState?.isLoggedOn && appState?.permissions.admin">
+		<button class="btn" @click="currentComponent = 'GeminiChat'">AI Answers</button>
+	</div>
 
 </template>
 
@@ -42,6 +47,7 @@ import FooterMain from "@/components/FooterMain.vue";
 import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
+import GeminiChat from "@/components/GeminiChat.vue";
 import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -50,7 +56,8 @@ export default {
 		FooterMain,
 		Login,
 		Register,
-		ContactForm
+		ContactForm,
+		GeminiChat,
 	},
 	data() {
 		return {
@@ -199,6 +206,7 @@ export default {
 		provide("contactEmail", (bool) => this.currentComponent = bool ? "ContactForm" : null);
 		provide("sendUpdateStatus", (payload) => this.sharedUpdateStatus = payload);
 		provide("mobileDropdownEvent", (bool) => this.mobileDropdownClose = bool);
+		provide("closeChat", () => this.currentComponent = null);
 		/* END NEW EVENT HANDLING SECTION */
 
 		screen.orientation.addEventListener("change", this.checkOrientation);
@@ -228,6 +236,14 @@ export default {
 <style scoped>
 span.link {
 	font-weight: bold;
+}
+
+.register-link .link {
+	color: #0740d9;
+}
+
+.register-link .link:hover {
+	color: #ff6600;
 }
 
 #dark-mode-check {
@@ -343,6 +359,11 @@ nav a:first-of-type {
 	display: grid;
 }
 
+#ai-button {
+	position: fixed;
+	bottom: 60px;
+}
+
 @media (min-width: 1024px) {
 	header {
 		position: fixed;
@@ -369,6 +390,10 @@ nav a:first-of-type {
 
 		padding: 1rem 0;
 		margin-top: 1rem;
+	}
+
+	#ai-button {
+		bottom: 75px;
 	}
 }
 </style>
