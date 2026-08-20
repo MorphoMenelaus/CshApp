@@ -1,5 +1,5 @@
 <template>
-	<BackgroundOverlay />
+	<BackgroundOverlay :class="isMobile ? 'mobile' : ''" />
 	
 	<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
 		<div class="spinner-comet"></div>

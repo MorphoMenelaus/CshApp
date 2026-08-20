@@ -34,17 +34,32 @@
 	background: radial-gradient(circle, rgb(77 0 255 / 35%) 0%, rgba(2, 6, 24, 0) 60%);
 }
 
+.mobile .one {
+	background: radial-gradient(circle, rgb(77 0 255 / 35%) 0%, rgba(2, 6, 24, 0) 35%);
+}
+
 .uiDarkMode .one {
 	background: radial-gradient(circle, rgb(77 0 255 / 60%) 0%, rgba(2, 6, 24, 0) 60%);
 }
 
+.uiDarkMode .mobile .one {
+	background: radial-gradient(circle, rgb(77 0 255 / 60%) 0%, rgba(2, 6, 24, 0) 35%);
+}
 
 .two {
 	transform: translateY(15%) translateX(-15%) scaleX(1.5) scaleY(1.25);
 	background: radial-gradient(circle, rgb(0 112 255 / 100%) 0%, rgba(2, 6, 24, 0) 60%);
 }
 
+.mobile .two {
+	background: radial-gradient(circle, rgb(0 112 255 / 100%) 0%, rgba(2, 6, 24, 0) 30%);
+}
+
 .uiDarkMode .two {
 	background: radial-gradient(circle, rgb(0 112 255 / 50%) 0%, rgba(2, 6, 24, 0) 60%);
+}
+
+.uiDarkMode .mobile .two {
+	background: radial-gradient(circle, rgb(0 112 255 / 50%) 0%, rgba(2, 6, 24, 0) 35%);
 }
 </style>
