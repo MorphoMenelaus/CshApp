@@ -28,6 +28,7 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 				<small class="appVersion" v-if="appCurrentVersion">App Version: <span>{{ appCurrentVersion
 				}}</span></small>
 			</div>
+
 			<h1 class="julius-sans stroke">Chris Hardwick</h1>
 			<div class="tagline-box">
 				<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
@@ -35,12 +36,13 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 				<h3>Front-End Web Developer</h3>
 			</div>
 			<div class="btn-container top">
-				<a class="btn" href="https://www.linkedin.com/in/cs-hardwick" title="Chris Hardwick | Linkedin Profile"
-					target="_blank" @click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
-				<a class="btn" href="https://hardwick.design/" title="Chris Hardwick | Hardwick Web Design"
+				<a class="btn linkedin-icon" href="https://www.linkedin.com/in/cs-hardwick"
+					title="Chris Hardwick | Linkedin Profile" target="_blank"
+					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
+				<a class="btn csh-icon" href="https://hardwick.design/" title="Chris Hardwick | Hardwick Web Design"
 					target="_blank" @click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')">Personal
 					Website</a>
-				<a class="btn" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
+				<a class="btn email-icon" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
 			</div>
 			<div id="profile">
 				<h2 class="julius-sans profile">Professional Profile</h2>
@@ -190,6 +192,45 @@ h2.profile {
 
 #serverInfo span {
 	user-select: all;
+}
+
+.btn.email-icon {
+	padding-right: 38px;
+}
+
+.btn.csh-icon {
+	padding-right: 38px;
+}
+
+.csh-icon::after {
+	top: 5px;
+	right: 9px;
+	width: 22px;
+	height: 22px;
+}
+
+.email-icon::after {
+	top: 9px;
+	right: 10px;
+	width: 20px;
+	height: 20px;
+}
+
+.btn.linkedin-icon {
+	padding-right: 40px;
+}
+
+.linkedin-icon::after {
+	right: 10px;
+	top: 4px;
+	width: 21px;
+	height: 21px;
+	border-radius: 2px;
+	border: 1px #b1b1b1 solid;
+}
+
+.btn:hover::after {
+	filter: brightness(0.8);
 }
 
 @media (max-width: 767px) {

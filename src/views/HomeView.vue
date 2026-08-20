@@ -423,7 +423,7 @@ p {
 	width: 18px;
 	height: 26px;
 	position: absolute;
-	top: -4px;
+	top: 0;
 	left: -20px;
 }
 

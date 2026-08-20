@@ -1,5 +1,6 @@
 <template>
-
+	<BackgroundOverlay />
+	
 	<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
 		<div class="spinner-comet"></div>
 	</div>
@@ -33,7 +34,6 @@
 		<component :is="currentComponent" :appState="appState" :isMobile="isMobile" :class="isMobile ? 'mobile' : ''" />
 	</Transition>
 
-	<!-- <GeminiChat :appState="appState" /> -->
 	<div id="ai-button" v-if="appState?.isLoggedOn && appState?.permissions.admin">
 		<button class="btn" @click="currentComponent = 'GeminiChat'">AI Answers</button>
 	</div>
@@ -42,6 +42,7 @@
 
 <script>
 import { provide, inject } from 'vue';
+import BackgroundOverlay from "@/components/BackgroundOverlay.vue";
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
 import Login from "@/components/Login.vue";
@@ -52,6 +53,7 @@ import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
 
 export default {
 	components: {
+		BackgroundOverlay,
 		HeaderMain,
 		FooterMain,
 		Login,
