@@ -427,6 +427,10 @@ p {
 	left: -20px;
 }
 
+.mobile .map-pin::before {
+	left: 0;
+}
+
 @media (max-width: 767px) {
 	#name-title {
 		font-size: 2.5em;

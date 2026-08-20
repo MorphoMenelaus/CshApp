@@ -202,6 +202,10 @@ h2.profile {
 	padding-right: 38px;
 }
 
+.btn.linkedin-icon {
+	padding-right: 40px;
+}
+
 .csh-icon::after {
 	top: 5px;
 	right: 9px;
@@ -216,10 +220,6 @@ h2.profile {
 	height: 20px;
 }
 
-.btn.linkedin-icon {
-	padding-right: 40px;
-}
-
 .linkedin-icon::after {
 	right: 10px;
 	top: 4px;
@@ -227,6 +227,20 @@ h2.profile {
 	height: 21px;
 	border-radius: 2px;
 	border: 1px #b1b1b1 solid;
+}
+
+.mobile .btn.email-icon,
+.mobile .btn.csh-icon,
+.mobile .btn.linkedin-icon {
+	padding-right: 15px;
+	text-align: center;
+	margin: 0 5px;
+}
+
+.mobile .btn.email-icon::after,
+.mobile .btn.csh-icon::after,
+.mobile .btn.linkedin-icon::after {
+	display: none;
 }
 
 .btn:hover::after {

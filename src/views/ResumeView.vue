@@ -333,17 +333,6 @@ export default {
 	height: 21px;
 }
 
-.btn.csh-icon {
-	padding-right: 35px;
-}
-
-.csh-icon::after {
-	top: 4px;
-	right: 8px;
-	width: 22px;
-	height: 22px;
-}
-
 .btn.email-icon {
 	padding-right: 36px;
 }
@@ -366,6 +355,20 @@ export default {
 	height: 21px;
 	border-radius: 2px;
 	border: 1px #b1b1b1 solid;
+}
+
+.mobile .btn.email-icon,
+.mobile .btn.acrobat-icon,
+.mobile .btn.linkedin-icon {
+	padding-right: 15px;
+	text-align: center;
+	margin: 15px 5px;
+}
+
+.mobile .btn.email-icon::after,
+.mobile .btn.acrobat-icon::after,
+.mobile .btn.linkedin-icon::after {
+	display: none;
 }
 
 .btn:hover::after {

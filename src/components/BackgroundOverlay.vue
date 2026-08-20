@@ -19,9 +19,17 @@
 	opacity: .3;
 }
 
-.uiDarkMode #bg-parent[data-v-bd50b37f] {
+/* #bg-parent.mobile {
+	opacity: .2;
+} */
+
+.uiDarkMode #bg-parent {
 	opacity: .5;
 }
+
+/* .uiDarkMode #bg-parent.mobile {
+	opacity: .2;
+} */
 
 .one,
 .two {
@@ -35,7 +43,8 @@
 }
 
 .mobile .one {
-	background: radial-gradient(circle, rgb(77 0 255 / 35%) 0%, rgba(2, 6, 24, 0) 35%);
+	transform: translateY(-20%) translateX(12%) scaleX(3) scaleY(3.25);
+	background: radial-gradient(circle, rgb(77 0 255 / 35%) 0%, rgba(2, 6, 24, 0) 20%);
 }
 
 .uiDarkMode .one {
@@ -43,7 +52,8 @@
 }
 
 .uiDarkMode .mobile .one {
-	background: radial-gradient(circle, rgb(77 0 255 / 60%) 0%, rgba(2, 6, 24, 0) 35%);
+	transform: translateY(-20%) translateX(12%) scaleX(3) scaleY(3.25);
+	background: radial-gradient(circle, rgb(77 0 255 / 60%) 0%, rgba(2, 6, 24, 0) 20%);
 }
 
 .two {
@@ -52,7 +62,8 @@
 }
 
 .mobile .two {
-	background: radial-gradient(circle, rgb(0 112 255 / 100%) 0%, rgba(2, 6, 24, 0) 30%);
+	transform: translateY(15%) translateX(-15%) scaleX(3) scaleY(3.25);
+	background: radial-gradient(circle, rgb(0 112 255 / 100%) 0%, rgba(2, 6, 24, 0) 20%);
 }
 
 .uiDarkMode .two {
@@ -60,6 +71,7 @@
 }
 
 .uiDarkMode .mobile .two {
-	background: radial-gradient(circle, rgb(0 112 255 / 50%) 0%, rgba(2, 6, 24, 0) 35%);
+	transform: translateY(15%) translateX(-15%) scaleX(3) scaleY(3.25);
+	background: radial-gradient(circle, rgb(0 112 255 / 50%) 0%, rgba(2, 6, 24, 0) 20%);
 }
 </style>
