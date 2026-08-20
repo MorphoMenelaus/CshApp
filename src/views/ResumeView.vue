@@ -8,14 +8,15 @@
 			</div>
 
 			<div class="btn-container top">
-				<a class="btn" href="/pdf/ChrisHardwickResume2026-08nc.pdf" title="Download Chris Hardwick Resume PDF"
-					download="ChrisHardwickResume2026.pdf" @click="sendAnalyticsEvent('download', 'resume_link')">
+				<a class="btn acrobat-icon" href="/pdf/ChrisHardwickResume2026-08nc.pdf"
+					title="Download Chris Hardwick Resume PDF" download="ChrisHardwickResume2026.pdf"
+					@click="sendAnalyticsEvent('download', 'resume_link')">
 					Download PDF
 				</a>
-				<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
+				<a class="btn linkedin linkedin-icon" href="https://www.linkedin.com/in/cs-hardwick"
 					title="Chris Hardwick | Linkedin Profile" target="_blank"
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
-				<button class="btn" @click="contactEmail(true)">Contact Me</button>
+				<button class="btn email-icon" @click="contactEmail(true)">Contact Me</button>
 			</div>
 			<div>
 				<div class="form-group">
@@ -319,6 +320,56 @@ export default {
 .form-group input {
 	font-size: .8em;
 	padding-left: 6px;
+}
+
+.btn.acrobat-icon {
+	padding-right: 36px;
+}
+
+.acrobat-icon::after {
+	top: 4px;
+	right: 8px;
+	width: 21px;
+	height: 21px;
+}
+
+.btn.csh-icon {
+	padding-right: 35px;
+}
+
+.csh-icon::after {
+	top: 4px;
+	right: 8px;
+	width: 22px;
+	height: 22px;
+}
+
+.btn.email-icon {
+	padding-right: 36px;
+}
+
+.email-icon::after {
+	top: 8px;
+	right: 10px;
+	width: 20px;
+	height: 20px;
+}
+
+.btn.linkedin-icon {
+	padding-right: 40px;
+}
+
+.linkedin-icon::after {
+	right: 10px;
+	top: 4px;
+	width: 21px;
+	height: 21px;
+	border-radius: 2px;
+	border: 1px #b1b1b1 solid;
+}
+
+.btn:hover::after {
+	filter: brightness(0.8);
 }
 
 @media (max-width: 767px) {

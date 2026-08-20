@@ -14,7 +14,7 @@
 	background: rgb(0 128 0);
 	padding: 0 15px 0 25px;
 	border-radius: 1em;
-	border: 1px #008000 solid;
+	border: 1px #0f0 solid;
 	position: relative;
 }
 
@@ -23,7 +23,7 @@
 	content: '';
 	position: absolute;
 	border-radius: 50%;
-	border: 2px #00ff00 solid;
+	border: 2px #0f0 solid;
 	animation: pulse 1.2s infinite ease-in-out both;
 }
 

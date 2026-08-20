@@ -12,9 +12,6 @@ const props = defineProps({
 	isMobile: Boolean
 });
 
-// console.log(appState);
-console.log(props);
-
 let question = ref("");
 let answer = ref("");
 
@@ -28,7 +25,6 @@ const askQuestion = async () => {
 	// Remove html tags
 	let reg = new RegExp(/(<([^>]+)>)/ig);
 	let prompt = question.value.replace(reg, "");
-	console.log(prompt);
 
 	showHideLoader(true);
 
