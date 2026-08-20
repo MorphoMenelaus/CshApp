@@ -19,17 +19,9 @@
 	opacity: .3;
 }
 
-/* #bg-parent.mobile {
-	opacity: .2;
-} */
-
 .uiDarkMode #bg-parent {
 	opacity: .5;
 }
-
-/* .uiDarkMode #bg-parent.mobile {
-	opacity: .2;
-} */
 
 .one,
 .two {
