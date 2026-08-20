@@ -132,7 +132,7 @@ table {
 }
 
 .csh-icon::after {
-	background: url(./favicon.ico) 0 0 / contain no-repeat;
+	background: url(/favicon.ico) 0 0 / contain no-repeat;
 }
 
 .linkedin-icon::after {
