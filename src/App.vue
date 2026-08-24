@@ -1,6 +1,6 @@
 <template>
 	<BackgroundOverlay :class="isMobile ? 'mobile' : ''" />
-	
+
 	<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
 		<div class="spinner-comet"></div>
 	</div>
@@ -34,8 +34,10 @@
 		<component :is="currentComponent" :appState="appState" :isMobile="isMobile" :class="isMobile ? 'mobile' : ''" />
 	</Transition>
 
-	<div id="ai-button" v-if="appState?.isLoggedOn && appState?.permissions.admin">
+	<div id="ai-button" v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)">
 		<button class="btn" @click="currentComponent = 'GeminiChat'">AI Answers</button>
+		<button class="btn" @click="currentComponent = 'GeminiJobMatch'">AI Job Match</button>
+		<button class="btn" @click="currentComponent = 'GeminiExplainCode'">AI Code Review</button>
 	</div>
 
 </template>
@@ -49,6 +51,8 @@ import Login from "@/components/Login.vue";
 import Register from "@/components/Register.vue";
 import ContactForm from "@/components/ContactForm.vue";
 import GeminiChat from "@/components/GeminiChat.vue";
+import GeminiJobMatch from "@/components/GeminiJobMatch.vue";
+import GeminiExplainCode from "@/components/GeminiExplainCode.vue";
 import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -60,6 +64,8 @@ export default {
 		Register,
 		ContactForm,
 		GeminiChat,
+		GeminiJobMatch,
+		GeminiExplainCode,
 	},
 	data() {
 		return {
@@ -364,6 +370,10 @@ nav a:first-of-type {
 #ai-button {
 	position: fixed;
 	bottom: 60px;
+}
+
+#ai-button .btn {
+	margin-right: 15px;
 }
 
 @media (min-width: 1024px) {

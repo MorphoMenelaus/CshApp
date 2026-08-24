@@ -12,30 +12,33 @@ const props = defineProps({
 });
 
 let showHideLoader = ref(false);
-let question = ref("");
-let answer = ref("");
+let jobDescription = ref("");
+let profile = ref("");
+let analysis = ref("");
 
-const askQuestion = async () => {
+const matchJob = async () => {
 
-	if (!question.value) {
-		console.error("Question field is required");
+	if (!jobDescription.value) {
+		console.error("Job Description field is required");
 		return;
 	}
 
 	// Remove html tags
 	let reg = new RegExp(/(<([^>]+)>)/ig);
-	let prompt = question.value.replace(reg, "");
+	let description = jobDescription.value.replace(reg, "");
+	let jobProfile = profile.value.replace(reg, "");
 
 	showHideLoader.value = true;
 
 	let body = {
-		prompt: prompt,
+		jobDescription: description,
+		profile: jobProfile,
 	};
 
 	let headerObj = new Headers();
 	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
 	headerObj.append("Content-Type", "application/json; charset=utf-8");
-	let requestUrl = new URL("/api/gemini/question", baseUrl);
+	let requestUrl = new URL("/api/gemini/match", baseUrl);
 
 	let request = new Request(
 		requestUrl.toString(), {
@@ -52,7 +55,8 @@ const askQuestion = async () => {
 			updateStatus(data);
 		}
 
-		answer.value = data.output;
+		let formattedJson = JSON.stringify(data.analysis, null, '\t');
+		analysis.value = formattedJson;
 
 	} catch (error) {
 		console.error('Error posting data:', error);
@@ -68,8 +72,9 @@ const askQuestion = async () => {
 };
 
 const clear = () => {
-	question.value = "";
-	answer.value = "";
+	jobDescription.value = "";
+	profile.value = "";
+	analysis.value = "";
 }
 
 </script>
@@ -87,27 +92,34 @@ const clear = () => {
 					</div>
 				</Transition>
 				<div id="header">
-					<h1>Ask AI</h1>
-					<h2>Type Question Below</h2>
+					<h1>AI Job Match</h1>
+					<h2>Returns match% and suggestions.</h2>
 				</div>
-				<form @submit.prevent="askQuestion" method="get">
+				<form @submit.prevent="matchJob" method="get">
 					<div class="form-group">
-						<label for="question">Question:</label>
-						<textarea id="question" title="Question" v-model="question" type="text" name="Question"
-							class="form-control" placeholder="Tell me what's on your mind..."></textarea>
+						<a class="external" href="https://www.minifier.org/text-minifier"
+							title="Minifier | minifier.org" target="_blank">Minifier &#128279;</a>
+						<label for="description">Job Description:</label>
+						<textarea id="description" title="Job Description" v-model="jobDescription" type="text"
+							name="description" class="form-control"
+							placeholder="Paste minified job description here."></textarea>
+						<label for="profile">Additional Profile Info (optional):</label>
+						<textarea id="profile" title="Additional Profile Info (optional)" v-model="profile" type="text"
+							name="Profile" class="form-control"
+							placeholder="Profile info in addition to DB resume..."></textarea>
 					</div>
 					<div class="button-container">
-						<button class="btn" @click="askQuestion()">Submit</button>
+						<button class="btn" @click="matchJob()">Submit</button>
 						<button class="btn" @click="clear()">Clear</button>
 						<button class="btn" @click="closeChat()">Close</button>
 					</div>
 				</form>
 			</div>
 			<Transition name="slide-up">
-				<div id="answer" v-if="answer">
+				<div id="answer" v-if="analysis">
 					<h2 class="output-header">AI Output <small v-if="isMobile" class="link"
 							@click="clear()">Clear</small></h2>
-					<div v-html="answer" class="output"></div>
+					<pre class="output">{{ analysis }}</pre>
 				</div>
 			</Transition>
 		</div>
@@ -220,6 +232,21 @@ textarea {
 	background: linear-gradient(#0f225d 5%, #060626 50%);
 	color: #aaa;
 	border: 1px #666 solid;
+}
+
+#description {
+	margin-bottom: 30px;
+}
+
+.external {
+	display: flex;
+	align-self: center;
+	padding: 0 15px;
+	text-decoration: none;
+}
+
+.external:hover {
+	text-decoration: underline;
 }
 
 #loading-icon {

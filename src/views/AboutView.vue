@@ -1,12 +1,14 @@
 <script setup>
 import { inject } from 'vue';
+import urls from "../dependencies/commonUrls.json";
 import Disclaimers from "../components/Disclaimers.vue";
 
 const appCurrentVersion = inject('appCurrentVersion');
 
 const props = defineProps({
 	appState: Object,
-	serverVersion: String
+	serverVersion: String,
+	isMobile: Boolean
 });
 
 const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
@@ -36,13 +38,15 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 				<h3>Front-End Web Developer</h3>
 			</div>
 			<div class="btn-container top">
-				<a class="btn linkedin-icon" href="https://www.linkedin.com/in/cs-hardwick"
+				<a class="btn linkedin-icon" :class="isMobile ? '' : 'large'" :href="urls.linkedin"
 					title="Chris Hardwick | Linkedin Profile" target="_blank"
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
-				<a class="btn csh-icon" href="https://hardwick.design/" title="Chris Hardwick | Hardwick Web Design"
-					target="_blank" @click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')">Personal
+				<a class="btn csh-icon" :class="isMobile ? '' : 'large'" :href="urls.hardwickDesign"
+					title="Chris Hardwick | Hardwick Web Design" target="_blank"
+					@click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')">Personal
 					Website</a>
-				<a class="btn email-icon" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
+				<a class="btn email-icon" :class="isMobile ? '' : 'large'" @click="contactEmail(true)"
+					title="Contact Me">Contact Me</a>
 			</div>
 			<div id="profile">
 				<h2 class="julius-sans profile">Professional Profile</h2>
@@ -194,6 +198,14 @@ h2.profile {
 	user-select: all;
 }
 
+a.btn.large {
+	height: 2em;
+	width: 15em;
+	width: auto;
+	font-size: 1.65em;
+	padding-right: 72px;
+}
+
 .btn.email-icon {
 	padding-right: 38px;
 }
@@ -214,7 +226,7 @@ h2.profile {
 }
 
 .email-icon::after {
-	top: 9px;
+	top: 11px;
 	right: 10px;
 	width: 20px;
 	height: 20px;
@@ -247,6 +259,11 @@ h2.profile {
 	filter: brightness(0.8);
 }
 
+.large::after {
+	width: 48px;
+	height: 48px;
+}
+
 @media (max-width: 767px) {
 	h1 {
 		font-size: 2.5em;
@@ -267,8 +284,13 @@ h2.profile {
 		font-size: 1.25em;
 	}
 
-	.btn-container.top {
+	/* .btn-container.top {
 		width: 50%;
+	} */
+
+	.btn-container.top {
+		width: 75%;
+		margin-bottom: 30px;
 	}
 }
 

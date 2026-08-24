@@ -15,7 +15,7 @@
 			<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow" @touchstart="handleTouchStart"
 				@touchend="handleTouchEnd">
 				<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="closeDialogs('home_icon')">
-					<img src="/favicon.ico" alt="CSH App">
+					<img src="/icons/CS20260822_128.png" alt="CSH App">
 				</RouterLink>
 				<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
 				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Database">Movie DB
@@ -180,9 +180,9 @@ a.home-icon {
 
 .home-icon img {
 	margin-right: 15px;
-	height: 56px;
-	width: 56px;
+	height: 64px;
 	cursor: pointer;
+	object-fit: contain;
 }
 
 #nav-container {

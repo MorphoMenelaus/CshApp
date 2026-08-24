@@ -395,7 +395,8 @@ small {
 }
 
 .uiDarkMode #description-box {
-	background-color: #333;
+	border: 1px #555 solid;
+	background-color: #222;
 	color: #c1c1c1;
 }
 
