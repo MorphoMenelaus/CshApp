@@ -13,9 +13,8 @@
 					@click="sendAnalyticsEvent('download', 'resume_link')">
 					Download PDF
 				</a>
-				<a class="btn linkedin linkedin-icon" href="https://www.linkedin.com/in/cs-hardwick"
-					title="Chris Hardwick | Linkedin Profile" target="_blank"
-					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
+				<a class="btn linkedin linkedin-icon" :href="urls.linkedin" title="Chris Hardwick | Linkedin Profile"
+					target="_blank" @click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
 				<button class="btn email-icon" @click="contactEmail(true)">Contact Me</button>
 			</div>
 			<div>
@@ -63,6 +62,7 @@
 
 <script>
 import { inject } from 'vue';
+import urls from "@/dependencies/commonUrls.json";
 import ResumeTable from "@/components/ResumeTable.vue";
 import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
 import skills from "@/dependencies/skills.json";
@@ -79,6 +79,7 @@ export default {
 	},
 	data() {
 		return {
+			urls: urls,
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
 			contactEmail: inject('contactEmail'),

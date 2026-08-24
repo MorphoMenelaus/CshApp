@@ -12,30 +12,32 @@ const props = defineProps({
 });
 
 let showHideLoader = ref(false);
-let question = ref("");
-let answer = ref("");
+let codeSnippet = ref("");
+let projectTitle = ref("");
+let description = ref("");
+let techStack = ref("");
+let analysis = ref("");
 
-const askQuestion = async () => {
+const explainCode = async () => {
 
-	if (!question.value) {
-		console.error("Question field is required");
+	if (!codeSnippet.value || !techStack.value) {
+		console.error("Code snippet and tech stack inputs are required");
 		return;
 	}
-
-	// Remove html tags
-	let reg = new RegExp(/(<([^>]+)>)/ig);
-	let prompt = question.value.replace(reg, "");
 
 	showHideLoader.value = true;
 
 	let body = {
-		prompt: prompt,
+		codeSnippet: codeSnippet.value,
+		projectTitle: projectTitle.value,
+		description: description.value,
+		techStack: techStack.value
 	};
 
 	let headerObj = new Headers();
 	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
 	headerObj.append("Content-Type", "application/json; charset=utf-8");
-	let requestUrl = new URL("/api/gemini/question", baseUrl);
+	let requestUrl = new URL("/api/gemini/explain-code", baseUrl);
 
 	let request = new Request(
 		requestUrl.toString(), {
@@ -52,7 +54,8 @@ const askQuestion = async () => {
 			updateStatus(data);
 		}
 
-		answer.value = data.output;
+		let formattedJson = JSON.stringify(data.analysis, null, '\t');
+		analysis.value = formattedJson;
 
 	} catch (error) {
 		console.error('Error posting data:', error);
@@ -68,8 +71,9 @@ const askQuestion = async () => {
 };
 
 const clear = () => {
-	question.value = "";
-	answer.value = "";
+	jobDescription.value = "";
+	profile.value = "";
+	analysis.value = "";
 }
 
 </script>
@@ -87,27 +91,38 @@ const clear = () => {
 					</div>
 				</Transition>
 				<div id="header">
-					<h1>Ask AI</h1>
-					<h2>Type Question Below</h2>
+					<h1>AI Code Review</h1>
+					<h2>Reviews code patterns with suggestions.</h2>
 				</div>
-				<form @submit.prevent="askQuestion" method="get">
+				<form @submit.prevent="explainCode" method="get">
 					<div class="form-group">
-						<label for="question">Question:</label>
-						<textarea id="question" title="Question" v-model="question" type="text" name="Question"
-							class="form-control" placeholder="Tell me what's on your mind..."></textarea>
+						<a class="external" href="https://www.minifier.org/text-minifier"
+							title="Minifier | minifier.org" target="_blank">Minifier &#128279;</a>
+						<label for="projectTitle">Project Title:</label>
+						<input id="projectTitle" title="Project Title" v-model="projectTitle" type="text"
+							name="projectTitle" class="form-control" placeholder="Project Title" />
+						<label for="description">Description:</label>
+						<textarea id="description" title="Description" v-model="description" type="text"
+							name="description" class="form-control" placeholder="Description">Description</textarea>
+						<label for="techStack">Tech Stack:</label>
+						<textarea id="techStack" title="Tech Stack" v-model="techStack" type="text" name="techStack"
+							class="form-control" placeholder="Tech Stack">Tech Stack</textarea>
+						<label for="codeSnippet">Code Snippet:</label>
+						<textarea id="codeSnippet" title="Code Snippet" v-model="codeSnippet" type="text"
+							name="codeSnippet" class="form-control" placeholder="Code Snippet"></textarea>
 					</div>
 					<div class="button-container">
-						<button class="btn" @click="askQuestion()">Submit</button>
+						<button class="btn" @click="explainCode()">Submit</button>
 						<button class="btn" @click="clear()">Clear</button>
 						<button class="btn" @click="closeChat()">Close</button>
 					</div>
 				</form>
 			</div>
 			<Transition name="slide-up">
-				<div id="answer" v-if="answer">
+				<div id="answer" v-if="analysis">
 					<h2 class="output-header">AI Output <small v-if="isMobile" class="link"
 							@click="clear()">Clear</small></h2>
-					<div v-html="answer" class="output"></div>
+					<pre class="output">{{ analysis }}</pre>
 				</div>
 			</Transition>
 		</div>
@@ -143,7 +158,8 @@ h2 {
 	padding: 15px;
 	border-radius: 12px;
 	border: 1px #333 solid;
-	overflow: hidden;
+	overflow: hidden auto;
+	max-height: 65vh;
 }
 
 #header {
@@ -171,13 +187,17 @@ label {
 	font-weight: bold;
 }
 
-textarea {
-	min-height: 2em;
+textarea,
+input {
 	background-color: #cdb2f5;
 	color: #000;
 	padding: 5px;
 	border-radius: 8px;
 	font-size: 1em;
+}
+
+textarea {
+	min-height: 2em;
 }
 
 .button-container {
@@ -220,6 +240,21 @@ textarea {
 	background: linear-gradient(#0f225d 5%, #060626 50%);
 	color: #aaa;
 	border: 1px #666 solid;
+}
+
+#description {
+	margin-bottom: 30px;
+}
+
+.external {
+	display: flex;
+	align-self: center;
+	padding: 0 15px;
+	text-decoration: none;
+}
+
+.external:hover {
+	text-decoration: underline;
 }
 
 #loading-icon {

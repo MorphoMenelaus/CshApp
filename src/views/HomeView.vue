@@ -1,5 +1,6 @@
 <script setup>
 import { ref, inject } from 'vue';
+import urls from "@/dependencies/commonUrls.json";
 import Disclaimers from "../components/Disclaimers.vue";
 import StockCharts from "../components/StockCharts.vue";
 import Available from "@/components/Available.vue";
@@ -74,7 +75,7 @@ const showStockDetails = (id) => {
 						<li>REST API</li>
 						<li>HTML5</li>
 						<li>CSS3</li>
-						<li>JavaScript ES6</li>
+						<li>JavaScript</li>
 						<li>Agile Development</li>
 					</ul>
 					<ul>
@@ -113,9 +114,8 @@ const showStockDetails = (id) => {
 					}} Details <span class="arrow" :class="lessText ? 'rotated' : ''">▽</span></button>
 					<RouterLink to="/resume" class="btn linkedin">{{ isMobile ? 'Full' : 'Chris Hardwick' }} Resume
 					</RouterLink>
-					<a class="btn linkedin" href="https://www.linkedin.com/in/cs-hardwick"
-						title="Chris Hardwick | Linkedin Profile" target="_blank"
-						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
+					<a class="btn linkedin" :href="urls.linkedin" title="Chris Hardwick | Linkedin Profile"
+						target="_blank" @click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
 				</div>
 				<Transition name="slide-down">
 					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
@@ -425,10 +425,6 @@ p {
 	position: absolute;
 	top: 0;
 	left: -20px;
-}
-
-.mobile .map-pin::before {
-	left: 0;
 }
 
 @media (max-width: 767px) {

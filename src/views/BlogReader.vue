@@ -314,6 +314,12 @@ h3 {
 	margin: 30px auto 45px;
 }
 
+.uiDarkMode .blog-intro {
+	border: 1px #555 solid;
+	background-color: #222;
+	color: #c1c1c1;
+}
+
 #paging {
 	color: #000;
 	font-size: 18px;

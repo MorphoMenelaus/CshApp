@@ -40,6 +40,7 @@ export default {
 
 .uiDarkMode #pseudo-table {
 	color: #aaa;
+	background-color: #0d1126;
 }
 
 .container {

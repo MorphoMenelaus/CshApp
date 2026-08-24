@@ -8,9 +8,9 @@
 			</h3>
 			<!-- <small>Powered by Vue 3 &amp; Node/Express</small> -->
 			<div id="footer-contacts">
-				<a v-if="!isMobile" class="footer-link" href="https://www.linkedin.com/in/cs-hardwick" target="_blank"
+				<a v-if="!isMobile" class="footer-link" :href="urls.linkedin" target="_blank"
 					title="Chris Hardwick | Linkedin Profile">Linkedin</a>
-				<a v-if="!isMobile" class="footer-link" href="https://hardwick.design" target="_blank"
+				<a v-if="!isMobile" class="footer-link" :href="urls.hardwickDesign" target="_blank"
 					title="Chris Hardwick | Graphic Designer">Personal Site</a>
 				<span class="footer-link" @click="openThisModalCloseOthers()" title="Contact Chris Hardwick">Contact
 					Me</span>
@@ -21,6 +21,7 @@
 
 <script>
 import { inject } from "vue";
+import urls from "@/dependencies/commonUrls.json";
 
 export default {
 	name: 'FooterMain',
@@ -30,9 +31,10 @@ export default {
 	},
 	data() {
 		return {
+			urls: urls,
 			contactEmail: inject("contactEmail"),
 			loginShow: inject("loginShow"),
-			registerUser: inject('registerUser'),
+			registerUser: inject('registerUser')
 		}
 	},
 	methods: {

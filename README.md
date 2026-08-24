@@ -30,4 +30,4 @@ npm run lint
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-### Requires web browsers that support ECMAScript 2015, also known as ES6
+### Requires web browsers that support a minimum ECMAScript 2015, also known as ES6
