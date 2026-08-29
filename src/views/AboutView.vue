@@ -1,7 +1,7 @@
 <script setup>
 import { inject } from 'vue';
 import urls from "../dependencies/commonUrls.json";
-import Disclaimers from "../components/Disclaimers.vue";
+import PrivacyDisclaimer from "../components/PrivacyDisclaimer.vue";
 
 const appCurrentVersion = inject('appCurrentVersion');
 
@@ -30,7 +30,9 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 				<small class="appVersion" v-if="appCurrentVersion">App Version: <span>{{ appCurrentVersion
 				}}</span></small>
 			</div>
-
+			<RouterLink class="about-img" to="/" title="Home" @click="closeDialogs('home_title')">
+				<img src="/icons/CS20260822_256.png" alt="CSH App" />
+			</RouterLink>
 			<h1 class="julius-sans stroke">Chris Hardwick</h1>
 			<div class="tagline-box">
 				<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
@@ -62,7 +64,7 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 					Chris' focus on teamwork and communication makes him a valuable asset for any team wanting to design
 					and complete a project beautifully or can work independently as required.</p>
 			</div>
-			<Disclaimers />
+			<PrivacyDisclaimer />
 		</div>
 		<div id="copyright">
 			<small v-html="copyright"></small>
@@ -84,6 +86,14 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 	padding-bottom: 45px;
 }
 
+.about-img {
+	display: flex;
+	justify-content: center;
+	justify-self: center;
+	height: 64px;
+	object-fit: contain;
+	margin: 30px 0 15px;
+}
 
 .uiDarkMode #about {
 	color: #aaa;
@@ -279,6 +289,10 @@ a.btn.large {
 }
 
 @media (min-width: 768px) {
+	.about-img {
+		height: 128px;
+	}
+
 	#profile {
 		padding: 15px;
 		font-size: 1.25em;

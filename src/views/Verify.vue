@@ -166,6 +166,10 @@ h3 {
 	margin: 30px auto;
 }
 
+#verify button {
+	font-size: 1.65em;
+}
+
 #verificationCode {
 	text-align: center;
 	font-size: 1.5em;

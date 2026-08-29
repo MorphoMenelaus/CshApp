@@ -22,7 +22,7 @@
 
 				<div class="form-group">
 					<label for="phone" title="Phone (optional)">Phone (optional)</label>
-					<input v-model.trim="phone" id="phone" type="text" name="phone" class="form-control" />
+					<input v-model.trim="phone" id="phone" type="text" name="phone" class="form-control" maxlength="12" />
 				</div>
 
 				<div class="form-group" title="Subject">

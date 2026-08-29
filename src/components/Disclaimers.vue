@@ -1,3 +1,14 @@
+<script setup>
+import { useRoute } from 'vue-router'
+
+const aiDisclaimer = `Hi! I am Chris' AI assistant, powered by Google Gemini. 
+			I am an experimental chatbot trained to answer questions about Chris' career, skills, and interests. 
+			While I strive for accuracy, AI can occasionally hallucinate or make mistakes. 
+			Please do not share any sensitive personal or confidential information in this chat.`
+
+const route = useRoute();
+</script>
+
 <template>
 	<div id="disclaimers">
 		<p>This web application was made using a <strong>Vue 3</strong> frontend with a <strong>NodeJS/Express</strong>
@@ -13,24 +24,12 @@
 					of Service</a>
 			</strong> apply.
 		</p>
+		<span v-if="route.name === 'home'">See my full 
+			<RouterLink class="privacy-link" to="/about#privacy">privacy policy</RouterLink>
+		</span>
 	</div>
 </template>
 
-<script>
-export default {
-	name: "Disclaimers",
-	data() {
-		return {
-			aiDisclaimer: `Hi! I am Chris' AI assistant, powered by Google Gemini. 
-			I am an experimental chatbot trained to answer questions about Chris' career, skills, and interests. 
-			While I strive for accuracy, AI can occasionally hallucinate or make mistakes. 
-			Please do not share any sensitive personal or confidential information in this chat.`
-		};
-	},
-}
-</script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 strong {
 	font-weight: bold;
