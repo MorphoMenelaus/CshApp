@@ -13,10 +13,12 @@ const onsiteServer = onsiteUrlService.get();
 const allowedDomains = [
 	import.meta.env.VITE_API_BASE_URL,
 	import.meta.env.VITE_API_STAGING_URL,
+	import.meta.env.VITE_API_CSH_URL,
 	onsiteServer // Empty string unless built in dev mode - which loads .env.development
 ];
 
 const origin = onsiteServer || window.location.origin;
+const personalRestricted = origin === import.meta.env.VITE_API_CSH_URL;
 const baseUrl = allowedDomains.includes(origin) ? origin : "";
 
 const appCurrentVersion = APP_VERSION;
@@ -46,6 +48,7 @@ const timeOptions = {
 }
 
 app.config.globalProperties.appCurrentVersion = appCurrentVersion;
+app.config.globalProperties.personalRestricted = personalRestricted;
 app.config.globalProperties.baseUrl = baseUrl;
 app.config.globalProperties.reCaptchaSiteKey = reCaptchaSiteKey;
 app.config.globalProperties.appNotify = appNotify;
@@ -60,6 +63,7 @@ app.config.globalProperties.isObjNullOrEmpty = isObjNullOrEmpty;
 
 app.provide('appCurrentVersion', appCurrentVersion);
 app.provide('sendAnalyticsEvent', sendAnalyticsEvent);
+app.provide('personalRestricted', personalRestricted);
 app.provide('baseUrl', baseUrl);
 
 app.mount('#app')

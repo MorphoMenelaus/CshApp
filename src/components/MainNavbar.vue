@@ -8,7 +8,9 @@
 				<div></div>
 			</div>
 			<div class="home-title">
-				<RouterLink to="/" title="Home" @click="closeDialogs('home_title')">CSH</RouterLink>
+				<RouterLink to="/" title="Home" @click="closeDialogs('home_title')">
+					<img src="/icons/CS20260822_128.png" alt="CSH App" />
+				</RouterLink>
 			</div>
 		</div>
 		<Transition name="slide-down">
@@ -21,11 +23,11 @@
 				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Database">Movie DB
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
+					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin) && !personalRestricted"
 					to="/blog-reader" @click="closeDialogs('blog')" title="Blog Reader">Blog
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
+					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin) && !personalRestricted"
 					to="/displayusers" @click="closeDialogs('users')" title="Display Users">Users
 				</RouterLink>
 				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs"
@@ -34,8 +36,8 @@
 				<RouterLink to="/resume" @click="closeDialogs('resume')" title="Chris Hardwick Resume">Resume
 				</RouterLink>
 				<RouterLink to="/weather" @click="closeDialogs('weather')" title="Weather">Weather</RouterLink>
-				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin" to="/toggl"
-					@click="closeDialogs('toggl')" title="Toggl Time Tracker">Toggl
+				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin && !personalRestricted"
+					to="/toggl" @click="closeDialogs('toggl')" title="Toggl Time Tracker">Toggl
 				</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
@@ -172,6 +174,15 @@ export default {
 	box-shadow: unset;
 	font-size: 1.75em;
 	text-decoration: none;
+}
+
+.home-title a {
+	display: flex;
+	align-items: center;
+}
+
+.home-title a img {
+	height: 48px;
 }
 
 a.home-icon {

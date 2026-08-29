@@ -314,7 +314,7 @@ textarea {
 	#answer {
 		position: absolute;
 		max-height: 50vh;
-		bottom: 182px;
+		bottom: 60px;
 		left: unset;
 		right: unset;
 	}

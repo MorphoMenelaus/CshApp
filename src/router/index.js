@@ -87,6 +87,17 @@ const router = createRouter({
 		}
 	],
 	scrollBehavior(to, from, savedPosition) {
+		if (to.hash) {
+			// Return a promise with a slight delay to allow the DOM to load
+			return new Promise((resolve) => {
+				setTimeout(() => {
+					resolve({
+						el: to.hash,
+						behavior: 'smooth',
+					})
+				}, 100) // 100ms is usually enough for the DOM to be ready
+			})
+		}
 		// If the browser back/forward button is pressed, maintain the saved position
 		if (savedPosition) {
 			return savedPosition
