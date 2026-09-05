@@ -5,7 +5,7 @@
 		<div class="spinner-comet"></div>
 	</div>
 
-	<div v-if="isMobileLandscape" class="rotate-warning background-img">
+	<div id="mobile-landscape" class="rotate-warning background-img">
 		<h2>For best user experience,<br />landscape view is not supported on mobile devices.</h2>
 		<p>Please rotate your mobile device to portrait view.</p>
 	</div>
@@ -16,17 +16,33 @@
 	</div>
 
 	<div class="register-link" v-if="!appState?.isLoggedOn && !isMobile">
-		<span>New User? <span class="link" @click="showRegisterUserComponent(false, true)"
-				title="Click to register">Click to register</span>.<br />Or login with username "guest"</span>
+		<span
+			>New User?
+			<span class="link" @click="showRegisterUserComponent(false, true)" title="Click to register"
+				>Click to register</span
+			>.<br />Or login with username "guest"</span
+		>
 	</div>
+	,
 
-	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus"
-		:mobileDropdownClose="mobileDropdownClose" />
+	<HeaderMain
+		:appState="appState"
+		:isMobile="isMobile"
+		:sharedUpdateStatus="sharedUpdateStatus"
+		:mobileDropdownClose="mobileDropdownClose"
+	/>
 
 	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" :isMobile="isMobile" />
 
-	<RouterView id="view" :serverVersion="serverVersion" :appState="appState" :isMobile="isMobile"
-		:windowWidth="windowWidth" :forceLogoutEvent="forceLogoutEvent" :class="isMobile ? 'mobile' : ''" />
+	<RouterView
+		id="view"
+		:serverVersion="serverVersion"
+		:appState="appState"
+		:isMobile="isMobile"
+		:windowWidth="windowWidth"
+		:forceLogoutEvent="forceLogoutEvent"
+		:class="isMobile ? 'mobile' : ''"
+	/>
 
 	<FooterMain :isMobile="isMobile" />
 
@@ -39,11 +55,10 @@
 		<button class="btn" @click="currentComponent = 'GeminiJobMatch'">AI Job Match</button>
 		<button class="btn" @click="currentComponent = 'GeminiExplainCode'">AI Code Review</button>
 	</div>
-
 </template>
 
 <script>
-import { provide, inject } from 'vue';
+import { provide, inject } from "vue";
 import BackgroundOverlay from "@/components/BackgroundOverlay.vue";
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
@@ -73,13 +88,17 @@ export default {
 			forceLogoutEvent: {},
 			mobileDropdownClose: null,
 			recall: new Storage(),
-			body: document.getElementsByTagName('body'),
+			body: document.getElementsByTagName("body"),
 			serverVersion: "",
 			appState: {},
 			appDevDuties: [],
 			currentComponent: null,
+			isMobileDevice: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
 			isMobile: window.innerWidth < 1024,
-			isMobileLandscape: screen.orientation.type.includes("landscape") && window.innerHeight < 600,
+			isMobileLandscape:
+				screen.orientation.type.includes("landscape") &&
+				window.innerHeight < 600 &&
+				/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
 			windowWidth: window.innerWidth,
 			uiDarkMode: false,
 			isHidden: false,
@@ -99,11 +118,14 @@ export default {
 		},
 		currentComponent() {
 			this.mobileDropdownClose = this.currentComponent ? true : false;
-		}
+		},
 	},
 	methods: {
 		checkOrientation() {
-			this.isMobileLandscape = screen.orientation.type.includes("landscape") && window.innerHeight < 600;
+			this.isMobileLandscape =
+				screen.orientation.type.includes("landscape") &&
+				window.innerHeight < 600 &&
+				/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 		},
 		async initialSetup() {
 			this.getServerVersion();
@@ -115,7 +137,7 @@ export default {
 						code: 403,
 						message: "Refresh Token Expired. Please login again.",
 						success: false,
-						forced: true
+						forced: true,
 					};
 					this.forceLogoutEvent = res;
 				}
@@ -125,7 +147,7 @@ export default {
 			this.getAppRolesData();
 		},
 		showRegisterUserComponent(login = false, register = false) {
-			this.currentComponent = register ? "Register" : null
+			this.currentComponent = register ? "Register" : null;
 			this.loginShow = login;
 		},
 		recallAppState() {
@@ -148,11 +170,10 @@ export default {
 					this.serverVersion = data?.version || "";
 				}
 			} catch (error) {
-				console.error('Error fetching server version:', error);
+				console.error("Error fetching server version:", error);
 			}
 		},
 		async getAppRolesData() {
-
 			let headerObj = new Headers();
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL("/api/blog/appduties/", this.baseUrl);
@@ -161,14 +182,12 @@ export default {
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
 			try {
-
 				let response = await fetch(request);
 				let data = await response.json();
 				if (data?.success) {
@@ -177,9 +196,8 @@ export default {
 					updateAppState.appDevDuties = this.appDevDuties = data.appDevDuties;
 					this.updateAppState(updateAppState);
 				}
-
 			} catch (error) {
-				console.error('Error reading data:', error);
+				console.error("Error reading data:", error);
 			}
 		},
 		handleScroll(e) {
@@ -203,33 +221,32 @@ export default {
 			code: 403,
 			message: "Session Expired. Please login again.",
 			success: false,
-			forced: true
+			forced: true,
 		};
-		provide("forceLogout", (status = defaultStatus) => this.forceLogoutEvent = status);
+		provide("forceLogout", (status = defaultStatus) => (this.forceLogoutEvent = status));
 		provide("updateAppState", this.updateAppState);
 		provide("initialSetup", this.initialSetup);
-		provide("showHideLoader", (bool) => this.showHideLoader = bool);
-		provide("loginShow", (bool) => this.loginShow = bool);
-		provide("registerUser", (bool) => this.currentComponent = bool ? "Register" : null);
-		provide("contactEmail", (bool) => this.currentComponent = bool ? "ContactForm" : null);
-		provide("sendUpdateStatus", (payload) => this.sharedUpdateStatus = payload);
-		provide("mobileDropdownEvent", (bool) => this.mobileDropdownClose = bool);
-		provide("closeChat", () => this.currentComponent = null);
+		provide("showHideLoader", (bool) => (this.showHideLoader = bool));
+		provide("loginShow", (bool) => (this.loginShow = bool));
+		provide("registerUser", (bool) => (this.currentComponent = bool ? "Register" : null));
+		provide("contactEmail", (bool) => (this.currentComponent = bool ? "ContactForm" : null));
+		provide("sendUpdateStatus", (payload) => (this.sharedUpdateStatus = payload));
+		provide("mobileDropdownEvent", (bool) => (this.mobileDropdownClose = bool));
+		provide("closeChat", () => (this.currentComponent = null));
 		/* END NEW EVENT HANDLING SECTION */
 
 		screen.orientation.addEventListener("change", this.checkOrientation);
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
-		window.addEventListener("forceLogout", (e) => this.forceLogoutEvent = e?.detail);
+		window.addEventListener("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));
 		window.addEventListener("keydown", (down) => {
-			if (down.key === "Escape")
-				this.currentComponent = null;
+			if (down.key === "Escape") this.currentComponent = null;
 		});
 		window.addEventListener("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
 			this.windowWidth = window.innerWidth;
 			this.checkOrientation();
 		});
-		window.addEventListener('storage', (event) => {
+		window.addEventListener("storage", (event) => {
 			if (event.key === this.recall.getstorageKey()) {
 				this.recallAppState();
 			}
@@ -329,7 +346,6 @@ nav a:first-of-type {
 	background-color: #1a1a1a;
 	color: #fff;
 	z-index: 999999;
-	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
@@ -350,7 +366,7 @@ nav a:first-of-type {
 	width: 100vw;
 	background-color: rgb(0 0 0 / 50%);
 	backdrop-filter: blur(5px);
-	transition: background-color .3 ease-in-out;
+	transition: background-color 0.3 ease-in-out;
 	z-index: 15000;
 }
 
@@ -406,6 +422,16 @@ nav a:first-of-type {
 
 	#ai-button {
 		bottom: 75px;
+	}
+}
+
+#mobile-landscape {
+	display: none;
+}
+
+@media (orientation: landscape) and (max-width: 932px) and (max-height: 450px) and (hover: none) {
+	#mobile-landscape {
+		display: flex;
 	}
 }
 </style>

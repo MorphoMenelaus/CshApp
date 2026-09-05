@@ -1,47 +1,48 @@
 <template>
-
 	<div id="contact" @click="handleClick($event)">
 		<div class="wrapper" v-if="!messageSent">
 			<div id="form-header">
 				<h2>I'd love to hear from you</h2>
-				<h4 style="text-align: center;">Please, let me know what you think.</h4>
-				<p style="text-align: center;">Your info will not be shared with anyone.</p>
+				<h4 style="text-align: center">Please, let me know what you think.</h4>
+				<p style="text-align: center">Your info will not be shared with anyone.</p>
 			</div>
 			<form @submit.prevent="contactHandler" method="post">
 				<div class="form-group">
-					<label for="name" title="Name">Name<span v-if="!name && errState" class="err"> *
-							required</span></label>
+					<label for="name" title="Name"
+						>Name<span v-if="!name && errState" class="err"> * required</span></label
+					>
 					<input v-model.trim="name" id="name" type="text" name="name" class="form-control" />
 				</div>
 
 				<div class="form-group">
-					<label for="email" title="Email Address">Email Address<span v-if="!email && errState" class="err"> *
-							required</span></label>
+					<label for="email" title="Email Address"
+						>Email Address<span v-if="!email && errState" class="err"> * required</span></label
+					>
 					<input v-model.trim="email" id="email" type="text" name="email" class="form-control" />
 				</div>
 
-				<div class="form-group">
-					<label for="phone" title="Phone (optional)">Phone (optional)</label>
-					<input v-model.trim="phone" id="phone" type="text" name="phone" class="form-control" maxlength="12" />
-				</div>
-
 				<div class="form-group" title="Subject">
-					<label for="subject">Subject<span v-if="!subject && errState" class="err"> *
-							required</span></label>
+					<label for="subject">Subject<span v-if="!subject && errState" class="err"> * required</span></label>
 					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control" />
 				</div>
 
 				<div class="form-group">
-					<label for="message" title="Message">Message<span v-if="!message && errState" class="err"> *
-							required</span></label>
+					<label for="message" title="Message"
+						>Message<span v-if="!message && errState" class="err"> * required</span></label
+					>
 					<small>(characters remaining: {{ charRemaining }})</small>
-					<textarea v-model.trim="message" id="message" type="text" name="message" class="form-control"
-						:maxlength="maxlength" @keyup="charCounter()" />
+					<textarea
+						v-model.trim="message"
+						id="message"
+						type="text"
+						name="message"
+						class="form-control"
+						:maxlength="maxlength"
+						@keyup="charCounter()"
+					/>
 				</div>
-				<div style="display: flex;">
-					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">
-						Send
-					</button>
+				<div style="display: flex">
+					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">Send</button>
 					<button class="btn" type="button" @click="contactEmail(false)" title="Cancel">Cancel</button>
 				</div>
 			</form>
@@ -54,18 +55,16 @@
 			<div>
 				<h3>I'll get back to you as soon as I can.</h3>
 			</div>
-			<div style="display: flex;">
+			<div style="display: flex">
 				<button class="btn" type="button" @click="contactEmail(false)" title="Cancel">Close</button>
 			</div>
 		</div>
-
 	</div>
-
 </template>
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount, inject } from 'vue';
+import { onBeforeUnmount, inject } from "vue";
 
 export default {
 	name: "ContactForm",
@@ -74,10 +73,10 @@ export default {
 	},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
-			showHideLoader: inject('showHideLoader'),
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			contactEmail: inject("contactEmail"),
-			forceLogout: inject('forceLogout'),
+			forceLogout: inject("forceLogout"),
 			serverStatus: Object.assign({}, this.appNotify),
 			siteKey: this.reCaptchaSiteKey,
 			token: "",
@@ -92,13 +91,11 @@ export default {
 			messageSent: false,
 		};
 	},
-	watch: {
-	},
+	watch: {},
 	methods: {
 		charCounter() {
 			let currCount = this.message.length;
-			if (this.charRemaining <= this.maxlength)
-				this.charRemaining = this.maxlength - currCount;
+			if (this.charRemaining <= this.maxlength) this.charRemaining = this.maxlength - currCount;
 		},
 		async sendEmail() {
 			this.showHideLoader(true);
@@ -123,13 +120,12 @@ export default {
 
 				let headerObj = new Headers();
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL('/api/mail', this.baseUrl);
+				let requestUrl = new URL("/api/mail", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'POST',
+				let request = new Request(requestUrl.toString(), {
+					method: "POST",
 					headers: headerObj,
-					body: JSON.stringify(body)
+					body: JSON.stringify(body),
 				});
 
 				let response = await fetch(request);
@@ -146,13 +142,12 @@ export default {
 				this.serverStatus.success = data?.success;
 
 				if (data.success) {
-					this.sendAnalyticsEvent('contact_form_send', 'contact_modal');
+					this.sendAnalyticsEvent("contact_form_send", "contact_modal");
 					this.messageSent = true;
 				}
 				this.errState = data?.success;
-
 			} catch (error) {
-				console.error('Error posting data:', error.message);
+				console.error("Error posting data:", error.message);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error.message}`;
 				this.serverStatus.success = false;
@@ -174,34 +169,30 @@ export default {
 					try {
 						// Execute reCAPTCHA
 						this.token = await window.grecaptcha.enterprise.execute(this.siteKey, {
-							action: "sendEmail"
+							action: "sendEmail",
 						});
 
 						await this.sendEmail();
-
 					} catch (error) {
 						console.error("reCAPTCHA execution failed:", error);
 					}
 				});
-
 			} catch (err) {
 				console.error("Email failed:", err);
 			}
 		},
 		keyDown(e) {
-			if (e.key === "Escape")
-				this.contactEmail(false);
+			if (e.key === "Escape") this.contactEmail(false);
 		},
 		handleClick(event) {
-			if (event.target.id === "contact")
-				this.contactEmail(false);
+			if (event.target.id === "contact") this.contactEmail(false);
 		},
 	},
 	mounted() {
-		this.sendAnalyticsEvent('contact_form_load', 'contact_modal');
-		if (!document.getElementById('recaptcha-script')) {
-			const script = document.createElement('script');
-			script.id = 'recaptcha-script';
+		this.sendAnalyticsEvent("contact_form_load", "contact_modal");
+		if (!document.getElementById("recaptcha-script")) {
+			const script = document.createElement("script");
+			script.id = "recaptcha-script";
 			script.src = `https://google.com/recaptcha/enterprise.js?render=${this.siteKey}`;
 			script.async = true;
 			script.defer = true;
@@ -284,7 +275,10 @@ form {
 label[for="casinoId"] {
 	text-align: center;
 	text-transform: uppercase;
-	text-shadow: -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000,
+	text-shadow:
+		-1px -1px 0px #000,
+		1px -1px 0px #000,
+		-1px 1px 0px #000,
 		1px 1px 0px #000;
 }
 

@@ -1,34 +1,36 @@
 <script setup>
-import { inject } from 'vue';
+import { inject } from "vue";
 import urls from "../dependencies/commonUrls.json";
 import PrivacyDisclaimer from "../components/PrivacyDisclaimer.vue";
 
-const appCurrentVersion = inject('appCurrentVersion');
+const appCurrentVersion = inject("appCurrentVersion");
 
 const props = defineProps({
 	appState: Object,
 	serverVersion: String,
-	isMobile: Boolean
+	isMobile: Boolean,
 });
 
-const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
-	console.warn('Global function not found! sendAnalyticsEvent()');
+const sendAnalyticsEvent = inject("sendAnalyticsEvent", () => {
+	console.warn("Global function not found! sendAnalyticsEvent()");
 });
-const contactEmail = inject('contactEmail', () => {
-	console.warn('Global function not found! contactEmail()');
+const contactEmail = inject("contactEmail", () => {
+	console.warn("Global function not found! contactEmail()");
 });
 
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
-
 </script>
 
 <template>
 	<div>
 		<div id="about">
 			<div id="serverInfo" v-if="appState?.isLoggedOn">
-				<small class="version" v-if="serverVersion">Server Version: <span>{{ serverVersion }}</span></small>
-				<small class="appVersion" v-if="appCurrentVersion">App Version: <span>{{ appCurrentVersion
-				}}</span></small>
+				<small class="version" v-if="serverVersion"
+					>Server Version: <span>{{ serverVersion }}</span></small
+				>
+				<small class="appVersion" v-if="appCurrentVersion"
+					>App Version: <span>{{ appCurrentVersion }}</span></small
+				>
 			</div>
 			<RouterLink class="about-img" to="/" title="Home" @click="closeDialogs('home_title')">
 				<img src="/icons/CS20260822_256.png" alt="CSH App" />
@@ -40,15 +42,23 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 				<h3>Front-End Web Developer</h3>
 			</div>
 			<div class="btn-container top">
-				<a class="btn linkedin-icon" :class="isMobile ? '' : 'large'" :href="urls.linkedin"
-					title="Chris Hardwick | Linkedin Profile" target="_blank"
-					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
-				<a class="btn csh-icon" :class="isMobile ? '' : 'large'" :href="urls.hardwickDesign"
-					title="Chris Hardwick | Hardwick Web Design" target="_blank"
-					@click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')">Personal
-					Website</a>
-				<a class="btn email-icon" :class="isMobile ? '' : 'large'" @click="contactEmail(true)"
-					title="Contact Me">Contact Me</a>
+				<a
+					class="btn linkedin-icon"
+					:href="urls.linkedin"
+					title="Chris Hardwick | Linkedin Profile"
+					target="_blank"
+					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
+					>Linkedin Profile</a
+				>
+				<a
+					class="btn csh-icon"
+					:href="urls.hardwickDesign"
+					title="Chris Hardwick | Hardwick Web Design"
+					target="_blank"
+					@click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')"
+					>Personal Website</a
+				>
+				<a class="btn email-icon" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
 			</div>
 			<div id="profile">
 				<h2 class="julius-sans profile">Professional Profile</h2>
@@ -56,13 +66,16 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 					Chris is a creative and experienced website and web application developer with over 10 years of
 					experience creating UI excellence and fluid User Experiences. Chris engineers modern responsive web
 					environments using technologies that engage users in an intuitive, clean connection to well
-					structured data.</p>
+					structured data.
+				</p>
 				<p>
 					Since modern website layouts are necessarily visual and eye-catching, Chris' graphic design talents
-					blend together perfectly with coding precision to create memorable user interfaces.</p>
+					blend together perfectly with coding precision to create memorable user interfaces.
+				</p>
 				<p>
 					Chris' focus on teamwork and communication makes him a valuable asset for any team wanting to design
-					and complete a project beautifully or can work independently as required.</p>
+					and complete a project beautifully or can work independently as required.
+				</p>
 			</div>
 			<PrivacyDisclaimer />
 		</div>
@@ -156,7 +169,7 @@ h2.profile {
 }
 
 .btn-container .btn {
-	font-size: .75em;
+	font-size: 0.75em;
 	padding: 5px 15px;
 	border: 1px #000 solid;
 }
@@ -214,6 +227,8 @@ a.btn.large {
 	width: auto;
 	font-size: 1.65em;
 	padding-right: 72px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .btn.email-icon {

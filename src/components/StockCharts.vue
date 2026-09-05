@@ -10,38 +10,48 @@
 			<div class="input-container">
 				<label for="series">Series</label>
 				<select id="series" v-model="series" title="Select series">
-					<option v-for="(item, index) in seriesOptions" :key="index" :value="item.series_id">{{
-						item.desciption
-					}}
+					<option v-for="(item, index) in seriesOptions" :key="index" :value="item.series_id">
+						{{ item.desciption }}
 					</option>
 				</select>
 			</div>
 			<div class="btn-group">
-				<button v-for="(item, index) in dateRanges" :key="index" :value="item.value" :title="item.title"
-					class="btn" @click="selectDateRange(item)"
-					:class="selectedDate.value == item.value ? 'selected' : ''">
-					{{ item.text }}</button>
+				<button
+					v-for="(item, index) in dateRanges"
+					:key="index"
+					:value="item.value"
+					:title="item.title"
+					class="btn"
+					@click="selectDateRange(item)"
+					:class="selectedDate.value == item.value ? 'selected' : ''"
+				>
+					{{ item.text }}
+				</button>
 			</div>
 		</div>
 		<div id="stocks">
 			<canvas id="stocks-graph"></canvas>
 		</div>
-		<small class="text-center">This product uses the FRED&reg; API but is not endorsed or certified by the Federal
-			Reserve Bank of St. Louis.
+		<small class="text-center"
+			>This product uses the FRED&reg; API but is not endorsed or certified by the Federal Reserve Bank of St.
+			Louis.
 		</small>
 	</div>
 </template>
 
 <script>
-import { inject } from "vue";
-import seriesIds from '@/dependencies/seriesIds.json';
-import Chart from 'chart.js/auto';
+import { onBeforeUnmount, inject } from "vue";
+import seriesIds from "@/dependencies/seriesIds.json";
+import Chart from "chart.js/auto";
 
 const verticalLinePlugin = {
-	id: 'verticalLine',
+	id: "verticalLine",
 	afterDraw: (chart) => {
 		if (chart.tooltip?._active && chart.tooltip._active.length) {
-			const { ctx, chartArea: { top, bottom } } = chart;
+			const {
+				ctx,
+				chartArea: { top, bottom },
+			} = chart;
 			const activePoint = chart.tooltip._active[0];
 			const x = activePoint.element.x;
 
@@ -50,12 +60,12 @@ const verticalLinePlugin = {
 			ctx.moveTo(x, top);
 			ctx.lineTo(x, bottom);
 			ctx.lineWidth = 1.5;
-			ctx.strokeStyle = '#f00';
+			ctx.strokeStyle = "#f00";
 			ctx.setLineDash([6, 6]);
 			ctx.stroke();
 			ctx.restore();
 		}
-	}
+	},
 };
 
 export default {
@@ -63,17 +73,17 @@ export default {
 	props: {
 		appState: Object,
 		isMobile: Boolean,
-		windowWidth: Number
+		windowWidth: Number,
 	},
 	components: {},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
+			updateStatus: inject("sendUpdateStatus"),
 			serverStatus: Object.assign({}, this.appNotify),
 			showHideLoader: false,
 			chartElem: null,
-			startDate: new Date().toISOString().split('T')[0],
-			endDate: new Date().toISOString().split('T')[0],
+			startDate: new Date().toISOString().split("T")[0],
+			endDate: new Date().toISOString().split("T")[0],
 			seriesOptions: seriesIds,
 			limitOptions: [
 				{ text: "50", value: 50 },
@@ -86,15 +96,15 @@ export default {
 				{ text: "5000", value: 5000 },
 			],
 			CHART_COLORS: {
-				red: 'rgb(255, 99, 132)',
-				orange: 'rgb(255, 159, 64)',
-				yellow: 'rgb(255, 205, 86)',
-				green: 'rgb(75, 192, 192)',
-				blue: 'rgb(54, 162, 235)',
-				purple: 'rgb(153, 102, 255)',
-				grey: 'rgb(201, 203, 207)',
-				white: 'rgb(255, 255, 255)',
-				black: 'rgb(0, 0, 0)'
+				red: "rgb(255, 99, 132)",
+				orange: "rgb(255, 159, 64)",
+				yellow: "rgb(255, 205, 86)",
+				green: "rgb(75, 192, 192)",
+				blue: "rgb(54, 162, 235)",
+				purple: "rgb(153, 102, 255)",
+				grey: "rgb(201, 203, 207)",
+				white: "rgb(255, 255, 255)",
+				black: "rgb(0, 0, 0)",
 			},
 			startMin: this.endDate,
 			endMax: this.startDate,
@@ -104,7 +114,7 @@ export default {
 				{ title: "Date Ramge: 90 Day", text: "90 Day", value: 3 },
 				{ title: "Date Ramge: 6 Month", text: "6 Mo.", value: 6 },
 				{ title: "Date Ramge: 1 Year", text: "12 Mo.", value: 12 },
-				{ title: "Date Ramge: 2 Year", text: "24 Mo.", value: 24 }
+				{ title: "Date Ramge: 2 Year", text: "24 Mo.", value: 24 },
 			],
 			selectedDate: this.isMobile ? { text: "60 Day", value: 2 } : { text: "6 Mo.", value: 6 },
 			limit: 500,
@@ -120,7 +130,7 @@ export default {
 			this.drawChart();
 		},
 		series() {
-			this.seriesDetails = this.seriesOptions.filter(item => item.series_id === this.series)[0];
+			this.seriesDetails = this.seriesOptions.filter((item) => item.series_id === this.series)[0];
 			this.selectRanges();
 			this.getStocksData();
 		},
@@ -135,14 +145,13 @@ export default {
 			let monthOffset = this.selectedDate.value;
 			let date = new Date();
 			let start = date.setMonth(date.getMonth() - monthOffset);
-			this.startDate = new Date(start).toISOString().split('T')[0];
+			this.startDate = new Date(start).toISOString().split("T")[0];
 			this.limit = 30 * monthOffset;
 		},
 		async getStocksData() {
 			this.showHideLoader = true;
 
 			try {
-
 				let headerObj = new Headers();
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
 				let requestUrl = new URL("/api/stocks", this.baseUrl);
@@ -155,9 +164,8 @@ export default {
 				params.set("series_id", this.series);
 				requestUrl.search = params.toString();
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'GET',
+				let request = new Request(requestUrl.toString(), {
+					method: "GET",
 					headers: headerObj,
 				});
 
@@ -176,9 +184,8 @@ export default {
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
 				if (this.serverStatus.code !== 200) this.updateStatus(this.serverStatus);
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -188,7 +195,6 @@ export default {
 			}
 		},
 		drawChart() {
-
 			this.setupForGraph();
 
 			const existingChart = Chart.getChart("stocks-graph");
@@ -196,23 +202,23 @@ export default {
 				existingChart.destroy();
 			}
 
-			const extractedValues = this.observations.map(item => Number(item.value));
-			const extractedDates = this.observations.map(item => item.date);
+			const extractedValues = this.observations.map((item) => Number(item.value));
+			const extractedDates = this.observations.map((item) => item.date);
 
 			const data = {
 				labels: extractedDates,
 				datasets: [
 					{
-						type: 'line',
+						type: "line",
 						label: this.seriesDetails.units,
 						data: extractedValues,
 						backgroundColor: this.CHART_COLORS.blue,
 						borderColor: this.CHART_COLORS.blue,
 						spanGaps: true,
 						fill: false,
-						yAxisID: "y1"
+						yAxisID: "y1",
 					},
-				]
+				],
 			};
 
 			const chartConfig = {
@@ -222,20 +228,20 @@ export default {
 					responsive: true,
 					maintainAspectRatio: false,
 					interaction: {
-						mode: 'index', // Snaps line to the closest date point
-						intersect: false
+						mode: "index", // Snaps line to the closest date point
+						intersect: false,
 					},
 					plugins: {
 						tooltip: {
-							enabled: true // Keeps default hover text visible
+							enabled: true, // Keeps default hover text visible
 						},
 						title: {
 							display: true,
 							text: this.seriesDetails.desciption,
 							font: {
 								weight: 700,
-								size: this.isMobile ? 16 : 26
-							}
+								size: this.isMobile ? 16 : 26,
+							},
 						},
 					},
 					scales: {
@@ -243,12 +249,12 @@ export default {
 							display: true,
 							title: {
 								display: true,
-								text: 'DATE',
+								text: "DATE",
 								// color: this.CHART_COLORS.blue,
 								font: {
 									// weight: 700,
-									size: this.isMobile ? 14 : 24
-								}
+									size: this.isMobile ? 14 : 24,
+								},
 							},
 						},
 						y1: {
@@ -259,29 +265,37 @@ export default {
 								// color: this.CHART_COLORS.blue,
 								font: {
 									// weight: 700,
-									size: this.isMobile ? 14 : 24
-								}
+									size: this.isMobile ? 14 : 24,
+								},
 							},
 							suggestedMin: Math.min(...extractedValues) - 100,
-							suggestedMax: Math.max(...extractedValues) + 100
+							suggestedMax: Math.max(...extractedValues) + 100,
 						},
-					}
+					},
 				},
-				plugins: [verticalLinePlugin]
-			}
+				plugins: [verticalLinePlugin],
+			};
 
 			Chart.defaults.font.size = this.isMobile ? 12 : 18;
 			this.weatherChart = new Chart(this.chartElem, chartConfig);
 		},
 		setupForGraph() {
-			this.chartElem = document.getElementById('stocks-graph');
-		}
+			this.chartElem = document.getElementById("stocks-graph");
+		},
 	},
 	mounted() {
-		this.seriesDetails = this.seriesOptions.filter(item => item.series_id === this.series)[0];
+		this.seriesDetails = this.seriesOptions.filter((item) => item.series_id === this.series)[0];
 		this.setupForGraph();
 		this.selectRanges();
 		this.getStocksData();
+	},
+	created() {
+		onBeforeUnmount(() => {
+			const existingChart = Chart.getChart("stocks-graph");
+			if (existingChart) {
+				existingChart.destroy();
+			}
+		});
 	},
 };
 </script>
@@ -351,7 +365,7 @@ h2 {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	padding: 2px 5px;
-	font-size: .8em;
+	font-size: 0.8em;
 	cursor: pointer;
 }
 

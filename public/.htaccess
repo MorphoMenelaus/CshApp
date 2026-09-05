@@ -9,6 +9,11 @@ PassengerStartupFile server.js
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+  
+  # Replace example\.com and example.com with domain to redirect
+  RewriteCond %{HTTP_HOST} ^www\.example\.com [NC]
+  RewriteRule ^(.*)$ https://example.com [R=301,L]
+  
   RewriteRule ^index\.html$ - [L]
   
   # Skip files, directories, and symbolic links
