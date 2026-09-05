@@ -1,18 +1,18 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { ref, inject } from "vue";
 import urls from "@/dependencies/commonUrls.json";
 import Disclaimers from "../components/Disclaimers.vue";
 import StockCharts from "../components/StockCharts.vue";
 import Available from "@/components/Available.vue";
 
-const sendAnalyticsEvent = inject('sendAnalyticsEvent', () => {
-	console.warn('Global function not found! sendAnalyticsEvent()')
+const sendAnalyticsEvent = inject("sendAnalyticsEvent", () => {
+	console.warn("Global function not found! sendAnalyticsEvent()");
 });
 
 const props = defineProps({
 	appState: Object,
 	isMobile: Boolean,
-	windowWidth: Number
+	windowWidth: Number,
 });
 
 let lessText = ref(false);
@@ -21,35 +21,34 @@ let showStocks = ref(false);
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
 const scrollToId = (id) => {
-	const element = document.getElementById(id)
+	const element = document.getElementById(id);
 	if (element) {
 		element.scrollIntoView({
 			behavior: "smooth",
 			block: "start",
-			inline: "nearest"
+			inline: "nearest",
 		});
 	}
-}
+};
 
 const showDetails = (id) => {
 	lessText.value = lessText?.value ? false : true;
 	setTimeout(() => {
 		scrollToId(id);
 	}, 200);
-	sendAnalyticsEvent('show_details', 'accomplishments');
-}
+	sendAnalyticsEvent("show_details", "accomplishments");
+};
 const showStockDetails = (id) => {
 	showStocks.value = showStocks?.value ? false : true;
 	setTimeout(() => {
 		scrollToId(id);
 	}, 200);
-	sendAnalyticsEvent('stock_charts', 'details');
-}
+	sendAnalyticsEvent("stock_charts", "details");
+};
 </script>
 
 <template>
 	<main class="roboto-body">
-
 		<div v-if="appState?.isLoggedOn && !appState?.permissions.verified" class="not-verified">
 			<span>Not Verified. </span>
 			<RouterLink class="unverified" to="/verify">Click to Verify Account</RouterLink>
@@ -108,14 +107,21 @@ const showStockDetails = (id) => {
 					HelpDesk, Cashier, Reporter, and Player all allow for different access and abilities.
 				</p>
 				<div class="btn-link-container">
-					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">{{ lessText ? 'Fewer'
-						:
-						'More'
-					}} Details <span class="arrow" :class="lessText ? 'rotated' : ''">▽</span></button>
-					<RouterLink to="/resume" class="btn linkedin">{{ isMobile ? 'Full' : 'Chris Hardwick' }} Resume
+					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
+						{{ lessText ? "Fewer" : "More" }} Details
+						<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
+					</button>
+					<RouterLink to="/resume" class="btn linkedin"
+						>{{ isMobile ? "Full" : "Chris Hardwick" }} Resume
 					</RouterLink>
-					<a class="btn linkedin" :href="urls.linkedin" title="Chris Hardwick | Linkedin Profile"
-						target="_blank" @click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
+					<a
+						class="btn linkedin"
+						:href="urls.linkedin"
+						title="Chris Hardwick | Linkedin Profile"
+						target="_blank"
+						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
+						>Linkedin Profile</a
+					>
 				</div>
 				<Transition name="slide-down">
 					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
@@ -134,11 +140,16 @@ const showStockDetails = (id) => {
 
 			<div id="stocks-container">
 				<div id="charts-header">
-					<h2 class="julius-sans" @click="showStockDetails('latest-stocks')"
-						:title="`${showStocks ? 'Close' : 'Open'} Market Summary Graphs`">Market Summary Graphs</h2>
+					<h2
+						class="julius-sans"
+						@click="showStockDetails('latest-stocks')"
+						:title="`${showStocks ? 'Close' : 'Open'} Market Summary Graphs`"
+					>
+						Market Summary Graphs
+					</h2>
 					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>
 					<button id="stocks-anchor" class="btn" @click="showStockDetails('latest-stocks')">
-						{{ showStocks ? 'Close' : 'Open' }} Market Graphs
+						{{ showStocks ? "Close" : "Open" }} Market Graphs
 						<span :class="showStocks ? 'rotated' : ''">▽</span>
 					</button>
 				</div>
@@ -165,7 +176,7 @@ const showStockDetails = (id) => {
 	margin-left: 10px;
 	font-weight: bold;
 	transform: rotate(-90deg);
-	transition: transform .4s ease-in-out;
+	transition: transform 0.4s ease-in-out;
 }
 
 span.rotated {
@@ -179,7 +190,7 @@ span.rotated {
 h1,
 h2,
 #title-block h3,
-#latest-summary>h3 {
+#latest-summary > h3 {
 	text-align: center;
 }
 
@@ -188,18 +199,18 @@ h1 {
 }
 
 h2 {
-	font-size: 2em;
+	font-size: 1.75em;
 }
 
 h3 {
-	font-size: 1.5em;
+	font-size: 1.25em;
 }
 
 #charts-header h2 {
 	font-size: 1.8em;
 	font-weight: bold;
 	cursor: pointer;
-	transition: color .25s ease-in-out;
+	transition: color 0.25s ease-in-out;
 }
 
 .uiDarkMode #charts-header h2 {
@@ -242,7 +253,7 @@ p {
 }
 
 #name-title {
-	font-size: 4em;
+	font-size: 2.5em;
 	/* font-weight: bold; */
 }
 
@@ -267,15 +278,15 @@ p {
 	background-color: #000;
 }
 
-#latest-summary>h3 {
+#latest-summary > h3 {
 	font-size: 1.25em;
 }
 
-#latest-summary>h2 {
+#latest-summary > h2 {
 	font-weight: bold;
 }
 
-.uiDarkMode #latest-summary>h2 {
+.uiDarkMode #latest-summary > h2 {
 	font-weight: normal;
 }
 
@@ -382,7 +393,7 @@ p {
 	justify-content: space-between;
 }
 
-.mobile .btn-link-container>* {
+.mobile .btn-link-container > * {
 	margin: 5px 10px;
 }
 
@@ -394,7 +405,7 @@ p {
 	display: inline-block;
 	position: relative;
 	right: 0;
-	font-size: .75em;
+	font-size: 0.75em;
 	padding: 3px 15px 2px;
 	border: 1px #000 solid;
 	box-shadow: 1px 1px 0px #000;
@@ -418,7 +429,7 @@ p {
 }
 
 .map-pin::before {
-	content: '';
+	content: "";
 	background: url(../icons/map_pin.png) 0 0 / contain no-repeat;
 	width: 18px;
 	height: 26px;
@@ -428,9 +439,9 @@ p {
 }
 
 @media (max-width: 767px) {
-	#name-title {
+	/* #name-title {
 		font-size: 2.5em;
-	}
+	} */
 
 	h2 {
 		font-size: 1.5em;
@@ -445,17 +456,34 @@ p {
 	}
 }
 
-@media (min-width: 768px) and (max-width: 991px) {}
+@media (min-width: 768px) and (max-width: 991px) {
+}
 
 @media (min-width: 768px) {
 	/* #main-home-layout {
 		width: 95%;
 	} */
+
+	#name-title {
+		font-size: 3.5em;
+	}
 }
 
 @media (min-width: 992px) {
 	#main-home-layout {
 		width: 90%;
+	}
+
+	#name-title {
+		font-size: 3.75em;
+	}
+
+	h2 {
+		font-size: 2em;
+	}
+
+	h3 {
+		font-size: 1.5em;
 	}
 
 	#latest-summary {

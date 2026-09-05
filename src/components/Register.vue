@@ -1,5 +1,4 @@
 <template>
-
 	<div id="register" @click="handleClick($event)">
 		<div class="wrapper">
 			<div id="form-header">
@@ -9,44 +8,80 @@
 			<form @submit.prevent="registerHandler" method="post">
 				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
 					<label for="username">Username</label>
-					<input id="username" title="Username" autocomplete="username" v-model.trim="userName" type="text"
-						name="userName" class="form-control">
+					<input
+						id="username"
+						title="Username"
+						autocomplete="username"
+						v-model.trim="userName"
+						type="text"
+						name="userName"
+						class="form-control"
+					/>
 				</div>
 				<div class="form-group" :class="errState && !email.length > 0 ? 'err' : ''">
 					<label for="email">Email <small>*required to verify account</small></label>
-					<input id="email" title="Username" autocomplete="email" v-model.trim="email" type="text"
-						name="email" class="form-control">
+					<input
+						id="email"
+						title="Username"
+						autocomplete="email"
+						v-model.trim="email"
+						type="text"
+						name="email"
+						class="form-control"
+					/>
 				</div>
 				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
 					<label for="password">Password</label>
-					<input id="password" title="Password" autocomplete="new-password" v-model.trim="password"
-						type="password" name="password" class="form-control">
+					<input
+						id="password"
+						title="Password"
+						autocomplete="new-password"
+						v-model.trim="password"
+						type="password"
+						name="password"
+						class="form-control"
+					/>
 				</div>
 				<div class="form-group">
 					<label for="confirmPassword">Confirm Password</label>
-					<input id="confirmPassword" title="Confirm Password" autocomplete="new-password"
-						v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
+					<input
+						id="confirmPassword"
+						title="Confirm Password"
+						autocomplete="new-password"
+						v-model.trim="confirmPassword"
+						type="password"
+						name="confirmPassword"
+						class="form-control"
+					/>
 				</div>
-				<small>By registering, you agree to receive a verification code by email. Your email will not be shared
-					or
-					used for any other purpose.</small>
-				<div style="display: flex;">
+				<small
+					>By registering, you agree to receive a verification code by email. Your email will not be shared or
+					used for any other purpose.
+				</small>
+				<small
+					>See full
+					<RouterLink class="privacy-link link" to="/about#privacy" @click="registerUser(false)"
+						>privacy policy</RouterLink
+					>
+				</small>
+
+				<div style="display: flex">
 					<button class="btn" type="submit" @click.prevent="registerHandler" title="Register">
 						Register
 					</button>
 					<button class="btn" type="button" @click="registerUser(false)" title="Cancel">Cancel</button>
 				</div>
-				<p style="text-align: center;">Already have an account? <span class="link" title="Login here"
-						@click="loginRequest()">Login here.</span>
+				<p style="text-align: center">
+					Already have an account?
+					<span class="link" title="Login here" @click="loginRequest()">Login here.</span>
 				</p>
 			</form>
 		</div>
 	</div>
-
 </template>
 
 <script>
-import { onBeforeUnmount, inject } from 'vue';
+import { onBeforeUnmount, inject } from "vue";
 
 export default {
 	name: "RegisterUser",
@@ -55,11 +90,11 @@ export default {
 	},
 	data() {
 		return {
-			forceLogout: inject('forceLogout'),
+			forceLogout: inject("forceLogout"),
 			loginShow: inject("loginShow"),
 			registerUser: inject("registerUser"),
-			updateStatus: inject('sendUpdateStatus'),
-			showHideLoader: inject('showHideLoader'),
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			serverStatus: Object.assign({}, this.appNotify),
 			userName: "",
 			password: "",
@@ -67,11 +102,10 @@ export default {
 			email: "",
 			errState: false,
 			siteKey: this.reCaptchaSiteKey,
-			token: ""
+			token: "",
 		};
 	},
-	watch: {
-	},
+	watch: {},
 	methods: {
 		loginRequest() {
 			this.loginShow(true);
@@ -98,13 +132,12 @@ export default {
 
 				let headerObj = new Headers();
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL('/api/users/register', this.baseUrl);
+				let requestUrl = new URL("/api/users/register", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'POST',
+				let request = new Request(requestUrl.toString(), {
+					method: "POST",
 					headers: headerObj,
-					body: JSON.stringify(body)
+					body: JSON.stringify(body),
 				});
 
 				let response = await fetch(request);
@@ -123,13 +156,12 @@ export default {
 				if (data?.success) {
 					this.loginShow(false);
 					this.registerUser(false);
-					this.sendAnalyticsEvent('register_form_send', 'register_modal');
+					this.sendAnalyticsEvent("register_form_send", "register_modal");
 				}
 
 				this.errState = data?.success;
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error.message}`;
 				this.serverStatus.success = false;
@@ -139,7 +171,6 @@ export default {
 			}
 		},
 		async registerHandler() {
-
 			if (this.password !== this.confirmPassword) {
 				this.serverStatus.message = "New Password and Confirm Password do not match.";
 				this.serverStatus.success = false;
@@ -159,40 +190,36 @@ export default {
 					try {
 						// Execute reCAPTCHA
 						this.token = await window.grecaptcha.enterprise.execute(this.siteKey, {
-							action: "register"
+							action: "register",
 						});
 
 						await this.register();
-
 					} catch (error) {
 						console.error("reCAPTCHA execution failed:", error);
 						let res = {
 							code: 400,
 							message: `reCAPTCHA execution failed: ${error?.message}`,
-							success: false
+							success: false,
 						};
 						this.updateStatus(res);
 					}
 				});
-
 			} catch (err) {
 				console.error("Registration failed:", err);
 			}
 		},
 		keyDown(e) {
-			if (e.key === "Escape")
-				this.registerUser(false);
+			if (e.key === "Escape") this.registerUser(false);
 		},
 		handleClick(event) {
-			if (event.target.id === "register")
-				this.registerUser(false);
+			if (event.target.id === "register") this.registerUser(false);
 		},
 	},
 	mounted() {
-		this.sendAnalyticsEvent('register_form_load', 'register_modal');
-		if (!document.getElementById('recaptcha-script')) {
-			const script = document.createElement('script');
-			script.id = 'recaptcha-script';
+		this.sendAnalyticsEvent("register_form_load", "register_modal");
+		if (!document.getElementById("recaptcha-script")) {
+			const script = document.createElement("script");
+			script.id = "recaptcha-script";
 			script.src = `https://google.com/recaptcha/enterprise.js?render=${this.siteKey}`;
 			script.async = true;
 			script.defer = true;
@@ -274,7 +301,10 @@ form {
 label[for="casinoId"] {
 	text-align: center;
 	text-transform: uppercase;
-	text-shadow: -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000,
+	text-shadow:
+		-1px -1px 0px #000,
+		1px -1px 0px #000,
+		-1px 1px 0px #000,
 		1px 1px 0px #000;
 }
 
@@ -340,5 +370,9 @@ label[for="casinoId"] {
 	color: #ddd;
 	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
 	border-bottom: 1px #fff solid;
+}
+
+.link:visited {
+	color: #4c88ff;
 }
 </style>

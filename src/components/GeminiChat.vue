@@ -1,14 +1,14 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { ref, inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
-const baseUrl = inject('baseUrl');
+const baseUrl = inject("baseUrl");
 const closeChat = inject("closeChat");
-const updateStatus = inject('sendUpdateStatus');
+const updateStatus = inject("sendUpdateStatus");
 
 const props = defineProps({
 	appState: Object,
-	isMobile: Boolean
+	isMobile: Boolean,
 });
 
 let showHideLoader = ref(false);
@@ -16,14 +16,13 @@ let question = ref("");
 let answer = ref("");
 
 const askQuestion = async () => {
-
 	if (!question.value) {
 		console.error("Question field is required");
 		return;
 	}
 
 	// Remove html tags
-	let reg = new RegExp(/(<([^>]+)>)/ig);
+	let reg = new RegExp(/(<([^>]+)>)/gi);
 	let prompt = question.value.replace(reg, "");
 
 	showHideLoader.value = true;
@@ -37,11 +36,10 @@ const askQuestion = async () => {
 	headerObj.append("Content-Type", "application/json; charset=utf-8");
 	let requestUrl = new URL("/api/gemini/question", baseUrl);
 
-	let request = new Request(
-		requestUrl.toString(), {
-		method: 'POST',
+	let request = new Request(requestUrl.toString(), {
+		method: "POST",
 		headers: headerObj,
-		body: JSON.stringify(body)
+		body: JSON.stringify(body),
 	});
 
 	try {
@@ -52,15 +50,23 @@ const askQuestion = async () => {
 			updateStatus(data);
 		}
 
-		answer.value = data.output;
+		if (data.code === 429) {
+			let serverStatus = {
+				code: 429,
+				message: "This request exceeds current quota. Try again in several minutes.",
+				success: false,
+			};
+			updateStatus(serverStatus);
+		}
 
+		answer.value = data.output;
 	} catch (error) {
-		console.error('Error posting data:', error);
+		console.error("Error posting data:", error);
 		let serverStatus = {
 			code: 500,
 			message: `Error getting data: ${error}`,
-			success: false
-		}
+			success: false,
+		};
 		updateStatus(serverStatus);
 	} finally {
 		showHideLoader.value = false;
@@ -70,8 +76,7 @@ const askQuestion = async () => {
 const clear = () => {
 	question.value = "";
 	answer.value = "";
-}
-
+};
 </script>
 
 <template>
@@ -93,8 +98,15 @@ const clear = () => {
 				<form @submit.prevent="askQuestion" method="get">
 					<div class="form-group">
 						<label for="question">Question:</label>
-						<textarea id="question" title="Question" v-model="question" type="text" name="Question"
-							class="form-control" placeholder="Tell me what's on your mind..."></textarea>
+						<textarea
+							id="question"
+							title="Question"
+							v-model="question"
+							type="text"
+							name="Question"
+							class="form-control"
+							placeholder="Tell me what's on your mind..."
+						></textarea>
 					</div>
 					<div class="button-container">
 						<button class="btn" @click="askQuestion()">Submit</button>
@@ -105,8 +117,9 @@ const clear = () => {
 			</div>
 			<Transition name="slide-up">
 				<div id="answer" v-if="answer">
-					<h2 class="output-header">AI Output <small v-if="isMobile" class="link"
-							@click="clear()">Clear</small></h2>
+					<h2 class="output-header">
+						AI Output <small v-if="isMobile" class="link" @click="clear()">Clear</small>
+					</h2>
 					<div v-html="answer" class="output"></div>
 				</div>
 			</Transition>
@@ -265,7 +278,8 @@ textarea {
 	left: 40px;
 }
 
-@media (max-width: 767px) {}
+@media (max-width: 767px) {
+}
 
 @media (min-width: 768px) {
 	#chat {
@@ -289,7 +303,9 @@ textarea {
 	}
 }
 
-@media (min-width: 992px) {}
+@media (min-width: 992px) {
+}
 
-@media (min-width: 1200px) {}
+@media (min-width: 1200px) {
+}
 </style>

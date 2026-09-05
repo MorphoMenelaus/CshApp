@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { inject } from "vue";
+import { onBeforeUnmount, inject } from "vue";
 import locations from '@/dependencies/locations.json';
 import Chart from 'chart.js/auto';
 
@@ -360,6 +360,14 @@ export default {
 		this.setupForGraph();
 		this.getWeatherData();
 	},
+	created() {
+		onBeforeUnmount(() => {
+			const existingChart = Chart.getChart("weather-graph");
+			if (existingChart) {
+				existingChart.destroy();
+			}
+		})
+	}
 };
 </script>
 
