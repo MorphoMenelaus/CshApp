@@ -1,33 +1,48 @@
 <template>
 	<div>
 		<div id="layout-container">
-
 			<div id="resume-header">
 				<h1 class="julius-sans center name stroke">Chris Hardwick</h1>
 				<h2>Resume</h2>
 			</div>
 
 			<div class="btn-container top">
-				<a v-if="!this.personalRestricted" class="btn acrobat-icon" href="/pdf/ChrisHardwickResume2026-08nc.pdf"
-					title="Download Chris Hardwick Resume PDF" download="ChrisHardwickResume2026.pdf"
-					@click="sendAnalyticsEvent('download', 'resume_link')">
-					Download PDF
+				<a
+					v-if="!this.personalRestricted"
+					class="btn acrobat-icon"
+					href="/pdf/ChrisHardwickResume2026-09nc.pdf"
+					title="Download Chris Hardwick Resume PDF"
+					download="ChrisHardwickResume2026.pdf"
+					@click="sendAnalyticsEvent('download', 'resume_link')"
+				>
+					Download Resume
 				</a>
-				<a class="btn linkedin linkedin-icon" :href="urls.linkedin" title="Chris Hardwick | Linkedin Profile"
-					target="_blank" @click="sendAnalyticsEvent('linkedin', 'linkedin_link')">Linkedin Profile</a>
+				<a
+					class="btn linkedin linkedin-icon"
+					:href="urls.linkedin"
+					title="Chris Hardwick | Linkedin Profile"
+					target="_blank"
+					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
+					>Linkedin Profile</a
+				>
 				<button class="btn email-icon" @click="contactEmail(true)">Contact Me</button>
 			</div>
 			<div>
 				<div class="form-group">
 					<label for="keywords">Search Skills&nbsp;&&nbsp;Roles</label>
-					<input id="keywords" title="keywords" v-model.trim="keywords" type="text" name="keywords"
-						placeholder="Enter keyword to search" class="form-control">
-					<span v-if="keywords.length > 0" title="Clear search" @click="keywords = ''"
-						class="clear-field">✕</span>
+					<input
+						id="keywords"
+						title="keywords"
+						v-model.trim="keywords"
+						type="text"
+						name="keywords"
+						placeholder="Enter keyword to search"
+						class="form-control"
+					/>
+					<span v-if="keywords.length > 0" title="Clear search" @click="keywords = ''" class="clear-field">✕</span>
 				</div>
 				<Transition name="slide-down">
-					<div v-if="(filteredSkills.length > 0 || filteredArray.length > 0) && keywords.length >= 3"
-						id="filtered">
+					<div v-if="(filteredSkills.length > 0 || filteredArray.length > 0) && keywords.length >= 3" id="filtered">
 						<div v-if="filteredArray.length > 0">
 							<h2>Roles Search Results</h2>
 							<ul id="resp-list">
@@ -55,13 +70,12 @@
 				<h1 class="center">Resume Data Failed to Load.</h1>
 				<h2 class="center">Please try again.</h2>
 			</div>
-
 		</div>
 	</div>
 </template>
 
 <script>
-import { inject } from 'vue';
+import { inject } from "vue";
 import urls from "@/dependencies/commonUrls.json";
 import ResumeTable from "@/components/ResumeTable.vue";
 import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
@@ -71,19 +85,19 @@ export default {
 	name: "ResumeView",
 	props: {
 		appState: Object,
-		isMobile: Boolean
+		isMobile: Boolean,
 	},
 	components: {
 		ResumeTable,
-		ResumeTableMobile
+		ResumeTableMobile,
 	},
 	data() {
 		return {
 			urls: urls,
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
-			contactEmail: inject('contactEmail'),
-			forceLogout: inject('forceLogout'),
+			contactEmail: inject("contactEmail"),
+			forceLogout: inject("forceLogout"),
 			serverStatus: Object.assign({}, this.appNotify),
 			resumeArray: [],
 			allDutiesArray: [],
@@ -96,25 +110,29 @@ export default {
 	watch: {
 		keywords() {
 			this.keywordFilter();
-		}
+		},
 	},
 	methods: {
 		keywordFilter() {
 			let filtered = [];
 			let filteredSkills = [];
 			const regex = new RegExp(this.keywords, "gi");
-			this.allDutiesArray.forEach(duty => {
+			this.allDutiesArray.forEach((duty) => {
 				if (duty.toUpperCase().includes(this.keywords.toUpperCase()))
-					filtered.push(duty.replaceAll(regex, (match) => {
-						return match.replaceAll(regex, `<b>${match}</b>`);
-					}));
+					filtered.push(
+						duty.replaceAll(regex, (match) => {
+							return match.replaceAll(regex, `<b>${match}</b>`);
+						}),
+					);
 			});
-			this.skills.forEach(skill => {
+			this.skills.forEach((skill) => {
 				if (skill.toUpperCase().includes(this.keywords.toUpperCase()))
-					filteredSkills.push(skill.replaceAll(regex, (match) => {
-						return match.replaceAll(regex, `<b>${match}</b>`);
-					}));
-			})
+					filteredSkills.push(
+						skill.replaceAll(regex, (match) => {
+							return match.replaceAll(regex, `<b>${match}</b>`);
+						}),
+					);
+			});
 			this.filteredArray = filtered;
 			this.filteredSkills = filteredSkills;
 		},
@@ -122,10 +140,10 @@ export default {
 			let newArr = [];
 			let duitiesArr = [];
 			if (this.appState?.appDevDuties?.length > 0) {
-				duitiesArr = this.appState?.appDevDuties.flatMap(app => app.duties);
+				duitiesArr = this.appState?.appDevDuties.flatMap((app) => app.duties);
 				newArr = [...newArr, ...duitiesArr];
 			}
-			this.resumeArray.forEach(entry => {
+			this.resumeArray.forEach((entry) => {
 				newArr = [...newArr, ...entry.duties];
 			});
 			this.allDutiesArray = newArr;
@@ -141,14 +159,12 @@ export default {
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
 			try {
-
 				let response = await fetch(request);
 				let data = await response.json();
 
@@ -161,9 +177,8 @@ export default {
 					this.resumeArray = data.resume;
 					this.combineAllToNewArray();
 				}
-
 			} catch (error) {
-				console.error('Error reading data:', error);
+				console.error("Error reading data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -278,7 +293,7 @@ export default {
 }
 
 .btn-container .btn {
-	font-size: .75em;
+	font-size: 0.75em;
 	line-height: 1.5em;
 	padding: 5px 15px;
 	border: 1px #000 solid;
@@ -295,7 +310,6 @@ export default {
 	font-size: 18px;
 }
 
-
 .btn-container button {
 	font-size: 1em;
 }
@@ -307,9 +321,9 @@ export default {
 	padding: 4px;
 	position: relative;
 	right: -5px;
-	font-size: .9em;
+	font-size: 0.9em;
 	font-weight: bold;
-	line-height: .9em;
+	line-height: 0.9em;
 	color: #000;
 	align-self: center;
 }
@@ -319,7 +333,7 @@ export default {
 }
 
 .form-group input {
-	font-size: .8em;
+	font-size: 0.8em;
 	padding-left: 6px;
 }
 
