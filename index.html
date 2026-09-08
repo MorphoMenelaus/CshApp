@@ -20,6 +20,13 @@
 	<link
 		href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
 		rel="stylesheet">
+	<script>
+		// Blocking script to prevent theme flashing
+		const savedTheme = localStorage.getItem("theme");
+		const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+		const themeToApply = savedTheme || (systemPrefersDark ? "dark" : "light");
+		document.documentElement.setAttribute("data-theme", themeToApply);
+	</script>
 	<!-- Google Tag Manager -->
 	<script>(function (w, d, s, l, i) {
 			w[l] = w[l] || []; w[l].push({

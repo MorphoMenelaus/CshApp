@@ -1,25 +1,32 @@
 <template>
-
 	<div class="login-status">
 		<div v-if="appState?.isLoggedOn">
 			<span>{{ appState.userName }}</span>
 			<button class="btn" type="button" @click="openConfirmDialog()">Logout</button>
-			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify
-				Account</RouterLink>
-			<RouterLink v-if="appState?.permissions.verified" to="/userpreferences" title="User Preferences"
-				class="preferences green" @click="showRegisterUserComponent(false, false)">Preferences
+			<RouterLink class="unverified link" v-if="!appState?.permissions.verified" to="/verify">Click to Verify Account</RouterLink>
+			<RouterLink
+				v-if="appState?.permissions.verified"
+				to="/userpreferences"
+				title="User Preferences"
+				class="preferences green"
+				@click="showRegisterUserComponent(false, false)"
+				>Preferences
 			</RouterLink>
 		</div>
 		<div v-else>
 			<button class="btn" type="button" @click="loginRequest(true)">Login</button>
-			<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to
-					register</span>.</span>
+			<span @click="showRegisterUserComponent(false, true)">New User? <br /><span class="link">Click to register</span>.</span>
 		</div>
 	</div>
 
 	<Transition name="fade">
-		<div id="login" class="input-heading" :class="appState.isLoggedOn ? 'logged-on' : ''"
-			v-if="!appState?.isLoggedOn && loginShow" @click="handleClick($event)">
+		<div
+			id="login"
+			class="input-heading"
+			:class="appState.isLoggedOn ? 'logged-on' : ''"
+			v-if="!appState?.isLoggedOn && loginShow"
+			@click="handleClick($event)"
+		>
 			<form class="input-section" :class="isMobile ? 'mobile' : ''">
 				<div id="form-header">
 					<h1>Chris Hardwick's SPA</h1>
@@ -28,18 +35,30 @@
 				<h2>Login to continue</h2>
 				<div class="inputs">
 					<label for="username">User Name</label>
-					<input id="username" type="text" name="username" v-model="userName" placeholder="User Name"
-						autocomplete="username" onfocus="this.select()" />
+					<input
+						id="username"
+						type="text"
+						name="username"
+						v-model="userName"
+						placeholder="User Name"
+						autocomplete="username"
+						onfocus="this.select()"
+					/>
 					<label for="password">Password</label>
-					<input id="password" type="password" name="password" v-model="password" placeholder="Password"
-						autocomplete="current-password" />
+					<input
+						id="password"
+						type="password"
+						name="password"
+						v-model="password"
+						placeholder="Password"
+						autocomplete="current-password"
+					/>
 				</div>
 				<div class="login-buttons">
 					<button class="btn login-btn" type="button" @click="login()">Login</button>
 					<button class="btn" type="button" @click="loginRequest(false)">Cancel</button>
 				</div>
-				<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to
-						register</span>.</span>
+				<span @click="showRegisterUserComponent(false, true)">New User? <span class="link">Click to register</span>.</span>
 			</form>
 		</div>
 	</Transition>
@@ -47,9 +66,7 @@
 	<div id="dialog-container">
 		<dialog id="confirmDialog">
 			<div>
-				<h2>
-					Are you sure you want to logout?
-				</h2>
+				<h2>Are you sure you want to logout?</h2>
 				<div class="dialog-buttons">
 					<button class="btn" @click="logout()">Confirm</button>
 					<button class="btn cancel" @click="dialog.close()">Cancel</button>
@@ -57,7 +74,6 @@
 			</div>
 		</dialog>
 	</div>
-
 </template>
 
 <script>
@@ -68,8 +84,8 @@ const user = import.meta.env.VITE_APP_GUEST_USER;
 const password = import.meta.env.VITE_APP_GUEST_PASS;
 const guestUser = {
 	userName: user,
-	password: password
-}
+	password: password,
+};
 
 export default {
 	name: "Login",
@@ -82,13 +98,13 @@ export default {
 	data() {
 		return {
 			mobileDropdownEvent: inject("mobileDropdownEvent"),
-			forceLogout: inject('forceLogout'),
-			updateAppState: inject('updateAppState'),
-			initialSetup: inject('initialSetup'),
-			updateStatus: inject('sendUpdateStatus'),
-			showHideLoader: inject('showHideLoader'),
+			forceLogout: inject("forceLogout"),
+			updateAppState: inject("updateAppState"),
+			initialSetup: inject("initialSetup"),
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			loginShowEvent: inject("loginShow"),
-			registerUser: inject('registerUser'),
+			registerUser: inject("registerUser"),
 			appNotify: Object.assign({}, this.appNotify),
 			accessToken: "",
 			accessTokenExpiration: "",
@@ -97,7 +113,7 @@ export default {
 			userName: "",
 			password: "",
 			userId: "",
-			dialog: null
+			dialog: null,
 		};
 	},
 	watch: {
@@ -136,8 +152,7 @@ export default {
 				};
 
 				if (!this.userName || !this.password) {
-					this.appNotify.message =
-						"Please provide a user name and password.";
+					this.appNotify.message = "Please provide a user name and password.";
 					this.appNotify.success = false;
 					this.updateStatus(this.appNotify);
 					return this.appNotify;
@@ -145,13 +160,12 @@ export default {
 
 				let headerObj = new Headers();
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL('/api/auth/login', this.baseUrl);
+				let requestUrl = new URL("/api/auth/login", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'POST',
+				let request = new Request(requestUrl.toString(), {
+					method: "POST",
 					headers: headerObj,
-					body: JSON.stringify(body)
+					body: JSON.stringify(body),
 				});
 
 				let response = await fetch(request);
@@ -168,11 +182,10 @@ export default {
 					updateAppState.accessTokenExpiration = dataObj.authorization.accessTokenExpiration;
 					updateAppState.refreshToken = dataObj.authorization.refreshToken;
 					updateAppState.userName = this.userName;
-					updateAppState.user = dataObj.authorization.user
+					updateAppState.user = dataObj.authorization.user;
 					updateAppState.permissions = dataObj.authorization.user.permissions;
 					updateAppState.isLoggedOn = true;
 					this.updateAppState(updateAppState);
-
 
 					this.appNotify.code = 200;
 					this.appNotify.message = "Access Token acquired: Login Success";
@@ -187,7 +200,6 @@ export default {
 				}
 
 				this.updateStatus(this.appNotify);
-
 			} catch (e) {
 				console.error(e);
 			} finally {
@@ -196,7 +208,7 @@ export default {
 		},
 		openConfirmDialog() {
 			this.mobileDropdownEvent(true);
-			this.dialog.showModal()
+			this.dialog.showModal();
 		},
 		async logout() {
 			this.showHideLoader(true);
@@ -206,18 +218,16 @@ export default {
 			};
 
 			try {
-
 				this.dialog.close();
 
 				let headerObj = new Headers();
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL('/api/auth/logout', this.baseUrl);
+				let requestUrl = new URL("/api/auth/logout", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'POST',
+				let request = new Request(requestUrl.toString(), {
+					method: "POST",
 					headers: headerObj,
-					body: JSON.stringify(body)
+					body: JSON.stringify(body),
 				});
 
 				let response = await fetch(request);
@@ -228,7 +238,6 @@ export default {
 					this.initialSetup();
 					localStorage.clear();
 				}
-
 			} catch (e) {
 				console.error(e);
 			} finally {
@@ -237,12 +246,10 @@ export default {
 			}
 		},
 		keyDown(e) {
-			if (e.key === "Escape")
-				this.loginShowEvent(false);
+			if (e.key === "Escape") this.loginShowEvent(false);
 		},
 		handleClick(event) {
-			if (event.target.id === "login")
-				this.loginShowEvent(false);
+			if (event.target.id === "login") this.loginShowEvent(false);
 		},
 	},
 	mounted() {
@@ -362,11 +369,11 @@ h2 {
 	background: rgb(49 59 100 / 70%);
 }
 
-.input-section>* {
+.input-section > * {
 	margin: 15px 15px 0;
 }
 
-.login-status>div {
+.login-status > div {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
