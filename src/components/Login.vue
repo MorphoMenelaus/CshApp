@@ -192,7 +192,7 @@ export default {
 					this.appNotify.success = true;
 					this.forceLogout({});
 					this.loginRequest(false);
-					router.push("/");
+					router.push(this.$route.path || "/");
 				} else {
 					this.appNotify.code = dataObj.code;
 					this.appNotify.message = dataObj.message;
