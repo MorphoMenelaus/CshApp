@@ -8,9 +8,7 @@
 			</div>
 			<form @submit.prevent="contactHandler" method="post">
 				<div class="form-group">
-					<label for="name" title="Name"
-						>Name<span v-if="!name && errState" class="err"> * required</span></label
-					>
+					<label for="name" title="Name">Name<span v-if="!name && errState" class="err"> * required</span></label>
 					<input v-model.trim="name" id="name" type="text" name="name" class="form-control" />
 				</div>
 
@@ -21,15 +19,19 @@
 					<input v-model.trim="email" id="email" type="text" name="email" class="form-control" />
 				</div>
 
+				<small>Your email will not be shared or used for any other purpose. </small>
+				<small
+					>See full
+					<RouterLink class="privacy-link link" to="/about#privacy" @click="registerUser(false)">privacy policy</RouterLink>
+				</small>
+
 				<div class="form-group" title="Subject">
 					<label for="subject">Subject<span v-if="!subject && errState" class="err"> * required</span></label>
 					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control" />
 				</div>
 
 				<div class="form-group">
-					<label for="message" title="Message"
-						>Message<span v-if="!message && errState" class="err"> * required</span></label
-					>
+					<label for="message" title="Message">Message<span v-if="!message && errState" class="err"> * required</span></label>
 					<small>(characters remaining: {{ charRemaining }})</small>
 					<textarea
 						v-model.trim="message"
@@ -77,6 +79,7 @@ export default {
 			showHideLoader: inject("showHideLoader"),
 			contactEmail: inject("contactEmail"),
 			forceLogout: inject("forceLogout"),
+			registerUser: inject("registerUser"),
 			serverStatus: Object.assign({}, this.appNotify),
 			siteKey: this.reCaptchaSiteKey,
 			token: "",
