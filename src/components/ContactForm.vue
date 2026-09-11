@@ -355,4 +355,8 @@ label[for="casinoId"] {
 textarea#message {
 	min-height: 5em;
 }
+
+a:visited {
+	color: #f53cf5;
+}
 </style>
