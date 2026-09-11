@@ -1,15 +1,22 @@
 <template>
-
 	<div id="preferences">
 		<div class="wrapper">
 			<h1>User Preferences</h1>
 			<div v-if="admin">
-				<p style="text-align: center;">Please enter user name to search.</p>
+				<p style="text-align: center">Please enter user name to search.</p>
 				<form id="userid-input" @submit.prevent="handleSubmit" method="get">
 					<div class="form-group">
 						<label for="userId">Search by User Name</label>
-						<input @keyup="findUserByName()" v-model="keyword" id="keyword" type="text" name="keyword"
-							class="form-control" placeholder="User Name" onfocus="this.select()" />
+						<input
+							@keyup="findUserByName()"
+							v-model="keyword"
+							id="keyword"
+							type="text"
+							name="keyword"
+							class="form-control"
+							placeholder="User Name"
+							onfocus="this.select()"
+						/>
 						<div id="user-select" v-if="usersList.length > 0">
 							<span v-for="(item, index) in usersList" :key="index" @click="populateFields(item)">
 								{{ item.userName }}
@@ -21,38 +28,40 @@
 			</div>
 			<div id="get-set-user-prefs">
 				<div class="form-container" v-if="user && Object.keys(user).length > 0">
-					<h3 class="user-select-name">Current User: {{ user.userName }}</h3>
-					<p v-if="appState.userName == 'guest'" class="guest">Fields are not
-						editable with guest login.
-						<br />Please, create an account to be able to edit on this site.
+					<h3 class="user-select-name">Selected User: {{ user.userName }}</h3>
+					<p v-if="appState.userName == 'guest'" class="guest">
+						Fields are not editable with guest login. <br />Please, create an account to be able to edit on this site.
 					</p>
 					<form @submit.prevent="handleSubmit" method="put">
 						<div class="fields">
 							<div class="form-group">
 								<label for="email">Email</label>
-								<input id="email" v-model="email" maxlength="256"
-									:readonly="appState.userName == 'guest'" />
+								<input id="email" v-model="email" maxlength="256" :readonly="appState.userName == 'guest'" />
 							</div>
 							<div class="form-group">
 								<label for="lastName">Last Name</label>
-								<input id="lastName" v-model="lastName" maxlength="64"
-									:readonly="appState.userName == 'guest'" />
+								<input id="lastName" v-model="lastName" maxlength="64" :readonly="appState.userName == 'guest'" />
 							</div>
 							<div class="form-group">
 								<label for="firstName">First Name</label>
-								<input id="firstName" v-model="firstName" maxlength="64"
-									:readonly="appState.userName == 'guest'" />
+								<input id="firstName" v-model="firstName" maxlength="64" :readonly="appState.userName == 'guest'" />
 							</div>
 							<div class="form-group">
 								<label for="userNotes">User Notes</label>
 								<small>(characters remaining: {{ charRemaining }})</small>
-								<textarea id="userNotes" v-model="userNotes" :maxlength="maxlength"
-									@keyup="charCounter()" :readonly="appState.userName == 'guest'"></textarea>
+								<textarea
+									id="userNotes"
+									v-model="userNotes"
+									:maxlength="maxlength"
+									@keyup="charCounter()"
+									:readonly="appState.userName == 'guest'"
+								></textarea>
 							</div>
 						</div>
 						<div class="drop-downs">
 							<div class="form-group">
-								<label for="location">Location Default<br />
+								<label for="location"
+									>Location Default<br />
 									<small>(for weather charts)</small>
 								</label>
 								<select v-model="location">
@@ -72,12 +81,7 @@
 							</div>
 							<div class="form-group">
 								<label for="admin">Admin</label>
-								<select v-model="userAdmin" v-if="admin">
-									<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-										{{ item.text }}
-									</option>
-								</select>
-								<small v-else>{{ userAdmin == 1 ? "True" : "False" }}</small>
+								<small>{{ userAdmin == 1 ? "True" : "False" }}</small>
 							</div>
 							<div class="form-group">
 								<label for="siteAdmin">Site Admin</label>
@@ -118,11 +122,17 @@
 						</div>
 					</form>
 					<div class="btn-container">
-						<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn"
-							title="Update User Prefernces">Save Prefernces</button>
-						<button v-if="appState.userName !== 'guest'" @click="currentComponent = 'ChangePassword'"
-							class="btn" title="Change Password">Change
-							Password</button>
+						<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn" title="Update User Prefernces">
+							Save Prefernces
+						</button>
+						<button
+							v-if="appState.userName !== 'guest'"
+							@click="currentComponent = 'ChangePassword'"
+							class="btn"
+							title="Change Password"
+						>
+							Change Password
+						</button>
 					</div>
 				</div>
 			</div>
@@ -130,11 +140,17 @@
 		<component :is="currentComponent" :appState="appState" />
 		<div id="change-btn" v-if="user.userId === appState?.user?.userId">
 			<button class="btn back" @click="goBack()">Exit</button>
-			<button v-if="appState.userName !== 'guest'" id="delete-button" class="btn delete"
-				@click="currentComponent = 'DeleteUser'" title="Delete Account">Delete Account</button>
+			<button
+				v-if="appState.userName !== 'guest'"
+				id="delete-button"
+				class="btn delete"
+				@click="currentComponent = 'DeleteUser'"
+				title="Delete Account"
+			>
+				Delete Account
+			</button>
 		</div>
 	</div>
-
 </template>
 
 <script>
@@ -143,7 +159,7 @@ import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
 import DeleteUser from "@/components/DeleteUser.vue";
-import locations from '@/dependencies/locations.json';
+import locations from "@/dependencies/locations.json";
 
 export default {
 	name: "UserPreferences",
@@ -154,14 +170,14 @@ export default {
 	},
 	components: {
 		ChangePassword,
-		DeleteUser
+		DeleteUser,
 	},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
+			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
 			updateAppState: inject("updateAppState"),
-			forceLogout: inject('forceLogout'),
+			forceLogout: inject("forceLogout"),
 			serverStatus: Object.assign({}, this.appNotify),
 			admin: this.appState?.permissions?.admin,
 			userId: this.appState?.user?.userId,
@@ -186,7 +202,7 @@ export default {
 			keyword: "",
 			maxlength: 1024,
 			charRemaining: 1024,
-			location: locations.filter(loc => loc.city === this.locationDefault)[0],
+			location: locations.filter((loc) => loc.city === this.locationDefault)[0],
 			locationOptions: locations.toSorted((a, b) => a.city.localeCompare(b.city)),
 		};
 	},
@@ -215,8 +231,7 @@ export default {
 		},
 		charCounter() {
 			let currCount = this.userNotes.length;
-			if (this.charRemaining <= this.maxlength)
-				this.charRemaining = this.maxlength - currCount;
+			if (this.charRemaining <= this.maxlength) this.charRemaining = this.maxlength - currCount;
 		},
 		populateFields(user) {
 			this.usersList = [];
@@ -235,10 +250,9 @@ export default {
 			this.locationDefault = this.user.locationDefault || "Atlanta";
 			this.userNotes = this.user.userNotes;
 			this.verified = this.user.verified;
-			this.location = locations.filter(loc => loc.city === this.locationDefault)[0];
+			this.location = locations.filter((loc) => loc.city === this.locationDefault)[0];
 		},
 		async findUserByName() {
-
 			if (this.keyword >= 0) {
 				this.usersList = [];
 				return;
@@ -253,9 +267,8 @@ export default {
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
@@ -263,11 +276,9 @@ export default {
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data?.success)
-					this.usersList = data.users;
-
+				if (data?.success) this.usersList = data.users;
 			} catch (error) {
-				console.error('Error fetching data:', error)
+				console.error("Error fetching data:", error);
 			}
 		},
 		async getUser() {
@@ -282,22 +293,18 @@ export default {
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
 			try {
-
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
-				if (data?.success)
-					this.populateFields(data.user);
-
+				if (data?.success) this.populateFields(data.user);
 			} catch (error) {
-				console.error('Error fetching data:', error)
+				console.error("Error fetching data:", error);
 			} finally {
 				this.showHideLoader(false);
 			}
@@ -309,14 +316,13 @@ export default {
 				email: this.email,
 				lastName: this.lastName,
 				firstName: this.firstName,
-				admin: this.userAdmin,
 				siteAdmin: this.siteAdmin,
 				siteEditor: this.siteEditor,
 				contributor: this.contributor,
 				uiDarkMode: this.uiDarkMode,
 				locationDefault: this.locationDefault,
 				userNotes: this.userNotes,
-				verified: this.verified
+				verified: this.verified,
 			};
 
 			let headerObj = new Headers();
@@ -324,11 +330,10 @@ export default {
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL(`/api/users/${this.userId}`, this.baseUrl);
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'PUT',
+			let request = new Request(requestUrl.toString(), {
+				method: "PUT",
 				headers: headerObj,
-				body: JSON.stringify(body)
+				body: JSON.stringify(body),
 			});
 
 			try {
@@ -347,21 +352,19 @@ export default {
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
 				this.updateStatus(this.serverStatus);
-
 			} catch (error) {
-				console.error('Error fetching data:', error)
+				console.error("Error fetching data:", error);
 			} finally {
 				this.addUserLog(this.appState, "Update User Preferences");
 				this.showHideLoader(false);
 			}
-		}
+		},
 	},
-	mounted() {
-	},
+	mounted() {},
 	created() {
 		this.getUser();
-		provide('cancelDeleteUser', (bool) => this.currentComponent = bool ? "DeleteUser" : null);
-		provide('closeChangePassword', (bool) => this.currentComponent = bool ? "ChangePassword" : null);
+		provide("cancelDeleteUser", (bool) => (this.currentComponent = bool ? "DeleteUser" : null));
+		provide("closeChangePassword", (bool) => (this.currentComponent = bool ? "ChangePassword" : null));
 	},
 };
 </script>
