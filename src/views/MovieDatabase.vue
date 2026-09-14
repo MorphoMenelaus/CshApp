@@ -1,63 +1,71 @@
 <template>
-
 	<div>
 		<div id="movie-header">
 			<h1>Movie Database</h1>
-			<p class="movie-intro">A searchable, sortable list of more than 1500 movies in my database, containing cast,
-				crew, ratings, etc... Not a complete list of all movies ever made, obviously.</p>
+			<p class="movie-intro">
+				A searchable, sortable list of more than 1500 movies in my database, containing cast, crew, ratings, etc... Not a complete
+				list of all movies ever made, obviously.
+			</p>
 			<p class="movie-intro">Favorites can be saved to your account, if you have an account on this site.</p>
 		</div>
 
 		<div class="favorite-check" v-if="favoritesList.length > 0">
 			<label for="favoritesOnly" title="Show only movies in your favorites list">Favorites only</label>
-			<input id="favoritesOnly" title="Show only movies in your favorites list" type="checkbox"
-				v-model="favoritesOnly" />
+			<input id="favoritesOnly" title="Show only movies in your favorites list" type="checkbox" v-model="favoritesOnly" />
 		</div>
 		<div id="paging" v-if="!favoritesOnly || favoritesList.length === 0">
 			<div class="center">
 				<label for="limitOptions">Limit List</label>
 				<select v-model="limit">
-					<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
-					</option>
+					<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}</option>
 				</select>
 			</div>
 			<div class="flex-row">
-				<label for="sortByOptions" title="Click to toggle sort order" class="link"
-					@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">Sort
-					By</label>
+				<label
+					for="sortByOptions"
+					title="Click to toggle sort order"
+					class="link"
+					@click="orderDir === 'ASC' ? (orderDir = 'DESC') : (orderDir = 'ASC')"
+					>Sort By</label
+				>
 				<div class="order">
-					<small title="Click to toggle sort order"
-						@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir === 'ASC' ?
-							'Ascend'
-							: 'Descend' }}</small>
+					<small title="Click to toggle sort order" @click="orderDir === 'ASC' ? (orderDir = 'DESC') : (orderDir = 'ASC')">{{
+						orderDir === "ASC" ? "Ascend" : "Descend"
+					}}</small>
 					<select v-model="sortBy">
-						<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}
-						</option>
+						<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}</option>
 					</select>
 				</div>
 			</div>
 			<input v-model="contains" placeholder="Title contains..." />
 			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">✕</span>
 			<div>
-				<button class="prev-button btn" type="button" @click="previousPage()"
-					title="Previous Page">previous</button>
-				<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
-				<span :currentPage="currentPage">page {{ currentPage }}</span>
+				<button class="prev-button btn" :disabled="prevDisable" type="button" @click="previousPage()" title="Previous Page">
+					previous
+				</button>
+				<button class="next-button btn" :disabled="nextDisable" type="button" @click="nextPage()" title="Next Page">next</button>
+				<span :currentPage="currentPage">page {{ currentPage }} / {{ pages.toFixed() }}</span>
 			</div>
 		</div>
 		<div id="movies">
 			<div id="cards" v-if="movieList?.length > 0">
 				<div class="card" v-for="(item, index) in movieList" :key="index">
-					<button v-if="appState?.permissions?.admin" class="btn edit" @click="editThisEntry(item)"
-						title="Edit this movie's detils">Edit</button>
+					<button
+						v-if="appState?.permissions?.admin"
+						class="btn edit"
+						@click="editThisEntry(item)"
+						title="Edit this movie's detils"
+					>
+						Edit
+					</button>
 					<!-- <div v-if="item.original_title" class="summary-pop">
 							<p>{{ item.summary }}</p>
 						</div> -->
 					<div class="inner">
-						<div class="title-description" :title="`View details for ${item.title}`"
-							@click="viewThisEntry(item)">
+						<div class="title-description" :title="`View details for ${item.title}`" @click="viewThisEntry(item)">
 							<h2 :title="item.original_title ? item.original_title : ''">
-								{{ item.title }}</h2>
+								{{ item.title }}
+							</h2>
 							<h3>{{ item.tagline }}</h3>
 							<p class="genr-year">
 								<small>{{ item.tags_genre }}</small>
@@ -65,15 +73,17 @@
 							</p>
 							<!-- <p>{{ item.summary }}</p> -->
 						</div>
-						<div class="image-container" :title="`View details for ${item.title}`"
-							@click="viewThisEntry(item)">
+						<div class="image-container" :title="`View details for ${item.title}`" @click="viewThisEntry(item)">
 							<img :alt="item.title" :src="`./media-poster/${item.slug}.jpg`" />
 						</div>
-						<span id="favorite" :class="favoritesList.includes(item.movieId) ? 'favs' : ''"
+						<span
+							id="favorite"
+							:class="favoritesList.includes(item.movieId) ? 'favs' : ''"
 							@click="favoritesHandler(item.movieId)"
-							:title="`${favoritesList.includes(item.movieId) ? 'Remove from' : 'Add to'} favorites`">🔖</span>
-						<span v-if="item.content_rating.length > 0" class="content-rating">{{ item.content_rating
-						}}</span>
+							:title="`${favoritesList.includes(item.movieId) ? 'Remove from' : 'Add to'} favorites`"
+							>🔖</span
+						>
+						<span v-if="item.content_rating.length > 0" class="content-rating">{{ item.content_rating }}</span>
 					</div>
 				</div>
 			</div>
@@ -81,40 +91,43 @@
 				<h1>No Results Found</h1>
 			</div>
 			<div class="button-container" v-if="!favoritesOnly || favoritesList.length === 0">
-				<button class="prev-button btn" type="button" @click="previousPage()"
-					title="Previous Page">previous</button>
-				<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
+				<button class="prev-button btn" :disabled="prevDisable" type="button" @click="previousPage()" title="Previous Page">
+					previous
+				</button>
+				<button class="next-button btn" :disabled="nextDisable" type="button" @click="nextPage()" title="Next Page">next</button>
 			</div>
 		</div>
 
 		<div id="modal-container">
-			<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie"
-				:favoritesList="favoritesList" :isMobile="isMobile" />
+			<component
+				:is="currentComponent"
+				:appState="appState"
+				:selectedMovie="selectedMovie"
+				:favoritesList="favoritesList"
+				:isMobile="isMobile"
+			/>
 		</div>
 
 		<div id="permissions-dialog-container">
 			<dialog id="not-allowed">
 				<div>
-					<h2>
-						Saving Favorites requires a verified account
-					</h2>
+					<h2>Saving Favorites requires a verified account</h2>
 					<p>You must be logged in with a verified account to save to your fovorites list.</p>
 					<div class="dialog-buttons">
-						<button class="btn" @click="showRegisterUserComponent(false, true)"
-							title="Click to register">Click to register</button>
-						<button class="btn" title="Login here" @click="showRegisterUserComponent(true, false)">Login
-							here.</button>
+						<button class="btn" @click="showRegisterUserComponent(false, true)" title="Click to register">
+							Click to register
+						</button>
+						<button class="btn" title="Login here" @click="showRegisterUserComponent(true, false)">Login here.</button>
 						<button class="btn cancel" @click="dialog.close()">Close</button>
 					</div>
 				</div>
 			</dialog>
 		</div>
-
 	</div>
 </template>
 
 <script>
-import { onBeforeUnmount, inject, provide } from 'vue';
+import { onBeforeUnmount, inject, provide } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
@@ -124,23 +137,26 @@ export default {
 	props: {
 		appState: Object,
 		isMobile: Boolean,
-		windowWidth: Number
+		windowWidth: Number,
 	},
 	components: {
 		EditMovieDetails,
-		MovieDetails
+		MovieDetails,
 	},
 	data() {
 		return {
 			showHideLoader: inject("showHideLoader"),
 			updateStatus: inject("sendUpdateStatus"),
-			forceLogout: inject('forceLogout'),
+			forceLogout: inject("forceLogout"),
 			loginShow: inject("loginShow"),
 			registerUser: inject("registerUser"),
 			serverStatus: Object.assign({}, this.appNotify),
 			limit: 10,
 			offset: 0,
 			currentPage: 1,
+			pages: 0,
+			totalMovies: 0,
+			totalMoviesFromKeywords: 0,
 			limitOptions: [],
 			sortByOptions: [
 				{ text: "Title", value: "title" },
@@ -160,12 +176,16 @@ export default {
 			favoritesOnly: false,
 			columns: 1,
 			modalContainer: null,
+			prevDisable: false,
+			nextDisable: false,
 		};
 	},
 	watch: {
 		async limit() {
 			this.currentPage = 1;
 			this.offset = 0;
+			this.pages =
+				this.contains.length > 0 ? Math.ceil(this.totalMoviesFromKeywords / this.limit) : Math.ceil(this.totalMovies / this.limit);
 			this.refreshMoviesWithFaves();
 		},
 		sortBy() {
@@ -189,6 +209,14 @@ export default {
 		favoritesOnly() {
 			this.refreshMoviesWithFaves();
 		},
+		currentPage() {
+			this.prevDisable = this.currentPage <= 1;
+			this.nextDisable = this.currentPage >= this.pages;
+		},
+		movieList() {
+			this.prevDisable = this.currentPage <= 1;
+			this.nextDisable = this.currentPage >= this.pages;
+		},
 	},
 	methods: {
 		showRegisterUserComponent(login = false, register = false) {
@@ -197,13 +225,13 @@ export default {
 			this.registerUser(register);
 		},
 		openPermissionsDialog() {
-			this.dialog.showModal()
+			this.dialog.showModal();
 		},
 		scrollToTop() {
 			let container = document.getElementById("app");
 			container.scrollTo({
 				top: 0,
-				behavior: "smooth"
+				behavior: "smooth",
 			});
 		},
 		populateLimits() {
@@ -236,15 +264,15 @@ export default {
 					break;
 				default:
 					multiplier = 1;
-			};
-			let limitBase = [2, 4, 6, 8, 10]
+			}
+			let limitBase = [2, 4, 6, 8, 10];
 			this.limitOptions = [];
-			limitBase.forEach(limit => {
-				let limitCbj = { text: "", value: null }
+			limitBase.forEach((limit) => {
+				let limitCbj = { text: "", value: null };
 				limitCbj.text = (limit * multiplier).toString();
-				limitCbj.value = (limit * multiplier);
+				limitCbj.value = limit * multiplier;
 				this.limitOptions.push(limitCbj);
-			})
+			});
 
 			// set defaults for limit and columns
 			this.limit = 2 * multiplier;
@@ -259,7 +287,7 @@ export default {
 			if (this.favoritesList.includes(movieId)) {
 				this.removeFavorite(movieId);
 			} else {
-				this.setFavorite(movieId)
+				this.setFavorite(movieId);
 			}
 		},
 		viewThisEntry(movie) {
@@ -271,22 +299,20 @@ export default {
 			this.currentComponent = "EditMovieDetails";
 		},
 		async setFavorite(movieId) {
-
 			let body = {
 				userId: this.appState.user.userId,
-				movieId: movieId
+				movieId: movieId,
 			};
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL('/api/movies/favorites', this.baseUrl);
+			let requestUrl = new URL("/api/movies/favorites", this.baseUrl);
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'POST',
+			let request = new Request(requestUrl.toString(), {
+				method: "POST",
 				headers: headerObj,
-				body: JSON.stringify(body)
+				body: JSON.stringify(body),
 			});
 
 			try {
@@ -300,17 +326,14 @@ export default {
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200)
-					this.updateStatus(this.serverStatus);
-
+				if (this.serverStatus.code !== 200) this.updateStatus(this.serverStatus);
 			} catch (error) {
-				console.error('Error fetching data:', error)
+				console.error("Error fetching data:", error);
 			}
 		},
 		async removeFavorite(movieId) {
-
 			let body = {
-				movieId: movieId
+				movieId: movieId,
 			};
 
 			let headerObj = new Headers();
@@ -318,11 +341,10 @@ export default {
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL(`/api/movies/favorites/${this.appState.user.userId}`, this.baseUrl);
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'PUT',
+			let request = new Request(requestUrl.toString(), {
+				method: "PUT",
 				headers: headerObj,
-				body: JSON.stringify(body)
+				body: JSON.stringify(body),
 			});
 
 			try {
@@ -336,11 +358,9 @@ export default {
 				this.serverStatus.code = data.code;
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200)
-					this.updateStatus(this.serverStatus);
-
+				if (this.serverStatus.code !== 200) this.updateStatus(this.serverStatus);
 			} catch (error) {
-				console.error('Error fetching data:', error)
+				console.error("Error fetching data:", error);
 			}
 		},
 		async getFavoriteList() {
@@ -357,9 +377,8 @@ export default {
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
@@ -368,9 +387,8 @@ export default {
 				const data = await response.json();
 
 				this.favoritesList = data?.userFavorites || [];
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -381,19 +399,18 @@ export default {
 			this.showHideLoader(true);
 
 			let body = {
-				movieIds: this.favoritesList
-			}
+				movieIds: this.favoritesList,
+			};
 
 			let headerObj = new Headers();
 			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL("/api/movies/", this.baseUrl);
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'POST',
+			let request = new Request(requestUrl.toString(), {
+				method: "POST",
 				headers: headerObj,
-				body: JSON.stringify(body)
+				body: JSON.stringify(body),
 			});
 
 			try {
@@ -401,9 +418,8 @@ export default {
 				const data = await response.json();
 
 				this.movieFavorites = data.movies;
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -429,9 +445,8 @@ export default {
 			params.set("time", new Date().getTime());
 			requestUrl.search = params.toString();
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
@@ -445,11 +460,14 @@ export default {
 				}
 
 				this.movieList = data.movies;
+				this.totalMovies = data.tableRowCount;
+				this.totalMoviesFromKeywords = data.totalLikeRows;
+				this.pages =
+					this.contains.length > 0 ? Math.ceil(data.totalLikeRows / this.limit) : Math.ceil(this.totalMovies / this.limit);
 
 				this.getFavoriteList();
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -482,8 +500,7 @@ export default {
 		closeModal(refresh = true) {
 			this.currentComponent = null;
 			this.selectedMovie = null;
-			if (refresh)
-				this.refreshMoviesWithFaves();
+			if (refresh) this.refreshMoviesWithFaves();
 		},
 		keyDown(e) {
 			if (e.key === "Escape") {
@@ -492,9 +509,8 @@ export default {
 			}
 		},
 		clickHandler(e) {
-			if (e.target.id === "movie-details")
-				this.currentComponent = null;
-		}
+			if (e.target.id === "movie-details") this.currentComponent = null;
+		},
 	},
 	mounted() {
 		this.limit = this.columns * 2;
@@ -641,8 +657,8 @@ label[for="limitOptions"] {
 	padding: 4px;
 	background-color: #ccc;
 	color: #000;
-	font-size: .9em;
-	line-height: .9em;
+	font-size: 0.9em;
+	line-height: 0.9em;
 	font-weight: bold;
 	border-radius: 6px;
 	cursor: pointer;
@@ -651,7 +667,6 @@ label[for="limitOptions"] {
 .uiDarkMode .clear-field {
 	background-color: #fff;
 }
-
 
 .button-container {
 	display: flex;
@@ -792,7 +807,6 @@ p.movie-intro {
 	p.movie-intro {
 		width: 85%;
 	}
-
 }
 
 @media (min-width: 1200px) {
