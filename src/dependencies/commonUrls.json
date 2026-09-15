@@ -1,5 +1,14 @@
 {
-	"linkedin": "https://www.linkedin.com/in/cs-hardwick",
-	"hardwickDesign": "https://hardwick.design/",
-	"github": "https://github.com/MorphoMenelaus"
+	"linkedin": {
+		"url": "https://www.linkedin.com/in/cs-hardwick",
+		"title": "Chris Hardwick | Linkedin Profile"
+	},
+	"hardwickDesign": {
+		"url": "https://hardwick.design/",
+		"title": "Chris Hardwick | Graphic Designer"
+	},
+	"github": {
+		"url": "https://github.com/MorphoMenelaus",
+		"title": "Chris Hardwick | GitHub Repositories"
+	}
 }

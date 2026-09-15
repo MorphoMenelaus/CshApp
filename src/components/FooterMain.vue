@@ -2,18 +2,13 @@
 	<footer>
 		<div class="flex-between">
 			<h3 id="name-contact" title="Contact Chris Hardwick" @click="openThisModalCloseOthers()">
-				<strong>Chris&nbsp;Hardwick</strong> {{
-					!isMobile ? ' &mdash; Web Application Developer &amp; Frontend Developer' :
-						'' }}
+				<strong>Chris&nbsp;Hardwick</strong> {{ !isMobile ? " &mdash; Web Application Developer &amp; Frontend Developer" : "" }}
 			</h3>
 			<!-- <small>Powered by Vue 3 &amp; Node/Express</small> -->
 			<div id="footer-contacts">
-				<a v-if="!isMobile" class="footer-link" :href="urls.linkedin" target="_blank"
-					title="Chris Hardwick | Linkedin Profile">Linkedin</a>
-				<a v-if="!isMobile" class="footer-link" :href="urls.hardwickDesign" target="_blank"
-					title="Chris Hardwick | Graphic Designer">Personal Site</a>
-				<span class="footer-link" @click="openThisModalCloseOthers()" title="Contact Chris Hardwick">Contact
-					Me</span>
+				<a v-if="!isMobile" class="footer-link" :href="urls.linkedin.url" target="_blank" :title="urls.linkedin.title">Linkedin</a>
+				<a v-if="!isMobile" class="footer-link" :href="urls.hardwickDesign.url" target="_blank" :title="urls.hardwickDesign.title">Personal Site</a>
+				<span class="footer-link" @click="openThisModalCloseOthers()" title="Contact Chris Hardwick">Contact Me</span>
 			</div>
 		</div>
 	</footer>
@@ -24,28 +19,28 @@ import { inject } from "vue";
 import urls from "@/dependencies/commonUrls.json";
 
 export default {
-	name: 'FooterMain',
+	name: "FooterMain",
 	props: {
 		// serverVersion: String,
-		isMobile: Boolean
+		isMobile: Boolean,
 	},
 	data() {
 		return {
 			urls: urls,
 			contactEmail: inject("contactEmail"),
 			loginShow: inject("loginShow"),
-			registerUser: inject('registerUser')
-		}
+			registerUser: inject("registerUser"),
+		};
 	},
 	methods: {
 		openThisModalCloseOthers() {
 			this.loginShow(false);
 			this.registerUser(false);
 			this.contactEmail(true);
-			this.sendAnalyticsEvent('contact_form_footer', 'contact_modal');
-		}
+			this.sendAnalyticsEvent("contact_form_footer", "contact_modal");
+		},
 	},
-}
+};
 </script>
 
 <style scoped>
@@ -111,5 +106,6 @@ span.footer-link {
 	cursor: pointer;
 }
 
-@media (min-width: 768px) {}
+@media (min-width: 768px) {
+}
 </style>
