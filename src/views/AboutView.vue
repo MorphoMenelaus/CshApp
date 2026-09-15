@@ -44,16 +44,16 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 			<div class="btn-container top">
 				<a
 					class="btn linkedin-icon"
-					:href="urls.linkedin"
-					title="Chris Hardwick | Linkedin Profile"
+					:href="urls.linkedin.url"
+					:title="urls.linkedin.title"
 					target="_blank"
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
 					>Linkedin Profile</a
 				>
 				<a
 					class="btn csh-icon"
-					:href="urls.hardwickDesign"
-					title="Chris Hardwick | Hardwick Web Design"
+					:href="urls.hardwickDesign.url"
+					:title="urls.hardwickDesign.title"
 					target="_blank"
 					@click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')"
 					>Personal Website</a
@@ -63,18 +63,17 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 			<div id="profile">
 				<h2 class="julius-sans profile">Professional Profile</h2>
 				<p>
-					Chris is a creative and experienced website and web application developer with over 10 years of
-					experience creating UI excellence and fluid User Experiences. Chris engineers modern responsive web
-					environments using technologies that engage users in an intuitive, clean connection to well
-					structured data.
+					Chris is a creative and experienced website and web application developer with over 10 years of experience creating UI excellence and fluid
+					User Experiences. Chris engineers modern responsive web environments using technologies that engage users in an intuitive, clean connection
+					to well structured data.
 				</p>
 				<p>
-					Since modern website layouts are necessarily visual and eye-catching, Chris' graphic design talents
-					blend together perfectly with coding precision to create memorable user interfaces.
+					Since modern website layouts are necessarily visual and eye-catching, Chris' graphic design talents blend together perfectly with coding
+					precision to create memorable user interfaces.
 				</p>
 				<p>
-					Chris' focus on teamwork and communication makes him a valuable asset for any team wanting to design
-					and complete a project beautifully or can work independently as required.
+					Chris' focus on teamwork and communication makes him a valuable asset for any team wanting to design and complete a project beautifully or
+					can work independently as required.
 				</p>
 			</div>
 			<PrivacyDisclaimer />

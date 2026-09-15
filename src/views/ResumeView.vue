@@ -19,8 +19,8 @@
 				</a>
 				<a
 					class="btn linkedin linkedin-icon"
-					:href="urls.linkedin"
-					title="Chris Hardwick | Linkedin Profile"
+					:href="urls.linkedin.url"
+					:title="urls.linkedin.title"
 					target="_blank"
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
 					>Linkedin Profile</a

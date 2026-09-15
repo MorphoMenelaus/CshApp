@@ -93,31 +93,27 @@ const showStockDetails = (id) => {
 				<h2 class="julius-sans">Latest Accomplishments</h2>
 				<h3>Web Application Developer | Makrö Gaming Studios</h3>
 				<p>
-					I developed a full suite of Single Page Applications using the Vue 3 framework to accompany the
-					video slots online game application ecosystem for Makrö Gaming Studios. I placed a strong emphasis
-					on responsive clean design, interactivity and readability in order to present and effortlessly
-					manage potentially complex functionality and data. The apps consist of an Admin App, Cashier App,
-					Player App and Report App to facilitate all the behind-the-scenes functions and player facing needs
-					in order to support the game client and the site administrators mostly through REST API calls to the
-					game server.
+					I developed a full suite of Single Page Applications using the Vue 3 framework to accompany the video slots online game application
+					ecosystem for Makrö Gaming Studios. I placed a strong emphasis on responsive clean design, interactivity and readability in order to present
+					and effortlessly manage potentially complex functionality and data. The apps consist of an Admin App, Cashier App, Player App and Report App
+					to facilitate all the behind-the-scenes functions and player facing needs in order to support the game client and the site administrators
+					mostly through REST API calls to the game server.
 				</p>
 				<p>
-					A robust role and permissions management system was implemented in each application that dynamically
-					renders user interfaces and enables functions based on role/permissions. Authorization for Admin,
-					HelpDesk, Cashier, Reporter, and Player all allow for different access and abilities.
+					A robust role and permissions management system was implemented in each application that dynamically renders user interfaces and enables
+					functions based on role/permissions. Authorization for Admin, HelpDesk, Cashier, Reporter, and Player all allow for different access and
+					abilities.
 				</p>
 				<div class="btn-link-container">
 					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
 						{{ lessText ? "Fewer" : "More" }} Details
 						<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
 					</button>
-					<RouterLink to="/resume" class="btn linkedin"
-						>{{ isMobile ? "Full" : "Chris Hardwick" }} Resume
-					</RouterLink>
+					<RouterLink to="/resume" class="btn linkedin">{{ isMobile ? "Full" : "Chris Hardwick" }} Resume </RouterLink>
 					<a
 						class="btn linkedin"
-						:href="urls.linkedin"
-						title="Chris Hardwick | Linkedin Profile"
+						:href="urls.linkedin.url"
+						:title="urls.linkedin.title"
 						target="_blank"
 						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
 						>Linkedin Profile</a
@@ -140,11 +136,7 @@ const showStockDetails = (id) => {
 
 			<div id="stocks-container">
 				<div id="charts-header">
-					<h2
-						class="julius-sans"
-						@click="showStockDetails('latest-stocks')"
-						:title="`${showStocks ? 'Close' : 'Open'} Market Summary Graphs`"
-					>
+					<h2 class="julius-sans" @click="showStockDetails('latest-stocks')" :title="`${showStocks ? 'Close' : 'Open'} Market Summary Graphs`">
 						Market Summary Graphs
 					</h2>
 					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>

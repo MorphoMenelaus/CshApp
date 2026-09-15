@@ -1,9 +1,12 @@
 <script setup>
+import urls from "@/dependencies/commonUrls.json";
 </script>
 
 <template>
 	<div id="available">
-		<span class="pulse">Available</span>
+		<a :title="urls.linkedin.title" :href="urls.linkedin.url" target="_blank" @click="sendAnalyticsEvent('linkedin', 'linkedin_available')">
+			<span class="pulse">Available</span>
+		</a>
 	</div>
 </template>
 
@@ -11,16 +14,34 @@
 #available span {
 	/* color: #8eef8e; */
 	color: #b3ffb3;
-	background: rgb(0 128 0);
+	background-color: rgb(0 128 0);
 	padding: 0 15px 0 25px;
 	border-radius: 1em;
 	border: 1px #0f0 solid;
 	position: relative;
+	transition:
+		border-color 0.2s,
+		background-color 0.2s;
+}
+
+#available a {
+	color: #b3ffb3;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+#available a:hover {
+	color: #fff;
+}
+
+#available span:hover {
+	background-color: rgb(0 160 0);
+	border-color: #fff;
 }
 
 .pulse::before,
 .pulse::after {
-	content: '';
+	content: "";
 	position: absolute;
 	border-radius: 50%;
 	border: 2px #0f0 solid;
@@ -44,7 +65,6 @@
 }
 
 @keyframes pulse {
-
 	0%,
 	80%,
 	100% {
