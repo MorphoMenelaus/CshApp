@@ -8,19 +8,25 @@ Vue3 based single page app
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compiles and hot-reloads for development.
 
 ```
-npm run serve
+npm run dev
 ```
 
-### Compiles and minifies for production
+### Compiles and minifies for development. Allows devtools to run in the browser.
+
+```
+npm run build:dev
+```
+
+### Compiles and minifies for production.
 
 ```
 npm run build
 ```
 
-### Lints and fixes files
+### Lints and fixes files.
 
 ```
 npm run lint
