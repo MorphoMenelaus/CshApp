@@ -17,6 +17,7 @@
 				>
 					Download Resume
 				</a>
+				<button class="btn email-icon" @click="contactEmail(true)">Contact Me</button>
 				<a
 					class="btn linkedin linkedin-icon"
 					:href="urls.linkedin.url"
@@ -25,11 +26,10 @@
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
 					>Linkedin Profile</a
 				>
-				<button class="btn email-icon" @click="contactEmail(true)">Contact Me</button>
 			</div>
 			<div>
 				<div class="form-group">
-					<label for="keywords">Search Skills&nbsp;&&nbsp;Roles</label>
+					<label for="keywords">Search Skills&nbsp;&amp;&nbsp;Roles</label>
 					<input
 						id="keywords"
 						title="keywords"
@@ -293,7 +293,7 @@ export default {
 }
 
 .btn-container .btn {
-	font-size: 0.75em;
+	font-size: 1em;
 	line-height: 1.5em;
 	padding: 5px 15px;
 	border: 1px #000 solid;
@@ -337,39 +337,11 @@ export default {
 	padding-left: 6px;
 }
 
-.btn.acrobat-icon {
-	padding-right: 36px;
-}
-
-.acrobat-icon::after {
-	top: 4px;
-	right: 8px;
-	width: 21px;
-	height: 21px;
-}
-
-.btn.email-icon {
-	padding-right: 36px;
-}
-
 .email-icon::after {
 	top: 8px;
 	right: 10px;
 	width: 20px;
 	height: 20px;
-}
-
-.btn.linkedin-icon {
-	padding-right: 40px;
-}
-
-.linkedin-icon::after {
-	right: 10px;
-	top: 4px;
-	width: 21px;
-	height: 21px;
-	border-radius: 2px;
-	border: 1px #b1b1b1 solid;
 }
 
 .mobile .btn.email-icon,
@@ -411,8 +383,36 @@ export default {
 }
 
 @media (min-width: 768px) {
+	.btn.acrobat-icon,
+	.btn.linkedin-icon {
+		padding-right: 48px;
+	}
+
+	.acrobat-icon::after,
+	.linkedin-icon::after,
+	.email-icon::after {
+		content: "";
+		top: 4px;
+		right: 10px;
+		width: 28px;
+		height: 28px;
+	}
+
+	.email-icon::after {
+		top: 8px;
+	}
+
+	.linkedin-icon::after {
+		border-radius: 2px;
+		border: 1px #fff solid;
+	}
+
+	.btn.email-icon {
+		padding-right: 45px;
+	}
+
 	.btn-container.top {
-		width: 50%;
+		width: 80%;
 	}
 }
 

@@ -17,18 +17,12 @@
 
 	<div class="register-link" v-if="!appState?.isLoggedOn && !isMobile">
 		<span
-			>New User?
-			<span class="link" @click="showRegisterUserComponent(false, true)" title="Click to register">Click to register</span>.<br />Or
-			login with username "guest"</span
+			>New User? <span class="link" @click="showRegisterUserComponent(false, true)" title="Click to register">Click to register</span>.<br />Or login with
+			username "guest"</span
 		>
 	</div>
 
-	<HeaderMain
-		:appState="appState"
-		:isMobile="isMobile"
-		:sharedUpdateStatus="sharedUpdateStatus"
-		:mobileDropdownClose="mobileDropdownClose"
-	/>
+	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus" :mobileDropdownClose="mobileDropdownClose" />
 
 	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" :isMobile="isMobile" />
 
@@ -94,9 +88,7 @@ export default {
 			isMobileDevice: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
 			isMobile: window.innerWidth < 1024,
 			isMobileLandscape:
-				screen.orientation.type.includes("landscape") &&
-				window.innerHeight < 600 &&
-				/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
+				screen.orientation.type.includes("landscape") && window.innerHeight < 600 && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
 			windowWidth: window.innerWidth,
 			uiDarkMode: false,
 			isHidden: false,
@@ -121,9 +113,7 @@ export default {
 	methods: {
 		checkOrientation() {
 			this.isMobileLandscape =
-				screen.orientation.type.includes("landscape") &&
-				window.innerHeight < 600 &&
-				/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+				screen.orientation.type.includes("landscape") && window.innerHeight < 600 && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 		},
 		async initialSetup() {
 			this.getServerVersion();
@@ -214,7 +204,6 @@ export default {
 		},
 	},
 	async created() {
-		/* BEGIN NEW EVENT HANDLING SECTION */
 		let defaultStatus = {
 			code: 403,
 			message: "Session Expired. Please login again.",
@@ -231,8 +220,6 @@ export default {
 		provide("sendUpdateStatus", (payload) => (this.sharedUpdateStatus = payload));
 		provide("mobileDropdownEvent", (bool) => (this.mobileDropdownClose = bool));
 		provide("closeChat", () => (this.currentComponent = null));
-		/* END NEW EVENT HANDLING SECTION */
-
 		screen.orientation.addEventListener("change", this.checkOrientation);
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
 		window.addEventListener("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));

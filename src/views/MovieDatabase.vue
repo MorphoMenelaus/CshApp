@@ -3,8 +3,8 @@
 		<div id="movie-header">
 			<h1>Movie Database</h1>
 			<p class="movie-intro">
-				A searchable, sortable list of more than 1500 movies in my database, containing cast, crew, ratings, etc... Not a complete
-				list of all movies ever made, obviously.
+				A searchable, sortable list of more than 1500 movies in my database, containing cast, crew, ratings, etc... Not a complete list of all movies
+				ever made, obviously.
 			</p>
 			<p class="movie-intro">Favorites can be saved to your account, if you have an account on this site.</p>
 		</div>
@@ -37,12 +37,12 @@
 					</select>
 				</div>
 			</div>
-			<input v-model="contains" placeholder="Title contains..." />
-			<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">✕</span>
+			<div class="form-group">
+				<input v-model="contains" placeholder="Title contains..." />
+				<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">✕</span>
+			</div>
 			<div>
-				<button class="prev-button btn" :disabled="prevDisable" type="button" @click="previousPage()" title="Previous Page">
-					previous
-				</button>
+				<button class="prev-button btn" :disabled="prevDisable" type="button" @click="previousPage()" title="Previous Page">previous</button>
 				<button class="next-button btn" :disabled="nextDisable" type="button" @click="nextPage()" title="Next Page">next</button>
 				<span :currentPage="currentPage">page {{ currentPage }} / {{ pages.toFixed() }}</span>
 			</div>
@@ -50,14 +50,7 @@
 		<div id="movies">
 			<div id="cards" v-if="movieList?.length > 0">
 				<div class="card" v-for="(item, index) in movieList" :key="index">
-					<button
-						v-if="appState?.permissions?.admin"
-						class="btn edit"
-						@click="editThisEntry(item)"
-						title="Edit this movie's detils"
-					>
-						Edit
-					</button>
+					<button v-if="appState?.permissions?.admin" class="btn edit" @click="editThisEntry(item)" title="Edit this movie's detils">Edit</button>
 					<!-- <div v-if="item.original_title" class="summary-pop">
 							<p>{{ item.summary }}</p>
 						</div> -->
@@ -91,21 +84,13 @@
 				<h1>No Results Found</h1>
 			</div>
 			<div class="button-container" v-if="!favoritesOnly || favoritesList.length === 0">
-				<button class="prev-button btn" :disabled="prevDisable" type="button" @click="previousPage()" title="Previous Page">
-					previous
-				</button>
+				<button class="prev-button btn" :disabled="prevDisable" type="button" @click="previousPage()" title="Previous Page">previous</button>
 				<button class="next-button btn" :disabled="nextDisable" type="button" @click="nextPage()" title="Next Page">next</button>
 			</div>
 		</div>
 
 		<div id="modal-container">
-			<component
-				:is="currentComponent"
-				:appState="appState"
-				:selectedMovie="selectedMovie"
-				:favoritesList="favoritesList"
-				:isMobile="isMobile"
-			/>
+			<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie" :favoritesList="favoritesList" :isMobile="isMobile" />
 		</div>
 
 		<div id="permissions-dialog-container">
@@ -114,9 +99,7 @@
 					<h2>Saving Favorites requires a verified account</h2>
 					<p>You must be logged in with a verified account to save to your fovorites list.</p>
 					<div class="dialog-buttons">
-						<button class="btn" @click="showRegisterUserComponent(false, true)" title="Click to register">
-							Click to register
-						</button>
+						<button class="btn" @click="showRegisterUserComponent(false, true)" title="Click to register">Click to register</button>
 						<button class="btn" title="Login here" @click="showRegisterUserComponent(true, false)">Login here.</button>
 						<button class="btn cancel" @click="dialog.close()">Close</button>
 					</div>
@@ -184,8 +167,7 @@ export default {
 		async limit() {
 			this.currentPage = 1;
 			this.offset = 0;
-			this.pages =
-				this.contains.length > 0 ? Math.ceil(this.totalMoviesFromKeywords / this.limit) : Math.ceil(this.totalMovies / this.limit);
+			this.pages = this.contains.length > 0 ? Math.ceil(this.totalMoviesFromKeywords / this.limit) : Math.ceil(this.totalMovies / this.limit);
 			this.refreshMoviesWithFaves();
 		},
 		sortBy() {
@@ -462,8 +444,7 @@ export default {
 				this.movieList = data.movies;
 				this.totalMovies = data.tableRowCount;
 				this.totalMoviesFromKeywords = data.totalLikeRows;
-				this.pages =
-					this.contains.length > 0 ? Math.ceil(data.totalLikeRows / this.limit) : Math.ceil(this.totalMovies / this.limit);
+				this.pages = this.contains.length > 0 ? Math.ceil(data.totalLikeRows / this.limit) : Math.ceil(this.totalMovies / this.limit);
 
 				this.getFavoriteList();
 			} catch (error) {

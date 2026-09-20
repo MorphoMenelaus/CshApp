@@ -1,5 +1,6 @@
 <script setup>
 import { useRoute } from "vue-router";
+import GeneralPurpose from "@/components/GeneralPurpose.vue";
 
 const aiDisclaimer = `Hi! I am Chris' AI assistant, powered by Google Gemini. 
 			I am an experimental chatbot trained to answer questions about Chris' career, skills, and interests. 
@@ -11,26 +12,21 @@ const route = useRoute();
 
 <template>
 	<div id="disclaimers">
-		<p>
-			This web application was made using a <strong>Vue 3</strong> frontend with a <strong>NodeJS/Express</strong>
-			backend.
-		</p>
+		<GeneralPurpose />
 		<p>
 			This site is protected by reCAPTCHA and the Google
 			<strong>
-				<a title="Privacy Policy" target="_blank" href="https://policies.google.com/privacy">Privacy Policy</a>
+				<a title="Google's Privacy Policy" target="_blank" href="https://policies.google.com/privacy">Privacy Policy</a>
 			</strong>
 			and
 			<strong>
-				<a title="Terms of Service" target="_blank" href="https://policies.google.com/terms"
-					>Terms of Service</a
-				>
+				<a title="Google's Terms of Service" target="_blank" href="https://policies.google.com/terms">Terms of Service</a>
 			</strong>
 			apply.
 		</p>
 		<small v-if="route.name === 'home'"
 			>See full
-			<RouterLink class="privacy-link" to="/about#privacy">privacy policy</RouterLink>
+			<RouterLink class="privacy-link" to="/about#privacy" title="Privacy Policy">privacy policy</RouterLink>
 		</small>
 	</div>
 </template>
