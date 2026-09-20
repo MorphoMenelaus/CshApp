@@ -1,10 +1,11 @@
 <template>
 	<div id="general-disclaimer">
-		<h3 class="julius-sans">Site built using a <strong>Vue 3</strong> frontend with a <strong>NodeJS/ExpressJS</strong> backend.</h3>
+		<h3 class="julius-sans">Site built using a Vue 3 frontend with a NodeJS/ExpressJS backend.</h3>
 		<div>
 			<p>
-				I designed and built a backend server featuring more than 40 REST API endpoints, utilizing optimized SQL database queries for seamless data
-				retrieval and state management. Together, the server and Vue 3 frontend enforce strong authentication with role-based access control (RBAC).
+				I designed and built a backend server featuring more than 40 <strong>REST API</strong> endpoints, utilizing optimized
+				<strong>SQL</strong> database queries for seamless data retrieval and state management. Together, the server and <strong>Vue 3</strong> frontend
+				enforce strong authentication with role-based access control <strong>(RBAC)</strong>.
 			</p>
 			<p>
 				Each page of this demonstration website showcases end-to-end features that cleanly integrate a responsive frontend UI with a well-organized
@@ -17,6 +18,7 @@
 		</div>
 		<div class="logos">
 			<img class="logo" src="/icons/vue-logo.svg" title="Vue 3" alt="Vue 3 Logo" />
+			<img class="logo" src="/icons/pinia-logo.svg" title="Pinia" alt="Pinia Logo" />
 			<img class="logo" src="/icons/express-logo-white.svg" title="ExpressJS" alt="ExpressJS Logo" />
 			<img class="logo short-logo" src="/icons/nodejsStackedDark.svg" title="NodeJS" alt="NodeJS Logo" />
 			<img class="logo short-logo" src="/icons/mysql-official.svg" title="MySQL" alt="MySQL Logo" />
@@ -45,7 +47,7 @@ p {
 }
 
 strong {
-	font-weight: bold;
+	font-weight: 500;
 }
 
 .logos {
@@ -56,8 +58,8 @@ strong {
 }
 
 img.logo {
-	max-width: 50px;
-	max-height: 40px;
+	max-width: 80px;
+	max-height: 50px;
 	object-fit: contain;
 	margin: 10px;
 }
