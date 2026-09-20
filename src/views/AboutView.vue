@@ -1,7 +1,9 @@
 <script setup>
 import { inject } from "vue";
 import urls from "../dependencies/commonUrls.json";
+import Disclaimers from "../components/Disclaimers.vue";
 import PrivacyDisclaimer from "../components/PrivacyDisclaimer.vue";
+import TaglineBox from "@/components/TaglineBox.vue";
 
 const appCurrentVersion = inject("appCurrentVersion");
 
@@ -35,21 +37,8 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 			<RouterLink class="about-img" to="/" title="Home" @click="closeDialogs('home_title')">
 				<img src="/icons/CS20260822_256.png" alt="CSH App" />
 			</RouterLink>
-			<h1 class="julius-sans stroke">Chris Hardwick</h1>
-			<div class="tagline-box">
-				<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
-				<h3>Web Application Developer</h3>
-				<h3>Front-End Web Developer</h3>
-			</div>
+			<TaglineBox />
 			<div class="btn-container top">
-				<a
-					class="btn linkedin-icon"
-					:href="urls.linkedin.url"
-					:title="urls.linkedin.title"
-					target="_blank"
-					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
-					>Linkedin Profile</a
-				>
 				<a
 					class="btn csh-icon"
 					:href="urls.hardwickDesign.url"
@@ -59,6 +48,14 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 					>Personal Website</a
 				>
 				<a class="btn email-icon" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
+				<a
+					class="btn linkedin-icon"
+					:href="urls.linkedin.url"
+					:title="urls.linkedin.title"
+					target="_blank"
+					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
+					>Linkedin Profile</a
+				>
 			</div>
 			<div id="profile">
 				<h2 class="julius-sans profile">Professional Profile</h2>
@@ -76,6 +73,7 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 					can work independently as required.
 				</p>
 			</div>
+			<Disclaimers />
 			<PrivacyDisclaimer />
 		</div>
 		<div id="copyright">
@@ -111,6 +109,12 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 	color: #aaa;
 }
 
+#available {
+	position: absolute;
+	top: -18px;
+	left: 15px;
+}
+
 h1,
 h2,
 h3 {
@@ -132,6 +136,7 @@ h3 {
 p {
 	margin: 0 auto 15px;
 	padding: 0 30px 15px;
+	text-indent: 1.5em;
 }
 
 .profile {
@@ -168,7 +173,8 @@ h2.profile {
 }
 
 .btn-container .btn {
-	font-size: 0.75em;
+	font-size: 1em;
+	line-height: 1.5em;
 	padding: 5px 15px;
 	border: 1px #000 solid;
 }
@@ -182,19 +188,6 @@ h2.profile {
 	width: 100%;
 	margin: auto;
 	font-size: 18px;
-}
-
-.tagline-box {
-	border: 1px #555 solid;
-	background-color: #fff;
-	padding: 15px 30px;
-	border-radius: 8px;
-	width: fit-content;
-	margin: 0 auto 30px;
-}
-
-.uiDarkMode .tagline-box {
-	background-color: #222;
 }
 
 #copyright {
@@ -230,41 +223,6 @@ a.btn.large {
 	text-overflow: ellipsis;
 }
 
-.btn.email-icon {
-	padding-right: 38px;
-}
-
-.btn.csh-icon {
-	padding-right: 38px;
-}
-
-.btn.linkedin-icon {
-	padding-right: 40px;
-}
-
-.csh-icon::after {
-	top: 5px;
-	right: 9px;
-	width: 22px;
-	height: 22px;
-}
-
-.email-icon::after {
-	top: 11px;
-	right: 10px;
-	width: 20px;
-	height: 20px;
-}
-
-.linkedin-icon::after {
-	right: 10px;
-	top: 4px;
-	width: 21px;
-	height: 21px;
-	border-radius: 2px;
-	border: 1px #b1b1b1 solid;
-}
-
 .mobile .btn.email-icon,
 .mobile .btn.csh-icon,
 .mobile .btn.linkedin-icon {
@@ -286,6 +244,11 @@ a.btn.large {
 .large::after {
 	width: 48px;
 	height: 48px;
+}
+
+#about #disclaimers,
+#about #privacy {
+	font-size: 1.25em;
 }
 
 @media (max-width: 767px) {
@@ -312,9 +275,33 @@ a.btn.large {
 		font-size: 1.25em;
 	}
 
-	/* .btn-container.top {
-		width: 50%;
-	} */
+	.btn.csh-icon,
+	.btn.linkedin-icon {
+		padding-right: 48px;
+	}
+
+	.csh-icon::after,
+	.linkedin-icon::after,
+	.email-icon::after {
+		content: "";
+		top: 4px;
+		right: 10px;
+		width: 28px;
+		height: 28px;
+	}
+
+	.email-icon::after {
+		top: 8px;
+	}
+
+	.linkedin-icon::after {
+		border-radius: 2px;
+		border: 1px #fff solid;
+	}
+
+	.btn.email-icon {
+		padding-right: 45px;
+	}
 
 	.btn-container.top {
 		width: 75%;

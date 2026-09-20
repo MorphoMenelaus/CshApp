@@ -10,25 +10,19 @@
 		<p>Please rotate your mobile device to portrait view.</p>
 	</div>
 
-	<div v-if="!appState?.isLoggedOn || appState?.userName == 'guest'" id="dark-mode-check">
-		<label for="uiDarkMode" title="Toggle dark mode">Dark Mode</label>
-		<input id="uiDarkMode" title="Toggle dark mode" type="checkbox" v-model="uiDarkMode" />
+	<div v-if="!appState?.isLoggedOn || appState?.userName == 'guest'" id="dark-mode-check" :class="userSetTheme ? 'themed' : ''">
+		<label for="uiDarkMode" title="Toggle dark theme">Dark Theme</label>
+		<input id="uiDarkMode" title="Toggle dark theme" type="checkbox" v-model="uiDarkMode" />
 	</div>
 
 	<div class="register-link" v-if="!appState?.isLoggedOn && !isMobile">
 		<span
-			>New User?
-			<span class="link" @click="showRegisterUserComponent(false, true)" title="Click to register">Click to register</span>.<br />Or
-			login with username "guest"</span
+			>New User? <span class="link" @click="showRegisterUserComponent(false, true)" title="Click to register">Click to register</span>.<br />Or login with
+			username "guest"</span
 		>
 	</div>
 
-	<HeaderMain
-		:appState="appState"
-		:isMobile="isMobile"
-		:sharedUpdateStatus="sharedUpdateStatus"
-		:mobileDropdownClose="mobileDropdownClose"
-	/>
+	<HeaderMain :appState="appState" :isMobile="isMobile" :sharedUpdateStatus="sharedUpdateStatus" :mobileDropdownClose="mobileDropdownClose" />
 
 	<Login :appState="appState" :loginShow="loginShow" :forceLogoutEvent="forceLogoutEvent" :isMobile="isMobile" />
 
@@ -94,9 +88,7 @@ export default {
 			isMobileDevice: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
 			isMobile: window.innerWidth < 1024,
 			isMobileLandscape:
-				screen.orientation.type.includes("landscape") &&
-				window.innerHeight < 600 &&
-				/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
+				screen.orientation.type.includes("landscape") && window.innerHeight < 600 && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
 			windowWidth: window.innerWidth,
 			uiDarkMode: false,
 			isHidden: false,
@@ -104,26 +96,40 @@ export default {
 			threshold: 50,
 			showHideLoader: false,
 			loginShow: false,
+			userSetTheme: false,
 		};
 	},
 	watch: {
 		uiDarkMode() {
-			if (this.uiDarkMode) {
-				this.body[0].classList.add("uiDarkMode");
-			} else {
-				this.body[0].classList.remove("uiDarkMode");
-			}
+			this.setThemePreference();
 		},
 		currentComponent() {
 			this.mobileDropdownClose = this.currentComponent ? true : false;
 		},
 	},
 	methods: {
+		setThemePreference() {
+			let newTheme = this.uiDarkMode ? "dark" : "light";
+			localStorage.setItem("theme", newTheme);
+			this.userSetTheme = true;
+			if (this.uiDarkMode) {
+				this.body[0].classList.add("uiDarkMode");
+			} else {
+				this.body[0].classList.remove("uiDarkMode");
+			}
+		},
+		getThemePreference() {
+			let savedTheme = localStorage.getItem("theme");
+			if (savedTheme) {
+				this.userSetTheme = true;
+				return savedTheme;
+			}
+			// If the user has never saved an override, set default to light
+			return "light";
+		},
 		checkOrientation() {
 			this.isMobileLandscape =
-				screen.orientation.type.includes("landscape") &&
-				window.innerHeight < 600 &&
-				/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+				screen.orientation.type.includes("landscape") && window.innerHeight < 600 && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 		},
 		async initialSetup() {
 			this.getServerVersion();
@@ -158,7 +164,9 @@ export default {
 		updateAppState(newState) {
 			this.appState = newState;
 			this.recall.save(this.appState);
-			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
+			if (this.appState.hasOwnProperty("user")) {
+				this.uiDarkMode = this.appState.user?.uiDarkMode || false;
+			}
 		},
 		async getServerVersion() {
 			try {
@@ -214,7 +222,6 @@ export default {
 		},
 	},
 	async created() {
-		/* BEGIN NEW EVENT HANDLING SECTION */
 		let defaultStatus = {
 			code: 403,
 			message: "Session Expired. Please login again.",
@@ -231,8 +238,6 @@ export default {
 		provide("sendUpdateStatus", (payload) => (this.sharedUpdateStatus = payload));
 		provide("mobileDropdownEvent", (bool) => (this.mobileDropdownClose = bool));
 		provide("closeChat", () => (this.currentComponent = null));
-		/* END NEW EVENT HANDLING SECTION */
-
 		screen.orientation.addEventListener("change", this.checkOrientation);
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
 		window.addEventListener("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));
@@ -252,6 +257,10 @@ export default {
 
 		this.checkOrientation();
 		this.initialSetup();
+	},
+	mounted() {
+		let savedTheme = this.getThemePreference();
+		this.uiDarkMode = savedTheme === "dark" ? true : false;
 	},
 };
 </script>
@@ -280,6 +289,15 @@ span.link {
 	width: 6em;
 	/* color: #000; */
 	z-index: 1;
+	transition: opacity 0.2s;
+}
+
+.themed {
+	opacity: 0.5;
+}
+
+.themed:hover {
+	opacity: 1;
 }
 
 .register-link {

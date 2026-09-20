@@ -2,9 +2,14 @@
 	<div id="contact" @click="handleClick($event)">
 		<div class="wrapper" v-if="!messageSent">
 			<div id="form-header">
-				<h2>I'd love to hear from you</h2>
-				<h4 style="text-align: center">Please, let me know what you think.</h4>
-				<p style="text-align: center">Your info will not be shared with anyone.</p>
+				<h1>I'd love to hear from you</h1>
+				<h3 style="text-align: center">Schedule an interview or just let me know what you think.</h3>
+				<small
+					>Your email will not be shared or used for any other purpose.
+					<br />
+					See full
+					<RouterLink class="privacy-link link" to="/about#privacy" @click="registerUser(false)" title="Privacy Policy">privacy policy</RouterLink>
+				</small>
 			</div>
 			<form @submit.prevent="contactHandler" method="post">
 				<div class="form-group">
@@ -13,17 +18,9 @@
 				</div>
 
 				<div class="form-group">
-					<label for="email" title="Email Address"
-						>Email Address<span v-if="!email && errState" class="err"> * required</span></label
-					>
+					<label for="email" title="Email Address">Email Address<span v-if="!email && errState" class="err"> * required</span></label>
 					<input v-model.trim="email" id="email" type="text" name="email" class="form-control" />
 				</div>
-
-				<small>Your email will not be shared or used for any other purpose. </small>
-				<small
-					>See full
-					<RouterLink class="privacy-link link" to="/about#privacy" @click="registerUser(false)">privacy policy</RouterLink>
-				</small>
 
 				<div class="form-group" title="Subject">
 					<label for="subject">Subject<span v-if="!subject && errState" class="err"> * required</span></label>
@@ -354,6 +351,16 @@ label[for="casinoId"] {
 
 textarea#message {
 	min-height: 5em;
+}
+
+#form-header small {
+	display: block;
+	line-height: 1.5em;
+}
+
+.privacy-link {
+	/* text-transform: uppercase; */
+	font-weight: bold;
 }
 
 a:visited {

@@ -2,7 +2,7 @@
 	<footer>
 		<div class="flex-between">
 			<h3 id="name-contact" title="Contact Chris Hardwick" @click="openThisModalCloseOthers()">
-				<strong>Chris&nbsp;Hardwick</strong> {{ !isMobile ? " &mdash; Web Application Developer &amp; Frontend Developer" : "" }}
+				<strong>Chris&nbsp;Hardwick</strong> {{ !isMobile ? " &mdash; Frontend Web Application Developer" : "" }}
 			</h3>
 			<!-- <small>Powered by Vue 3 &amp; Node/Express</small> -->
 			<div id="footer-contacts">

@@ -1,9 +1,9 @@
 <script setup>
-import { ref, inject } from "vue";
+import { ref, inject, onMounted, onUnmounted, nextTick } from "vue";
 import urls from "@/dependencies/commonUrls.json";
-import Disclaimers from "../components/Disclaimers.vue";
-import StockCharts from "../components/StockCharts.vue";
-import Available from "@/components/Available.vue";
+import Disclaimers from "@/components/Disclaimers.vue";
+import StockCharts from "@/components/StockCharts.vue";
+import TaglineBox from "@/components/TaglineBox.vue";
 
 const sendAnalyticsEvent = inject("sendAnalyticsEvent", () => {
 	console.warn("Global function not found! sendAnalyticsEvent()");
@@ -15,8 +15,11 @@ const props = defineProps({
 	windowWidth: Number,
 });
 
-let lessText = ref(false);
-let showStocks = ref(false);
+const lessText = ref(false);
+const showStocks = ref(false);
+const targetElement = ref(null);
+const showScrollButton = ref(false);
+let observer = null;
 
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
@@ -31,6 +34,11 @@ const scrollToId = (id) => {
 	}
 };
 
+const scrollHomeLayout = () => {
+	lessText.value = false;
+	showStocks.value = false;
+	scrollToId("view");
+};
 const showDetails = (id) => {
 	lessText.value = lessText?.value ? false : true;
 	setTimeout(() => {
@@ -45,6 +53,28 @@ const showStockDetails = (id) => {
 	}, 200);
 	sendAnalyticsEvent("stock_charts", "details");
 };
+
+onMounted(async () => {
+	await nextTick();
+	observer = new IntersectionObserver(
+		([entry]) => {
+			showScrollButton.value = !entry.isIntersecting;
+		},
+		{
+			root: document.getElementById("view"),
+			threshold: 0.5,
+		},
+	);
+
+	if (targetElement.value) {
+		observer.observe(targetElement.value);
+	}
+});
+onUnmounted(() => {
+	if (observer) {
+		observer.disconnect();
+	}
+});
 </script>
 
 <template>
@@ -54,44 +84,40 @@ const showStockDetails = (id) => {
 			<RouterLink class="unverified" to="/verify">Click to Verify Account</RouterLink>
 		</div>
 
-		<div id="main-home-layout">
+		<!-- <button v-if="showScrollButton" class="btn" @click="scrollHomeLayout()" id="scroll-top"><span>▽</span>&nbsp;Scroll to Top</button> -->
+
+		<div id="main-home-layout" ref="targetElement">
 			<div id="title-block">
 				<div>
-					<h1 id="name-title" class="julius-sans stroke">Chris Hardwick</h1>
-					<div class="tagline-box">
-						<Available />
-						<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
-						<h3>Web Application Developer</h3>
-						<h3>Front-End Web Developer</h3>
-						<span class="text-center map-pin">Atlanta, GA (Open to Hybrid / Remote)</span>
-					</div>
+					<TaglineBox />
 				</div>
 				<div id="skills-list" class="stroke">
 					<ul>
 						<li>Vue 3</li>
-						<li>Vuex</li>
+						<li>Pinia &amp; Vuex</li>
 						<li>NodeJS</li>
+						<li>ExpressJS</li>
 						<li>REST API</li>
 						<li>HTML5</li>
 						<li>CSS3</li>
 						<li>JavaScript</li>
-						<li>Agile Development</li>
+						<li class="mobile-show">WCAG / ADA accessibility principles</li>
 					</ul>
 					<ul>
+						<li>SQL</li>
 						<li>ChartJS</li>
 						<li>C#</li>
-						<li>SQL</li>
+						<li>Agile Development</li>
 						<li>Single Page Applications</li>
 						<li>Responsive Web Design</li>
 						<li>Full-Stack Development</li>
-						<li>ADA compliant design</li>
-						<li>Godot</li>
+						<li class="mobile-hide">WCAG / ADA accessibility principles</li>
 					</ul>
 				</div>
 			</div>
 			<div id="latest-summary">
 				<h2 class="julius-sans">Latest Accomplishments</h2>
-				<h3>Web Application Developer | Makrö Gaming Studios</h3>
+				<h3>Front-End Web Developer | Makrö Gaming Studios</h3>
 				<p>
 					I developed a full suite of Single Page Applications using the Vue 3 framework to accompany the video slots online game application
 					ecosystem for Makrö Gaming Studios. I placed a strong emphasis on responsive clean design, interactivity and readability in order to present
@@ -106,18 +132,21 @@ const showStockDetails = (id) => {
 				</p>
 				<div class="btn-link-container">
 					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
-						{{ lessText ? "Fewer" : "More" }} Details
+						<span v-if="!isMobile">{{ lessText ? "Fewer " : "More " }}</span
+						>Details
 						<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
 					</button>
-					<RouterLink to="/resume" class="btn linkedin">{{ isMobile ? "Full" : "Chris Hardwick" }} Resume </RouterLink>
+					<RouterLink to="/resume" title="Chris Hardwick Resume" class="btn acrobat-icon" @click="sendAnalyticsEvent('download', 'resume_link')"
+						>{{ isMobile ? "" : "Chris Hardwick " }}Resume</RouterLink
+					>
 					<a
-						class="btn linkedin"
+						class="btn linkedin linkedin-icon"
 						:href="urls.linkedin.url"
 						:title="urls.linkedin.title"
 						target="_blank"
 						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
-						>Linkedin Profile</a
-					>
+						>Linkedin<span v-if="!isMobile">&nbsp;Profile</span>
+					</a>
 				</div>
 				<Transition name="slide-down">
 					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
@@ -141,8 +170,9 @@ const showStockDetails = (id) => {
 					</h2>
 					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>
 					<button id="stocks-anchor" class="btn" @click="showStockDetails('latest-stocks')">
-						{{ showStocks ? "Close" : "Open" }} Market Graphs
-						<span :class="showStocks ? 'rotated' : ''">▽</span>
+						<span v-if="!isMobile">{{ showStocks ? "Close " : "Open " }}</span
+						>Market Graphs
+						<span class="arrow" :class="showStocks ? 'rotated' : ''">▽</span>
 					</button>
 				</div>
 				<Transition name="slide-down">
@@ -161,17 +191,18 @@ const showStockDetails = (id) => {
 </template>
 
 <style scoped>
-.btn span {
+#stocks-anchor.btn .arrow,
+.btn-link-container .btn .arrow {
 	display: inline-block;
 	position: relative;
 	right: -5px;
-	margin-left: 10px;
 	font-weight: bold;
 	transform: rotate(-90deg);
 	transition: transform 0.4s ease-in-out;
 }
 
-span.rotated {
+#stocks-anchor.btn .arrow.rotated,
+.btn-link-container .btn .arrow.rotated {
 	transform: rotate(0deg);
 }
 
@@ -215,16 +246,13 @@ h3 {
 
 p {
 	margin: 15px auto;
-	text-indent: 30px;
+	text-indent: 1.5em;
 }
 
 #view {
-	/* position: relative; */
 	width: 100%;
 	margin: 15px auto;
 	padding: 15px;
-	/* padding-bottom: 110px; */
-	/* z-index: -1; */
 	position: absolute;
 	inset: 0;
 }
@@ -244,11 +272,6 @@ p {
 	flex-direction: column;
 }
 
-#name-title {
-	font-size: 2.5em;
-	/* font-weight: bold; */
-}
-
 #stocks-container {
 	margin-top: 30px;
 	display: flex;
@@ -260,7 +283,6 @@ p {
 #stocks-container {
 	background-color: #e7e7e7;
 	padding: 15px;
-	/* font-size: 1.25em; */
 	border: 1px #555 solid;
 	border-radius: 12px;
 }
@@ -317,7 +339,6 @@ p {
 }
 
 .mobile #skills-list {
-	/* flex-direction: column; */
 	width: 100%;
 }
 
@@ -327,7 +348,6 @@ p {
 	left: -15px;
 	width: calc(100% + 30px);
 	padding: 15px;
-	/* background-color: #c1c1c1; */
 	background-color: #d5d5d5;
 	color: #444;
 	font-size: 1.25em;
@@ -352,20 +372,6 @@ p {
 	background-color: #1c2138;
 }
 
-.tagline-box {
-	position: relative;
-	border: 1px #555 solid;
-	background-color: #fff;
-	padding: 15px 30px;
-	border-radius: 8px;
-	width: fit-content;
-	margin: 0 auto 30px;
-}
-
-.uiDarkMode .tagline-box {
-	background-color: #222;
-}
-
 .not-verified {
 	position: absolute;
 	display: flex;
@@ -383,6 +389,7 @@ p {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	align-items: center;
 }
 
 .mobile .btn-link-container > * {
@@ -393,11 +400,11 @@ p {
 	right: 0;
 }
 
-.linkedin {
+.linkedin,
+.acrobat-icon {
 	display: inline-block;
 	position: relative;
 	right: 0;
-	font-size: 0.75em;
 	padding: 3px 15px 2px;
 	border: 1px #000 solid;
 	box-shadow: 1px 1px 0px #000;
@@ -410,7 +417,7 @@ p {
 
 #available {
 	position: absolute;
-	top: -15px;
+	top: -18px;
 	left: 15px;
 }
 
@@ -430,11 +437,36 @@ p {
 	left: -20px;
 }
 
-@media (max-width: 767px) {
-	/* #name-title {
-		font-size: 2.5em;
-	} */
+#scroll-anchor,
+#stocks-anchor,
+.btn.acrobat-icon,
+.btn.linkedin-icon {
+	font-size: 0.8em;
+	text-align: center;
+}
 
+.acrobat-icon::after,
+.linkedin-icon::after {
+	content: unset;
+}
+
+.mobile-hide {
+	display: none;
+}
+
+#scroll-top {
+	display: none;
+}
+
+#scroll-top span {
+	transform: rotate(180deg);
+	position: absolute;
+	top: 0;
+	left: 2px;
+	font-size: 1.25em;
+}
+
+@media (max-width: 767px) {
 	h2 {
 		font-size: 1.5em;
 	}
@@ -446,28 +478,66 @@ p {
 	#skills-list {
 		padding: 0;
 	}
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
+	#charts-header h2 {
+		font-size: 1.5em;
+	}
 }
 
 @media (min-width: 768px) {
-	/* #main-home-layout {
-		width: 95%;
-	} */
+	#scroll-top {
+		display: inline-block;
+		position: fixed;
+		bottom: 80px;
+		right: 30px;
+	}
 
-	#name-title {
-		font-size: 3.5em;
+	.mobile-show {
+		display: none;
+	}
+
+	.mobile-hide {
+		display: list-item;
+	}
+
+	#scroll-anchor,
+	#stocks-anchor,
+	.btn.acrobat-icon,
+	.btn.linkedin-icon {
+		font-size: 1em;
+	}
+
+	#stocks-anchor.btn .arrow,
+	.btn-link-container .btn .arrow {
+		margin-left: 10px;
+	}
+
+	.btn.acrobat-icon,
+	.btn.linkedin-icon {
+		padding-right: 48px;
+	}
+
+	.acrobat-icon::after,
+	.linkedin-icon::after {
+		content: "";
+		top: 5px;
+		right: 10px;
+		width: 28px;
+		height: 28px;
+	}
+
+	.linkedin-icon::after {
+		border-radius: 2px;
+		border: 1px #fff solid;
+	}
+
+	.btn:hover::after {
+		filter: brightness(0.8);
 	}
 }
 
 @media (min-width: 992px) {
 	#main-home-layout {
 		width: 90%;
-	}
-
-	#name-title {
-		font-size: 3.75em;
 	}
 
 	h2 {

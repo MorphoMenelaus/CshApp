@@ -12,8 +12,8 @@ const trackerModel = {
 	user_id: null,
 	uid: null,
 	wid: null,
-	pid: null
-}
+	pid: null,
+};
 
 const candidateProfile = {
 	id: Number,
@@ -31,10 +31,23 @@ const candidateProfile = {
 	status: String,
 	experienceStart: Date,
 	featuredQuote: String,
-	skills: Array
-}
+	skills: Array,
+};
 
-export {
-	trackerModel,
-	candidateProfile
-}
+const dutiesModel = [
+	{
+		id: Number,
+		title: String,
+		company: String,
+		dates: String,
+		type: String,
+		duties: [
+			{
+				details: String,
+				related: Array,
+			},
+		],
+	},
+];
+
+export { trackerModel, candidateProfile, dutiesModel };

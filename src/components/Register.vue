@@ -8,27 +8,11 @@
 			<form @submit.prevent="registerHandler" method="post">
 				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
 					<label for="username">Username</label>
-					<input
-						id="username"
-						title="Username"
-						autocomplete="username"
-						v-model.trim="userName"
-						type="text"
-						name="userName"
-						class="form-control"
-					/>
+					<input id="username" title="Username" autocomplete="username" v-model.trim="userName" type="text" name="userName" class="form-control" />
 				</div>
 				<div class="form-group" :class="errState && !email.length > 0 ? 'err' : ''">
 					<label for="email">Email <small>*required to verify account</small></label>
-					<input
-						id="email"
-						title="Username"
-						autocomplete="email"
-						v-model.trim="email"
-						type="text"
-						name="email"
-						class="form-control"
-					/>
+					<input id="email" title="Username" autocomplete="email" v-model.trim="email" type="text" name="email" class="form-control" />
 				</div>
 				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
 					<label for="password">Password</label>
@@ -54,21 +38,14 @@
 						class="form-control"
 					/>
 				</div>
-				<small
-					>By registering, you agree to receive a verification code by email. Your email will not be shared or
-					used for any other purpose.
-				</small>
+				<small>By registering, you agree to receive a verification code by email. Your email will not be shared or used for any other purpose. </small>
 				<small
 					>See full
-					<RouterLink class="privacy-link link" to="/about#privacy" @click="registerUser(false)"
-						>privacy policy</RouterLink
-					>
+					<RouterLink class="privacy-link link" to="/about#privacy" title="Privacy Policy" @click="registerUser(false)">privacy policy</RouterLink>
 				</small>
 
 				<div style="display: flex">
-					<button class="btn" type="submit" @click.prevent="registerHandler" title="Register">
-						Register
-					</button>
+					<button class="btn" type="submit" @click.prevent="registerHandler" title="Register">Register</button>
 					<button class="btn" type="button" @click="registerUser(false)" title="Cancel">Cancel</button>
 				</div>
 				<p style="text-align: center">
