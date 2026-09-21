@@ -85,7 +85,8 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	/* font-size: 18px; */
 	/* font-size: calc(16px + (24 - 16) * ((100vw - 300px) / (1600 - 300))); */
-	font-size: calc(16px + (24 - 16) * ((100vw - 300px) / (3200 - 300)));
+	/* font-size: calc(16px + (24 - 16) * ((100vw - 300px) / (3200 - 300))); */
+	font-size: clamp(16px, 1vw, 22px);
 }
 
 body.uiDarkMode {

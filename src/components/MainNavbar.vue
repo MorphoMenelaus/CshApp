@@ -1,5 +1,93 @@
-<template>
+<script setup>
+import { ref, onMounted, watch, inject } from "vue";
+import { permissionsModel } from "@/dependencies/models.js";
 
+const props = defineProps({
+	appState: Object,
+	isMobile: Boolean,
+	mobileDropdownClose: Boolean,
+});
+
+const sendAnalyticsEvent = inject("sendAnalyticsEvent");
+const mobileDropdownEvent = inject("mobileDropdownEvent");
+const contactEmail = inject("contactEmail");
+const personalRestricted = inject("personalRestricted");
+const loginShow = inject("loginShow");
+const registerUser = inject("registerUser");
+const permissions = ref(permissionsModel);
+const mobileMenuShow = ref(false);
+const startY = ref(0);
+
+const closeDialogs = (link_name = "unkown") => {
+	sendAnalyticsEvent("main_nav", link_name);
+	loginShow(false);
+	registerUser(false);
+	contactEmail(false);
+	mobileMenuShow.value = false;
+};
+
+const showHideNav = () => {
+	mobileMenuShow.value = mobileMenuShow.value ? false : true;
+};
+
+const handleTouchStart = (event) => {
+	startY.value = event.touches[0].clientY;
+};
+
+const handleTouchEnd = (event) => {
+	let endY = event.changedTouches[0].clientY;
+	let diff = startY.value - endY;
+
+	if (diff > 50) {
+		mobileMenuShow.value = false;
+	}
+};
+
+const allowed = (required = []) => {
+	let userPermissions = permissions.value;
+
+	// If account is not verirfied, reject. Even accounts with elevated priveleges.
+	// Right now this is the most convenient way to disable an account without changing any other account settings.
+	if (required.includes("verified") && !userPermissions.verified) return false;
+
+	switch (true) {
+		case required.includes("admin") && userPermissions.admin:
+			return true;
+		case required.includes("siteAdmin") && userPermissions.siteAdmin:
+			return true;
+		case required.includes("siteEditor") && userPermissions.siteEditor:
+			return true;
+		case required.includes("contributor") && userPermissions.contributor:
+			return true;
+		case required.includes("verified") && userPermissions.verified:
+			return true;
+		case required.length === 0 && userPermissions.loggedIn:
+			return true;
+		default:
+			return false;
+	}
+};
+
+watch(
+	[() => props.mobileDropdownClose, () => props.appState],
+	([newMobile, newState], [oldMobile, oldState]) => {
+		if (newMobile !== oldMobile) {
+			if (props.mobileDropdownClose) {
+				mobileMenuShow.value = false;
+				mobileDropdownEvent(false);
+			}
+		}
+		permissions.value = newState?.permissions || permissionsModel;
+	},
+	{ deep: true },
+);
+
+onMounted(() => {
+	permissions.value = props?.appState?.permissions || permissionsModel;
+});
+</script>
+
+<template>
 	<div id="nav-container" :class="isMobile ? 'mobile' : ''">
 		<div v-if="isMobile" class="mobile-menu-icon">
 			<div id="hamburger" @click="showHideNav()">
@@ -14,95 +102,54 @@
 			</div>
 		</div>
 		<Transition name="slide-down">
-			<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow" @touchstart="handleTouchStart"
-				@touchend="handleTouchEnd">
+			<nav aria-label="main menu" v-if="!isMobile || mobileMenuShow" @touchstart="handleTouchStart" @touchend="handleTouchEnd">
 				<RouterLink v-if="!isMobile" to="/" title="Home" class="home-icon" @click="closeDialogs('home_icon')">
-					<img src="/icons/CS20260822_128.png" alt="CSH App">
+					<img src="/icons/CS20260822_128.png" alt="CSH App" />
 				</RouterLink>
 				<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
-				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Database">Movie DB
+				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Database">Movie DB</RouterLink>
+				<RouterLink
+					v-if="appState?.isLoggedOn && allowed(['verified', 'admin', 'siteAdmin']) && !personalRestricted"
+					to="/blog-reader"
+					@click="closeDialogs('blog')"
+					title="Blog Reader"
+					>Blog
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin) && !personalRestricted"
-					to="/blog-reader" @click="closeDialogs('blog')" title="Blog Reader">Blog
+					v-if="appState?.isLoggedOn && allowed(['verified', 'admin', 'siteAdmin']) && !personalRestricted"
+					to="/displayusers"
+					@click="closeDialogs('users')"
+					title="Display Users"
+					>Users
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin) && !personalRestricted"
-					to="/displayusers" @click="closeDialogs('users')" title="Display Users">Users
-				</RouterLink>
-				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.verified" to="/displayuserlogs"
-					@click="closeDialogs('user_logs')" title="Display User Logs">User
-					Logs</RouterLink>
-				<RouterLink to="/resume" @click="closeDialogs('resume')" title="Chris Hardwick Resume">Resume
-				</RouterLink>
+					v-if="appState?.isLoggedOn && allowed(['verified'])"
+					to="/displayuserlogs"
+					@click="closeDialogs('user_logs')"
+					title="Display User Logs"
+					>User Logs</RouterLink
+				>
+				<RouterLink to="/resume" @click="closeDialogs('resume')" title="Chris Hardwick Resume">Resume </RouterLink>
 				<RouterLink to="/weather" @click="closeDialogs('weather')" title="Weather">Weather</RouterLink>
-				<RouterLink v-if="appState?.isLoggedOn && appState?.permissions.admin && !personalRestricted"
-					to="/toggl" @click="closeDialogs('toggl')" title="Toggl Time Tracker">Toggl
+				<RouterLink
+					v-if="appState?.isLoggedOn && allowed(['verified', 'admin']) && !personalRestricted"
+					to="/toggl"
+					@click="closeDialogs('toggl')"
+					title="Toggl Time Tracker"
+					>Toggl
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)"
-					to="/simpleclock" @click="closeDialogs('simple_clock')" title="Simple Clock">Simple Clock
+					v-if="appState?.isLoggedOn && allowed(['verified', 'admin', 'siteAdmin'])"
+					to="/simpleclock"
+					@click="closeDialogs('simple_clock')"
+					title="Simple Clock"
+					>Simple Clock
 				</RouterLink>
 				<RouterLink to="/about" @click="closeDialogs('about')" title="About Chris Hardwick">About</RouterLink>
 			</nav>
 		</Transition>
 	</div>
-
 </template>
-
-<script>
-import { inject } from "vue";
-
-export default {
-	name: "MainNavbar",
-	props: {
-		appState: Object,
-		isMobile: Boolean,
-		mobileDropdownClose: Boolean
-	},
-	data() {
-		return {
-			mobileDropdownEvent: inject("mobileDropdownEvent"),
-			contactEmail: inject("contactEmail"),
-			loginShow: inject("loginShow"),
-			registerUser: inject('registerUser'),
-			mobileMenuShow: false,
-			startY: 0
-		};
-	},
-	watch: {
-		mobileDropdownClose() {
-			if (this.mobileDropdownClose) {
-				this.mobileMenuShow = false;
-				this.mobileDropdownEvent(false);
-			}
-		}
-	},
-	methods: {
-		closeDialogs(link_name = 'unkown') {
-			this.sendAnalyticsEvent('main_nav', link_name);
-			this.loginShow(false);
-			this.registerUser(false);
-			this.contactEmail(false);
-			this.mobileMenuShow = false;
-		},
-		showHideNav() {
-			this.mobileMenuShow = this.mobileMenuShow ? false : true;
-		},
-		handleTouchStart(event) {
-			this.startY = event.touches[0].clientY;
-		},
-		handleTouchEnd(event) {
-			let endY = event.changedTouches[0].clientY;
-			let diff = this.startY - endY;
-
-			if (diff > 50) {
-				this.mobileMenuShow = false;
-			}
-		},
-	},
-};
-</script>
 
 <style scoped>
 .mobile nav {

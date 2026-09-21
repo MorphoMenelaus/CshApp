@@ -1,7 +1,5 @@
 <template>
-
 	<div id="edit-movies" @keyup.esc="cancel()">
-
 		<div class="wrapper">
 			<h1>Movie Details (movieId: {{ selectedMovie.movieId }})</h1>
 			<div id="edit">
@@ -79,8 +77,7 @@
 						</div>
 					</form>
 					<div class="button-container">
-						<button @click="openConfirmDialog()" class="btn" title="Update Movie Details">Update Movie
-							Details</button>
+						<button @click="openConfirmDialog()" class="btn" title="Update Movie Details">Update Movie Details</button>
 						<button @click="cancel()" class="btn" title="Cancel">Cancel</button>
 					</div>
 				</div>
@@ -90,9 +87,7 @@
 		<div id="edit-dialog-container">
 			<dialog id="confirmEdit">
 				<div>
-					<h2>
-						Are you sure you want to edit movie?
-					</h2>
+					<h2>Are you sure you want to edit movie?</h2>
 					<p>This cannot be undone.</p>
 					<div class="dialog-buttons">
 						<button class="btn" @click="updateMovie()" :disabled="disableBtn">Update</button>
@@ -101,13 +96,11 @@
 				</div>
 			</dialog>
 		</div>
-
 	</div>
-
 </template>
 
 <script>
-import { inject } from 'vue';
+import { inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -115,12 +108,12 @@ export default {
 	props: {
 		appState: Object,
 		selectedMovie: Object,
-		favoritesList: Array
+		favoritesList: Array,
 	},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
-			showHideLoader: inject('showHideLoader'),
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			movieUpdated: inject("movieUpdated"),
 			serverStatus: Object.assign({}, this.appNotify),
 			dialog: null,
@@ -145,11 +138,10 @@ export default {
 			slug: this.selectedMovie.slug,
 		};
 	},
-	watch: {
-	},
+	watch: {},
 	methods: {
 		openConfirmDialog() {
-			this.dialog.showModal()
+			this.dialog.showModal();
 		},
 		async updateMovie() {
 			this.showHideLoader(true);
@@ -179,11 +171,10 @@ export default {
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL(`/api/movies/${this.selectedMovie.movieId}`, this.baseUrl);
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'PUT',
+			let request = new Request(requestUrl.toString(), {
+				method: "PUT",
 				headers: headerObj,
-				body: JSON.stringify(body)
+				body: JSON.stringify(body),
 			});
 
 			try {
@@ -198,9 +189,8 @@ export default {
 				this.serverStatus.message = data.message;
 				this.serverStatus.success = data.success;
 				this.updateStatus(this.serverStatus);
-
 			} catch (error) {
-				console.error('Error fetching data:', error)
+				console.error("Error fetching data:", error);
 			} finally {
 				this.showHideLoader(false);
 				this.disableBtn = false;
@@ -211,7 +201,7 @@ export default {
 			// Event is movieUpdated() but it can work as a cancel as well
 			// false only closes component and true closes and refreshes movie list
 			this.movieUpdated(false);
-		}
+		},
 	},
 	mounted() {
 		this.dialog = document.getElementById("confirmEdit");

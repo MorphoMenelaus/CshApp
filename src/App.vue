@@ -60,7 +60,7 @@ import ContactForm from "@/components/ContactForm.vue";
 import GeminiChat from "@/components/GeminiChat.vue";
 import GeminiJobMatch from "@/components/GeminiJobMatch.vue";
 import GeminiExplainCode from "@/components/GeminiExplainCode.vue";
-import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
+import { Storage, stateUpdateService, routerStateService } from "@/dependencies/csh-libs.js";
 
 export default {
 	components: {
@@ -156,6 +156,7 @@ export default {
 		},
 		recallAppState() {
 			this.appState = this.recall.get();
+			routerStateService.setPermissions(this.appState?.permissions, this.appState?.isLoggedOn);
 			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		},
 		handleStateUpdateEvent() {
@@ -163,6 +164,7 @@ export default {
 		},
 		updateAppState(newState) {
 			this.appState = newState;
+			routerStateService.setPermissions(newState?.permissions, newState?.isLoggedOn);
 			this.recall.save(this.appState);
 			if (this.appState.hasOwnProperty("user")) {
 				this.uiDarkMode = this.appState.user?.uiDarkMode || false;
@@ -241,6 +243,7 @@ export default {
 		screen.orientation.addEventListener("change", this.checkOrientation);
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
 		window.addEventListener("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));
+		window.addEventListener("routerNotify", (e) => (this.sharedUpdateStatus = e?.detail));
 		window.addEventListener("keydown", (down) => {
 			if (down.key === "Escape") this.currentComponent = null;
 		});

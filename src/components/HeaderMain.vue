@@ -1,11 +1,8 @@
 <template>
-
 	<header>
 		<div v-if="statusArray.length > 0" id="notifications" :class="isMobile ? 'mobile' : ''">
-			<div class="status-message" v-for="(item, index) in statusArray" :key="index"
-				:class="item.success ? 'ok' : 'error'">
-				<button @click="closeNotification(item)" class="close-notification"
-					title="Close This Notification">✕</button>
+			<div class="status-message" v-for="(item, index) in statusArray" :key="index" :class="item.success ? 'ok' : 'error'">
+				<button @click="closeNotification(item)" class="close-notification" title="Close This Notification">✕</button>
 				<span v-if="item.code != null">{{ item.code }}</span>
 				<span v-if="item.message != null">{{ item.message }}</span>
 			</div>
@@ -16,36 +13,35 @@
 				<span id="time">{{ timeLocal }}</span>
 			</div>
 			<div id="date-container">
-				<span id="dayLong">{{ dayLocal }}</span><br />
+				<span id="dayLong">{{ dayLocal }}</span
+				><br />
 				<span id="dateLong">{{ dateLocal }}</span>
 			</div>
 		</div>
 
 		<MainNavbar :appState="appState" :isMobile="isMobile" :mobileDropdownClose="mobileDropdownClose" />
-
 	</header>
-
 </template>
 
 <script>
-import { inject } from 'vue';
+import { inject } from "vue";
 import MainNavbar from "@/components/MainNavbar.vue";
 
 export default {
 	name: "HeaderMain",
 	components: {
-		MainNavbar
+		MainNavbar,
 	},
 	props: {
 		appState: Object,
 		serverVersion: String,
 		isMobile: Boolean,
 		sharedUpdateStatus: Object,
-		mobileDropdownClose: Boolean
+		mobileDropdownClose: Boolean,
 	},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
+			updateStatus: inject("sendUpdateStatus"),
 			appNotify: Object.assign({}, this.appNotify),
 			statusArray: [],
 			dayLocal: "",
@@ -85,20 +81,20 @@ export default {
 		},
 		updateDateTime() {
 			let date = new Date();
-			this.dayLocal = date.toLocaleDateString('en-US', { weekday: 'long' });
+			this.dayLocal = date.toLocaleDateString("en-US", { weekday: "long" });
 			this.dateLocal = date.toLocaleDateString("en-US");
 			this.timeLocal = date.toLocaleTimeString();
 			if (this.statusArray.length > 0) this.removeStaleEvents();
 		},
 		removeStaleEvents() {
 			let currentTime = new Date().getTime();
-			let newArray = this.statusArray.filter(item => item.expireTime > currentTime);
+			let newArray = this.statusArray.filter((item) => item.expireTime > currentTime);
 			this.statusArray = newArray;
 		},
 		closeNotification(timeCode) {
-			let newArray = this.statusArray.filter(item => item.expireTime !== timeCode.expireTime);
+			let newArray = this.statusArray.filter((item) => item.expireTime !== timeCode.expireTime);
 			this.statusArray = newArray;
-		}
+		},
 	},
 };
 </script>
@@ -175,8 +171,8 @@ h1 {
 	right: -10px;
 	margin: 0;
 	padding: 2px 3px 1px;
-	line-height: .9em;
-	font-size: .9em;
+	line-height: 0.9em;
+	font-size: 0.9em;
 	border-radius: 6px;
 	cursor: pointer;
 	font-weight: bold;

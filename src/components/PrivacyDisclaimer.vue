@@ -18,7 +18,7 @@ onMounted(async () => {
 
 <template>
 	<div id="privacy">
-		<h2>Privacy Policy</h2>
+		<h2 class="julius-sans">Privacy Policy</h2>
 		<h3>User Accounts &amp; Authentication</h3>
 		<p>
 			When you create an account on our website, we collect your email address solely for account security and spam prevention. To finalize your login,
@@ -66,6 +66,7 @@ onMounted(async () => {
 h1,
 h2 {
 	text-align: center;
+	font-weight: bold;
 }
 
 h3 {
@@ -75,5 +76,6 @@ h3 {
 
 p {
 	text-indent: 1.5em;
+	margin-bottom: 1em;
 }
 </style>

@@ -83,11 +83,16 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 </template>
 
 <style scoped>
+#view {
+	margin: 15px auto;
+	padding-bottom: 15px;
+}
+
 #about {
 	width: 100%;
 	margin: 15px auto;
 	color: var(--vt-c-text-light-2);
-	font-size: 18px;
+	/* font-size: 18px; */
 }
 
 #about {
@@ -145,8 +150,8 @@ p {
 
 h2.profile {
 	margin: 15px auto 0;
-	font-size: 1.5em;
-	font-weight: bold;
+	font-size: 2em;
+	/* font-weight: bold; */
 }
 
 #profile {
@@ -154,9 +159,13 @@ h2.profile {
 	border: 1px solid #555;
 	border-radius: 12px;
 	padding: 15px 0;
-	font-size: 1em;
+	/* font-size: 1em; */
 	margin: 15px auto;
 	background-color: #e7e7e7;
+}
+
+#profile p {
+	/* font-size: 1.15rem; */
 }
 
 .uiDarkMode #profile {
@@ -246,8 +255,8 @@ a.btn.large {
 	height: 48px;
 }
 
-#about #disclaimers,
-#about #privacy {
+/* #about #disclaimers h3, */
+#about #privacy h3 {
 	font-size: 1.25em;
 }
 
@@ -272,7 +281,7 @@ a.btn.large {
 
 	#profile {
 		padding: 15px;
-		font-size: 1.25em;
+		/* font-size: 1.25em; */
 	}
 
 	.btn.csh-icon,

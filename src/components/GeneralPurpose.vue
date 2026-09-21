@@ -1,5 +1,5 @@
 <template>
-	<div id="general-disclaimer">
+	<div id="general-description">
 		<h3 class="julius-sans">Site built using a Vue 3 frontend with a NodeJS/ExpressJS backend.</h3>
 		<div>
 			<p>
@@ -27,7 +27,7 @@
 </template>
 
 <style scoped>
-#general-disclaimer {
+#general-description {
 	display: flex;
 	flex-direction: column;
 	margin: 15px auto;
@@ -38,12 +38,17 @@ h3 {
 	font-weight: bold;
 }
 
+h3 {
+	font-size: 1.5em;
+}
+
 p {
 	text-align: left;
 	color: #222;
 	text-indent: 1.5em;
-	padding: 10px 0;
+	/* padding: 10px 0; */
 	width: fit-content;
+	margin-bottom: 1em;
 }
 
 strong {
@@ -69,9 +74,9 @@ img.short-logo {
 }
 
 @media (min-width: 768px) {
-	p {
+	/* p {
 		padding: 10px 0;
-	}
+	} */
 
 	img.logo {
 		max-width: 100px;

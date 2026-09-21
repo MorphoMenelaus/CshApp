@@ -122,15 +122,8 @@
 						</div>
 					</form>
 					<div class="btn-container">
-						<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn" title="Update User Prefernces">
-							Save Prefernces
-						</button>
-						<button
-							v-if="appState.userName !== 'guest'"
-							@click="currentComponent = 'ChangePassword'"
-							class="btn"
-							title="Change Password"
-						>
+						<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn" title="Update User Prefernces">Save Prefernces</button>
+						<button v-if="appState.userName !== 'guest'" @click="currentComponent = 'ChangePassword'" class="btn" title="Change Password">
 							Change Password
 						</button>
 					</div>
@@ -140,13 +133,7 @@
 		<component :is="currentComponent" :appState="appState" />
 		<div id="change-btn" v-if="user.userId === appState?.user?.userId">
 			<button class="btn back" @click="goBack()">Exit</button>
-			<button
-				v-if="appState.userName !== 'guest'"
-				id="delete-button"
-				class="btn delete"
-				@click="currentComponent = 'DeleteUser'"
-				title="Delete Account"
-			>
+			<button v-if="appState.userName !== 'guest'" id="delete-button" class="btn delete" @click="currentComponent = 'DeleteUser'" title="Delete Account">
 				Delete Account
 			</button>
 		</div>

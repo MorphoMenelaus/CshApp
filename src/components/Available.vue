@@ -19,7 +19,7 @@ const route = useRoute();
 
 <style scoped>
 #available span {
-	font-size: 1.25em;
+	/* font-size: 1.25em; */
 	/* color: #8eef8e; */
 	color: #b3ffb3;
 	background-color: rgb(0 128 0);
@@ -37,7 +37,7 @@ const route = useRoute();
 
 #available span.about {
 	padding-top: 0;
-	padding-bottom: 1px;
+	/* padding-bottom: 1px; */
 }
 
 #available:hover span {

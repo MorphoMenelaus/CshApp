@@ -225,7 +225,6 @@ h2 {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-
 	margin: 30px auto;
 	padding: 15px 30px;
 	height: fit-content;

@@ -1,18 +1,18 @@
 /*!
- * CSH Classes and Utilities v0.3.1
+ * CSH Classes and Utilities v0.4.0
  * (c) 2026 Chris Hardwick
  */
 
 class Storage {
 	/**
 	 * Saves or retrieves localStorage or sessionStorage
-	 * 
+	 *
 	 * @name Storage
-	 * 
+	 *
 	 * @param {String} parentKey Storage object key - required for some methods
 	 * @param {String} storageType Expected "local" or "session" | Default to "local"
 	 * @param {Object} storage
-	 * @returns {Object} 
+	 * @returns {Object}
 	 * @throws {StorageError}
 	 */
 
@@ -40,7 +40,7 @@ class Storage {
 	save(storage = null) {
 		if (!storage) {
 			throw new StorageError("Save method requires an object");
-		};
+		}
 		switch (this.storageType) {
 			case "session":
 				sessionStorage.setItem(this.parentKey, JSON.stringify(storage));
@@ -54,7 +54,7 @@ class Storage {
 	add(key = null, storage = null) {
 		if (!key || !storage) {
 			throw new StorageError("Invalid Key Value pair arguments");
-		};
+		}
 		let store = {};
 		switch (this.storageType) {
 			case "session":
@@ -73,7 +73,7 @@ class Storage {
 	delete(key = null) {
 		if (!key) {
 			throw new StorageError("Delete method requires a key");
-		};
+		}
 		let store = {};
 		switch (this.storageType) {
 			case "session":
@@ -108,14 +108,36 @@ const onsiteUrlService = {
 	},
 	get() {
 		return onsiteServerUrl;
-	}
-}
+	},
+};
+
+let appStateUpdate = {};
+const stateUpdateService = {
+	setState(state) {
+		appStateUpdate = state;
+		// Custom window event tells the parent App.vue to update the appState in the Vue instance
+		dispatchCustomEvent("appStateChange");
+	},
+	getState() {
+		return appStateUpdate;
+	},
+};
+
+let permissions = { admin: false, siteAdmin: false, siteEditor: false, contributor: false, verified: false, loggedIn: false };
+const routerStateService = {
+	setPermissions(payload = permissions, loggedIn = false) {
+		payload.loggedIn = loggedIn;
+		permissions = payload;
+	},
+	getPermissions() {
+		return permissions;
+	},
+};
 
 async function addUserLog(appState = null, actionPerformed = null) {
-
 	if (!appState || !actionPerformed) {
 		throw new AddUserLogError("Invalid or missing arguments");
-	};
+	}
 
 	try {
 		let body = {
@@ -129,22 +151,20 @@ async function addUserLog(appState = null, actionPerformed = null) {
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
 		let requestUrl = new URL("/api/userlogs", onsiteServerUrl || window.location.origin);
 
-		let request = new Request(
-			requestUrl.toString(), {
-			method: 'POST',
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
 			headers: headerObj,
-			body: JSON.stringify(body)
+			body: JSON.stringify(body),
 		});
 
 		await fetch(request);
-
 	} catch (error) {
 		throw new AddUserLogError(`Error posting data: ${error}`);
 	}
 }
 
 function toTitleCase(str) {
-	let spaced = str.replace(/([a-z])([A-Z])/g, '$1 $2');
+	let spaced = str.replace(/([a-z])([A-Z])/g, "$1 $2");
 	return `${spaced.charAt(0).toUpperCase()}${spaced.slice(1)}`;
 }
 
@@ -159,15 +179,15 @@ function isUTCtime(str) {
 }
 
 function sendAnalyticsEvent(eventType, method) {
-	gtag('event', eventType, {
-		'method': method,
-		'page_location': window.location.href
+	gtag("event", eventType, {
+		method: method,
+		page_location: window.location.href,
 	});
 }
 
 function isObjNullOrEmpty(val) {
-	if (typeof val === 'undefined') return true;
-	let isObject = typeof val === 'object' && val !== null && !Array.isArray(val);
+	if (typeof val === "undefined") return true;
+	let isObject = typeof val === "object" && val !== null && !Array.isArray(val);
 	return !isObject || Object.keys(val).length === 0;
 }
 
@@ -176,28 +196,16 @@ function dispatchCustomEvent(name, payload = {}) {
 	const event = new CustomEvent(name, {
 		detail: payload,
 		bubbles: true,
-		cancelable: true
+		cancelable: true,
 	});
 	window.dispatchEvent(event);
-}
-
-let appStateUpdate = "";
-const stateUpdateService = {
-	setState(state) {
-		appStateUpdate = state;
-		// Custom window event tells the parent App.vue to update the appState in the Vue instance
-		dispatchCustomEvent("appStateChange");
-	},
-	getState() {
-		return appStateUpdate;
-	}
 }
 
 async function tokenCheck(appState) {
 	// Check if the refresh token is valid and is no older that the max allowed by the server.
 	if (!appState?.accessToken || !appState?.refreshToken) {
 		throw new TokenCheckError("Invalid or missing arguments");
-	};
+	}
 
 	let body = {
 		accessToken: appState?.accessToken,
@@ -205,16 +213,14 @@ async function tokenCheck(appState) {
 	};
 
 	try {
-
 		let headerObj = new Headers();
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL('/api/auth/tokencheck', onsiteServerUrl || window.location.origin);
+		let requestUrl = new URL("/api/auth/tokencheck", onsiteServerUrl || window.location.origin);
 
-		let request = new Request(
-			requestUrl.toString(), {
-			method: 'POST',
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
 			headers: headerObj,
-			body: JSON.stringify(body)
+			body: JSON.stringify(body),
 		});
 
 		let response = await fetch(request);
@@ -224,7 +230,7 @@ async function tokenCheck(appState) {
 			code: data.code,
 			tokenValid: data.tokenValid,
 			success: data.success,
-		}
+		};
 		return serverResponse;
 	} catch (error) {
 		console.error(error);
@@ -236,23 +242,21 @@ async function accessTokenCheck(appState) {
 	// Check if the access token is valid and not expired.
 	if (!appState?.accessToken) {
 		throw new TokenCheckError("Invalid or missing arguments");
-	};
+	}
 
 	let body = {
 		accessToken: appState?.accessToken,
 	};
 
 	try {
-
 		let headerObj = new Headers();
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL('/api/auth/tokenexpired', onsiteServerUrl || window.location.origin);
+		let requestUrl = new URL("/api/auth/tokenexpired", onsiteServerUrl || window.location.origin);
 
-		let request = new Request(
-			requestUrl.toString(), {
-			method: 'POST',
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
 			headers: headerObj,
-			body: JSON.stringify(body)
+			body: JSON.stringify(body),
 		});
 
 		let response = await fetch(request);
@@ -262,7 +266,7 @@ async function accessTokenCheck(appState) {
 			code: data.code,
 			tokenValid: data.tokenValid,
 			success: data.success,
-		}
+		};
 		return serverResponse;
 	} catch (error) {
 		console.error(error);
@@ -271,7 +275,6 @@ async function accessTokenCheck(appState) {
 }
 
 async function refreshAccessToken(appState) {
-
 	try {
 		let body = {
 			accessToken: appState?.accessToken,
@@ -280,13 +283,12 @@ async function refreshAccessToken(appState) {
 
 		let headerObj = new Headers();
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
-		let requestUrl = new URL('/api/auth/refresh', onsiteServerUrl || window.location.origin);
+		let requestUrl = new URL("/api/auth/refresh", onsiteServerUrl || window.location.origin);
 
-		let request = new Request(
-			requestUrl.toString(), {
-			method: 'POST',
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
 			headers: headerObj,
-			body: JSON.stringify(body)
+			body: JSON.stringify(body),
 		});
 
 		const response = await fetch(request);
@@ -296,8 +298,8 @@ async function refreshAccessToken(appState) {
 				code: response.status,
 				message: response.message ? response.message : "Account is already logged into on another device",
 				success: response.ok,
-				forced: true
-			}
+				forced: true,
+			};
 			dispatchCustomEvent("forceLogout", res);
 			return res;
 		}
@@ -333,11 +335,10 @@ async function refreshAccessToken(appState) {
 let refreshTokenPromise = null;
 
 async function tokenInterceptFetch(request) {
-
 	const appState = JSON.parse(localStorage.getItem("cshApp")) || {};
 	if (isObjNullOrEmpty(appState)) {
 		throw new RefreshTokenError("Invalid or missing appState");
-	};
+	}
 
 	try {
 		let tokenCheck = await accessTokenCheck(appState);
@@ -346,7 +347,6 @@ async function tokenInterceptFetch(request) {
 		if (tokenCheck.tokenValid) {
 			response = await fetch(request);
 		} else {
-
 			if (!refreshTokenPromise) {
 				refreshTokenPromise = refreshAccessToken(appState);
 			}
@@ -402,14 +402,16 @@ class TokenCheckError extends Error {
 export {
 	Storage,
 	onsiteUrlService,
+	stateUpdateService,
+	routerStateService,
 	addUserLog,
 	toTitleCase,
 	isUTCtime,
 	sendAnalyticsEvent,
 	isObjNullOrEmpty,
-	stateUpdateService,
+	dispatchCustomEvent,
 	tokenCheck,
 	accessTokenCheck,
 	refreshAccessToken,
 	tokenInterceptFetch,
-}
+};

@@ -9,8 +9,7 @@
 				</div>
 				<div class="details-box">
 					<h1>{{ selectedMovie.title }}</h1>
-					<small v-if="selectedMovie.original_title">Original Title: {{ selectedMovie.original_title
-					}}</small>
+					<small v-if="selectedMovie.original_title">Original Title: {{ selectedMovie.original_title }}</small>
 					<small>Directed By: {{ selectedMovie.tags_director.replaceAll("|", ", ") }}</small>
 					<h2>{{ selectedMovie.tagline }}</h2>
 					<div class="year-block">
@@ -21,8 +20,7 @@
 					<div>{{ selectedMovie.tags_genre.replaceAll("|", ", ") }}</div>
 					<div class="rating-block">
 						<div v-if="selectedMovie.rating">Rating: {{ selectedMovie.rating }}</div>
-						<div v-if="selectedMovie.audience_rating">Audience Rating: {{ selectedMovie.audience_rating }}
-						</div>
+						<div v-if="selectedMovie.audience_rating">Audience Rating: {{ selectedMovie.audience_rating }}</div>
 					</div>
 					<div>
 						<p>{{ selectedMovie.summary }}</p>
@@ -40,18 +38,18 @@
 </template>
 
 <script>
-import { inject } from 'vue';
+import { inject } from "vue";
 
 export default {
 	name: "MovieDetails",
 	props: {
 		isMobile: Boolean,
-		selectedMovie: Object
+		selectedMovie: Object,
 	},
 	data() {
 		return {
 			movieUpdated: inject("movieUpdated"),
-		}
+		};
 	},
 	methods: {
 		cancel() {
@@ -64,12 +62,8 @@ export default {
 			const minutes = Math.floor((ms / (1000 * 60)) % 60);
 			const hours = Math.floor(ms / (1000 * 60 * 60));
 
-			return [
-				String(hours).padStart(2, '0'),
-				String(minutes).padStart(2, '0'),
-				String(seconds).padStart(2, '0')
-			].join(':');
-		}
+			return [String(hours).padStart(2, "0"), String(minutes).padStart(2, "0"), String(seconds).padStart(2, "0")].join(":");
+		},
 	},
 };
 </script>
@@ -176,6 +170,12 @@ img.poster {
 	width: 100%;
 	justify-content: center;
 	margin: 30px auto 15px;
+}
+
+@media (max-width: 767px) {
+	.card {
+		max-height: calc(100vh - 245px);
+	}
 }
 
 @media (min-width: 768px) {

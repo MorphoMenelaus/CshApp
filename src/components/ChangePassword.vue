@@ -1,38 +1,35 @@
 <template>
-
 	<div id="change-password">
 		<div class="wrapper">
 			<!-- <div class="btn-container">
 				<button @click="closePopup()" class="close-modal" title="Close This Dialog">✕</button>
 			</div> -->
 			<h1>Password Change</h1>
-			<p style="margin: 15px 0;"><span class="warning">Warning!</span> After changing your password you will have
-				to log in again.</p>
+			<p style="margin: 15px 0"><span class="warning">Warning!</span> After changing your password you will have to log in again.</p>
 			<form method="post">
 				<div class="form-group" :class="errState && !currentPassword.length > 0 ? 'err' : ''">
 					<label>Current Password</label>
-					<input v-model.trim="currentPassword" type="password" name="currentPassword" class="form-control">
+					<input v-model.trim="currentPassword" type="password" name="currentPassword" class="form-control" />
 				</div>
 				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
 					<label>New Password</label>
-					<input v-model.trim="password" type="password" name="password" class="form-control">
+					<input v-model.trim="password" type="password" name="password" class="form-control" />
 				</div>
 				<div class="form-group">
 					<label>Confirm New Password</label>
-					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control">
+					<input v-model.trim="confirmPassword" type="password" name="confirmPassword" class="form-control" />
 				</div>
 				<div class="button-container">
-					<button class="btn" type='button' title="Change password" @click="changePassword()">Submit</button>
+					<button class="btn" type="button" title="Change password" @click="changePassword()">Submit</button>
 					<button @click="closePopup()" class="btn cancel" title="Cancel">Cancel</button>
 				</div>
 			</form>
 		</div>
 	</div>
-
 </template>
 
 <script>
-import { onBeforeUnmount, inject } from 'vue';
+import { onBeforeUnmount, inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
 export default {
@@ -42,10 +39,10 @@ export default {
 	},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
-			showHideLoader: inject('showHideLoader'),
-			closeChangePassword: inject('closeChangePassword'),
-			forceLogout: inject('forceLogout'),
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
+			closeChangePassword: inject("closeChangePassword"),
+			forceLogout: inject("forceLogout"),
 			serverStatus: Object.assign({}, this.appNotify),
 			currentPassword: "",
 			password: "",
@@ -53,14 +50,12 @@ export default {
 			errState: false,
 		};
 	},
-	watch: {
-	},
+	watch: {},
 	methods: {
 		closePopup() {
 			this.closeChangePassword();
 		},
 		async changePassword() {
-
 			if (!this.currentPassword || !this.password) {
 				this.serverStatus.message = "Please provide current password and new password.";
 				this.serverStatus.success = false;
@@ -88,13 +83,12 @@ export default {
 				let headerObj = new Headers();
 				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL('/api/users/password', this.baseUrl);
+				let requestUrl = new URL("/api/users/password", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'POST',
+				let request = new Request(requestUrl.toString(), {
+					method: "POST",
 					headers: headerObj,
-					body: JSON.stringify(body)
+					body: JSON.stringify(body),
 				});
 
 				const response = await tokenInterceptFetch(request);
@@ -114,9 +108,8 @@ export default {
 					this.addUserLog(this.appState, "User Changed Password");
 					this.forceLogout(data);
 				}
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
@@ -126,12 +119,10 @@ export default {
 			}
 		},
 		keyDown(e) {
-			if (e.key === "Escape")
-				this.closePopup();
+			if (e.key === "Escape") this.closePopup();
 		},
 	},
-	mounted() {
-	},
+	mounted() {},
 	created() {
 		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
@@ -159,7 +150,6 @@ h1 {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-
 	margin: 30px auto;
 	padding: 15px 30px;
 	height: fit-content;
@@ -207,7 +197,10 @@ form {
 label[for="casinoId"] {
 	text-align: center;
 	text-transform: uppercase;
-	text-shadow: -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000,
+	text-shadow:
+		-1px -1px 0px #000,
+		1px -1px 0px #000,
+		-1px 1px 0px #000,
 		1px 1px 0px #000;
 }
 
@@ -229,7 +222,7 @@ label[for="casinoId"] {
 	z-index: 10000;
 }
 
-.mobile #change-password>div {
+.mobile #change-password > div {
 	width: 90%;
 	margin: auto;
 }

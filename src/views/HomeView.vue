@@ -253,7 +253,8 @@ p {
 	width: 100%;
 	margin: 15px auto;
 	padding: 15px;
-	position: absolute;
+	/* position: absolute; */
+	position: relative;
 	inset: 0;
 }
 
@@ -519,10 +520,10 @@ p {
 	.acrobat-icon::after,
 	.linkedin-icon::after {
 		content: "";
-		top: 5px;
+		top: 3px;
 		right: 10px;
-		width: 28px;
-		height: 28px;
+		width: 26px;
+		height: 26px;
 	}
 
 	.linkedin-icon::after {
