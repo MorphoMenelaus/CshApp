@@ -1,3 +1,8 @@
+/*!
+ * CSH Models and Constants v0.0.5
+ * (c) 2026 Chris Hardwick
+ */
+
 const trackerModel = {
 	id: null,
 	workspace_id: null,
@@ -50,4 +55,36 @@ const dutiesModel = [
 	},
 ];
 
-export { trackerModel, candidateProfile, dutiesModel };
+const appNotify = {
+	code: "",
+	message: "",
+	success: false,
+};
+
+const dateOptions = {
+	weekday: "long",
+	year: "numeric",
+	month: "long",
+	day: "numeric",
+	hour: "numeric",
+	minute: "2-digit",
+	second: "2-digit",
+	hour12: false,
+};
+
+const timeOptions = {
+	hour: "numeric",
+	minute: "2-digit",
+	second: "2-digit",
+};
+
+const permissionsModel = {
+	admin: false,
+	siteAdmin: false,
+	siteEditor: false,
+	contributor: false,
+	verified: false,
+	loggedIn: false,
+};
+
+export { trackerModel, candidateProfile, dutiesModel, appNotify, dateOptions, timeOptions, permissionsModel };

@@ -17,15 +17,28 @@
 				</div>
 				<button v-if="startInstance?.stop" class="btn small" @click="reset()">Reset</button>
 				<div class="btn-container">
-					<button class="btn start" :title="`Start Timer ${startInstance?.start ? '(disabled)' : ''}`"
-						:disabled="startInstance?.start" @click="startTime()">Start</button>
-					<button class="btn stop" :title="`Stop Timer ${startInstance?.start ? '' : '(disabled)'}`"
-						:disabled="!startInstance?.start || startInstance?.stop" @click="stopTime()">Stop</button>
+					<button
+						class="btn start"
+						:title="`Start Timer ${startInstance?.start ? '(disabled)' : ''}`"
+						:disabled="startInstance?.start"
+						@click="startTime()"
+					>
+						Start
+					</button>
+					<button
+						class="btn stop"
+						:title="`Stop Timer ${startInstance?.start ? '' : '(disabled)'}`"
+						:disabled="!startInstance?.start || startInstance?.stop"
+						@click="stopTime()"
+					>
+						Stop
+					</button>
 				</div>
 			</div>
 		</div>
 		<div id="project">
-			<div class="proj-name" :style="`background-color: ${project.color}`">{{ project.name }}
+			<div class="proj-name" :style="`background-color: ${project.color}`">
+				{{ project.name }}
 				<span class="running" v-if="startInstance?.project_id && !startInstance?.stop">Started</span>
 			</div>
 			<div class="descrip" v-if="startInstance?.project_id">
@@ -43,8 +56,8 @@
 
 <script>
 import { inject } from "vue";
-import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-import { trackerModel } from "@/dependencies/models.js";
+import { Storage, isObjNullOrEmpty, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify, trackerModel } from "@/dependencies/models.js";
 
 export default {
 	name: "TimeTracker",
@@ -55,10 +68,11 @@ export default {
 	},
 	data() {
 		return {
-			showHideLoader: inject('showHideLoader'),
+			baseUrl: inject("baseUrl"),
+			showHideLoader: inject("showHideLoader"),
 			updateAppState: inject("updateAppState"),
-			updateStatus: inject('sendUpdateStatus'),
-			serverStatus: Object.assign({}, this.appNotify),
+			updateStatus: inject("sendUpdateStatus"),
+			serverStatus: Object.assign({}, appNotify),
 			timeTracker: Object.assign({}, trackerModel),
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
@@ -77,12 +91,12 @@ export default {
 	watch: {
 		tagsString() {
 			let newArray = [];
-			let arr = this.tagsString.split(',');
-			arr.forEach(tag => {
+			let arr = this.tagsString.split(",");
+			arr.forEach((tag) => {
 				newArray.push(tag.trim());
 			});
 			this.tags = newArray;
-		}
+		},
 	},
 	methods: {
 		reset() {
@@ -107,7 +121,6 @@ export default {
 			}
 
 			try {
-
 				let body = {
 					project_id: this.project.id,
 					created_with: this.created_with,
@@ -119,7 +132,7 @@ export default {
 					// https://engineering.toggl.com/docs/track/tracking/
 					duration: -1,
 					start: new Date().toISOString(),
-					stop: null // Must be null for a continuous run.
+					stop: null, // Must be null for a continuous run.
 				};
 
 				let headerObj = new Headers();
@@ -127,11 +140,10 @@ export default {
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
 				let requestUrl = new URL("/api/toggl/start", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'POST',
+				let request = new Request(requestUrl.toString(), {
+					method: "POST",
 					headers: headerObj,
-					body: JSON.stringify(body)
+					body: JSON.stringify(body),
 				});
 
 				const response = await tokenInterceptFetch(request);
@@ -145,7 +157,7 @@ export default {
 					return;
 				}
 
-				if (this.isObjNullOrEmpty(data?.startInstance)) return;
+				if (isObjNullOrEmpty(data?.startInstance)) return;
 
 				const currEnt = data?.startInstance;
 
@@ -170,7 +182,7 @@ export default {
 				this.serverStatus.success = data?.success;
 				this.updateStatus(this.serverStatus);
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
@@ -183,10 +195,9 @@ export default {
 			this.showHideLoader(true);
 
 			try {
-
 				let body = {
-					"workspace_id": this.project.workspace_id,
-					"time_entry_id": this.startInstance.id
+					workspace_id: this.project.workspace_id,
+					time_entry_id: this.startInstance.id,
 				};
 
 				let headerObj = new Headers();
@@ -194,11 +205,10 @@ export default {
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
 				let requestUrl = new URL("/api/toggl/stop", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'PATCH',
+				let request = new Request(requestUrl.toString(), {
+					method: "PATCH",
 					headers: headerObj,
-					body: JSON.stringify(body)
+					body: JSON.stringify(body),
 				});
 
 				const response = await tokenInterceptFetch(request);
@@ -228,7 +238,7 @@ export default {
 				this.serverStatus.success = data?.success;
 				this.updateStatus(this.serverStatus);
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error posting data: ${error}`;
 				this.serverStatus.success = false;
@@ -243,12 +253,16 @@ export default {
 			this.interval = setInterval(this.updateDateTime, 1000);
 		},
 		updateDateTime() {
-			let date = !this.isObjNullOrEmpty(this.startInstance) ? new Date(this.startInstance?.start) : new Date();
+			let date = !isObjNullOrEmpty(this.startInstance) ? new Date(this.startInstance?.start) : new Date();
 			let now = new Date();
 			let elapsed = now - date;
 
-			this.seconds = Math.floor((elapsed / 1000) % 60).toString().padStart(2, '0');
-			this.minutes = Math.floor((elapsed / (1000 * 60)) % 60).toString().padStart(2, '0');
+			this.seconds = Math.floor((elapsed / 1000) % 60)
+				.toString()
+				.padStart(2, "0");
+			this.minutes = Math.floor((elapsed / (1000 * 60)) % 60)
+				.toString()
+				.padStart(2, "0");
 			this.hours = Math.floor(elapsed / (1000 * 60 * 60));
 
 			this.elapsedTime = Number((elapsed / 1000).toFixed());
@@ -256,19 +270,17 @@ export default {
 	},
 	mounted() {
 		let store = this.togglStore.get();
-		this.startInstance = !this.isObjNullOrEmpty(store?.openTracker) ? store.openTracker : this.timeTracker;
+		this.startInstance = !isObjNullOrEmpty(store?.openTracker) ? store.openTracker : this.timeTracker;
 
 		if (this.startInstance?.id && this.openTracker?.id) {
 			this.startInstance = this.openTracker;
 			this.updateDateTime();
 		}
 
-		if (this.startInstance?.id && !this.startInstance?.stop)
-			this.setInterval();
+		if (this.startInstance?.id && !this.startInstance?.stop) this.setInterval();
 	},
 	created() {
-		if (this.isObjNullOrEmpty(this.togglStore.get()))
-			this.togglStore.save({});
+		if (isObjNullOrEmpty(this.togglStore.get())) this.togglStore.save({});
 		this.togglRecall = this.togglStore.get();
 	},
 };
@@ -376,7 +388,7 @@ export default {
 }
 
 #start-stop input {
-	font-size: .9em;
+	font-size: 0.9em;
 }
 
 #start-stop .btn {
@@ -390,7 +402,7 @@ export default {
 
 #start-stop .btn.small {
 	margin: 15px auto 0;
-	font-size: .8em;
+	font-size: 0.8em;
 	display: block;
 }
 
@@ -409,7 +421,8 @@ export default {
 	padding: 5px 15px;
 	font-weight: bold;
 	color: #000;
-	box-shadow: inset -3px -3px 6px 1px rgb(0 0 0 / 80%),
+	box-shadow:
+		inset -3px -3px 6px 1px rgb(0 0 0 / 80%),
 		inset 2px 2px 6px rgb(255 255 255 / 80%);
 }
 

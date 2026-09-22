@@ -1,37 +1,155 @@
+<script setup>
+import { ref, inject, watch, onMounted } from "vue";
+import { isObjNullOrEmpty, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
+
+const props = defineProps({
+	appState: Object,
+	isMobile: Boolean,
+});
+
+const baseUrl = inject("baseUrl");
+const updateStatus = inject("sendUpdateStatus");
+const showHideLoader = inject("showHideLoader");
+const serverStatus = Object.assign({}, appNotify);
+const limitOptions = [
+	{ text: "5", value: 5 },
+	{ text: "10", value: 10 },
+	{ text: "15", value: 15 },
+	{ text: "20", value: 20 },
+	{ text: "50", value: 50 },
+];
+const sortByOptions = [
+	{ text: "Author", value: "post_author" },
+	{ text: "Date", value: "post_date" },
+	{ text: "Title", value: "post_title" },
+	{ text: "Post Id", value: "post_id" },
+];
+const orderDirOptions = [
+	{ text: "Descending", value: "DESC" },
+	{ text: "Ascending", value: "ASC" },
+];
+const postStatusOptions = [
+	{ text: "Published", value: "publish" },
+	{ text: "Hidden", value: "hidden" },
+];
+const limit = ref(10);
+const offset = ref(0);
+const currentPage = ref(1);
+const postStatus = ref("publish");
+const orderDir = ref("ASC");
+const sortBy = ref("post_date");
+const blogList = ref([]);
+const postButtons = ref([]);
+const selectedBlog = ref({});
+
+const loadPost = (post_id) => {
+	selectedBlog.value = blogList.value.filter((post) => post_id === post.post_id)[0];
+};
+
+const getBlogPosts = async () => {
+	showHideLoader(true);
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/blog/", baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("limit", limit.value);
+	params.set("offset", offset.value);
+	params.set("sort", sortBy.value);
+	params.set("order", orderDir.value);
+	params.set("status", postStatus.value);
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(requestUrl.toString(), {
+		method: "GET",
+		headers: headerObj,
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		blogList.value = data.posts;
+
+		postButtons.value = [];
+		blogList.value.forEach((post) => {
+			let button = {
+				post_id: post.post_id,
+				post_title: post.post_title,
+			};
+			postButtons.value.push(button);
+		});
+	} catch (error) {
+		console.error("Error reading data:", error);
+		serverStatus.code = 500;
+		serverStatus.message = `Error getting data: ${error}`;
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+	} finally {
+		showHideLoader(false);
+	}
+};
+
+const previousPage = () => {
+	if (currentPage.value == 1) return;
+	currentPage.value--;
+	offset.value = offset.value - limit.value;
+	getBlogPosts();
+};
+
+const nextPage = () => {
+	if (blogList.value?.length < limit.value) return;
+	offset.value = offset.value + limit.value;
+	currentPage.value++;
+	getBlogPosts();
+};
+
+watch([limit, sortBy, orderDir, postStatus], () => {
+	selectedBlog.value = {};
+	getBlogPosts();
+});
+
+onMounted(() => {
+	getBlogPosts();
+});
+</script>
+
 <template>
 	<div>
 		<div id="blogs">
 			<div>
 				<div class="blog-intro">
 					<h1>Blog</h1>
-					<p>These are all old blog posts from a blog I had over ten years ago. It was originally a Wordpress
-						site but I found an old backup of that site including the SQL backup files. All are pretty dated
-						and not using the Wordpress themes and styles but kind of amusing to see past posts.</p>
-					<p>Many posts are hidden and will be unhidden as I clean them up a little but even the ones that are
-						unhidden are pretty rough.</p>
+					<p>
+						These are all old blog posts from a blog I had over ten years ago. It was originally a Wordpress site but I found an old backup of that
+						site including the SQL backup files. All are pretty dated and not using the Wordpress themes and styles but kind of amusing to see past
+						posts.
+					</p>
+					<p>Many posts are hidden and will be unhidden as I clean them up a little but even the ones that are unhidden are pretty rough.</p>
 				</div>
 			</div>
 			<div>
 				<div id="paging">
-					<label for="limitOptions">Limit{{ isMobile ? '' : ' List' }}</label>
+					<label for="limitOptions">Limit{{ isMobile ? "" : " List" }}</label>
 					<select v-model="limit" id="limitOptions">
-						<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}
-						</option>
+						<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.text }}</option>
 					</select>
-					<label for="sortBy" title="Click to toggle sort order" class="link"
-						@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">Sort By</label>
+					<label for="sortBy" title="Click to toggle sort order" class="link" @click="orderDir === 'ASC' ? (orderDir = 'DESC') : (orderDir = 'ASC')"
+						>Sort By</label
+					>
 					<div class="order">
-						<small title="Click to toggle sort order"
-							@click="orderDir === 'ASC' ? orderDir = 'DESC' : orderDir = 'ASC'">{{ orderDir === 'ASC' ?
-								'Ascend' : 'Descend' }}</small>
+						<small title="Click to toggle sort order" @click="orderDir === 'ASC' ? (orderDir = 'DESC') : (orderDir = 'ASC')">{{
+							orderDir === "ASC" ? "Ascend" : "Descend"
+						}}</small>
 						<select v-model="sortBy" id="sortBy">
-							<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text
-							}}
-							</option>
+							<option v-for="(item, index) in sortByOptions" :key="index" :value="item.value">{{ item.text }}</option>
 						</select>
 					</div>
-					<button class="prev-button btn" type="button" @click="previousPage()"
-						title="Previous Page">previous</button>
+					<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
 					<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 					<span :currentPage="currentPage">page {{ currentPage }}</span>
 				</div>
@@ -44,16 +162,21 @@
 					</select>
 				</div>
 				<div class="button-container">
-					<button class="btn" :class="item.post_id === selectedBlog?.post_id ? 'selected' : ''"
-						v-for="(item, index) in postButtons" :key="index" @click="loadPost(item.post_id)">
-						{{ item.post_title }}</button>
+					<button
+						class="btn"
+						:class="item.post_id === selectedBlog?.post_id ? 'selected' : ''"
+						v-for="(item, index) in postButtons"
+						:key="index"
+						@click="loadPost(item.post_id)"
+					>
+						{{ item.post_title }}
+					</button>
 				</div>
 				<div id="posts" v-if="!isObjNullOrEmpty(selectedBlog)">
 					<span v-if="selectedBlog?.post_status == 'hidden'" class="hidden-post">Post is hidden</span>
 					<h1>{{ selectedBlog?.post_title }}</h1>
 					<h3>{{ selectedBlog?.post_author }}</h3>
-					<span class="post-date">Published: {{ new Date(selectedBlog?.post_date).toLocaleDateString("en-US")
-					}}</span>
+					<span class="post-date">Published: {{ new Date(selectedBlog?.post_date).toLocaleDateString("en-US") }}</span>
 					<div v-html="selectedBlog?.post_content"></div>
 				</div>
 				<h1 v-else>Click a button to view a blog post</h1>
@@ -62,143 +185,8 @@
 	</div>
 </template>
 
-<script>
-// @ is an alias to /src
-import { inject } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-
-export default {
-	name: "BlogReader",
-	props: {
-		appState: Object,
-		isMobile: Boolean,
-	},
-	components: {},
-	data() {
-		return {
-			updateStatus: inject("sendUpdateStatus"),
-			showHideLoader: inject("showHideLoader"),
-			serverStatus: Object.assign({}, this.appNotify),
-			limit: 10,
-			offset: 0,
-			currentPage: 1,
-			limitOptions: [
-				{ text: "5", value: 5 },
-				{ text: "10", value: 10 },
-				{ text: "15", value: 15 },
-				{ text: "20", value: 20 },
-				{ text: "50", value: 50 },
-			],
-			sortByOptions: [
-				{ text: "Author", value: "post_author" },
-				{ text: "Date", value: "post_date" },
-				{ text: "Title", value: "post_title" },
-				{ text: "Post Id", value: "post_id" },
-			],
-			orderDirOptions: [
-				{ text: "Descending", value: "DESC" },
-				{ text: "Ascending", value: "ASC" },
-			],
-			postStatusOptions: [
-				{ text: "Published", value: "publish" },
-				{ text: "Hidden", value: "hidden" },
-			],
-			postStatus: "publish",
-			orderDir: "ASC",
-			sortBy: "post_date",
-			blogList: [],
-			postButtons: [],
-			selectedBlog: {},
-		};
-	},
-	watch: {
-		limit() {
-			this.getBlogPosts();
-		},
-		sortBy() {
-			this.getBlogPosts();
-		},
-		orderDir() {
-			this.getBlogPosts();
-		},
-		postStatus() {
-			this.selectedBlog = {};
-			this.getBlogPosts();
-		},
-	},
-	methods: {
-		loadPost(post_id) {
-			this.selectedBlog = this.blogList.filter(post => post_id === post.post_id)[0];
-		},
-		async getBlogPosts() {
-			this.showHideLoader(true);
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/blog/", this.baseUrl);
-
-			let params = requestUrl.searchParams;
-			params.set("limit", this.limit);
-			params.set("offset", this.offset);
-			params.set("sort", this.sortBy);
-			params.set("order", this.orderDir);
-			params.set("status", this.postStatus);
-			params.set("time", new Date().getTime());
-			requestUrl.search = params.toString();
-
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
-				headers: headerObj,
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				this.blogList = data.posts;
-
-				this.postButtons = [];
-				this.blogList.forEach(post => {
-					let button = {
-						post_id: post.post_id,
-						post_title: post.post_title,
-					}
-					this.postButtons.push(button);
-				});
-
-			} catch (error) {
-				console.error('Error reading data:', error);
-				this.serverStatus.code = 500;
-				this.serverStatus.message = `Error getting data: ${error}`;
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-			} finally {
-				this.showHideLoader(false);
-			}
-		},
-		previousPage() {
-			if (this.currentPage == 1) return;
-			this.currentPage--;
-			this.offset = this.offset - this.limit;
-			this.getBlogPosts();
-		},
-		nextPage() {
-			if (this.blogList?.length < this.limit) return;
-			this.offset = this.offset + this.limit;
-			this.currentPage++;
-			this.getBlogPosts();
-		},
-	},
-	mounted() {
-		this.getBlogPosts();
-	},
-};
-</script>
-
 <style>
-/* BEGIN Blog styles */
+/* BEGIN Blog styles - not scoped */
 #posts .indent {
 	text-indent: 3em;
 }
@@ -209,7 +197,7 @@ export default {
 	font-weight: 500;
 }
 
-#posts>div {
+#posts > div {
 	margin-bottom: 45px;
 }
 
@@ -261,7 +249,7 @@ export default {
 	margin-bottom: 30px;
 }
 
-/* END Blog styles */
+/* END Blog styles - not scoped */
 </style>
 
 <style scoped>
@@ -275,7 +263,7 @@ h3 {
 	width: 100%;
 	margin: 15px auto;
 	padding: 15px;
-	position: absolute;
+	position: relative;
 	inset: 0;
 }
 
@@ -300,7 +288,7 @@ h3 {
 	justify-content: center;
 }
 
-#status-container>* {
+#status-container > * {
 	margin: 15px;
 }
 
@@ -383,9 +371,6 @@ h3 {
 }
 
 @media (min-width: 768px) {
-	/* #blogs {
-		width: 95%;
-	} */
 }
 
 @media (min-width: 992px) {

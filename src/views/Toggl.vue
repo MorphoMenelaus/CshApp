@@ -3,52 +3,49 @@
 		<div>
 			<div id="toggl-user" v-if="toggleUser">
 				<h1 id="toggl-heading">Toggl Project Tracker</h1>
-				<a href="https://toggl.com/" class="link" title="Toggl Track" target="_blank"><small>Toggl Full
-						Website</small></a>
+				<a href="https://toggl.com/" class="link" title="Toggl Track" target="_blank"><small>Toggl Full Website</small></a>
 				<h1>{{ toggleUser.fullname }}</h1>
 				<h2>User Id: {{ toggleUser.user_account_id }}</h2>
 
 				<div class="btn-group">
-					<button class="btn" @click="showAcountDetails = showAcountDetails ? false : true">Account
-						Details</button>
+					<button class="btn" @click="showAcountDetails = showAcountDetails ? false : true">Account Details</button>
 				</div>
 
 				<Transition name="slide-down">
 					<ul v-if="showAcountDetails">
-						<li v-for="(item, index) in toggleUser" :key="index">
-							{{ index }}: {{ item }}
-						</li>
+						<li v-for="(item, index) in toggleUser" :key="index">{{ index }}: {{ item }}</li>
 					</ul>
 				</Transition>
 			</div>
 
 			<ProjectTable v-if="projects?.length > 0" :appState="appState" :projects="projects" :isMobile="isMobile" />
-
 		</div>
 	</div>
 </template>
 
 <script>
 import { inject } from "vue";
-import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { Storage, isObjNullOrEmpty, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import ProjectTable from "@/components/ProjectTable.vue";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "TogglPOC",
 	props: {
 		appState: Object,
 		isMobile: Boolean,
-		windowWidth: Number
+		windowWidth: Number,
 	},
 	components: {
-		ProjectTable
+		ProjectTable,
 	},
 	data() {
 		return {
-			forceLogout: inject('forceLogout'),
+			baseUrl: inject("baseUrl"),
+			forceLogout: inject("forceLogout"),
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
-			serverStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, appNotify),
 			togglStore: new Storage("togglStore"),
 			togglRecall: {},
 			showAcountDetails: false,
@@ -56,28 +53,24 @@ export default {
 			projects: [],
 		};
 	},
-	watch: {
-	},
+	watch: {},
 	methods: {
 		async getUserData() {
 			this.showHideLoader(true);
 
 			try {
-
 				let headerObj = new Headers();
 				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
 				let requestUrl = new URL("/api/toggl/user", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'GET',
+				let request = new Request(requestUrl.toString(), {
+					method: "GET",
 					headers: headerObj,
 				});
 
 				let response = await tokenInterceptFetch(request);
-				if (!response.ok)
-					this.forceLogout();
+				if (!response.ok) this.forceLogout();
 
 				let data = await response.json();
 
@@ -94,9 +87,8 @@ export default {
 
 				this.toggleUser = data.users;
 				this.togglStore.add("users", this.toggleUser);
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -114,15 +106,13 @@ export default {
 				headerObj.append("Content-Type", "application/json; charset=utf-8");
 				let requestUrl = new URL("/api/toggl/projects", this.baseUrl);
 
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'GET',
+				let request = new Request(requestUrl.toString(), {
+					method: "GET",
 					headers: headerObj,
 				});
 
 				let response = await tokenInterceptFetch(request);
-				if (!response.ok)
-					this.forceLogout();
+				if (!response.ok) this.forceLogout();
 
 				let data = await response.json();
 
@@ -140,9 +130,8 @@ export default {
 				this.projects = data.projects;
 
 				this.togglStore.add("projects", this.projects);
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -155,14 +144,12 @@ export default {
 	mounted() {
 		// 1 hour storage expire
 		let current = new Date().getTime();
-		if (current > this.togglRecall?.projects?.timecode + 3600000)
-			this.getProjects();
-		if (current > this.togglRecall?.users?.timecode + 3600000)
-			this.getUserData();
+		if (current > this.togglRecall?.projects?.timecode + 3600000) this.getProjects();
+		if (current > this.togglRecall?.users?.timecode + 3600000) this.getUserData();
 	},
 	created() {
 		this.togglRecall = this.togglStore.get();
-		if (this.isObjNullOrEmpty(this.togglRecall)) {
+		if (isObjNullOrEmpty(this.togglRecall)) {
 			this.togglStore.save({});
 		}
 		if (!this.togglRecall?.projects) {
@@ -192,7 +179,6 @@ h4 {
 #toggl-user {
 	width: 95%;
 	max-width: 50em;
-	/* margin: 15px auto; */
 	background-color: #c1c1c1;
 	color: #333;
 	border-radius: 12px;
@@ -219,7 +205,7 @@ h4 {
 
 #toggl-user a {
 	padding: 0 0 10px;
-	line-height: .75em;
+	line-height: 0.75em;
 	display: flex;
 	justify-content: center;
 }
@@ -228,9 +214,11 @@ h4 {
 	background-color: unset;
 }
 
-@media (max-width: 767px) {}
+@media (max-width: 767px) {
+}
 
-@media (min-width: 768px) and (max-width: 991px) {}
+@media (min-width: 768px) and (max-width: 991px) {
+}
 
 @media (min-width: 768px) {
 	#toggl-user {

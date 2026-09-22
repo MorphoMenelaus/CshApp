@@ -1,3 +1,115 @@
+<script setup>
+import { ref, inject, watch, onMounted } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
+import urls from "@/dependencies/commonUrls.json";
+import { appNotify } from "@/dependencies/models.js";
+import ResumeTable from "@/components/ResumeTable.vue";
+import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
+import skills from "@/dependencies/skills.json";
+
+const props = defineProps({
+	appState: Object,
+	isMobile: Boolean,
+});
+
+const baseUrl = inject("baseUrl");
+const personalRestricted = inject("personalRestricted");
+const updateStatus = inject("sendUpdateStatus");
+const showHideLoader = inject("showHideLoader");
+const contactEmail = inject("contactEmail");
+const forceLogout = inject("forceLogout");
+const serverStatus = Object.assign({}, appNotify);
+const resumeArray = ref([]);
+const allDutiesArray = ref([]);
+const keywords = ref("");
+const filteredArray = ref([]);
+const filteredSkills = ref([]);
+
+const keywordFilter = () => {
+	let filtered = [];
+	let filterSkills = [];
+	const regex = new RegExp(keywords.value, "gi");
+	allDutiesArray.value.forEach((duty) => {
+		if (duty.toUpperCase().includes(keywords.value.toUpperCase()))
+			filtered.push(
+				duty.replaceAll(regex, (match) => {
+					return match.replaceAll(regex, `<b>${match}</b>`);
+				}),
+			);
+	});
+	skills.forEach((skill) => {
+		if (skill.toUpperCase().includes(keywords.value.toUpperCase()))
+			filterSkills.push(
+				skill.replaceAll(regex, (match) => {
+					return match.replaceAll(regex, `<b>${match}</b>`);
+				}),
+			);
+	});
+	filteredArray.value = filtered;
+	filteredSkills.value = filterSkills;
+};
+
+const combineAllToNewArray = () => {
+	let newArr = [];
+	let duitiesArr = [];
+	if (props.appState?.appDevDuties?.length > 0) {
+		duitiesArr = props.appState?.appDevDuties.flatMap((app) => app.duties);
+		newArr = [...newArr, ...duitiesArr];
+	}
+	resumeArray.value.forEach((entry) => {
+		newArr = [...newArr, ...entry.duties];
+	});
+	allDutiesArray.value = newArr;
+};
+
+const getResumeData = async () => {
+	showHideLoader(true);
+
+	let headerObj = new Headers();
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/blog/resume/", baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(requestUrl.toString(), {
+		method: "GET",
+		headers: headerObj,
+	});
+
+	try {
+		let response = await fetch(request);
+		let data = await response.json();
+
+		if (data?.code === 403) {
+			data.forced = true;
+			forceLogout(data);
+		}
+
+		if (data?.success) {
+			resumeArray.value = data.resume;
+			combineAllToNewArray();
+		}
+	} catch (error) {
+		console.error("Error reading data:", error);
+		serverStatus.code = 500;
+		serverStatus.message = `Error getting data: ${error}`;
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+	} finally {
+		showHideLoader(false);
+	}
+};
+
+watch(keywords, () => {
+	keywordFilter();
+});
+
+onMounted(() => {
+	getResumeData();
+});
+</script>
 <template>
 	<div>
 		<div id="layout-container">
@@ -8,7 +120,7 @@
 
 			<div class="btn-container top">
 				<a
-					v-if="!this.personalRestricted"
+					v-if="!personalRestricted"
 					class="btn acrobat-icon"
 					href="/pdf/ChrisHardwickResume2026-09nc.pdf"
 					title="Download Chris Hardwick Resume PDF"
@@ -73,126 +185,6 @@
 		</div>
 	</div>
 </template>
-
-<script>
-import { inject } from "vue";
-import urls from "@/dependencies/commonUrls.json";
-import ResumeTable from "@/components/ResumeTable.vue";
-import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
-import skills from "@/dependencies/skills.json";
-
-export default {
-	name: "ResumeView",
-	props: {
-		appState: Object,
-		isMobile: Boolean,
-	},
-	components: {
-		ResumeTable,
-		ResumeTableMobile,
-	},
-	data() {
-		return {
-			urls: urls,
-			updateStatus: inject("sendUpdateStatus"),
-			showHideLoader: inject("showHideLoader"),
-			contactEmail: inject("contactEmail"),
-			forceLogout: inject("forceLogout"),
-			serverStatus: Object.assign({}, this.appNotify),
-			resumeArray: [],
-			allDutiesArray: [],
-			keywords: "",
-			filteredArray: [],
-			filteredSkills: [],
-			skills: skills,
-		};
-	},
-	watch: {
-		keywords() {
-			this.keywordFilter();
-		},
-	},
-	methods: {
-		keywordFilter() {
-			let filtered = [];
-			let filteredSkills = [];
-			const regex = new RegExp(this.keywords, "gi");
-			this.allDutiesArray.forEach((duty) => {
-				if (duty.toUpperCase().includes(this.keywords.toUpperCase()))
-					filtered.push(
-						duty.replaceAll(regex, (match) => {
-							return match.replaceAll(regex, `<b>${match}</b>`);
-						}),
-					);
-			});
-			this.skills.forEach((skill) => {
-				if (skill.toUpperCase().includes(this.keywords.toUpperCase()))
-					filteredSkills.push(
-						skill.replaceAll(regex, (match) => {
-							return match.replaceAll(regex, `<b>${match}</b>`);
-						}),
-					);
-			});
-			this.filteredArray = filtered;
-			this.filteredSkills = filteredSkills;
-		},
-		combineAllToNewArray() {
-			let newArr = [];
-			let duitiesArr = [];
-			if (this.appState?.appDevDuties?.length > 0) {
-				duitiesArr = this.appState?.appDevDuties.flatMap((app) => app.duties);
-				newArr = [...newArr, ...duitiesArr];
-			}
-			this.resumeArray.forEach((entry) => {
-				newArr = [...newArr, ...entry.duties];
-			});
-			this.allDutiesArray = newArr;
-		},
-		async getResumeData() {
-			this.showHideLoader(true);
-
-			let headerObj = new Headers();
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/blog/resume/", this.baseUrl);
-
-			let params = requestUrl.searchParams;
-			params.set("time", new Date().getTime());
-			requestUrl.search = params.toString();
-
-			let request = new Request(requestUrl.toString(), {
-				method: "GET",
-				headers: headerObj,
-			});
-
-			try {
-				let response = await fetch(request);
-				let data = await response.json();
-
-				if (data?.code === 403) {
-					data.forced = true;
-					this.forceLogout(data);
-				}
-
-				if (data?.success) {
-					this.resumeArray = data.resume;
-					this.combineAllToNewArray();
-				}
-			} catch (error) {
-				console.error("Error reading data:", error);
-				this.serverStatus.code = 500;
-				this.serverStatus.message = `Error getting data: ${error}`;
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-			} finally {
-				this.showHideLoader(false);
-			}
-		},
-	},
-	mounted() {
-		this.getResumeData();
-	},
-};
-</script>
 
 <style>
 #filtered {

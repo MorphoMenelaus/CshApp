@@ -5,7 +5,6 @@
 	height: 100%;
 	height: calc(100vh - 144px);
 	margin: 100px auto 50px;
-	padding: 15px;
 	font-weight: 400;
 	position: fixed;
 	inset: 0;
@@ -91,7 +90,6 @@ table {
 	color: #aaa;
 }
 
-/* a, */
 .green {
 	text-decoration: none;
 	color: hsla(160, 100%, 37%, 1);
@@ -151,7 +149,6 @@ table {
 button,
 .btn {
 	border: 1px rgb(128 128 128) solid !important;
-	/* box-shadow: none !important; */
 	box-shadow: inset -1px -1px 5px rgb(0 0 0 / 80%),
 		inset 1px 1px 4px rgb(255 255 255 / 75%) !important;
 }
@@ -186,7 +183,6 @@ button.close-modal {
 }
 
 .btn[disabled] {
-	/* background-color: #666; */
 	background-color: #578ca3;
 	color: #333;
 	cursor: default;
@@ -305,7 +301,12 @@ button.close-modal {
 	opacity: 0;
 }
 
-@media (max-width: 767px) {}
+@media (max-width: 767px) {
+	#app>#view {
+		padding-bottom: 75px;
+		margin-bottom: 15px;
+	}
+}
 
 @media (min-width: 768px) and (max-width: 991px) {}
 

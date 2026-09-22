@@ -1,5 +1,182 @@
-<template>
+<script setup>
+import { ref, inject, watch, onBeforeMount, onMounted } from "vue";
+import { isUTCtime, toTitleCase, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
 
+const props = defineProps({
+	appState: Object,
+	isMobile: Boolean,
+});
+
+const baseUrl = inject("baseUrl");
+const showHideLoader = inject("showHideLoader");
+const updateStatus = inject("sendUpdateStatus");
+const serverStatus = Object.assign({}, appNotify);
+const limit = ref(10);
+const offset = ref(0);
+const currentPage = ref(1);
+const dayLocal = ref("");
+const dateLocal = ref("");
+const timeLocal = ref("");
+const eventLogList = ref([]);
+const charRemaining = ref(512);
+const eventType = ref("");
+const isWakeupEvent = ref(0);
+const notes = ref("");
+const maxlength = 512;
+const boolOptions = [
+	{ text: "True", value: "1" },
+	{ text: "False", value: "0" },
+];
+const eventOptions = [
+	{ text: "Go to bed", value: "toBed" },
+	{ text: "Get out of bed", value: "fromBed" },
+	{ text: "Wake up", value: "wakeUp" },
+	{ text: "Dinner time", value: "dinnerTime" },
+];
+const limitOptions = [
+	{ text: "5", value: 5 },
+	{ text: "10", value: 10 },
+	{ text: "15", value: 15 },
+	{ text: "25", value: 25 },
+	{ text: "50", value: 50 },
+	{ text: "100", value: 100 },
+	{ text: "200", value: 200 },
+];
+
+const charCounter = () => {
+	let currCount = notes.value.length;
+	if (charRemaining.value <= maxlength) charRemaining.value = maxlength - currCount;
+};
+
+const getClockLog = async () => {
+	showHideLoader(true);
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/userlogs/clock/log", baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("limit", limit.value);
+	params.set("offset", offset.value);
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(requestUrl.toString(), {
+		method: "GET",
+		headers: headerObj,
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		eventLogList.value = data?.clockLogs;
+	} catch (error) {
+		console.error("Error posting data:", error);
+		serverStatus.code = 500;
+		serverStatus.message = `Error getting data: ${error}`;
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+	} finally {
+		showHideLoader(false);
+	}
+};
+
+const logSimpleClock = async () => {
+	showHideLoader(true);
+
+	let data;
+	try {
+		let body = {
+			userId: props.appState.user.userId,
+			userName: props.appState.user.userName,
+			eventType: eventType.value,
+			isWakeupEvent: isWakeupEvent.value,
+			notes: notes.value,
+		};
+
+		let headerObj = new Headers();
+		headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL("/api/userlogs/clock", baseUrl);
+
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
+			headers: headerObj,
+			body: JSON.stringify(body),
+		});
+
+		const response = await tokenInterceptFetch(request);
+		data = await response.json();
+
+		serverStatus.code = data?.code;
+		serverStatus.message = data?.message;
+		serverStatus.success = data?.success;
+		updateStatus(serverStatus);
+
+		isWakeupEvent.value = false;
+		notes.value = "";
+		getClockLog();
+	} catch (error) {
+		console.error("Error posting data:", error);
+		serverStatus.code = 400;
+		serverStatus.message = `Error posting data: ${error}`;
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+	} finally {
+		showHideLoader(false);
+	}
+};
+
+const updateDateTime = () => {
+	let date = new Date();
+	dayLocal.value = date.toLocaleDateString("en-US", { weekday: "long" });
+	dateLocal.value = date.toLocaleDateString("en-US");
+	timeLocal.value = date.toLocaleTimeString();
+};
+
+const previousPage = () => {
+	if (currentPage.value == 1) return;
+	currentPage.value--;
+	offset.value = offset.value - limit.value;
+	getClockLog();
+};
+
+const nextPage = () => {
+	if (eventLogList.value?.length < limit.value) return;
+	offset.value = offset.value + limit.value;
+	currentPage.value++;
+	getClockLog();
+};
+
+watch([limit, eventLogList], ([newLimit, newLogs], [oldLimit, oldLogs]) => {
+	if (newLimit !== oldLimit) {
+		currentPage.value = 1;
+		offset.value = null;
+		getClockLog();
+	}
+	if (newLogs.length !== oldLogs.length && eventLogList.value.length > 0) {
+		eventLogList.value.forEach((event) => {
+			event.isWakeupEvent = event?.isWakeupEvent === 1 ? true : false;
+		});
+	}
+});
+
+onBeforeMount(() => {
+	updateDateTime();
+	getClockLog();
+});
+
+onMounted(() => {
+	setInterval(() => {
+		updateDateTime();
+	}, 1000);
+});
+</script>
+
+<template>
 	<div id="clocklog-container">
 		<div id="clock">
 			<div id="time-container">
@@ -31,46 +208,43 @@
 				<label for="notes">
 					<small>(characters remaining: {{ charRemaining }})</small>
 				</label>
-				<textarea v-model="notes" class="notes" name="notes" id="notes" :maxlength="maxlength"
-					placeholder="Type notes here..." @keyup="charCounter()"></textarea>
+				<textarea
+					v-model="notes"
+					class="notes"
+					name="notes"
+					id="notes"
+					:maxlength="maxlength"
+					placeholder="Type notes here..."
+					@keyup="charCounter()"
+				></textarea>
 			</div>
-			<button @click="logSimpleClock()" class='btn time-log' type='submit' name='submit' value='submit'
-				title='Submit Time Log'>Submit Time
-				Log</button>
+			<button @click="logSimpleClock()" class="btn time-log" type="submit" name="submit" value="submit" title="Submit Time Log">Submit Time Log</button>
 		</form>
 
 		<div id="paging">
 			<label for="limitOptions">Limit List</label>
 			<select v-model="limit">
-				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}
-				</option>
+				<option v-for="(item, index) in limitOptions" :key="index" :value="item.value">{{ item.value }}</option>
 			</select>
-			<button class="prev-button btn" type="button" @click="previousPage()"
-				title="Previous Page">previous</button>
+			<button class="prev-button btn" type="button" @click="previousPage()" title="Previous Page">previous</button>
 			<button class="next-button btn" type="button" @click="nextPage()" title="Next Page">next</button>
 			<span :currentPage="currentPage">page {{ currentPage }}</span>
 		</div>
 
 		<div class="user-lists-container">
-
 			<div v-if="eventLogList?.length > 0">
 				<div id="non-mobile" v-if="!isMobile">
 					<table v-if="eventLogList && eventLogList.length > 0">
 						<thead>
 							<tr class="header-row">
-								<th v-for="(label, index) in Object.keys(eventLogList[0])" :key="index">{{
-									this.toTitleCase(label)
-								}}
-								</th>
+								<th v-for="(label, index) in Object.keys(eventLogList[0])" :key="index">{{ toTitleCase(label) }}</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr class="data-row" v-for="(event, index) in eventLogList" :key="index">
-								<td v-for="(column, index) in event" :key="index"
-									:class="column === true ? 'true' : ''">{{
-										isUTCtime(column) ? new
-											Date(column).toLocaleString() : column
-									}}</td>
+								<td v-for="(column, index) in event" :key="index" :class="column === true ? 'true' : ''">
+									{{ isUTCtime(column) ? new Date(column).toLocaleString() : column }}
+								</td>
 							</tr>
 						</tbody>
 					</table>
@@ -78,9 +252,8 @@
 				<div id="mobile" v-if="isMobile && eventLogList?.length > 0">
 					<table v-for="(item, index) in eventLogList" :key="index">
 						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
-							<th>{{ this.toTitleCase(key) }}</th>
-							<td :class="item[key] === true ? 'true' : ''">{{ isUTCtime(item[key]) ? new
-								Date(item[key]).toLocaleString() : item[key] }}</td>
+							<th>{{ toTitleCase(key) }}</th>
+							<td :class="item[key] === true ? 'true' : ''">{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 						</tr>
 					</table>
 				</div>
@@ -88,197 +261,9 @@
 			<div v-else>
 				<h1>Nothing more to display.</h1>
 			</div>
-
 		</div>
-
 	</div>
-
 </template>
-
-<script>
-import { inject } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-
-export default {
-	name: "SimpleClock",
-	props: {
-		appState: Object,
-		isMobile: Boolean
-	},
-	components: {},
-	data() {
-		return {
-			showHideLoader: inject("showHideLoader"),
-			updateStatus: inject("sendUpdateStatus"),
-			serverStatus: Object.assign({}, this.appNotify),
-			limit: 10,
-			offset: 0,
-			currentPage: 1,
-			boolOptions: [
-				{ text: "True", value: "1" },
-				{ text: "False", value: "0" },
-			],
-			eventOptions: [
-				{ text: "Go to bed", value: "toBed" },
-				{ text: "Get out of bed", value: "fromBed" },
-				{ text: "Wake up", value: "wakeUp" },
-				{ text: "Dinner time", value: "dinnerTime" },
-			],
-			limitOptions: [
-				{ text: "5", value: 5 },
-				{ text: "10", value: 10 },
-				{ text: "15", value: 15 },
-				{ text: "25", value: 25 },
-				{ text: "50", value: 50 },
-				{ text: "100", value: 100 },
-				{ text: "200", value: 200 },
-			],
-			dayLocal: "",
-			dateLocal: "",
-			timeLocal: "",
-			eventLogList: [],
-			maxlength: 512,
-			charRemaining: 512,
-			eventType: "",
-			isWakeupEvent: 0,
-			notes: "",
-		};
-	},
-	watch: {
-		limit() {
-			this.currentPage = 1;
-			this.offset = null;
-			this.getClockLog();
-		},
-		eventLogList() {
-			if (this.eventLogList?.length > 0) {
-				this.eventLogList.forEach(event => {
-					event.isWakeupEvent = event?.isWakeupEvent === 1 ? true : false;
-				});
-			}
-		}
-	},
-	methods: {
-		charCounter() {
-			let currCount = this.notes.length;
-			if (this.charRemaining <= this.maxlength)
-				this.charRemaining = this.maxlength - currCount;
-		},
-		async getClockLog() {
-			this.showHideLoader(true);
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/userlogs/clock/log", this.baseUrl);
-
-			let params = requestUrl.searchParams;
-			params.set("limit", this.limit);
-			params.set("offset", this.offset);
-			params.set("time", new Date().getTime());
-			requestUrl.search = params.toString();
-
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
-				headers: headerObj,
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				this.eventLogList = data?.clockLogs;
-
-			} catch (error) {
-				console.error('Error posting data:', error);
-				this.serverStatus.code = 500;
-				this.serverStatus.message = `Error getting data: ${error}`;
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-			} finally {
-				this.showHideLoader(false);
-			}
-		},
-		async logSimpleClock() {
-			this.showHideLoader(true);
-
-			let data;
-			try {
-
-				let body = {
-					userId: this.appState.user.userId,
-					userName: this.appState.user.userName,
-					eventType: this.eventType,
-					isWakeupEvent: this.isWakeupEvent,
-					notes: this.notes,
-
-				};
-
-				let headerObj = new Headers();
-				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL("/api/userlogs/clock", this.baseUrl);
-
-				let request = new Request(
-					requestUrl.toString(), {
-					method: 'POST',
-					headers: headerObj,
-					body: JSON.stringify(body)
-				});
-
-				const response = await tokenInterceptFetch(request);
-				data = await response.json();
-
-				this.serverStatus.code = data?.code;
-				this.serverStatus.message = data?.message;
-				this.serverStatus.success = data?.success;
-				this.updateStatus(this.serverStatus);
-
-				this.isWakeupEvent = false;
-				this.notes = "";
-				this.getClockLog();
-
-			} catch (error) {
-				console.error('Error posting data:', error);
-				this.serverStatus.code = 400;
-				this.serverStatus.message = `Error posting data: ${error}`;
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-			} finally {
-				this.showHideLoader(false);
-			}
-		},
-		updateDateTime() {
-			let date = new Date();
-			this.dayLocal = date.toLocaleDateString('en-US', { weekday: 'long' });
-			this.dateLocal = date.toLocaleDateString("en-US");
-			this.timeLocal = date.toLocaleTimeString();
-		},
-		previousPage() {
-			if (this.currentPage == 1) return;
-			this.currentPage--;
-			this.offset = this.offset - this.limit;
-			this.getClockLog();
-		},
-		nextPage() {
-			if (this.eventLogList?.length < this.limit) return;
-			this.offset = this.offset + this.limit;
-			this.currentPage++;
-			this.getClockLog();
-		},
-	},
-	mounted() {
-		setInterval(() => {
-			this.updateDateTime();
-		}, 1000);
-	},
-	created() {
-		this.updateDateTime();
-		this.getClockLog();
-	},
-};
-</script>
 
 <style scoped>
 h1 {
@@ -299,7 +284,7 @@ h1 {
 	max-width: 800px;
 }
 
-#wakeup-event+label {
+#wakeup-event + label {
 	margin-left: 15px;
 }
 
@@ -432,7 +417,7 @@ td {
 	height: unset;
 }
 
-.grid-border-bg>div {
+.grid-border-bg > div {
 	background-color: #555;
 	display: flex;
 	flex-flow: column nowrap;

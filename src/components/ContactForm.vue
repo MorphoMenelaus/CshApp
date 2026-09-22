@@ -62,8 +62,9 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import { onBeforeUnmount, inject } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "ContactForm",
@@ -72,13 +73,14 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
 			contactEmail: inject("contactEmail"),
 			forceLogout: inject("forceLogout"),
 			registerUser: inject("registerUser"),
-			serverStatus: Object.assign({}, this.appNotify),
-			siteKey: this.reCaptchaSiteKey,
+			siteKey: inject("reCaptchaSiteKey"),
+			serverStatus: Object.assign({}, appNotify),
 			token: "",
 			name: this.appState?.userName || "",
 			email: this.appState?.user?.email || "",
@@ -142,7 +144,7 @@ export default {
 				this.serverStatus.success = data?.success;
 
 				if (data.success) {
-					this.sendAnalyticsEvent("contact_form_send", "contact_modal");
+					sendAnalyticsEvent("contact_form_send", "contact_modal");
 					this.messageSent = true;
 				}
 				this.errState = data?.success;
@@ -189,7 +191,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.sendAnalyticsEvent("contact_form_load", "contact_modal");
+		sendAnalyticsEvent("contact_form_load", "contact_modal");
 		if (!document.getElementById("recaptcha-script")) {
 			const script = document.createElement("script");
 			script.id = "recaptcha-script";
@@ -222,7 +224,6 @@ h2 {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-
 	margin: 30px auto;
 	padding: 15px 30px;
 	height: fit-content;
@@ -240,7 +241,6 @@ form {
 	padding: 30px;
 	position: relative;
 	top: 0;
-	/* left: 10vw; */
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	border-radius: 12px;
@@ -297,9 +297,6 @@ label[for="casinoId"] {
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 }
-
-/* .uiDarkMode #contact {
-} */
 
 .wrapper {
 	max-width: 30em;
@@ -359,7 +356,6 @@ textarea#message {
 }
 
 .privacy-link {
-	/* text-transform: uppercase; */
 	font-weight: bold;
 }
 

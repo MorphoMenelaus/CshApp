@@ -60,7 +60,7 @@ import ContactForm from "@/components/ContactForm.vue";
 import GeminiChat from "@/components/GeminiChat.vue";
 import GeminiJobMatch from "@/components/GeminiJobMatch.vue";
 import GeminiExplainCode from "@/components/GeminiExplainCode.vue";
-import { Storage, stateUpdateService } from "@/dependencies/csh-libs.js";
+import { Storage, tokenCheck, stateUpdateService, routerStateService } from "@/dependencies/csh-libs.js";
 
 export default {
 	components: {
@@ -76,6 +76,7 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			sharedUpdateStatus: {},
 			forceLogoutEvent: {},
 			mobileDropdownClose: null,
@@ -135,7 +136,7 @@ export default {
 			this.getServerVersion();
 			this.recallAppState();
 			if (this.appState?.accessToken) {
-				let checkTokens = await this.tokenCheck(this.appState);
+				let checkTokens = await tokenCheck(this.appState);
 				if (!checkTokens?.tokenValid) {
 					let res = {
 						code: 403,
@@ -156,6 +157,7 @@ export default {
 		},
 		recallAppState() {
 			this.appState = this.recall.get();
+			routerStateService.setPermissions(this.appState?.permissions, this.appState?.isLoggedOn);
 			this.uiDarkMode = this.appState?.user?.uiDarkMode || false;
 		},
 		handleStateUpdateEvent() {
@@ -163,6 +165,7 @@ export default {
 		},
 		updateAppState(newState) {
 			this.appState = newState;
+			routerStateService.setPermissions(newState?.permissions, newState?.isLoggedOn);
 			this.recall.save(this.appState);
 			if (this.appState.hasOwnProperty("user")) {
 				this.uiDarkMode = this.appState.user?.uiDarkMode || false;
@@ -241,6 +244,7 @@ export default {
 		screen.orientation.addEventListener("change", this.checkOrientation);
 		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
 		window.addEventListener("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));
+		window.addEventListener("routerNotify", (e) => (this.sharedUpdateStatus = e?.detail));
 		window.addEventListener("keydown", (down) => {
 			if (down.key === "Escape") this.currentComponent = null;
 		});
@@ -287,7 +291,6 @@ span.link {
 	justify-content: space-between;
 	flex-direction: column;
 	width: 6em;
-	/* color: #000; */
 	z-index: 1;
 	transition: opacity 0.2s;
 }
@@ -402,6 +405,7 @@ nav a:first-of-type {
 #ai-button {
 	position: fixed;
 	bottom: 60px;
+	left: 1em;
 }
 
 #ai-button .btn {

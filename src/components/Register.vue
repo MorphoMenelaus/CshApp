@@ -59,6 +59,8 @@
 
 <script>
 import { onBeforeUnmount, inject } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "RegisterUser",
@@ -67,18 +69,19 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			forceLogout: inject("forceLogout"),
 			loginShow: inject("loginShow"),
 			registerUser: inject("registerUser"),
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
-			serverStatus: Object.assign({}, this.appNotify),
+			siteKey: inject("reCaptchaSiteKey"),
+			serverStatus: Object.assign({}, appNotify),
 			userName: "",
 			password: "",
 			confirmPassword: "",
 			email: "",
 			errState: false,
-			siteKey: this.reCaptchaSiteKey,
 			token: "",
 		};
 	},
@@ -121,7 +124,6 @@ export default {
 				const data = await response.json();
 
 				if (data?.code === 403) {
-					// this.updateStatus(data);
 					data.forced = true;
 					this.forceLogout(data);
 				}
@@ -133,7 +135,7 @@ export default {
 				if (data?.success) {
 					this.loginShow(false);
 					this.registerUser(false);
-					this.sendAnalyticsEvent("register_form_send", "register_modal");
+					sendAnalyticsEvent("register_form_send", "register_modal");
 				}
 
 				this.errState = data?.success;
@@ -193,7 +195,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.sendAnalyticsEvent("register_form_load", "register_modal");
+		sendAnalyticsEvent("register_form_load", "register_modal");
 		if (!document.getElementById("recaptcha-script")) {
 			const script = document.createElement("script");
 			script.id = "recaptcha-script";
@@ -225,7 +227,6 @@ h2 {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-
 	margin: 30px auto;
 	padding: 15px 30px;
 	height: fit-content;
@@ -243,7 +244,6 @@ form {
 	padding: 30px;
 	position: relative;
 	top: 0;
-	/* left: 10vw; */
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
 	border-radius: 12px;
@@ -301,11 +301,7 @@ label[for="casinoId"] {
 	backdrop-filter: blur(10px);
 }
 
-/* .uiDarkMode #register {
-} */
-
 .wrapper {
-	/* position: relative; */
 	max-width: 30em;
 	align-content: center;
 	background-color: #313b64;

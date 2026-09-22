@@ -1,6 +1,7 @@
 <script setup>
 import { inject } from "vue";
 import { useRoute } from "vue-router";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 const contactEmail = inject("contactEmail");
 const route = useRoute();
 </script>
@@ -19,8 +20,6 @@ const route = useRoute();
 
 <style scoped>
 #available span {
-	font-size: 1.25em;
-	/* color: #8eef8e; */
 	color: #b3ffb3;
 	background-color: rgb(0 128 0);
 	padding: 1px 15px 0 25px;
@@ -37,7 +36,6 @@ const route = useRoute();
 
 #available span.about {
 	padding-top: 0;
-	padding-bottom: 1px;
 }
 
 #available:hover span {

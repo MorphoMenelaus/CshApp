@@ -17,12 +17,14 @@
 			</thead>
 			<tbody>
 				<tr class="data-row" v-for="(item, index) in projects" :key="index">
-					<td @click="!projectOpen ? project = item : null"
-						:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`">
-						<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''"
-							:style="`background-color: ${item.color}`">{{ item.name }}</div>
-						<span class="running"
-							v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
+					<td
+						@click="!projectOpen ? (project = item) : null"
+						:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`"
+					>
+						<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''" :style="`background-color: ${item.color}`">
+							{{ item.name }}
+						</div>
+						<span class="running" v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
 					</td>
 					<td>
 						<div>{{ item.client_name }}</div>
@@ -50,12 +52,14 @@
 				<tbody>
 					<tr class="header-row">
 						<th>Project</th>
-						<td @click="!projectOpen ? project = item : null"
-							:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`">
-							<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''"
-								:style="`background-color: ${item.color}`">{{ item.name }}</div>
-							<span class="running"
-								v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
+						<td
+							@click="!projectOpen ? (project = item) : null"
+							:title="projectOpen && !openTracker?.stop ? `A project is already running` : `Select ${item.name}`"
+						>
+							<div :class="projectOpen && openTracker?.project_id !== item.id ? 'disabled' : ''" :style="`background-color: ${item.color}`">
+								{{ item.name }}
+							</div>
+							<span class="running" v-if="projectOpen && !openTracker?.stop && openTracker?.project_id === item.id">Started</span>
 						</td>
 					</tr>
 					<tr class="header-row">
@@ -90,8 +94,9 @@
 
 <script>
 import { inject } from "vue";
-import { Storage, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-import { trackerModel } from "@/dependencies/models.js";
+import { Storage, isObjNullOrEmpty, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { trackerModel, appNotify } from "@/dependencies/models.js";
+
 import TimeTracker from "@/components/TimeTracker.vue";
 
 export default {
@@ -102,17 +107,17 @@ export default {
 		projects: Array,
 	},
 	components: {
-		TimeTracker
+		TimeTracker,
 	},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
-			showHideLoader: inject('showHideLoader'),
+			baseUrl: inject("baseUrl"),
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			updateAppState: inject("updateAppState"),
-			serverStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, appNotify),
 			timeTracker: Object.assign({}, trackerModel),
 			togglStore: new Storage("togglStore"),
-			// togglRecall: {},
 			openTracker: this.timeTracker,
 			project: {},
 			projectOpen: false,
@@ -127,17 +132,17 @@ export default {
 		},
 		appState: {
 			handler(val) {
-				this.openTracker = !this.isObjNullOrEmpty(val?.openTracker) ? val.openTracker : this.timeTracker;
+				this.openTracker = !isObjNullOrEmpty(val?.openTracker) ? val.openTracker : this.timeTracker;
 			},
-			deep: true
-		}
+			deep: true,
+		},
 	},
 	methods: {
 		scrollToTop() {
 			let container = document.getElementById("app");
 			container.scrollTo({
 				top: 0,
-				behavior: "smooth"
+				behavior: "smooth",
 			});
 		},
 		async getCurrentTimeEntries() {
@@ -148,15 +153,12 @@ export default {
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL("/api/toggl/entries/current", this.baseUrl);
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
 			try {
-				// let response = await fetch(request);
-				// let data = await response.json();
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
@@ -168,7 +170,7 @@ export default {
 					return;
 				}
 
-				if (this.isObjNullOrEmpty(data?.currentEntries)) {
+				if (isObjNullOrEmpty(data?.currentEntries)) {
 					let updateAppState = this.appState;
 					updateAppState.openTracker = this.timeTracker;
 					updateAppState.project = {};
@@ -189,7 +191,7 @@ export default {
 				this.openTracker = mergedTracker;
 				this.togglStore.delete("openTracker");
 
-				this.project = this.projects.filter(proj => proj.id === this.openTracker.project_id)[0];
+				this.project = this.projects.filter((proj) => proj.id === this.openTracker.project_id)[0];
 				this.togglStore.add("project", this.project);
 				this.togglStore.add("openTracker", this.openTracker);
 
@@ -197,9 +199,8 @@ export default {
 				updateAppState.openTracker = this.openTracker;
 				updateAppState.project = this.project;
 				this.updateAppState(updateAppState);
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -246,11 +247,12 @@ td div {
 
 td:first-child div {
 	color: #000;
-	box-shadow: inset -3px -3px 6px 1px rgb(0 0 0 / 80%),
+	box-shadow:
+		inset -3px -3px 6px 1px rgb(0 0 0 / 80%),
 		inset 2px 2px 6px rgb(255 255 255 / 80%);
 	cursor: pointer;
 	user-select: none;
-	transition: transform .2s ease;
+	transition: transform 0.2s ease;
 }
 
 td:first-child div:not(.disabled):hover {

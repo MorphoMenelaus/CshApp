@@ -1,6 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import { dispatchCustomEvent, routerStateService } from "@/dependencies/csh-libs.js";
+import HomeView from "@/views/HomeView.vue";
 
+// required(array): list of all permissions required for a path location
+// public(bool): Public path overrides any permissions declared in required
+// public = false: Requires loggedIn(true) minimum
 const router = createRouter({
 	history: createWebHistory(),
 	routes: [
@@ -8,79 +12,79 @@ const router = createRouter({
 			path: "/",
 			name: "home",
 			component: HomeView,
-			meta: { requiresAuth: false, title: "Hardwick Web Development | Home" },
+			meta: { public: true, required: [], title: "Hardwick Web Development | Home" },
 		},
 		{
 			path: "/movie-database",
 			name: "MovieDatabase",
 			component: () => import("../views/MovieDatabase.vue"),
-			meta: { requiresAuth: true, title: "Movie Database | Hardwick Web Development" },
+			meta: { public: true, required: [], title: "Movie Database | Hardwick Web Development" },
 		},
 		{
 			path: "/blog-reader",
 			name: "BlogReader",
 			component: () => import("../views/BlogReader.vue"),
-			meta: { requiresAuth: true, title: "Blog Reader | Hardwick Web Development" },
+			meta: { public: false, required: ["siteAdmin", "admin"], title: "Blog Reader | Hardwick Web Development" },
 		},
 		{
 			path: "/verify",
 			name: "Verify",
 			component: () => import("../views/Verify.vue"),
-			meta: { requiresAuth: false, title: "Verify Code | Hardwick Web Development" },
+			meta: { public: false, required: [], title: "Verify Code | Hardwick Web Development" },
 		},
 		{
 			path: "/userpreferences",
 			name: "User Preferences",
 			component: () => import("../views/UserPreferences.vue"),
-			meta: { requiresAuth: true, title: "User Preferences | Hardwick Web Development" },
+			meta: { public: false, required: [], title: "User Preferences | Hardwick Web Development" },
 		},
 		{
 			path: "/weather",
 			name: "Weather",
 			component: () => import("../views/WeatherBasic.vue"),
-			meta: { requiresAuth: true, title: "Weather | Hardwick Web Development" },
+			meta: { public: true, required: [], title: "Weather | Hardwick Web Development" },
 		},
 		{
 			path: "/displayusers",
 			name: "DisplayUsers",
 			component: () => import("../views/DisplayUsers.vue"),
-			meta: { requiresAuth: true, title: "Display Users | Hardwick Web Development" },
+			meta: { public: false, required: ["siteAdmin", "admin"], title: "Display Users | Hardwick Web Development" },
 		},
 		{
 			path: "/displayuserlogs",
 			name: "DisplayUserLogs",
 			component: () => import("../views/DisplayUserLogs.vue"),
-			meta: { requiresAuth: true, title: "Display User Logs | Hardwick Web Development" },
+			meta: { public: false, required: ["verified"], title: "Display User Logs | Hardwick Web Development" },
 		},
 		{
 			path: "/resume",
 			name: "ResumeView",
 			component: () => import("../views/ResumeView.vue"),
-			meta: { requiresAuth: true, title: "Chris Hardwick Resume | Hardwick Web Development" },
+			meta: { public: true, required: [], title: "Chris Hardwick Resume | Hardwick Web Development" },
 		},
 		{
 			path: "/toggl",
 			name: "Toggl",
 			component: () => import("../views/Toggl.vue"),
-			meta: { requiresAuth: true, title: "Toggl Time Tracker | Hardwick Web Development" },
+			meta: { public: false, required: ["admin"], title: "Toggl Time Tracker | Hardwick Web Development" },
 		},
 		{
 			path: "/simpleclock",
 			name: "SimpleClock",
 			component: () => import("../views/SimpleClock.vue"),
-			meta: { requiresAuth: true, title: "Simple Clock | Hardwick Web Development" },
+			meta: { public: false, required: ["siteAdmin", "admin"], title: "Simple Clock | Hardwick Web Development" },
 		},
 		{
 			path: "/about",
 			name: "about",
 			component: () => import("../views/AboutView.vue"),
-			meta: { requiresAuth: false, title: "About Chris Hardwick | Hardwick Web Development" },
+			meta: { public: true, required: [], title: "About Chris Hardwick | Hardwick Web Development" },
 		},
 		{
 			path: "/:pathMatch(.*)*",
 			name: "NotFound",
 			component: () => import("@/views/NotFound.vue"),
-			meta: { title: "404 - Not Found | Hardwick Web Development" },
+			meta: { public: true, required: [], title: "404 - Not Found | Hardwick Web Development" },
 		},
 	],
 	scrollBehavior(to, from, savedPosition) {
@@ -104,15 +108,33 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-	const defaultTitle = "Hardwick Web Development";
-	document.title = to.meta.title || defaultTitle;
-	// 	let hide = false;
-	// 	if (to.meta.requiresAuth) {
-	// 		hide = false;
-	// 	} else {
-	// 		hide = true;
-	// 	}
-	// next();
+	document.title = to.meta.title || "Hardwick Web Development";
+
+	// Checks for public path. Anything after this check requires loggedIn(true) minimum
+	if (to.meta.public) return true;
+
+	let permissions = routerStateService.getPermissions();
+	switch (true) {
+		case to.meta.required.includes("admin") && permissions.admin:
+			return true;
+		case to.meta.required.includes("siteAdmin") && permissions.siteAdmin:
+			return true;
+		case to.meta.required.includes("siteEditor") && permissions.siteEditor:
+			return true;
+		case to.meta.required.includes("contributor") && permissions.contributor:
+			return true;
+		case to.meta.required.includes("verified") && permissions.verified:
+			return true;
+		case to.meta.required.length === 0 && permissions.loggedIn:
+			return true;
+		default:
+			let res = {
+				message: "You do not have permission to access the requested location. Try logging in again.",
+				success: false,
+			};
+			dispatchCustomEvent("routerNotify", res);
+			return from.path || { path: "/" };
+	}
 });
 
 export default router;

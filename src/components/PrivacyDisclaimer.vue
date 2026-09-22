@@ -1,5 +1,4 @@
 <script setup>
-// import Disclaimers from "../components/Disclaimers.vue";
 import { onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
 
@@ -18,7 +17,7 @@ onMounted(async () => {
 
 <template>
 	<div id="privacy">
-		<h2>Privacy Policy</h2>
+		<h2 class="julius-sans">Privacy Policy</h2>
 		<h3>User Accounts &amp; Authentication</h3>
 		<p>
 			When you create an account on our website, we collect your email address solely for account security and spam prevention. To finalize your login,
@@ -41,11 +40,11 @@ onMounted(async () => {
 		<p>
 			We do not use Google Analytics to track, collect, or match any personally identifiable information of our visitors. If you wish to opt out of Google
 			Analytics tracking on all websites, you can download and install the official
-			<a href="https://support.google.com/analytics/answer/181881" title="Google Analytics Opt-out Browser Add-on" target="_blank"
+			<a class="link" href="https://support.google.com/analytics/answer/181881" title="Google Analytics Opt-out Browser Add-on" target="_blank"
 				>Google&nbsp;Analytics&nbsp;Opt-out&nbsp;Browser&nbsp;Add-on</a
 			>
 			You can also learn more about how Google safeguards your data by visiting the
-			<a href="https://policies.google.com/technologies/partner-sites" title="Google Privacy & Terms" target="_blank"
+			<a class="link" href="https://policies.google.com/technologies/partner-sites" title="Google Privacy & Terms" target="_blank"
 				>Google&nbsp;Privacy&nbsp;&amp;&nbsp;Terms</a
 			>
 			page.
@@ -55,17 +54,21 @@ onMounted(async () => {
 
 <style scoped>
 #privacy {
-	color: #222;
-	background-color: rgb(219 221 247 / 80%);
+	background-color: var(--vt-c-disc-light-1);
 	border-radius: 8px;
 	margin: 30px auto 0;
 	padding: 15px 30px;
 	width: fit-content;
 }
 
+.uiDarkMode #privacy {
+	background-color: var(--vt-c-disc-dark-1);
+}
+
 h1,
 h2 {
 	text-align: center;
+	font-weight: bold;
 }
 
 h3 {
@@ -75,5 +78,10 @@ h3 {
 
 p {
 	text-indent: 1.5em;
+	margin-bottom: 1em;
+}
+
+.uiDarkMode a:visited {
+	color: #f53cf5;
 }
 </style>

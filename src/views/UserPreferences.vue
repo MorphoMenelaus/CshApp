@@ -122,15 +122,8 @@
 						</div>
 					</form>
 					<div class="btn-container">
-						<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn" title="Update User Prefernces">
-							Save Prefernces
-						</button>
-						<button
-							v-if="appState.userName !== 'guest'"
-							@click="currentComponent = 'ChangePassword'"
-							class="btn"
-							title="Change Password"
-						>
+						<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn" title="Update User Prefernces">Save Prefernces</button>
+						<button v-if="appState.userName !== 'guest'" @click="currentComponent = 'ChangePassword'" class="btn" title="Change Password">
 							Change Password
 						</button>
 					</div>
@@ -140,13 +133,7 @@
 		<component :is="currentComponent" :appState="appState" />
 		<div id="change-btn" v-if="user.userId === appState?.user?.userId">
 			<button class="btn back" @click="goBack()">Exit</button>
-			<button
-				v-if="appState.userName !== 'guest'"
-				id="delete-button"
-				class="btn delete"
-				@click="currentComponent = 'DeleteUser'"
-				title="Delete Account"
-			>
+			<button v-if="appState.userName !== 'guest'" id="delete-button" class="btn delete" @click="currentComponent = 'DeleteUser'" title="Delete Account">
 				Delete Account
 			</button>
 		</div>
@@ -155,11 +142,12 @@
 
 <script>
 import { inject, provide } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
 import DeleteUser from "@/components/DeleteUser.vue";
 import locations from "@/dependencies/locations.json";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "UserPreferences",
@@ -174,11 +162,12 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
 			updateAppState: inject("updateAppState"),
 			forceLogout: inject("forceLogout"),
-			serverStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, appNotify),
 			admin: this.appState?.permissions?.admin,
 			userId: this.appState?.user?.userId,
 			boolOptions: [
@@ -355,7 +344,7 @@ export default {
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			} finally {
-				this.addUserLog(this.appState, "Update User Preferences");
+				addUserLog(this.appState, "Update User Preferences");
 				this.showHideLoader(false);
 			}
 		},

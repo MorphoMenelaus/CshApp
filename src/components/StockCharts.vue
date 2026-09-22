@@ -32,16 +32,15 @@
 		<div id="stocks">
 			<canvas id="stocks-graph"></canvas>
 		</div>
-		<small class="text-center"
-			>This product uses the FRED&reg; API but is not endorsed or certified by the Federal Reserve Bank of St.
-			Louis.
-		</small>
+		<small class="text-center">This product uses the FRED&reg; API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. </small>
 	</div>
 </template>
 
 <script>
 import { onBeforeUnmount, inject } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import seriesIds from "@/dependencies/seriesIds.json";
+import { appNotify } from "@/dependencies/models.js";
 import Chart from "chart.js/auto";
 
 const verticalLinePlugin = {
@@ -78,8 +77,9 @@ export default {
 	components: {},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			updateStatus: inject("sendUpdateStatus"),
-			serverStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, appNotify),
 			showHideLoader: false,
 			chartElem: null,
 			startDate: new Date().toISOString().split("T")[0],
@@ -176,7 +176,7 @@ export default {
 				delete data.stocks.observations;
 				this.stocks = data.stocks;
 
-				this.sendAnalyticsEvent("stocks_chart", this.series);
+				sendAnalyticsEvent("stocks_chart", this.series);
 
 				this.drawChart();
 

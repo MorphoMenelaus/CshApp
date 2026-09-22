@@ -17,8 +17,13 @@
 
 	--vt-c-text-light-1: var(--vt-c-indigo);
 	--vt-c-text-light-2: rgba(60, 60, 60, 0.66);
+	--vt-c-text-light-3: rgba(32, 32, 32, 0.66);
 	--vt-c-text-dark-1: var(--vt-c-white);
 	--vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+	--vt-c-text-dark-3: rgba(235, 235, 235, 0.80);
+
+	--vt-c-disc-light-1: rgba(219, 221, 247, 0.80);
+	--vt-c-disc-dark-1: rgba(77, 80, 128, 0.50);
 }
 
 /* semantic color variables for this project */
@@ -59,10 +64,9 @@
 }
 
 body {
-	/* min-height: 100vh; */
-	/* color: #3c3c3ca8; */
 	color: rgb(70, 70, 70);
-	background-color: #f2f2f2;
+	color: var(--vt-c-text-light-3);
+	background-color: var(--vt-c-white-mute);
 	transition:
 		color 0.5s,
 		background-color 0.5s;
@@ -83,13 +87,11 @@ body {
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	/* font-size: 18px; */
-	/* font-size: calc(16px + (24 - 16) * ((100vw - 300px) / (1600 - 300))); */
-	font-size: calc(16px + (24 - 16) * ((100vw - 300px) / (3200 - 300)));
+	font-size: clamp(16px, 1vw, 22px);
 }
 
 body.uiDarkMode {
-	color: #ebebeba3;
+	color: var(--vt-c-text-dark-2);
 	background-color: #181818;
 }
 
@@ -110,8 +112,7 @@ body.uiDarkMode {
 
 h1.julius-sans {
 	font-weight: bold;
-	/* color: var(--vt-c-text-light-2); */
-	color: rgb(60 60 60);
+	color: var(--vt-c-text-light-3);
 }
 
 .btn,

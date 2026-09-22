@@ -45,14 +45,7 @@
 						onfocus="this.select()"
 					/>
 					<label for="password">Password</label>
-					<input
-						id="password"
-						type="password"
-						name="password"
-						v-model="password"
-						placeholder="Password"
-						autocomplete="current-password"
-					/>
+					<input id="password" type="password" name="password" v-model="password" placeholder="Password" autocomplete="current-password" />
 				</div>
 				<div class="login-buttons">
 					<button class="btn login-btn" type="button" @click="login()">Login</button>
@@ -97,6 +90,7 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			mobileDropdownEvent: inject("mobileDropdownEvent"),
 			forceLogout: inject("forceLogout"),
 			updateAppState: inject("updateAppState"),
@@ -265,7 +259,7 @@ export default {
 <style scoped>
 .login-status,
 #login {
-	color: #ebebeba3;
+	color: var(--vt-c-text-dark-2);
 	font-size: 18px;
 }
 
@@ -319,7 +313,6 @@ h2 {
 	display: grid;
 	align-items: center;
 	width: 100%;
-	/* height: calc(100% - 139px); */
 	top: 0;
 	right: 0;
 	bottom: 45px;

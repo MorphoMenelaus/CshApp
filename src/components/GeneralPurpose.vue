@@ -1,5 +1,5 @@
 <template>
-	<div id="general-disclaimer">
+	<div id="general-description">
 		<h3 class="julius-sans">Site built using a Vue 3 frontend with a NodeJS/ExpressJS backend.</h3>
 		<div>
 			<p>
@@ -20,14 +20,15 @@
 			<img class="logo" src="/icons/vue-logo.svg" title="Vue 3" alt="Vue 3 Logo" />
 			<img class="logo" src="/icons/pinia-logo.svg" title="Pinia" alt="Pinia Logo" />
 			<img class="logo" src="/icons/express-logo-white.svg" title="ExpressJS" alt="ExpressJS Logo" />
-			<img class="logo short-logo" src="/icons/nodejsStackedDark.svg" title="NodeJS" alt="NodeJS Logo" />
+			<img class="logo short-logo light" src="/icons/nodejsStackedDark.svg" title="NodeJS" alt="NodeJS Logo" />
+			<img class="logo short-logo dark" src="/icons/nodejsStackedLight.svg" title="NodeJS" alt="NodeJS Logo" />
 			<img class="logo short-logo" src="/icons/mysql-official.svg" title="MySQL" alt="MySQL Logo" />
 		</div>
 	</div>
 </template>
 
 <style scoped>
-#general-disclaimer {
+#general-description {
 	display: flex;
 	flex-direction: column;
 	margin: 15px auto;
@@ -38,16 +39,19 @@ h3 {
 	font-weight: bold;
 }
 
+h3 {
+	font-size: 1.5em;
+}
+
 p {
 	text-align: left;
-	color: #222;
 	text-indent: 1.5em;
-	padding: 10px 0;
 	width: fit-content;
+	margin-bottom: 1em;
 }
 
 strong {
-	font-weight: 500;
+	font-weight: bold;
 }
 
 .logos {
@@ -68,11 +72,19 @@ img.short-logo {
 	max-width: 140px;
 }
 
-@media (min-width: 768px) {
-	p {
-		padding: 10px 0;
-	}
+.dark {
+	display: none;
+}
 
+.uiDarkMode .light {
+	display: none;
+}
+
+.uiDarkMode .dark {
+	display: inline;
+}
+
+@media (min-width: 768px) {
 	img.logo {
 		max-width: 100px;
 		max-height: 80px;
