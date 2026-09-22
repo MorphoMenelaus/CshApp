@@ -520,7 +520,7 @@ p {
 	.acrobat-icon::after,
 	.linkedin-icon::after {
 		content: "";
-		top: 3px;
+		top: 4px;
 		right: 10px;
 		width: 26px;
 		height: 26px;

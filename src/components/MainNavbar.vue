@@ -43,7 +43,7 @@ const handleTouchEnd = (event) => {
 	}
 };
 
-const allowed = (required = []) => {
+const allowed = (...required) => {
 	let userPermissions = permissions.value;
 
 	// If account is not verirfied, reject. Even accounts with elevated priveleges.
@@ -59,7 +59,7 @@ const allowed = (required = []) => {
 			return true;
 		case required.includes("contributor") && userPermissions.contributor:
 			return true;
-		case required.includes("verified") && userPermissions.verified:
+		case required.includes("verified") && required.length === 1 && userPermissions.verified:
 			return true;
 		case required.length === 0 && userPermissions.loggedIn:
 			return true;
@@ -109,21 +109,21 @@ onMounted(() => {
 				<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
 				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Database">Movie DB</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && allowed(['verified', 'admin', 'siteAdmin']) && !personalRestricted"
+					v-if="appState?.isLoggedOn && allowed('verified', 'admin', 'siteAdmin') && !personalRestricted"
 					to="/blog-reader"
 					@click="closeDialogs('blog')"
 					title="Blog Reader"
 					>Blog
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && allowed(['verified', 'admin', 'siteAdmin']) && !personalRestricted"
+					v-if="appState?.isLoggedOn && allowed('verified', 'admin', 'siteAdmin') && !personalRestricted"
 					to="/displayusers"
 					@click="closeDialogs('users')"
 					title="Display Users"
 					>Users
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && allowed(['verified'])"
+					v-if="appState?.isLoggedOn && allowed('verified')"
 					to="/displayuserlogs"
 					@click="closeDialogs('user_logs')"
 					title="Display User Logs"
@@ -132,14 +132,14 @@ onMounted(() => {
 				<RouterLink to="/resume" @click="closeDialogs('resume')" title="Chris Hardwick Resume">Resume </RouterLink>
 				<RouterLink to="/weather" @click="closeDialogs('weather')" title="Weather">Weather</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && allowed(['verified', 'admin']) && !personalRestricted"
+					v-if="appState?.isLoggedOn && allowed('verified', 'admin') && !personalRestricted"
 					to="/toggl"
 					@click="closeDialogs('toggl')"
 					title="Toggl Time Tracker"
 					>Toggl
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && allowed(['verified', 'admin', 'siteAdmin'])"
+					v-if="appState?.isLoggedOn && allowed('verified', 'admin', 'siteAdmin')"
 					to="/simpleclock"
 					@click="closeDialogs('simple_clock')"
 					title="Simple Clock"
