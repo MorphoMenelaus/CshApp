@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { dispatchCustomEvent, routerStateService } from "@/dependencies/csh-libs.js";
-import HomeView from "../views/HomeView.vue";
+import HomeView from "@/views/HomeView.vue";
 
 // required(array): list of all permissions required for a path location
 // public(bool): Public path overrides any permissions declared in required

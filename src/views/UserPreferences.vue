@@ -142,11 +142,12 @@
 
 <script>
 import { inject, provide } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import router from "@/router";
 import ChangePassword from "@/components/ChangePassword.vue";
 import DeleteUser from "@/components/DeleteUser.vue";
 import locations from "@/dependencies/locations.json";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "UserPreferences",
@@ -161,11 +162,12 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
 			updateAppState: inject("updateAppState"),
 			forceLogout: inject("forceLogout"),
-			serverStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, appNotify),
 			admin: this.appState?.permissions?.admin,
 			userId: this.appState?.user?.userId,
 			boolOptions: [
@@ -342,7 +344,7 @@ export default {
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			} finally {
-				this.addUserLog(this.appState, "Update User Preferences");
+				addUserLog(this.appState, "Update User Preferences");
 				this.showHideLoader(false);
 			}
 		},

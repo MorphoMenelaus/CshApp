@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, watch, inject } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import { permissionsModel } from "@/dependencies/models.js";
 
 const props = defineProps({
@@ -8,7 +9,6 @@ const props = defineProps({
 	mobileDropdownClose: Boolean,
 });
 
-const sendAnalyticsEvent = inject("sendAnalyticsEvent");
 const mobileDropdownEvent = inject("mobileDropdownEvent");
 const contactEmail = inject("contactEmail");
 const personalRestricted = inject("personalRestricted");
@@ -215,7 +215,6 @@ onMounted(() => {
 }
 
 .home-title a {
-	/* font-weight: bold; */
 	background-color: unset;
 	color: #fff;
 	box-shadow: unset;
@@ -244,13 +243,11 @@ a.home-icon {
 }
 
 #nav-container {
-	/* position: absolute; */
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	margin: auto;
-	/* z-index: 1; */
 	z-index: 15000;
 }
 
@@ -268,7 +265,6 @@ nav {
 }
 
 nav a.router-link-exact-active {
-	/* color: #100f2e; */
 	color: #f2f1ff;
 }
 

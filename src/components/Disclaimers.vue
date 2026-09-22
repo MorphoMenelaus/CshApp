@@ -16,11 +16,11 @@ const route = useRoute();
 		<p>
 			This site is protected by reCAPTCHA and the Google
 			<strong>
-				<a title="Google's Privacy Policy" target="_blank" href="https://policies.google.com/privacy">Privacy Policy</a>
+				<a class="link" title="Google's Privacy Policy" target="_blank" href="https://policies.google.com/privacy">Privacy Policy</a>
 			</strong>
 			and
 			<strong>
-				<a title="Google's Terms of Service" target="_blank" href="https://policies.google.com/terms">Terms of Service</a>
+				<a class="link" title="Google's Terms of Service" target="_blank" href="https://policies.google.com/terms">Terms of Service</a>
 			</strong>
 			apply.
 		</p>
@@ -38,11 +38,18 @@ strong {
 
 #disclaimers {
 	text-align: center;
-	color: #222;
-	background-color: rgb(219 221 247 / 80%);
+	background-color: var(--vt-c-disc-light-1);
 	border-radius: 8px;
 	margin: 30px auto 0;
 	padding: 15px 30px;
 	width: fit-content;
+}
+
+.uiDarkMode #disclaimers {
+	background-color: var(--vt-c-disc-dark-1);
+}
+
+.uiDarkMode a:visited {
+	color: #f53cf5;
 }
 </style>

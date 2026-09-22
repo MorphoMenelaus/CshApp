@@ -1,5 +1,6 @@
 <script setup>
 import { inject } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "../dependencies/commonUrls.json";
 import Disclaimers from "../components/Disclaimers.vue";
 import PrivacyDisclaimer from "../components/PrivacyDisclaimer.vue";
@@ -13,9 +14,6 @@ const props = defineProps({
 	isMobile: Boolean,
 });
 
-const sendAnalyticsEvent = inject("sendAnalyticsEvent", () => {
-	console.warn("Global function not found! sendAnalyticsEvent()");
-});
 const contactEmail = inject("contactEmail", () => {
 	console.warn("Global function not found! contactEmail()");
 });
@@ -85,14 +83,12 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 <style scoped>
 #view {
 	margin: 15px auto;
-	padding-bottom: 15px;
+	padding: 0 0.8em 0.8em;
 }
 
 #about {
 	width: 100%;
 	margin: 15px auto;
-	color: var(--vt-c-text-light-2);
-	/* font-size: 18px; */
 }
 
 #about {
@@ -151,21 +147,15 @@ p {
 h2.profile {
 	margin: 15px auto 0;
 	font-size: 2em;
-	/* font-weight: bold; */
+	font-weight: bold;
 }
 
 #profile {
-	color: #000;
 	border: 1px solid #555;
 	border-radius: 12px;
 	padding: 15px 0;
-	/* font-size: 1em; */
 	margin: 15px auto;
 	background-color: #e7e7e7;
-}
-
-#profile p {
-	/* font-size: 1.15rem; */
 }
 
 .uiDarkMode #profile {
@@ -255,7 +245,6 @@ a.btn.large {
 	height: 48px;
 }
 
-/* #about #disclaimers h3, */
 #about #privacy h3 {
 	font-size: 1.25em;
 }
@@ -281,7 +270,6 @@ a.btn.large {
 
 	#profile {
 		padding: 15px;
-		/* font-size: 1.25em; */
 	}
 
 	.btn.csh-icon,

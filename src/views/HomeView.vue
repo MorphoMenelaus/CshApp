@@ -1,13 +1,10 @@
 <script setup>
 import { ref, inject, onMounted, onUnmounted, nextTick } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "@/dependencies/commonUrls.json";
 import Disclaimers from "@/components/Disclaimers.vue";
 import StockCharts from "@/components/StockCharts.vue";
 import TaglineBox from "@/components/TaglineBox.vue";
-
-const sendAnalyticsEvent = inject("sendAnalyticsEvent", () => {
-	console.warn("Global function not found! sendAnalyticsEvent()");
-});
 
 const props = defineProps({
 	appState: Object,
@@ -253,7 +250,6 @@ p {
 	width: 100%;
 	margin: 15px auto;
 	padding: 15px;
-	/* position: absolute; */
 	position: relative;
 	inset: 0;
 }

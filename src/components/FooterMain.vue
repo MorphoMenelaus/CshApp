@@ -16,6 +16,7 @@
 
 <script>
 import { inject } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "@/dependencies/commonUrls.json";
 
 export default {
@@ -37,7 +38,7 @@ export default {
 			this.loginShow(false);
 			this.registerUser(false);
 			this.contactEmail(true);
-			this.sendAnalyticsEvent("contact_form_footer", "contact_modal");
+			sendAnalyticsEvent("contact_form_footer", "contact_modal");
 		},
 	},
 };
@@ -66,7 +67,6 @@ h3 {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	/* margin-left: 30px; */
 	padding: 0 30px;
 }
 

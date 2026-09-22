@@ -20,16 +20,12 @@
 					<table v-if="timeEntries && timeEntries.length > 0">
 						<thead>
 							<tr class="header-row">
-								<th v-for="(label, index) in Object.keys(timeEntries[0])" :key="index">{{
-									this.toTitleCase(label)
-								}}
-								</th>
+								<th v-for="(label, index) in Object.keys(timeEntries[0])" :key="index">{{ toTitleCase(label) }}</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr class="data-row" v-for="(user, index) in timeEntries" :key="index">
-								<td v-for="(column, index) in user" :key="index">{{ isUTCtime(column) ? new
-									Date(column).toLocaleString() : column }}</td>
+								<td v-for="(column, index) in user" :key="index">{{ isUTCtime(column) ? new Date(column).toLocaleString() : column }}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -37,39 +33,38 @@
 				<div id="mobile" v-if="isMobile">
 					<table v-for="(item, index) in timeEntries" :key="index">
 						<tr class="header-row" v-for="(key, event, index) in Object.keys(item)" :key="index">
-							<th>{{ this.toTitleCase(key) }}</th>
+							<th>{{ toTitleCase(key) }}</th>
 							<td>{{ isUTCtime(item[key]) ? new Date(item[key]).toLocaleString() : item[key] }}</td>
 						</tr>
 					</table>
 				</div>
 			</div>
-
 		</div>
 	</div>
 </template>
 
 <script>
 import { inject } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { toTitleCase, isUTCtime, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "TimeEntries",
 	props: {
 		appState: Object,
-		isMobile: Boolean
+		isMobile: Boolean,
 	},
 	components: {},
 	data() {
 		return {
-			showHideLoader: inject('showHideLoader'),
-			updateStatus: inject('sendUpdateStatus'),
-			serverStatus: Object.assign({}, this.appNotify),
-			startDate: new Date().toISOString().split('T')[0],
-			endDate: new Date().toISOString().split('T')[0],
+			baseUrl: inject("baseUrl"),
+			showHideLoader: inject("showHideLoader"),
+			updateStatus: inject("sendUpdateStatus"),
+			serverStatus: Object.assign({}, appNotify),
+			startDate: new Date().toISOString().split("T")[0],
+			endDate: new Date().toISOString().split("T")[0],
 			timeEntries: [],
 		};
-	},
-	watch: {
 	},
 	methods: {
 		async getTimeEntries() {
@@ -85,9 +80,8 @@ export default {
 			params.set("end_date", this.endDate);
 			requestUrl.search = params.toString();
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
@@ -96,9 +90,8 @@ export default {
 				const data = await response.json();
 
 				this.timeEntries = data.timeEntries;
-
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;

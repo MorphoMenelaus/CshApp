@@ -3,10 +3,11 @@
 		<div id="weather-container">
 			<div id="description-box">
 				<h1>{{ forecastDayText }} Weather Forecast</h1>
-				<p>This data is retreived by a REST API call for up-to-date weather and is the combined reliable NOAA
-					GFS weather model with rapid updating HRRR weather model.</p>
-				<p>The graph is plotted based on data as returned by a weather server API and formatted to make the
-					data more readable.</p>
+				<p>
+					This data is retreived by a REST API call for up-to-date weather and is the combined reliable NOAA GFS weather model with rapid updating
+					HRRR weather model.
+				</p>
+				<p>The graph is plotted based on data as returned by a weather server API and formatted to make the data more readable.</p>
 				<small>No promises or guarantees of forecasts.</small>
 			</div>
 			<div id="weather-box">
@@ -19,13 +20,13 @@
 					</select>
 					<label for="location">City</label>
 					<select id="location" v-model="location">
-						<option v-for="(item, index) in locationOptions" :key="index" :value="item">{{ item.city }}
-						</option>
+						<option v-for="(item, index) in locationOptions" :key="index" :value="item">{{ item.city }}</option>
 					</select>
-					<small v-if="!isMobile">Latitude: {{ location.lat }} | Longitude: {{ location.long }}<br /><span
-							:title="`${weatherData?.elevation} meters above sea level`">
+					<small v-if="!isMobile"
+						>Latitude: {{ location.lat }} | Longitude: {{ location.long }}<br /><span :title="`${weatherData?.elevation} meters above sea level`">
 							Elevation: {{ weatherData?.elevation }}m asl
-						</span></small>
+						</span></small
+					>
 				</div>
 				<div v-if="weatherDateTime" class="weather-time">
 					<small>Last refreshed: {{ weatherDateTime.toLocaleString() }}</small>
@@ -46,12 +47,10 @@
 					</div>
 				</div>
 				<div class="attribution">
-					<small>REST API weather data by
-						<a href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank">
-							Open-Meteo.com
-						</a>&nbsp;|&nbsp;
-						<a href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE" title="Read licence here"
-							target="_blank">Licence here</a>
+					<small
+						>REST API weather data by
+						<a href="https://open-meteo.com/" title="Go to Open-Meteo.com" target="_blank"> Open-Meteo.com </a>&nbsp;|&nbsp;
+						<a href="https://github.com/open-meteo/open-meteo/blob/main/LICENSE" title="Read licence here" target="_blank">Licence here</a>
 					</small>
 				</div>
 			</div>
@@ -61,14 +60,19 @@
 
 <script>
 import { onBeforeUnmount, inject } from "vue";
-import locations from '@/dependencies/locations.json';
-import Chart from 'chart.js/auto';
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
+import locations from "@/dependencies/locations.json";
+import { appNotify } from "@/dependencies/models.js";
+import Chart from "chart.js/auto";
 
 const verticalLinePlugin = {
-	id: 'verticalLine',
+	id: "verticalLine",
 	afterDraw: (chart) => {
 		if (chart.tooltip?._active && chart.tooltip._active.length) {
-			const { ctx, chartArea: { top, bottom } } = chart;
+			const {
+				ctx,
+				chartArea: { top, bottom },
+			} = chart;
 			const activePoint = chart.tooltip._active[0];
 			const x = activePoint.element.x;
 
@@ -77,12 +81,12 @@ const verticalLinePlugin = {
 			ctx.moveTo(x, top);
 			ctx.lineTo(x, bottom);
 			ctx.lineWidth = 1.5;
-			ctx.strokeStyle = '#f00';
+			ctx.strokeStyle = "#f00";
 			ctx.setLineDash([6, 6]);
 			ctx.stroke();
 			ctx.restore();
 		}
-	}
+	},
 };
 
 export default {
@@ -90,33 +94,33 @@ export default {
 	props: {
 		appState: Object,
 		isMobile: Boolean,
-		windowWidth: Number
+		windowWidth: Number,
 	},
 	components: {},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
-			forceLogout: inject('forceLogout'),
-			serverStatus: Object.assign({}, this.appNotify),
+			updateStatus: inject("sendUpdateStatus"),
+			forceLogout: inject("forceLogout"),
+			serverStatus: Object.assign({}, appNotify),
 			showHideLoader: false,
 			chartElem: null,
 			weatherChart: null,
 			dateOptions: {
-				month: 'numeric',
-				day: 'numeric',
-				hour: 'numeric',
-				hour12: true
+				month: "numeric",
+				day: "numeric",
+				hour: "numeric",
+				hour12: true,
 			},
 			CHART_COLORS: {
-				red: 'rgb(255, 99, 132)',
-				orange: 'rgb(255, 159, 64)',
-				yellow: 'rgb(255, 205, 86)',
-				green: 'rgb(75, 192, 192)',
-				blue: 'rgb(54, 162, 235)',
-				purple: 'rgb(153, 102, 255)',
-				grey: 'rgb(201, 203, 207)',
-				white: 'rgb(255, 255, 255)',
-				black: 'rgb(0, 0, 0)'
+				red: "rgb(255, 99, 132)",
+				orange: "rgb(255, 159, 64)",
+				yellow: "rgb(255, 205, 86)",
+				green: "rgb(75, 192, 192)",
+				blue: "rgb(54, 162, 235)",
+				purple: "rgb(153, 102, 255)",
+				grey: "rgb(201, 203, 207)",
+				white: "rgb(255, 255, 255)",
+				black: "rgb(0, 0, 0)",
 			},
 			forecastDaysOptions: [
 				{ text: "1 Day", value: 1 },
@@ -140,12 +144,12 @@ export default {
 		location: {
 			handler() {
 				this.getWeatherData();
-				this.sendAnalyticsEvent("weather_location", this.location.city);
+				sendAnalyticsEvent("weather_location", this.location.city);
 			},
 			deep: true,
 		},
 		forecastDays() {
-			this.forecastDayText = this.forecastDaysOptions.filter(item => item.value === this.forecastDays)[0].text;
+			this.forecastDayText = this.forecastDaysOptions.filter((item) => item.value === this.forecastDays)[0].text;
 			this.getWeatherData();
 		},
 		windowWidth() {
@@ -164,9 +168,9 @@ export default {
 		formatWeatherTime() {
 			// Formats every hour item in the weather data array.
 			let newTimeArr = [];
-			this.weatherData.hourly.time.forEach(time => {
+			this.weatherData.hourly.time.forEach((time) => {
 				let date = new Date(time);
-				newTimeArr.push(new Intl.DateTimeFormat('en-US', this.dateOptions).format(date));
+				newTimeArr.push(new Intl.DateTimeFormat("en-US", this.dateOptions).format(date));
 			});
 			this.weatherData.hourly.time = newTimeArr;
 		},
@@ -187,9 +191,8 @@ export default {
 			params.set("timezone", "auto");
 			requestUrl.search = params.toString();
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'GET',
+			let request = new Request(requestUrl.toString(), {
+				method: "GET",
 				headers: headerObj,
 			});
 
@@ -206,7 +209,7 @@ export default {
 				this.weatherData.forecastTimecode = new Date().getTime();
 
 				if (data?.error) {
-					console.error('Error getting data:', data?.reason);
+					console.error("Error getting data:", data?.reason);
 					this.serverStatus.code = 503;
 					this.serverStatus.message = data?.reason;
 					this.serverStatus.success = false;
@@ -220,9 +223,8 @@ export default {
 
 				this.formatWeatherTime();
 				this.drawChart();
-
 			} catch (error) {
-				console.error('Error getting data:', error);
+				console.error("Error getting data:", error);
 				this.serverStatus.code = 500;
 				this.serverStatus.message = `Error getting data: ${error}`;
 				this.serverStatus.success = false;
@@ -232,7 +234,6 @@ export default {
 			}
 		},
 		drawChart() {
-
 			const existingChart = Chart.getChart("weather-graph");
 			if (existingChart) {
 				existingChart.destroy();
@@ -246,39 +247,39 @@ export default {
 				labels: this.weatherData.hourly.time,
 				datasets: [
 					{
-						type: 'line',
-						label: 'Temperature',
+						type: "line",
+						label: "Temperature",
 						data: temperatureData,
 						backgroundColor: this.CHART_COLORS.blue,
 						borderColor: this.CHART_COLORS.blue,
 						fill: false,
-						cubicInterpolationMode: 'monotone',
+						cubicInterpolationMode: "monotone",
 						tension: 0.4,
 						yAxisID: "y1",
-						order: 3
+						order: 3,
 					},
 					{
-						type: 'line',
-						label: 'Precip. Probability',
+						type: "line",
+						label: "Precip. Probability",
 						data: precipProbData,
 						backgroundColor: this.CHART_COLORS.green,
 						borderColor: this.CHART_COLORS.green,
 						fill: false,
 						tension: 0.4,
 						yAxisID: "y2",
-						order: 2
+						order: 2,
 					},
 					{
-						type: 'bar',
-						label: 'Precipitation Inches',
+						type: "bar",
+						label: "Precipitation Inches",
 						data: precipitation,
 						backgroundColor: this.CHART_COLORS.purple,
 						borderColor: this.CHART_COLORS.purple,
 						fill: false,
 						yAxisID: "y3",
-						order: 1
+						order: 1,
 					},
-				]
+				],
 			};
 
 			const chartConfig = {
@@ -289,19 +290,19 @@ export default {
 					maintainAspectRatio: false,
 					plugins: {
 						tooltip: {
-							enabled: true // Keeps default hover text visible
+							enabled: true, // Keeps default hover text visible
 						},
 						title: {
 							display: true,
 							text: `${this.forecastDayText} Weather for ${this.location.city}`,
 							font: {
 								weight: 700,
-								size: this.isMobile ? 16 : 26
-							}
+								size: this.isMobile ? 16 : 26,
+							},
 						},
 					},
 					interaction: {
-						mode: 'index', // Snaps line to the closest date point
+						mode: "index", // Snaps line to the closest date point
 						intersect: false,
 					},
 					scales: {
@@ -309,54 +310,54 @@ export default {
 							display: true,
 							title: {
 								display: true,
-								text: 'Date / Time'
+								text: "Date / Time",
 							},
 						},
 						y1: {
 							display: this.isMobile ? false : true,
 							title: {
 								display: true,
-								text: 'Temperature °F',
-								color: this.CHART_COLORS.blue
+								text: "Temperature °F",
+								color: this.CHART_COLORS.blue,
 							},
 							suggestedMin: (Math.min(...temperatureData) < 50 ? Math.min(...temperatureData) : 50) - 10,
-							suggestedMax: (Math.max(...temperatureData) > 80 ? Math.max(...temperatureData) : 80) + 10
+							suggestedMax: (Math.max(...temperatureData) > 80 ? Math.max(...temperatureData) : 80) + 10,
 						},
 						y2: {
 							display: this.isMobile ? false : true,
 							title: {
 								display: true,
-								text: 'Precip. Probability %',
-								color: this.CHART_COLORS.green
+								text: "Precip. Probability %",
+								color: this.CHART_COLORS.green,
 							},
 							suggestedMin: 0,
-							suggestedMax: (Math.max(...precipitation) > 60 ? Math.max(...precipitation) : 60) + 10
+							suggestedMax: (Math.max(...precipitation) > 60 ? Math.max(...precipitation) : 60) + 10,
 						},
 						y3: {
 							display: this.isMobile ? false : true,
 							title: {
 								display: true,
-								text: 'Precip. inch',
-								color: this.CHART_COLORS.purple
+								text: "Precip. inch",
+								color: this.CHART_COLORS.purple,
 							},
 							suggestedMin: 0,
-							suggestedMax: (Math.max(...precipitation) > .15 ? Math.max(...precipitation) : .15) + .05
-						}
-					}
+							suggestedMax: (Math.max(...precipitation) > 0.15 ? Math.max(...precipitation) : 0.15) + 0.05,
+						},
+					},
 				},
-				plugins: [verticalLinePlugin]
-			}
+				plugins: [verticalLinePlugin],
+			};
 
 			Chart.defaults.font.size = this.isMobile ? 12 : 18;
 			this.weatherChart = new Chart(this.chartElem, chartConfig);
 		},
 		setupForGraph() {
-			this.forecastDayText = this.forecastDaysOptions.filter(item => item.value === this.forecastDays)[0].text;
-			this.chartElem = document.getElementById('weather-graph');
-		}
+			this.forecastDayText = this.forecastDaysOptions.filter((item) => item.value === this.forecastDays)[0].text;
+			this.chartElem = document.getElementById("weather-graph");
+		},
 	},
 	mounted() {
-		this.location = locations.filter(loc => loc.city === this.locationDefault)[0];
+		this.location = locations.filter((loc) => loc.city === this.locationDefault)[0];
 		this.setupForGraph();
 		this.getWeatherData();
 	},
@@ -366,8 +367,8 @@ export default {
 			if (existingChart) {
 				existingChart.destroy();
 			}
-		})
-	}
+		});
+	},
 };
 </script>
 
@@ -383,14 +384,12 @@ small {
 
 small {
 	display: block;
-	font-size: .75em;
+	font-size: 0.75em;
 }
 
 #description-box {
-	/* background-color: rgb(191 191 191 / 75%); */
 	background-color: rgb(231 231 231);
 	color: #000;
-	/* width: 95%; */
 	margin: 30px auto 15px;
 	border-radius: 12px;
 	padding: 5px 15px 45px;
@@ -464,7 +463,6 @@ canvas#weather-graph {
 
 .input-container {
 	color: #000;
-	/* background-color: #e7e7e7; */
 	background-color: #dbdbdb;
 	border: 1px solid #7f7f7f;
 	border-radius: 12px;
@@ -539,8 +537,9 @@ small span {
 	padding: 0px 10px;
 	width: fit-content;
 	font-weight: 500;
-	font-size: .8em;
+	font-size: 0.8em;
 	text-transform: uppercase;
+	color: #444;
 	background: #92bdff;
 	border-radius: 8px;
 	border: 1px #b1b1b1 solid;
@@ -558,9 +557,7 @@ small span {
 
 @media (min-width: 768px) {
 	#description-box {
-		/* width: 90%; */
 		padding: 5px 30px 45px;
-
 	}
 
 	#description-box p {
@@ -569,10 +566,6 @@ small span {
 }
 
 @media (min-width: 992px) {
-	/* #description-box {
-		width: 85%;
-	} */
-
 	#weather-container {
 		width: 90%;
 	}
@@ -584,7 +577,6 @@ small span {
 
 @media (min-width: 1024px) {
 	#description-box {
-		/* width: 80%; */
 		padding: 5px 45px 45px;
 	}
 }

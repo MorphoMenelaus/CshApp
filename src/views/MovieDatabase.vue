@@ -114,6 +114,7 @@ import { onBeforeUnmount, inject, provide } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "MovieDatabase",
@@ -128,12 +129,13 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			showHideLoader: inject("showHideLoader"),
 			updateStatus: inject("sendUpdateStatus"),
 			forceLogout: inject("forceLogout"),
 			loginShow: inject("loginShow"),
 			registerUser: inject("registerUser"),
-			serverStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, appNotify),
 			limit: 10,
 			offset: 0,
 			currentPage: 1,
@@ -519,7 +521,6 @@ h2 {
 }
 
 #movie-header {
-	/* background-color: #c1c1c1; */
 	background-color: #e7e7e7;
 	color: #000;
 	width: fit-content;

@@ -30,7 +30,8 @@
 
 <script>
 import { onBeforeUnmount, inject } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "RegisterUser",
@@ -39,11 +40,12 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
 			closeChangePassword: inject("closeChangePassword"),
 			forceLogout: inject("forceLogout"),
-			serverStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, appNotify),
 			currentPassword: "",
 			password: "",
 			confirmPassword: "",
@@ -105,7 +107,7 @@ export default {
 				}
 
 				if (this.serverStatus.success) {
-					this.addUserLog(this.appState, "User Changed Password");
+					addUserLog(this.appState, "User Changed Password");
 					this.forceLogout(data);
 				}
 			} catch (error) {
@@ -207,8 +209,6 @@ label[for="casinoId"] {
 #change-password {
 	position: fixed;
 	top: 90px;
-	/* position: absolute;
-	top: 0; */
 	left: 0;
 	display: grid;
 	align-items: center;

@@ -143,7 +143,6 @@ p {
 }
 
 img.poster {
-	/* width: 100%; */
 	width: fit-content;
 	max-height: 600px;
 	object-fit: contain;
@@ -156,7 +155,6 @@ img.poster {
 .rating-block {
 	display: flex;
 	justify-content: flex-start;
-	/* width: 20em; */
 }
 
 .year-block div,

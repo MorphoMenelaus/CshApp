@@ -1,5 +1,6 @@
 <script setup>
 import { ref, inject, watch, onMounted } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "@/dependencies/commonUrls.json";
 import { appNotify } from "@/dependencies/models.js";
 import ResumeTable from "@/components/ResumeTable.vue";

@@ -60,7 +60,7 @@ import ContactForm from "@/components/ContactForm.vue";
 import GeminiChat from "@/components/GeminiChat.vue";
 import GeminiJobMatch from "@/components/GeminiJobMatch.vue";
 import GeminiExplainCode from "@/components/GeminiExplainCode.vue";
-import { Storage, stateUpdateService, routerStateService } from "@/dependencies/csh-libs.js";
+import { Storage, tokenCheck, stateUpdateService, routerStateService } from "@/dependencies/csh-libs.js";
 
 export default {
 	components: {
@@ -76,6 +76,7 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			sharedUpdateStatus: {},
 			forceLogoutEvent: {},
 			mobileDropdownClose: null,
@@ -135,7 +136,7 @@ export default {
 			this.getServerVersion();
 			this.recallAppState();
 			if (this.appState?.accessToken) {
-				let checkTokens = await this.tokenCheck(this.appState);
+				let checkTokens = await tokenCheck(this.appState);
 				if (!checkTokens?.tokenValid) {
 					let res = {
 						code: 403,
@@ -290,7 +291,6 @@ span.link {
 	justify-content: space-between;
 	flex-direction: column;
 	width: 6em;
-	/* color: #000; */
 	z-index: 1;
 	transition: opacity 0.2s;
 }
@@ -405,6 +405,7 @@ nav a:first-of-type {
 #ai-button {
 	position: fixed;
 	bottom: 60px;
+	left: 1em;
 }
 
 #ai-button .btn {

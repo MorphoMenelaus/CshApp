@@ -101,7 +101,8 @@
 
 <script>
 import { inject } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "EditMovieDetails",
@@ -112,10 +113,11 @@ export default {
 	},
 	data() {
 		return {
+			baseUrl: inject("baseUrl"),
 			updateStatus: inject("sendUpdateStatus"),
 			showHideLoader: inject("showHideLoader"),
 			movieUpdated: inject("movieUpdated"),
-			serverStatus: Object.assign({}, this.appNotify),
+			serverStatus: Object.assign({}, appNotify),
 			dialog: null,
 			disableBtn: false,
 			movie: {},
@@ -194,7 +196,7 @@ export default {
 			} finally {
 				this.showHideLoader(false);
 				this.disableBtn = false;
-				this.addUserLog(this.appState, `Update Movie Details. MovieId: ${this.selectedMovie.movieId}`);
+				addUserLog(this.appState, `Update Movie Details. MovieId: ${this.selectedMovie.movieId}`);
 			}
 		},
 		cancel() {

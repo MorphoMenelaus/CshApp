@@ -1,5 +1,4 @@
 <template>
-
 	<div id="delete">
 		<div class="wrapper">
 			<h2>Delete Your Account?</h2>
@@ -11,13 +10,13 @@
 			</div>
 		</div>
 	</div>
-
 </template>
 
 <script>
 // @ is an alias to /src
-import { onBeforeUnmount, inject } from 'vue';
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { onBeforeUnmount, inject } from "vue";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
 
 export default {
 	name: "DeleteUser",
@@ -26,21 +25,18 @@ export default {
 	},
 	data() {
 		return {
-			updateStatus: inject('sendUpdateStatus'),
-			showHideLoader: inject('showHideLoader'),
+			baseUrl: inject("baseUrl"),
+			updateStatus: inject("sendUpdateStatus"),
+			showHideLoader: inject("showHideLoader"),
 			cancelDeleteUser: inject("cancelDeleteUser"),
-			forceLogout: inject('forceLogout'),
-			serverStatus: Object.assign({}, this.appNotify),
+			forceLogout: inject("forceLogout"),
+			serverStatus: Object.assign({}, appNotify),
 		};
 	},
-	watch: {
-	},
+	watch: {},
 	methods: {
 		async deleteUser() {
-
-			let confirmDelete = confirm(
-				`Are you sure you want to DELETE, ${this.appState.user.userName}`
-			);
+			let confirmDelete = confirm(`Are you sure you want to DELETE, ${this.appState.user.userName}`);
 			if (!confirmDelete) return false;
 
 			this.showHideLoader(true);
@@ -50,14 +46,12 @@ export default {
 			headerObj.append("Content-Type", "application/json; charset=utf-8");
 			let requestUrl = new URL(`/api/users/${this.appState.user.userId}`, this.baseUrl);
 
-			let request = new Request(
-				requestUrl.toString(), {
-				method: 'DELETE',
+			let request = new Request(requestUrl.toString(), {
+				method: "DELETE",
 				headers: headerObj,
 			});
 
 			try {
-
 				const response = await tokenInterceptFetch(request);
 				const data = await response.json();
 
@@ -66,10 +60,10 @@ export default {
 					this.serverStatus.message = data?.success ? "Your account has been deleted." : data?.message;
 					this.serverStatus.forced = true;
 					this.forceLogout(this.serverStatus);
-					this.addUserLog(this.appState, "User Deleted Account");
+					addUserLog(this.appState, "User Deleted Account");
 				}
 			} catch (error) {
-				console.error('Error posting data:', error);
+				console.error("Error posting data:", error);
 				this.serverStatus.code = 400;
 				this.serverStatus.message = `Error deleting user: ${error}`;
 				this.serverStatus.success = true;
@@ -79,12 +73,10 @@ export default {
 			}
 		},
 		keyDown(e) {
-			if (e.key === "Escape")
-				this.closePopup();
+			if (e.key === "Escape") this.closePopup();
 		},
 	},
-	mounted() {
-	},
+	mounted() {},
 	created() {
 		window.addEventListener("keydown", this.keyDown);
 		onBeforeUnmount(() => {
@@ -124,7 +116,8 @@ h2 {
 	font-weight: bold;
 	border: 1px rgb(100 100 100) solid;
 	border-radius: 8px;
-	box-shadow: inset -6px -6px 20px 1px rgb(0 0 0 / 30%),
+	box-shadow:
+		inset -6px -6px 20px 1px rgb(0 0 0 / 30%),
 		inset 6px 6px 20px 1px rgb(0 0 0 / 30%);
 }
 

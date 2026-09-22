@@ -1,6 +1,6 @@
 <script setup>
 import { ref, inject, watch, onMounted } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { isObjNullOrEmpty, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import { appNotify } from "@/dependencies/models.js";
 
 const props = defineProps({
@@ -263,7 +263,6 @@ h3 {
 	width: 100%;
 	margin: 15px auto;
 	padding: 15px;
-	/* position: absolute; */
 	position: relative;
 	inset: 0;
 }
@@ -372,9 +371,6 @@ h3 {
 }
 
 @media (min-width: 768px) {
-	/* #blogs {
-		width: 95%;
-	} */
 }
 
 @media (min-width: 992px) {

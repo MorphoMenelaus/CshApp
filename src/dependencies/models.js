@@ -1,4 +1,8 @@
-// Models and constants used across the app
+/*!
+ * CSH Models and Constants v0.0.5
+ * (c) 2026 Chris Hardwick
+ */
+
 const trackerModel = {
 	id: null,
 	workspace_id: null,
