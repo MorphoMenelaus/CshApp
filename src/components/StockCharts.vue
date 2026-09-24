@@ -5,34 +5,48 @@
 				<div class="spinner-pulse"></div>
 			</div>
 		</Transition>
-		<h2>{{ seriesDetails.desciption }}</h2>
-		<div class="input-fields">
-			<div class="input-container">
-				<label for="series">Series</label>
-				<select id="series" v-model="series" title="Select series">
-					<option v-for="(item, index) in seriesOptions" :key="index" :value="item.series_id">
-						{{ item.desciption }}
-					</option>
-				</select>
-			</div>
-			<div class="btn-group">
-				<button
-					v-for="(item, index) in dateRanges"
-					:key="index"
-					:value="item.value"
-					:title="item.title"
-					class="btn"
-					@click="selectDateRange(item)"
-					:class="selectedDate.value == item.value ? 'selected' : ''"
-				>
-					{{ item.text }}
-				</button>
-			</div>
+		<div id="description-box">
+			<h1 class="julius-sans">Market Summary Graphs</h1>
+			<p>
+				REST API data provided by the Federal Reserve Bank of St. Louis (FRED&reg;) and contains frequently updated US and regional economic series (end
+				of day trading, for this API), updated from a variety of sources most of which are US government agencies.
+			</p>
+			<p>
+				For the purposes of demonstrating ChartJS usage, I needed a continuous, constantly changing dataset and a markets / stock-index REST API seemed
+				to fit the bill.
+			</p>
+			<small>This is just for demonstration puposes... Please don't try to be the Wolf of Wall Street with this.</small>
 		</div>
 		<div id="stocks">
-			<canvas id="stocks-graph"></canvas>
+			<div class="input-fields">
+				<div class="input-container">
+					<label for="series">Series</label>
+					<select id="series" v-model="series" title="Select series">
+						<option v-for="(item, index) in seriesOptions" :key="index" :value="item.series_id">
+							{{ item.desciption }}
+						</option>
+					</select>
+					<div class="btn-group">
+						<button
+							v-for="(item, index) in dateRanges"
+							:key="index"
+							:value="item.value"
+							:title="item.title"
+							class="btn"
+							@click="selectDateRange(item)"
+							:class="selectedDate.value == item.value ? 'selected' : ''"
+						>
+							{{ item.text }}
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div id="stocks-container">
+				<canvas id="stocks-graph"></canvas>
+			</div>
+			<small class="text-center">This product uses the FRED&reg; API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. </small>
 		</div>
-		<small class="text-center">This product uses the FRED&reg; API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. </small>
 	</div>
 </template>
 
@@ -74,12 +88,12 @@ export default {
 		isMobile: Boolean,
 		windowWidth: Number,
 	},
-	components: {},
 	data() {
 		return {
 			baseUrl: inject("baseUrl"),
 			updateStatus: inject("sendUpdateStatus"),
 			serverStatus: Object.assign({}, appNotify),
+			darkMode: localStorage.getItem("theme") === "dark",
 			showHideLoader: false,
 			chartElem: null,
 			startDate: new Date().toISOString().split("T")[0],
@@ -103,7 +117,9 @@ export default {
 				blue: "rgb(54, 162, 235)",
 				purple: "rgb(153, 102, 255)",
 				grey: "rgb(201, 203, 207)",
+				medWhite: "rgb(200, 200, 200)",
 				white: "rgb(255, 255, 255)",
+				medBlack: "rgb(40, 40, 40)",
 				black: "rgb(0, 0, 0)",
 			},
 			startMin: this.endDate,
@@ -195,6 +211,8 @@ export default {
 			}
 		},
 		drawChart() {
+			this.darkMode = localStorage.getItem("theme") === "dark";
+
 			this.setupForGraph();
 
 			const existingChart = Chart.getChart("stocks-graph");
@@ -256,6 +274,9 @@ export default {
 									size: this.isMobile ? 14 : 24,
 								},
 							},
+							grid: {
+								color: this.darkMode ? this.CHART_COLORS.grey : this.CHART_COLORS.medBlack,
+							},
 						},
 						y1: {
 							display: true,
@@ -268,6 +289,9 @@ export default {
 									size: this.isMobile ? 14 : 24,
 								},
 							},
+							grid: {
+								color: this.darkMode ? this.CHART_COLORS.grey : this.CHART_COLORS.medBlack,
+							},
 							suggestedMin: Math.min(...extractedValues) - 100,
 							suggestedMax: Math.max(...extractedValues) + 100,
 						},
@@ -277,6 +301,7 @@ export default {
 			};
 
 			Chart.defaults.font.size = this.isMobile ? 12 : 18;
+			Chart.defaults.color = this.darkMode ? this.CHART_COLORS.medWhite : this.CHART_COLORS.medBlack;
 			this.weatherChart = new Chart(this.chartElem, chartConfig);
 		},
 		setupForGraph() {
@@ -301,12 +326,45 @@ export default {
 </script>
 
 <style scoped>
+#description-box {
+	background-color: rgb(231 231 231);
+	color: #000;
+	margin: 30px auto 15px;
+	border-radius: 12px;
+	padding: 5px 15px 45px;
+	border: 1px #000 solid;
+	text-align: center;
+}
+
+#description-box p {
+	width: 95%;
+	margin: auto;
+	text-align: left;
+}
+
+.uiDarkMode #description-box {
+	border: 1px #555 solid;
+	background-color: #222;
+	color: #c1c1c1;
+}
+
 #markets {
 	position: relative;
+	width: 98%;
+	margin: auto;
 }
 
 small.text-center {
+	margin-top: 1em;
 	display: block;
+}
+
+h1 {
+	margin-top: 0.5em;
+}
+
+.uiDarkMode h1 {
+	color: #aaa;
 }
 
 h2,
@@ -320,10 +378,24 @@ h2 {
 }
 
 .uiDarkMode #stocks-graph {
-	background-color: #ccc;
+	background-color: #333;
+	border: 1px solid #ababab;
+}
+
+.uiDarkMode #stocks {
+	background-color: #222;
 }
 
 #stocks {
+	background-color: #e7e7e7;
+	border: 1px solid #ababab;
+	border-radius: 12px;
+	margin: 15px 0;
+	padding: 15px;
+}
+
+#stocks-container {
+	position: relative;
 	background-color: #dbdbdb;
 	border: 1px solid #ababab;
 	border-radius: 12px;
@@ -336,6 +408,26 @@ h2 {
 	background-color: #eee;
 	border-radius: 12px;
 	margin: auto;
+}
+
+.input-container {
+	color: #000;
+	background-color: #dbdbdb;
+	border: 1px solid #7f7f7f;
+	border-radius: 12px;
+	justify-content: space-evenly;
+	align-items: center;
+	width: 100%;
+	margin: 15px auto;
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+}
+
+.uiDarkMode .input-container {
+	color: #ddd;
+	background-color: #000;
+	border: 1px solid #fff;
 }
 
 .input-fields {
@@ -356,9 +448,9 @@ h2 {
 	display: none;
 }
 
-.mobile .btn-group {
+/* .mobile .btn-group {
 	margin-top: 15px;
-}
+} */
 
 .input-fields select {
 	max-width: 20em;
@@ -370,7 +462,14 @@ h2 {
 }
 
 .input-fields .btn {
-	margin: 0 5px;
+	margin: 0.5em;
+}
+
+.btn-group {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	margin-top: 0.5em;
 }
 
 #series {
@@ -381,7 +480,7 @@ h2 {
 canvas#stocks-graph {
 	width: 100%;
 	height: calc(100vw / 3);
-	max-height: 800px;
+	max-height: 720px;
 	border: 1px #000 solid;
 }
 
@@ -422,5 +521,52 @@ canvas#stocks-graph {
 
 .spinner-pulse:after {
 	left: 40px;
+}
+
+@media (min-width: 768px) {
+	#description-box {
+		padding: 5px 30px 45px;
+	}
+
+	#description-box p {
+		width: 80%;
+	}
+
+	.input-container {
+		max-width: 80%;
+		flex-direction: row;
+	}
+	.btn-group {
+		margin-top: unset;
+	}
+}
+
+@media (min-width: 1024px) {
+	#description-box {
+		padding: 5px 45px 45px;
+	}
+}
+
+@media (min-width: 992px) {
+	#markets {
+		width: 90%;
+	}
+}
+@media (min-width: 1200px) {
+	#markets {
+		width: 80%;
+	}
+}
+
+@media (min-width: 1800px) {
+	#markets {
+		width: 70%;
+	}
+}
+
+@media (min-width: 2200px) {
+	#markets {
+		width: 60%;
+	}
 }
 </style>

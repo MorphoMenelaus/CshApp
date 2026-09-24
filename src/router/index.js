@@ -39,10 +39,10 @@ const router = createRouter({
 			meta: { public: false, required: [], title: "User Preferences | Hardwick Web Development" },
 		},
 		{
-			path: "/weather",
-			name: "Weather",
-			component: () => import("../views/WeatherBasic.vue"),
-			meta: { public: true, required: [], title: "Weather | Hardwick Web Development" },
+			path: "/chartjs",
+			name: "ChartJS",
+			component: () => import("../views/ChartJS.vue"),
+			meta: { public: true, required: [], title: "ChartJS | Hardwick Web Development" },
 		},
 		{
 			path: "/displayusers",

@@ -31,7 +31,6 @@
 #general-description {
 	display: flex;
 	flex-direction: column;
-	margin: 15px auto;
 }
 
 h2,

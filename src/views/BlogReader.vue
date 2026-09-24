@@ -377,10 +377,6 @@ h3 {
 	#blogs {
 		width: 90%;
 	}
-
-	#latest-summary {
-		padding: 30px 60px;
-	}
 }
 
 @media (min-width: 1200px) {

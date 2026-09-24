@@ -41,7 +41,7 @@ strong {
 	background-color: var(--vt-c-disc-light-1);
 	border-radius: 8px;
 	margin: 30px auto 0;
-	padding: 15px 30px;
+	padding: 1em;
 	width: fit-content;
 }
 
@@ -49,7 +49,25 @@ strong {
 	background-color: var(--vt-c-disc-dark-1);
 }
 
+p {
+	margin: 0 auto 1em;
+	/* padding: 0 1em; */
+	text-indent: 1.5em;
+}
+
 .uiDarkMode a:visited {
 	color: #f53cf5;
+}
+
+@media (min-width: 768px) {
+	#disclaimers {
+		padding: 1em 2em;
+	}
+}
+
+@media (min-width: 992px) {
+	#disclaimers {
+		padding: 2em 4em;
+	}
 }
 </style>

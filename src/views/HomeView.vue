@@ -5,6 +5,9 @@ import urls from "@/dependencies/commonUrls.json";
 import Disclaimers from "@/components/Disclaimers.vue";
 import StockCharts from "@/components/StockCharts.vue";
 import TaglineBox from "@/components/TaglineBox.vue";
+import SkillsHighlight from "@/components/SkillsHighlight.vue";
+import AppDevDuties from "@/components/AppDevDuties.vue";
+import CoreTechStack from "@/components/CoreTechStack.vue";
 
 const props = defineProps({
 	appState: Object,
@@ -88,53 +91,40 @@ onUnmounted(() => {
 				<div>
 					<TaglineBox />
 				</div>
-				<div id="skills-list" class="stroke">
-					<ul>
-						<li>Vue 3</li>
-						<li>Pinia &amp; Vuex</li>
-						<li>NodeJS</li>
-						<li>ExpressJS</li>
-						<li>REST API</li>
-						<li>HTML5</li>
-						<li>CSS3</li>
-						<li>JavaScript</li>
-						<li class="mobile-show">WCAG / ADA accessibility principles</li>
-					</ul>
-					<ul>
-						<li>SQL</li>
-						<li>ChartJS</li>
-						<li>C#</li>
-						<li>Agile Development</li>
-						<li>Single Page Applications</li>
-						<li>Responsive Web Design</li>
-						<li>Full-Stack Development</li>
-						<li class="mobile-hide">WCAG / ADA accessibility principles</li>
-					</ul>
-				</div>
+				<SkillsHighlight />
 			</div>
 			<div id="latest-summary">
-				<h2 class="julius-sans">Latest Accomplishments</h2>
-				<h3>Front-End Web Developer | Makrö Gaming Studios</h3>
+				<h2 class="julius-sans">Proactive Upskilling &amp; Latest Accomplishments</h2>
 				<p>
-					I developed a full suite of Single Page Applications using the Vue 3 framework to accompany the video slots online game application
-					ecosystem for Makrö Gaming Studios. I placed a strong emphasis on responsive clean design, interactivity and readability in order to present
-					and effortlessly manage potentially complex functionality and data. The apps consist of an Admin App, Cashier App, Player App and Report App
-					to facilitate all the behind-the-scenes functions and player facing needs in order to support the game client and the site administrators
-					mostly through REST API calls to the game server.
+					I build high-performance, interactive web applications with clean architecture and seamless user experiences. Most recently,
+					I&nbsp;engineered a full suite of four interconnected Single Page Applications using Vue 3 for Makrö Gaming Studios, managing complex
+					dashboards and dynamic, role-based permission systems backed by relational databases via REST APIs.
 				</p>
 				<p>
-					A robust role and permissions management system was implemented in each application that dynamically renders user interfaces and enables
-					functions based on role/permissions. Authorization for Admin, HelpDesk, Cashier, Reporter, and Player all allow for different access and
-					abilities.
+					Motivated by a commitment to self-driven upskilling and continuous growth, I have spent the past year expanding my engineering toolkit into
+					robust full-stack development. I have transitioned into the React and TypeScript ecosystems, styling responsive interfaces with Tailwind
+					CSS, and building scalable backend environments using Node.js and Express. I bridge the gap between beautiful client-side interactivity and
+					secure server-side logic.
 				</p>
+				<CoreTechStack />
 				<div class="btn-link-container">
 					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
 						<span v-if="!isMobile">{{ lessText ? "Fewer " : "More " }}</span
 						>Details
 						<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
 					</button>
-					<RouterLink to="/resume" title="Chris Hardwick Resume" class="btn acrobat-icon" @click="sendAnalyticsEvent('download', 'resume_link')"
-						>{{ isMobile ? "" : "Chris Hardwick " }}Resume</RouterLink
+					<a
+						v-if="!isMobile"
+						class="btn acrobat-icon"
+						href="/pdf/ChrisHardwickResume2026-09nc.pdf"
+						title="Download Chris Hardwick Resume PDF"
+						download="ChrisHardwickResume2026.pdf"
+						@click="sendAnalyticsEvent('download', 'resume_link_home')"
+					>
+						Download Resume
+					</a>
+					<RouterLink to="/resume" title="Chris Hardwick Resume" class="btn personal-icon" @click="sendAnalyticsEvent('resume_online', 'resume_link')"
+						>Resume Page</RouterLink
 					>
 					<a
 						class="btn linkedin linkedin-icon"
@@ -147,12 +137,7 @@ onUnmounted(() => {
 				</div>
 				<Transition name="slide-down">
 					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
-						<div class="details-ul" v-for="(app, index) in appState.appDevDuties" :key="index">
-							<h3 class="julius-sans">{{ app.appName }}:</h3>
-							<ul>
-								<li v-for="(li, index) in app.duties" :key="index">{{ li }}</li>
-							</ul>
-						</div>
+						<AppDevDuties :appDevDuties="appState.appDevDuties" />
 					</div>
 				</Transition>
 				<div v-if="!appState?.appDevDuties?.length > 0">
@@ -160,7 +145,7 @@ onUnmounted(() => {
 				</div>
 			</div>
 
-			<div id="stocks-container">
+			<!-- <div id="stocks-container">
 				<div id="charts-header">
 					<h2 class="julius-sans" @click="showStockDetails('latest-stocks')" :title="`${showStocks ? 'Close' : 'Open'} Market Summary Graphs`">
 						Market Summary Graphs
@@ -177,7 +162,7 @@ onUnmounted(() => {
 						<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" />
 					</div>
 				</Transition>
-			</div>
+			</div> -->
 
 			<Disclaimers />
 		</div>
@@ -269,17 +254,17 @@ p {
 	flex-direction: column;
 }
 
-#stocks-container {
+/* #stocks-container {
 	margin-top: 30px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-}
+} */
 
 #latest-summary,
 #stocks-container {
 	background-color: #e7e7e7;
-	padding: 15px;
+	padding: 1em;
 	border: 1px #555 solid;
 	border-radius: 12px;
 }
@@ -301,6 +286,19 @@ p {
 	font-weight: normal;
 }
 
+#summary-flex {
+	display: flex;
+	flex-flow: row wrap;
+}
+
+.summary-inner {
+	flex-basis: 70%;
+}
+
+#tech-stack {
+	flex-basis: 30%;
+}
+
 #latest-details {
 	margin-top: 30px;
 	overflow: hidden;
@@ -308,20 +306,6 @@ p {
 
 #latest-details ul {
 	margin-bottom: 30px;
-}
-
-#skills-list {
-	display: flex;
-	justify-content: space-around;
-	margin: 30px auto;
-	font-size: 1.25em;
-	width: 50%;
-	padding: 0 30px;
-	color: rgb(25 25 25);
-}
-
-.uiDarkMode #skills-list {
-	color: inherit;
 }
 
 #charts-header {
@@ -333,40 +317,6 @@ p {
 
 #latest-stocks {
 	overflow: hidden;
-}
-
-.mobile #skills-list {
-	width: 100%;
-}
-
-.details-ul h3 {
-	position: relative;
-	top: -15px;
-	left: -15px;
-	width: calc(100% + 30px);
-	padding: 15px;
-	background-color: #d5d5d5;
-	color: #444;
-	font-size: 1.25em;
-	font-weight: bold;
-	border: 1px #444 solid;
-	border-radius: 8px 8px 0 0;
-}
-
-.uiDarkMode .details-ul h3 {
-	color: #fff;
-	background-color: #112;
-}
-
-.details-ul {
-	background-color: #fff;
-	padding: 15px;
-	margin-bottom: 30px;
-	border-radius: 0 0 8px 8px;
-}
-
-.uiDarkMode .details-ul {
-	background-color: #1c2138;
 }
 
 .not-verified {
@@ -387,6 +337,7 @@ p {
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
+	margin-top: 2em;
 }
 
 .mobile .btn-link-container > * {
@@ -398,7 +349,8 @@ p {
 }
 
 .linkedin,
-.acrobat-icon {
+.acrobat-icon,
+.personal-icon {
 	display: inline-block;
 	position: relative;
 	right: 0;
@@ -437,18 +389,16 @@ p {
 #scroll-anchor,
 #stocks-anchor,
 .btn.acrobat-icon,
-.btn.linkedin-icon {
+.btn.linkedin-icon,
+.btn.personal-icon {
 	font-size: 0.8em;
 	text-align: center;
 }
 
 .acrobat-icon::after,
-.linkedin-icon::after {
+.linkedin-icon::after,
+.personal-icon::after {
 	content: unset;
-}
-
-.mobile-hide {
-	display: none;
 }
 
 #scroll-top {
@@ -472,15 +422,17 @@ p {
 		font-size: 1.25em;
 	}
 
-	#skills-list {
-		padding: 0;
-	}
 	#charts-header h2 {
 		font-size: 1.5em;
 	}
 }
 
 @media (min-width: 768px) {
+	#latest-summary,
+	#stocks-container {
+		padding: 1em 2em;
+	}
+
 	#scroll-top {
 		display: inline-block;
 		position: fixed;
@@ -488,18 +440,11 @@ p {
 		right: 30px;
 	}
 
-	.mobile-show {
-		display: none;
-	}
-
-	.mobile-hide {
-		display: list-item;
-	}
-
 	#scroll-anchor,
 	#stocks-anchor,
 	.btn.acrobat-icon,
-	.btn.linkedin-icon {
+	.btn.linkedin-icon,
+	.btn.personal-icon {
 		font-size: 1em;
 	}
 
@@ -509,17 +454,27 @@ p {
 	}
 
 	.btn.acrobat-icon,
-	.btn.linkedin-icon {
+	.btn.linkedin-icon,
+	.btn.personal-icon {
 		padding-right: 48px;
 	}
 
 	.acrobat-icon::after,
-	.linkedin-icon::after {
+	.linkedin-icon::after,
+	.personal-icon::after {
 		content: "";
 		top: 4px;
 		right: 10px;
 		width: 26px;
 		height: 26px;
+	}
+
+	.personal-icon::after {
+		top: 5px;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		border: 1px #eee solid;
 	}
 
 	.linkedin-icon::after {
@@ -533,6 +488,11 @@ p {
 }
 
 @media (min-width: 992px) {
+	#latest-summary,
+	#stocks-container {
+		padding: 2em 4em;
+	}
+
 	#main-home-layout {
 		width: 90%;
 	}
@@ -543,10 +503,6 @@ p {
 
 	h3 {
 		font-size: 1.5em;
-	}
-
-	#latest-summary {
-		padding: 30px 60px;
 	}
 }
 

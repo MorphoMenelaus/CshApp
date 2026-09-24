@@ -2,7 +2,7 @@
 	<div>
 		<div id="weather-container">
 			<div id="description-box">
-				<h1>{{ forecastDayText }} Weather Forecast</h1>
+				<h1 class="julius-sans">{{ forecastDayText }} Weather Forecast</h1>
 				<p>
 					This data is retreived by a REST API call for up-to-date weather and is the combined reliable NOAA GFS weather model with rapid updating
 					HRRR weather model.
@@ -96,11 +96,11 @@ export default {
 		isMobile: Boolean,
 		windowWidth: Number,
 	},
-	components: {},
 	data() {
 		return {
 			updateStatus: inject("sendUpdateStatus"),
 			forceLogout: inject("forceLogout"),
+			darkMode: localStorage.getItem("theme") === "dark",
 			serverStatus: Object.assign({}, appNotify),
 			showHideLoader: false,
 			chartElem: null,
@@ -119,7 +119,9 @@ export default {
 				blue: "rgb(54, 162, 235)",
 				purple: "rgb(153, 102, 255)",
 				grey: "rgb(201, 203, 207)",
+				medWhite: "rgb(200, 200, 200)",
 				white: "rgb(255, 255, 255)",
+				medBlack: "rgb(40, 40, 40)",
 				black: "rgb(0, 0, 0)",
 			},
 			forecastDaysOptions: [
@@ -234,6 +236,8 @@ export default {
 			}
 		},
 		drawChart() {
+			this.darkMode = localStorage.getItem("theme") === "dark";
+
 			const existingChart = Chart.getChart("weather-graph");
 			if (existingChart) {
 				existingChart.destroy();
@@ -312,6 +316,9 @@ export default {
 								display: true,
 								text: "Date / Time",
 							},
+							grid: {
+								color: this.darkMode ? this.CHART_COLORS.grey : this.CHART_COLORS.medBlack,
+							},
 						},
 						y1: {
 							display: this.isMobile ? false : true,
@@ -319,6 +326,9 @@ export default {
 								display: true,
 								text: "Temperature °F",
 								color: this.CHART_COLORS.blue,
+							},
+							grid: {
+								color: this.darkMode ? this.CHART_COLORS.grey : this.CHART_COLORS.medBlack,
 							},
 							suggestedMin: (Math.min(...temperatureData) < 50 ? Math.min(...temperatureData) : 50) - 10,
 							suggestedMax: (Math.max(...temperatureData) > 80 ? Math.max(...temperatureData) : 80) + 10,
@@ -349,6 +359,7 @@ export default {
 			};
 
 			Chart.defaults.font.size = this.isMobile ? 12 : 18;
+			Chart.defaults.color = this.darkMode ? this.CHART_COLORS.medWhite : this.CHART_COLORS.medBlack;
 			this.weatherChart = new Chart(this.chartElem, chartConfig);
 		},
 		setupForGraph() {
@@ -375,6 +386,10 @@ export default {
 <style scoped>
 h1 {
 	margin: 15px auto;
+}
+
+.uiDarkMode h1 {
+	color: #aaa;
 }
 
 h1,
@@ -423,7 +438,11 @@ small {
 }
 
 .uiDarkMode #weather {
-	background-color: #ccc;
+	background-color: #111;
+}
+
+.uiDarkMode .stroke {
+	color: #aaa;
 }
 
 #weather-box {
@@ -434,7 +453,7 @@ small {
 }
 
 .uiDarkMode #weather-box {
-	background-color: #000;
+	background-color: #222;
 }
 
 #weather-error {
@@ -449,10 +468,14 @@ small {
 	margin: auto;
 }
 
+.uiDarkMode #weather-graph {
+	background-color: #333;
+}
+
 canvas#weather-graph {
 	width: 100%;
 	height: calc(100vw / 3);
-	max-height: 800px;
+	max-height: 720px;
 	border: 1px #000 solid;
 }
 

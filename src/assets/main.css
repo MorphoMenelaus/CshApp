@@ -18,7 +18,8 @@
 
 .uiDarkMode #app,
 .background-img {
-	background: linear-gradient(rgb(2 6 24), rgb(2 6 24) 90%);
+	/* background: linear-gradient(rgb(2 6 24), rgb(2 6 24) 90%); */
+	background: linear-gradient(hsl(229 85% 12% / 1), hsl(229 85% 0% / 1) 90%);
 }
 
 table {
@@ -115,14 +116,16 @@ table {
 .csh-icon,
 .linkedin-icon,
 .email-icon,
-.acrobat-icon {
+.acrobat-icon,
+.personal-icon {
 	position: relative;
 }
 
 .csh-icon::after,
 .linkedin-icon::after,
 .email-icon::after,
-.acrobat-icon::after {
+.acrobat-icon::after,
+.personal-icon::after {
 	content: '';
 	position: absolute;
 	width: 32px;
@@ -144,6 +147,10 @@ table {
 
 .acrobat-icon::after {
 	background: url(../icons/acrobat64px.png) 0 0 / contain no-repeat;
+}
+
+.personal-icon::after {
+	background: url(../icons/Chris_Hardwick_200.webp) 0 0 / contain no-repeat;
 }
 
 button,

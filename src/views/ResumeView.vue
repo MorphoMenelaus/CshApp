@@ -120,7 +120,6 @@ onMounted(() => {
 
 			<div class="btn-container top">
 				<a
-					v-if="!personalRestricted"
 					class="btn acrobat-icon"
 					href="/pdf/ChrisHardwickResume2026-09nc.pdf"
 					title="Download Chris Hardwick Resume PDF"
@@ -371,6 +370,7 @@ onMounted(() => {
 @media (min-width: 576px) {
 	.btn-container.top {
 		flex-direction: row;
+		margin-bottom: 0.8em;
 	}
 }
 

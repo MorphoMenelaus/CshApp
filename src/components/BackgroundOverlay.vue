@@ -9,18 +9,18 @@
 #bg-parent {
 	position: fixed;
 	display: flex;
-	top: 0;
+	top: -75px;
 	right: 0;
-	left: 0;
+	left: -15vw;
 	bottom: 0;
-	width: 100vw;
-	height: 100vh;
+	width: 130vw;
+	height: 130vh;
 	z-index: -1;
-	opacity: 0.3;
+	opacity: 0.2;
 }
 
 .uiDarkMode #bg-parent {
-	opacity: 0.5;
+	opacity: 0.3;
 }
 
 .one,
@@ -66,7 +66,7 @@
 }
 
 #bg-parent.animate {
-	animation: rotate-bg 30s infinite ease-in-out both;
+	animation: rotate-bg 25s infinite ease-in-out both;
 }
 
 .animate .one {
@@ -113,6 +113,15 @@
 
 	40% {
 		transform: rotateZ(180deg);
+	}
+}
+
+@media (min-width: 992px) {
+	#bg-parent {
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
 	}
 }
 </style>

@@ -235,7 +235,7 @@ label[for="casinoId"] {
 }
 
 .wrapper {
-	max-width: 30em;
+	max-width: 24em;
 	align-content: center;
 	background-color: #313b64;
 	height: fit-content;
