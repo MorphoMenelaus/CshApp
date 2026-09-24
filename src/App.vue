@@ -60,7 +60,7 @@ import ContactForm from "@/components/ContactForm.vue";
 import GeminiChat from "@/components/GeminiChat.vue";
 import GeminiJobMatch from "@/components/GeminiJobMatch.vue";
 import GeminiExplainCode from "@/components/GeminiExplainCode.vue";
-import { Storage, tokenCheck, stateUpdateService, routerStateService } from "@/dependencies/csh-libs.js";
+import { Storage, tokenCheck, dispatchCustomEvent, stateUpdateService, routerStateService } from "@/dependencies/csh-libs.js";
 
 export default {
 	components: {
@@ -103,6 +103,7 @@ export default {
 	watch: {
 		uiDarkMode() {
 			this.setThemePreference();
+			dispatchCustomEvent("uiDarkModeChange", this.uiDarkMode);
 		},
 		currentComponent() {
 			this.mobileDropdownClose = this.currentComponent ? true : false;
@@ -258,7 +259,6 @@ export default {
 				this.recallAppState();
 			}
 		});
-
 		this.checkOrientation();
 		this.initialSetup();
 	},

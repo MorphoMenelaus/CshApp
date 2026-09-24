@@ -39,10 +39,10 @@ const router = createRouter({
 			meta: { public: false, required: [], title: "User Preferences | Hardwick Web Development" },
 		},
 		{
-			path: "/weather",
-			name: "Weather",
-			component: () => import("../views/WeatherBasic.vue"),
-			meta: { public: true, required: [], title: "Weather | Hardwick Web Development" },
+			path: "/chartjs",
+			name: "ChartJS",
+			component: () => import("../views/ChartJS.vue"),
+			meta: { public: true, required: [], title: "ChartJS | Hardwick Web Development" },
 		},
 		{
 			path: "/displayusers",
@@ -134,6 +134,14 @@ router.beforeEach((to, from) => {
 			};
 			dispatchCustomEvent("routerNotify", res);
 			return from.path || { path: "/" };
+	}
+});
+
+router.afterEach((to, from) => {
+	const container = document.getElementById("app");
+
+	if (container) {
+		container.scrollTo({ top: 0, left: 0, behavior: "instant" });
 	}
 });
 

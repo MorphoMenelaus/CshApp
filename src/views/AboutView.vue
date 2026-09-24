@@ -135,8 +135,8 @@ h3 {
 }
 
 p {
-	margin: 0 auto 15px;
-	padding: 0 30px 15px;
+	margin: 0 auto 1em;
+	/* padding: 0 1em; */
 	text-indent: 1.5em;
 }
 
@@ -145,7 +145,7 @@ p {
 }
 
 h2.profile {
-	margin: 15px auto 0;
+	margin: 0 auto;
 	font-size: 2em;
 	font-weight: bold;
 }
@@ -153,8 +153,8 @@ h2.profile {
 #profile {
 	border: 1px solid #555;
 	border-radius: 12px;
-	padding: 15px 0;
-	margin: 15px auto;
+	padding: 1em;
+	margin: 1em auto;
 	background-color: #e7e7e7;
 }
 
@@ -269,7 +269,7 @@ a.btn.large {
 	}
 
 	#profile {
-		padding: 15px;
+		padding: 1em 2em;
 	}
 
 	.btn.csh-icon,
@@ -307,6 +307,10 @@ a.btn.large {
 }
 
 @media (min-width: 992px) {
+	#profile {
+		padding: 2em 4em;
+	}
+
 	#about {
 		width: 90%;
 	}

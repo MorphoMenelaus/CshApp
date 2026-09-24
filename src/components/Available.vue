@@ -54,7 +54,7 @@ const route = useRoute();
 }
 
 .pulse::before {
-	top: 8px;
+	top: 7px;
 	left: 8px;
 	width: 12px;
 	height: 12px;
@@ -62,7 +62,7 @@ const route = useRoute();
 }
 
 .pulse::after {
-	top: 2px;
+	top: 1px;
 	left: 2px;
 	width: 22px;
 	height: 22px;

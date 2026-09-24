@@ -107,7 +107,9 @@ onMounted(() => {
 					<img src="/icons/CS20260822_128.png" alt="CSH App" />
 				</RouterLink>
 				<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
-				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Database">Movie DB</RouterLink>
+				<RouterLink to="/resume" @click="closeDialogs('resume')" title="Chris Hardwick Resume">Resume</RouterLink>
+				<RouterLink to="/chartjs" @click="closeDialogs('ChartJS')" title="ChartJS Graphing Library | Weather, Stocks">ChartJS Examples</RouterLink>
+				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Library | Database Management">Movie DB</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && allowed('verified', 'admin', 'siteAdmin') && !personalRestricted"
 					to="/blog-reader"
@@ -129,8 +131,6 @@ onMounted(() => {
 					title="Display User Logs"
 					>User Logs</RouterLink
 				>
-				<RouterLink to="/resume" @click="closeDialogs('resume')" title="Chris Hardwick Resume">Resume </RouterLink>
-				<RouterLink to="/weather" @click="closeDialogs('weather')" title="Weather">Weather</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && allowed('verified', 'admin') && !personalRestricted"
 					to="/toggl"

@@ -117,10 +117,8 @@ onMounted(() => {
 				<h1 class="julius-sans center name stroke">Chris Hardwick</h1>
 				<h2>Resume</h2>
 			</div>
-
 			<div class="btn-container top">
 				<a
-					v-if="!personalRestricted"
 					class="btn acrobat-icon"
 					href="/pdf/ChrisHardwickResume2026-09nc.pdf"
 					title="Download Chris Hardwick Resume PDF"
@@ -171,6 +169,21 @@ onMounted(() => {
 				</Transition>
 			</div>
 			<div v-if="resumeArray?.length > 0">
+				<div id="profile">
+					<h2 class="julius-sans center bold">Professional Profile</h2>
+					<p>
+						Creative and experienced front-end and web application developer with over 10 years of experience building modern, responsive user
+						interfaces and fluid user experiences. Blends a strong background in graphic design with precise engineering to connect users
+						intuitively to structured data. Proven track record of collaborating across teams and working independently to launch successful web
+						ecosystems.
+					</p>
+					<h2 class="julius-sans center bold core">Core Technical Skills</h2>
+					<ul>
+						<li><strong>Front-End:</strong> Vue 3, JavaScript, HTML5, CSS3, Responsive Design, UI/UX Design</li>
+						<li><strong>Back-End & Frameworks:</strong> Node.js, C#, ASP.NET (MVC), REST APIs, SQL</li>
+						<li><strong>Tools & Software:</strong> Webpack, Vite, Git, Godot, Adobe Photoshop, Adobe Illustrator</li>
+					</ul>
+				</div>
 				<div v-if="!isMobile">
 					<ResumeTable :resumeArray="resumeArray" />
 				</div>
@@ -223,10 +236,32 @@ onMounted(() => {
 </style>
 
 <style scoped>
+#profile {
+	border: 1px solid #555;
+	border-radius: 12px;
+	padding: 1em;
+	margin: 1em auto;
+	background-color: #e7e7e7;
+}
+
+.uiDarkMode #profile {
+	background-color: #000;
+	color: #aaa;
+}
+
 .btn {
 	margin: 15px auto;
 	display: block;
 	width: fit-content;
+}
+
+.bold,
+strong {
+	font-weight: bold;
+}
+
+.core {
+	margin-top: 1em;
 }
 
 #layout-container {
@@ -265,6 +300,11 @@ onMounted(() => {
 	color: #ddd;
 	background-color: #000;
 	border: 1px solid #fff;
+}
+
+ul {
+	margin: auto;
+	width: fit-content;
 }
 
 .name {
@@ -371,10 +411,15 @@ onMounted(() => {
 @media (min-width: 576px) {
 	.btn-container.top {
 		flex-direction: row;
+		margin-bottom: 0.8em;
 	}
 }
 
 @media (min-width: 768px) {
+	#profile {
+		padding: 1em 2em;
+	}
+
 	.btn.acrobat-icon,
 	.btn.linkedin-icon {
 		padding-right: 48px;
@@ -409,6 +454,10 @@ onMounted(() => {
 }
 
 @media (min-width: 992px) {
+	#profile {
+		padding: 2em 4em;
+	}
+
 	#layout-container {
 		width: 90%;
 	}

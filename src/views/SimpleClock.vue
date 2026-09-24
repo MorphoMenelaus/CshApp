@@ -72,7 +72,7 @@ const getClockLog = async () => {
 		const response = await tokenInterceptFetch(request);
 		const data = await response.json();
 
-		eventLogList.value = data?.clockLogs;
+		eventLogList.value = setWakeupBool(data?.clockLogs);
 	} catch (error) {
 		console.error("Error posting data:", error);
 		serverStatus.code = 500;
@@ -151,16 +151,18 @@ const nextPage = () => {
 	getClockLog();
 };
 
-watch([limit, eventLogList], ([newLimit, newLogs], [oldLimit, oldLogs]) => {
+const setWakeupBool = (array = []) => {
+	array.forEach((item) => {
+		item.isWakeupEvent = item?.isWakeupEvent === 1 ? true : false;
+	});
+	return array;
+};
+
+watch(limit, (newLimit, oldLimit) => {
 	if (newLimit !== oldLimit) {
 		currentPage.value = 1;
 		offset.value = null;
 		getClockLog();
-	}
-	if (newLogs.length !== oldLogs.length && eventLogList.value.length > 0) {
-		eventLogList.value.forEach((event) => {
-			event.isWakeupEvent = event?.isWakeupEvent === 1 ? true : false;
-		});
 	}
 });
 

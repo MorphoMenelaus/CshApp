@@ -1,6 +1,6 @@
 <template>
 	<div id="general-description">
-		<h3 class="julius-sans">Site built using a Vue 3 frontend with a NodeJS/ExpressJS backend.</h3>
+		<h3 class="julius-sans">Site built using a Vue 3 frontend with a NodeJS / ExpressJS backend.</h3>
 		<div>
 			<p>
 				I designed and built a backend server featuring more than 40 <strong>REST API</strong> endpoints, utilizing optimized
@@ -31,7 +31,6 @@
 #general-description {
 	display: flex;
 	flex-direction: column;
-	margin: 15px auto;
 }
 
 h2,

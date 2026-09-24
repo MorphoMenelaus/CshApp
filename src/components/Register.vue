@@ -302,7 +302,7 @@ label[for="casinoId"] {
 }
 
 .wrapper {
-	max-width: 30em;
+	max-width: 24em;
 	align-content: center;
 	background-color: #313b64;
 	height: fit-content;
@@ -312,7 +312,7 @@ label[for="casinoId"] {
 	flex-direction: column;
 	overflow: hidden auto;
 	box-shadow: 2px 2px 6px #000;
-	width: 90%;
+	/* width: 90%; */
 	margin: auto;
 }
 
