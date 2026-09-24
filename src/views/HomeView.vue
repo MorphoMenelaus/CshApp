@@ -17,10 +17,6 @@ const props = defineProps({
 
 const lessText = ref(false);
 const showStocks = ref(false);
-const targetElement = ref(null);
-const showScrollButton = ref(false);
-let observer = null;
-
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
 const scrollToId = (id) => {
@@ -53,28 +49,6 @@ const showStockDetails = (id) => {
 	}, 200);
 	sendAnalyticsEvent("stock_charts", "details");
 };
-
-onMounted(async () => {
-	await nextTick();
-	observer = new IntersectionObserver(
-		([entry]) => {
-			showScrollButton.value = !entry.isIntersecting;
-		},
-		{
-			root: document.getElementById("view"),
-			threshold: 0.5,
-		},
-	);
-
-	if (targetElement.value) {
-		observer.observe(targetElement.value);
-	}
-});
-onUnmounted(() => {
-	if (observer) {
-		observer.disconnect();
-	}
-});
 </script>
 
 <template>
@@ -84,9 +58,7 @@ onUnmounted(() => {
 			<RouterLink class="unverified" to="/verify">Click to Verify Account</RouterLink>
 		</div>
 
-		<!-- <button v-if="showScrollButton" class="btn" @click="scrollHomeLayout()" id="scroll-top"><span>▽</span>&nbsp;Scroll to Top</button> -->
-
-		<div id="main-home-layout" ref="targetElement">
+		<div id="main-home-layout">
 			<div id="title-block">
 				<div>
 					<TaglineBox />
@@ -108,11 +80,6 @@ onUnmounted(() => {
 				</p>
 				<CoreTechStack />
 				<div class="btn-link-container">
-					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
-						<span v-if="!isMobile">{{ lessText ? "Fewer " : "More " }}</span
-						>Details
-						<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
-					</button>
 					<a
 						v-if="!isMobile"
 						class="btn acrobat-icon"
@@ -134,10 +101,16 @@ onUnmounted(() => {
 						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
 						>Linkedin<span v-if="!isMobile">&nbsp;Profile</span>
 					</a>
+					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
+						<span v-if="!isMobile">{{ lessText ? "Fewer " : "More " }}</span
+						>Details
+						<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
+					</button>
 				</div>
 				<Transition name="slide-down">
 					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
 						<AppDevDuties :appDevDuties="appState.appDevDuties" />
+						<button class="btn scroll-top" @click="scrollHomeLayout()"><span>▽</span>&nbsp;Scroll to Top</button>
 					</div>
 				</Transition>
 				<div v-if="!appState?.appDevDuties?.length > 0">
@@ -401,11 +374,13 @@ p {
 	content: unset;
 }
 
-#scroll-top {
-	display: none;
+.scroll-top {
+	position: relative;
+	display: flex;
+	justify-self: center;
 }
 
-#scroll-top span {
+.scroll-top span {
 	transform: rotate(180deg);
 	position: absolute;
 	top: 0;
@@ -431,13 +406,6 @@ p {
 	#latest-summary,
 	#stocks-container {
 		padding: 1em 2em;
-	}
-
-	#scroll-top {
-		display: inline-block;
-		position: fixed;
-		bottom: 80px;
-		right: 30px;
 	}
 
 	#scroll-anchor,

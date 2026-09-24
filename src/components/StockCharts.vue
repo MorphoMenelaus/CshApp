@@ -1,10 +1,5 @@
 <template>
 	<div id="markets">
-		<Transition name="fade">
-			<div v-if="showHideLoader" id="loading-icon" class="loading">
-				<div class="spinner-pulse"></div>
-			</div>
-		</Transition>
 		<div id="description-box">
 			<h1 class="julius-sans">Market Summary Graphs</h1>
 			<p>
@@ -43,6 +38,11 @@
 			</div>
 
 			<div id="stocks-container">
+				<Transition name="fade">
+					<div v-if="showHideLoader" id="loading-icon" class="loading">
+						<div class="spinner-pulse"></div>
+					</div>
+				</Transition>
 				<canvas id="stocks-graph"></canvas>
 			</div>
 			<small class="text-center">This product uses the FRED&reg; API but is not endorsed or certified by the Federal Reserve Bank of St. Louis. </small>
@@ -87,6 +87,7 @@ export default {
 		appState: Object,
 		isMobile: Boolean,
 		windowWidth: Number,
+		theme: String,
 	},
 	data() {
 		return {
@@ -119,7 +120,7 @@ export default {
 				grey: "rgb(201, 203, 207)",
 				medWhite: "rgb(200, 200, 200)",
 				white: "rgb(255, 255, 255)",
-				medBlack: "rgb(40, 40, 40)",
+				medBlack: "rgb(60, 60, 60)",
 				black: "rgb(0, 0, 0)",
 			},
 			startMin: this.endDate,
@@ -142,6 +143,9 @@ export default {
 		};
 	},
 	watch: {
+		theme() {
+			this.drawChart();
+		},
 		windowWidth() {
 			this.drawChart();
 		},
@@ -337,6 +341,7 @@ export default {
 }
 
 #description-box p {
+	text-indent: 1.5em;
 	width: 95%;
 	margin: auto;
 	text-align: left;
@@ -401,6 +406,10 @@ h2 {
 	border-radius: 12px;
 	margin: 15px 0;
 	padding: 15px;
+}
+
+.uiDarkMode #stocks-container {
+	background-color: #111;
 }
 
 #stocks-graph {

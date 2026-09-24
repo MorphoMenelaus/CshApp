@@ -137,4 +137,12 @@ router.beforeEach((to, from) => {
 	}
 });
 
+router.afterEach((to, from) => {
+	const container = document.getElementById("app");
+
+	if (container) {
+		container.scrollTo({ top: 0, left: 0, behavior: "instant" });
+	}
+});
+
 export default router;

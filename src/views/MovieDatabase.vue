@@ -1,12 +1,12 @@
 <template>
 	<div>
+		<h1 class="julius-sans">Movie Database</h1>
 		<div id="movie-header">
-			<h1>Movie Database</h1>
-			<p class="movie-intro">
-				A searchable, sortable list of more than 1500 movies in my database, containing cast, crew, ratings, etc... Not a complete list of all movies
-				ever made, obviously.
+			<p>
+				This page features a searchable, sortable list of more than 1500 movies in my database, containing cast, crew, ratings, etc. This UI fully
+				demonstrates database interactions even without being logged in but additional features are available. For eaxample, favorites can be saved to
+				your account, if you have an account on this site.
 			</p>
-			<p class="movie-intro">Favorites can be saved to your account, if you have an account on this site.</p>
 		</div>
 
 		<div class="favorite-check" v-if="favoritesList.length > 0">
@@ -520,14 +520,24 @@ h2 {
 	text-align: center;
 }
 
+h1 {
+	margin-top: 1em;
+	font-size: 3em;
+}
+
 #movie-header {
 	background-color: #e7e7e7;
 	color: #000;
 	width: fit-content;
+	max-width: 95%;
 	margin: 30px auto auto;
-	padding: 15px 0 30px;
+	padding: 15px 30px 30px;
 	border-radius: 12px;
 	border: 1px #aaa solid;
+}
+
+#movie-header p {
+	text-indent: 1.5em;
 }
 
 .uiDarkMode #movie-header {
@@ -776,7 +786,7 @@ p.movie-intro {
 		grid-template-columns: repeat(2, 1fr);
 	}
 
-	p.movie-intro {
+	#movie-header {
 		width: 90%;
 	}
 }
@@ -786,7 +796,7 @@ p.movie-intro {
 		grid-template-columns: repeat(3, 1fr);
 	}
 
-	p.movie-intro {
+	#movie-header {
 		width: 85%;
 	}
 }
@@ -796,7 +806,7 @@ p.movie-intro {
 		grid-template-columns: repeat(4, 1fr);
 	}
 
-	p.movie-intro {
+	#movie-header {
 		width: 80%;
 	}
 }
@@ -806,17 +816,17 @@ p.movie-intro {
 		grid-template-columns: repeat(5, 1fr);
 	}
 
-	p.movie-intro {
+	#movie-header {
 		width: 70%;
 	}
 }
 
 @media (min-width: 2400px) {
-	#cards {
+	F #cards {
 		grid-template-columns: repeat(6, 1fr);
 	}
 
-	p.movie-intro {
+	#movie-header {
 		width: 60%;
 	}
 }

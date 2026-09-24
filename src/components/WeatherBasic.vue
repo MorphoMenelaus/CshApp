@@ -4,8 +4,12 @@
 			<div id="description-box">
 				<h1 class="julius-sans">{{ forecastDayText }} Weather Forecast</h1>
 				<p>
-					This data is retreived by a REST API call for up-to-date weather and is the combined reliable NOAA GFS weather model with rapid updating
+					This data is retrieved by a REST API call for up-to-date weather and is the combined reliable NOAA GFS weather model with rapid updating
 					HRRR weather model.
+				</p>
+				<p>
+					For the purposes of demonstrating ChartJS usage, I needed a continuous, constantly changing dataset and a weather data is a great use-case
+					for that.
 				</p>
 				<p>The graph is plotted based on data as returned by a weather server API and formatted to make the data more readable.</p>
 				<small>No promises or guarantees of forecasts.</small>
@@ -95,6 +99,7 @@ export default {
 		appState: Object,
 		isMobile: Boolean,
 		windowWidth: Number,
+		theme: String,
 	},
 	data() {
 		return {
@@ -121,7 +126,7 @@ export default {
 				grey: "rgb(201, 203, 207)",
 				medWhite: "rgb(200, 200, 200)",
 				white: "rgb(255, 255, 255)",
-				medBlack: "rgb(40, 40, 40)",
+				medBlack: "rgb(60, 60, 60)",
 				black: "rgb(0, 0, 0)",
 			},
 			forecastDaysOptions: [
@@ -143,6 +148,9 @@ export default {
 		};
 	},
 	watch: {
+		theme() {
+			this.drawChart();
+		},
 		location: {
 			handler() {
 				this.getWeatherData();
@@ -412,6 +420,7 @@ small {
 }
 
 #description-box p {
+	text-indent: 1.5em;
 	width: 95%;
 	margin: auto;
 }

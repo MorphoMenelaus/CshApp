@@ -1,4 +1,5 @@
 <script setup>
+import { ref, inject, onBeforeUnmount } from "vue";
 import WeatherBasic from "@/components/WeatherBasic.vue";
 import StockCharts from "@/components/StockCharts.vue";
 
@@ -7,6 +8,17 @@ defineProps({
 	isMobile: Boolean,
 	windowWidth: Number,
 });
+
+const theme = ref(localStorage.getItem("theme") || "light");
+
+const handleThemeChange = (e) => {
+	theme.value = e.detail ? "dark" : "light";
+};
+
+window.addEventListener("uiDarkModeChange", (e) => handleThemeChange(e));
+onBeforeUnmount(() => {
+	window.removeEventListener("uiDarkModeChange", (e) => handleThemeChange(e));
+});
 </script>
 
 <template>
@@ -14,10 +26,10 @@ defineProps({
 		<div id="charts-header">
 			<h1 class="julius-sans center stroke">Visualizing Data</h1>
 			<h2>ChartJS Examples</h2>
-			<h3>Weather data and Markets data represented in graph form using the ChartJS library</h3>
+			<h3>Weather data and Market data represented in graphs using the ChartJS library</h3>
 		</div>
-		<WeatherBasic :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" />
-		<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" />
+		<WeatherBasic :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" :theme="theme" />
+		<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" :theme="theme" />
 	</div>
 </template>
 
