@@ -332,7 +332,7 @@ export default {
 <style scoped>
 #description-box {
 	background-color: rgb(231 231 231);
-	color: #000;
+	/* color: #000; */
 	margin: 30px auto 15px;
 	border-radius: 12px;
 	padding: 5px 15px 45px;
@@ -343,14 +343,14 @@ export default {
 #description-box p {
 	text-indent: 1.5em;
 	width: 95%;
-	margin: auto;
+	margin: auto auto 1em;
 	text-align: left;
 }
 
 .uiDarkMode #description-box {
 	border: 1px #555 solid;
 	background-color: #222;
-	color: #c1c1c1;
+	/* color: #c1c1c1; */
 }
 
 #markets {
@@ -383,7 +383,8 @@ h2 {
 }
 
 .uiDarkMode #stocks-graph {
-	background-color: #333;
+	/* background-color: #333; */
+	background-color: #1c2138;
 	border: 1px solid #ababab;
 }
 
@@ -414,7 +415,7 @@ h2 {
 
 #stocks-graph {
 	padding: unset;
-	background-color: #eee;
+	background-color: aliceblue;
 	border-radius: 12px;
 	margin: auto;
 }

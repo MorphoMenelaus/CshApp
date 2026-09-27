@@ -3,9 +3,10 @@
 		<h1 class="julius-sans">Movie Database</h1>
 		<div id="movie-header">
 			<p>
-				This page features a searchable, sortable list of more than 1500 movies in my database, containing cast, crew, ratings, etc. This UI fully
-				demonstrates database interactions even without being logged in but additional features are available. For eaxample, favorites can be saved to
-				your account, if you have an account on this site.
+				This page queries a searchable list of more than 1500 movies in my database containing cast, crew, ratings, etc., and sortable by title, rating,
+				year, director or genra. This UI fully demonstrates database interactions as a guest or public user but additional features are available for
+				registered users. For example, full editing abilities for each entry if your account has edit permissions or favorites can be saved to your
+				registred account with any access level.
 			</p>
 		</div>
 
@@ -100,7 +101,7 @@
 					<p>You must be logged in with a verified account to save to your fovorites list.</p>
 					<div class="dialog-buttons">
 						<button class="btn" @click="showRegisterUserComponent(false, true)" title="Click to register">Click to register</button>
-						<button class="btn" title="Login here" @click="showRegisterUserComponent(true, false)">Login here.</button>
+						<button class="btn" title="Login here" @click="showRegisterUserComponent(true, false)">Login here</button>
 						<button class="btn cancel" @click="dialog.close()">Close</button>
 					</div>
 				</div>
@@ -546,7 +547,8 @@ h1 {
 }
 
 #movies {
-	padding-bottom: 90px;
+	/* padding-bottom: 90px; */
+	padding: 15px 15px 90px;
 }
 
 #cards {

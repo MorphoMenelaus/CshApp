@@ -22,6 +22,14 @@
 	background: linear-gradient(hsl(229 85% 12% / 1), hsl(229 85% 0% / 1) 90%);
 }
 
+#view div:not(:where(#latest-details, #filtered, #toggle-user)) {
+	transition: background-color 0.3s;
+}
+
+#view *:not(:where(#latest-details, #filtered, #toggle-user)) {
+	transition: color 0.5s;
+}
+
 table {
 	position: relative;
 	width: 100%;
@@ -158,6 +166,7 @@ button,
 	border: 1px rgb(128 128 128) solid !important;
 	box-shadow: inset -1px -1px 5px rgb(0 0 0 / 80%),
 		inset 1px 1px 4px rgb(255 255 255 / 75%) !important;
+	user-select: none;
 }
 
 button.close-modal {

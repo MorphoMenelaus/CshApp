@@ -8,10 +8,10 @@
 					HRRR weather model.
 				</p>
 				<p>
-					For the purposes of demonstrating ChartJS usage, I needed a continuous, constantly changing dataset and a weather data is a great use-case
-					for that.
+					For the purposes of demonstrating ChartJS usage, I needed a continuous, constantly changing dataset and weather data is a great use-case for
+					that.
 				</p>
-				<p>The graph is plotted based on data as returned by a weather server API and formatted to make the data more readable.</p>
+				<p>The graph is plotted based on data as returned by a weather API service and formatted to make the data more readable.</p>
 				<small>No promises or guarantees of forecasts.</small>
 			</div>
 			<div id="weather-box">
@@ -412,7 +412,7 @@ small {
 
 #description-box {
 	background-color: rgb(231 231 231);
-	color: #000;
+	/* color: #000; */
 	margin: 30px auto 15px;
 	border-radius: 12px;
 	padding: 5px 15px 45px;
@@ -422,13 +422,13 @@ small {
 #description-box p {
 	text-indent: 1.5em;
 	width: 95%;
-	margin: auto;
+	margin: auto auto 1em;
 }
 
 .uiDarkMode #description-box {
 	border: 1px #555 solid;
 	background-color: #222;
-	color: #c1c1c1;
+	/* color: #c1c1c1; */
 }
 
 #weather-container {
@@ -466,19 +466,20 @@ small {
 }
 
 #weather-error {
-	color: #000;
+	/* color: #000; */
 	text-align: center;
 }
 
 #weather-graph {
 	padding: unset;
-	background-color: #eee;
+	background-color: aliceblue;
 	border-radius: 12px;
 	margin: auto;
 }
 
 .uiDarkMode #weather-graph {
-	background-color: #333;
+	/* background-color: #333; */
+	background-color: #1c2138;
 }
 
 canvas#weather-graph {
@@ -575,6 +576,11 @@ small span {
 	background: #92bdff;
 	border-radius: 8px;
 	border: 1px #b1b1b1 solid;
+}
+
+#weather-error h3 {
+	color: #f10000;
+	font-weight: bold;
 }
 
 @media (max-width: 767px) {

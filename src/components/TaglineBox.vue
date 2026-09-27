@@ -9,7 +9,7 @@ import Available from "@/components/Available.vue";
 		<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
 		<h3>Web Application Developer</h3>
 		<h3>Front-End Web Developer</h3>
-		<span class="text-center map-pin">Atlanta, GA (Open to Hybrid / Remote)</span>
+		<span class="text-center map-pin">Atlanta, GA | On-site, Hybrid, Remote</span>
 	</div>
 </template>
 

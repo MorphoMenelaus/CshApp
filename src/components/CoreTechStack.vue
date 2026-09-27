@@ -2,10 +2,12 @@
 	<div id="tech-stack">
 		<h2 class="julius-sans">
 			Core Tech Stack
-			<i class="icon devicon-htmx-plain" title="HTML5"></i>
 			<i class="icon devicon-javascript-plain" title="JavaScript"></i>
+			<i class="icon devicon-html5-plain" title="HTML5"></i>
 			<i class="icon devicon-css3-plain" title="CSS3"></i>
-			<i class="icon devicon-chartjs-plain" title="ChartJS"></i>
+			<img class="icon logo" src="/icons/vue-logo.svg" title="Vue 3" alt="Vue 3 Logo" />
+			<i class="icon devicon-react-original" title="React"></i>
+			<i class="icon devicon-git-plain" title="Git"></i>
 		</h2>
 		<hr />
 		<div class="ul-grid">
@@ -99,11 +101,18 @@ h4 {
 }
 
 .uiDarkMode .card {
-	background-color: #333;
+	/* background-color: #333; */
+	background-color: #1c2138;
 }
 
 .icon {
 	margin: 0 0.25em;
+}
+
+img.logo {
+	filter: grayscale(1);
+	height: 0.94em;
+	user-select: none;
 }
 
 hr {

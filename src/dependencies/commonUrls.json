@@ -1,14 +1,17 @@
 {
 	"linkedin": {
 		"url": "https://www.linkedin.com/in/cs-hardwick",
+		"text": "Linkedin",
 		"title": "Chris Hardwick | Linkedin Profile"
 	},
 	"hardwickDesign": {
 		"url": "https://hardwick.design/",
+		"text": "Personal Site",
 		"title": "Chris Hardwick | Graphic Designer"
 	},
 	"github": {
 		"url": "https://github.com/MorphoMenelaus",
+		"text": "GitHub Repos",
 		"title": "Chris Hardwick | GitHub Repositories"
 	}
 }
