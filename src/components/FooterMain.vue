@@ -6,8 +6,10 @@
 			</h3>
 			<!-- <small>Powered by Vue 3 &amp; Node/Express</small> -->
 			<div id="footer-contacts">
-				<a v-if="!isMobile" class="footer-link" :href="urls.linkedin.url" target="_blank" :title="urls.linkedin.title">Linkedin</a>
-				<a v-if="!isMobile" class="footer-link" :href="urls.hardwickDesign.url" target="_blank" :title="urls.hardwickDesign.title">Personal Site</a>
+				<a v-if="!isMobile" class="footer-link" :href="urls.linkedin.url" target="_blank" :title="urls.linkedin.title">{{ urls.linkedin.text }}</a>
+				<a v-if="!isMobile" class="footer-link" :href="urls.hardwickDesign.url" target="_blank" :title="urls.hardwickDesign.title">{{
+					urls.hardwickDesign.text
+				}}</a>
 				<span class="footer-link" @click="openThisModalCloseOthers()" title="Contact Chris Hardwick">Contact Me</span>
 			</div>
 		</div>

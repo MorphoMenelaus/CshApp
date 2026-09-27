@@ -12,7 +12,7 @@
 				</div>
 
 				<Transition name="slide-down">
-					<ul v-if="showAcountDetails">
+					<ul v-if="showAcountDetails" id="toggle-user">
 						<li v-for="(item, index) in toggleUser" :key="index">{{ index }}: {{ item }}</li>
 					</ul>
 				</Transition>

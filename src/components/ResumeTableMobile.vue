@@ -1,7 +1,6 @@
 <template>
 	<div>
 		<div id="pseudo-table">
-
 			<div class="container">
 				<div class="flex-inner" v-for="(item, index) in resumeArray" :key="index" :id="`id-${item.id}`">
 					<div class="top-row">
@@ -17,7 +16,6 @@
 					</div>
 				</div>
 			</div>
-
 		</div>
 	</div>
 </template>
@@ -26,20 +24,21 @@
 export default {
 	name: "ResumeTableMobile",
 	props: {
-		resumeArray: Array
+		resumeArray: Array,
 	},
-}
+};
 </script>
 
 <style scoped>
 #pseudo-table {
 	border: 1px #666 solid;
 	border-radius: 12px;
-	color: #222;
+	/* color: #222; */
+	background-color: #e7e7e7;
 }
 
 .uiDarkMode #pseudo-table {
-	color: #aaa;
+	/* color: #aaa; */
 	background-color: #0d1126;
 }
 
@@ -52,7 +51,8 @@ export default {
 	flex-direction: column;
 	gap: 15px;
 	padding: 15px;
-	background-color: #e7e7e7;
+	/* background-color: #e7e7e7; */
+	background-color: aliceblue;
 	border: 1px #555 solid;
 	border-radius: 8px;
 	margin-bottom: 15px;

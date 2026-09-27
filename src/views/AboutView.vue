@@ -2,6 +2,7 @@
 import { inject } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "../dependencies/commonUrls.json";
+import ProfessionalProfile from "@/components/ProfessionalProfile.vue";
 import Disclaimers from "../components/Disclaimers.vue";
 import PrivacyDisclaimer from "../components/PrivacyDisclaimer.vue";
 import TaglineBox from "@/components/TaglineBox.vue";
@@ -43,7 +44,7 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 					:title="urls.hardwickDesign.title"
 					target="_blank"
 					@click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')"
-					>Personal Website</a
+					>{{ urls.hardwickDesign.text }}</a
 				>
 				<a class="btn email-icon" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
 				<a
@@ -52,24 +53,11 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 					:title="urls.linkedin.title"
 					target="_blank"
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
-					>Linkedin Profile</a
+					>{{ urls.linkedin.text }}</a
 				>
 			</div>
 			<div id="profile">
-				<h2 class="julius-sans profile">Professional Profile</h2>
-				<p>
-					Chris is a creative and experienced website and web application developer with over 10 years of experience creating UI excellence and fluid
-					User Experiences. Chris engineers modern responsive web environments using technologies that engage users in an intuitive, clean connection
-					to well structured data.
-				</p>
-				<p>
-					Since modern website layouts are necessarily visual and eye-catching, Chris' graphic design talents blend together perfectly with coding
-					precision to create memorable user interfaces.
-				</p>
-				<p>
-					Chris' focus on teamwork and communication makes him a valuable asset for any team wanting to design and complete a project beautifully or
-					can work independently as required.
-				</p>
+				<ProfessionalProfile />
 			</div>
 			<Disclaimers />
 			<PrivacyDisclaimer />
@@ -107,7 +95,7 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 }
 
 .uiDarkMode #about {
-	color: #aaa;
+	/* color: #aaa; */
 }
 
 #available {
@@ -160,7 +148,7 @@ h2.profile {
 
 .uiDarkMode #profile {
 	background-color: #000;
-	color: #aaa;
+	/* color: #aaa; */
 }
 
 .btn-container {
@@ -247,6 +235,10 @@ a.btn.large {
 
 #about #privacy h3 {
 	font-size: 1.25em;
+}
+
+a.about-img:hover {
+	background-color: unset;
 }
 
 @media (max-width: 767px) {

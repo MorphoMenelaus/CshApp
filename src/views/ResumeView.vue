@@ -3,6 +3,7 @@ import { ref, inject, watch, onMounted } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "@/dependencies/commonUrls.json";
 import { appNotify } from "@/dependencies/models.js";
+import ProfessionalProfile from "@/components/ProfessionalProfile.vue";
 import ResumeTable from "@/components/ResumeTable.vue";
 import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
 import skills from "@/dependencies/skills.json";
@@ -125,7 +126,7 @@ onMounted(() => {
 					download="ChrisHardwickResume2026.pdf"
 					@click="sendAnalyticsEvent('download', 'resume_link')"
 				>
-					Download Resume
+					Download PDF
 				</a>
 				<button class="btn email-icon" @click="contactEmail(true)">Contact Me</button>
 				<a
@@ -134,7 +135,7 @@ onMounted(() => {
 					:title="urls.linkedin.title"
 					target="_blank"
 					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
-					>Linkedin Profile</a
+					>{{ urls.linkedin.text }}</a
 				>
 			</div>
 			<div>
@@ -170,19 +171,15 @@ onMounted(() => {
 			</div>
 			<div v-if="resumeArray?.length > 0">
 				<div id="profile">
-					<h2 class="julius-sans center bold">Professional Profile</h2>
-					<p>
-						Creative and experienced front-end and web application developer with over 10 years of experience building modern, responsive user
-						interfaces and fluid user experiences. Blends a strong background in graphic design with precise engineering to connect users
-						intuitively to structured data. Proven track record of collaborating across teams and working independently to launch successful web
-						ecosystems.
-					</p>
-					<h2 class="julius-sans center bold core">Core Technical Skills</h2>
-					<ul>
-						<li><strong>Front-End:</strong> Vue 3, JavaScript, HTML5, CSS3, Responsive Design, UI/UX Design</li>
-						<li><strong>Back-End & Frameworks:</strong> Node.js, C#, ASP.NET (MVC), REST APIs, SQL</li>
-						<li><strong>Tools & Software:</strong> Webpack, Vite, Git, Godot, Adobe Photoshop, Adobe Illustrator</li>
-					</ul>
+					<div class="profile-inner">
+						<ProfessionalProfile />
+						<h2 class="julius-sans center bold core">Core Technical Skills</h2>
+						<ul>
+							<li><strong>Front-End:</strong> Vue 3, JavaScript, HTML5, CSS3, Responsive Design, UI/UX Design</li>
+							<li><strong>Back-End & Frameworks:</strong> Node.js, C#, ASP.NET (MVC), REST APIs, SQL</li>
+							<li><strong>Tools & Software:</strong> Webpack, Vite, Git, Godot, Adobe Photoshop, Adobe Illustrator</li>
+						</ul>
+					</div>
 				</div>
 				<div v-if="!isMobile">
 					<ResumeTable :resumeArray="resumeArray" />
@@ -202,7 +199,7 @@ onMounted(() => {
 <style>
 #filtered {
 	background: linear-gradient(#eafbea, #dff7ff 50%);
-	color: #000;
+	/* color: #000; */
 	padding: 5px 15px 10px;
 	border-radius: 12px;
 	margin: 15px auto;
@@ -211,7 +208,7 @@ onMounted(() => {
 }
 
 .uiDarkMode #filtered {
-	background-image: none;
+	background: linear-gradient(rgb(12 23 64), rgb(0 0 10) 90%);
 	background-color: #c1c1c1;
 }
 
@@ -223,10 +220,15 @@ onMounted(() => {
 #resp-list b,
 #skill-list b {
 	background-color: rgb(86 131 239 / 30%);
-	color: #000;
+	/* color: #000; */
 	font-weight: 500;
 	padding-bottom: 2px;
 	border-radius: 4px;
+}
+
+.uiDarkMode #resp-list b,
+.uiDarkMode #skill-list b {
+	background-color: rgb(162 187 246 / 30%);
 }
 
 #skill-list {
@@ -241,12 +243,30 @@ onMounted(() => {
 	border-radius: 12px;
 	padding: 1em;
 	margin: 1em auto;
+	/* background-color: #e7e7e7; */
 	background-color: #e7e7e7;
 }
 
+.profile-inner {
+	border: 1px solid #555;
+	border-radius: 12px;
+	padding: 15px;
+	/* background-color: #e7e7e7; */
+	background-color: aliceblue;
+}
+
 .uiDarkMode #profile {
+	background-color: rgb(34 34 34 / 30%);
+}
+
+.uiDarkMode .profile-inner {
 	background-color: #000;
-	color: #aaa;
+	/* color: #aaa; */
+}
+
+.profile-inner p {
+	text-indent: 1.5em;
+	margin-bottom: 0.5em;
 }
 
 .btn {
@@ -305,6 +325,10 @@ strong {
 ul {
 	margin: auto;
 	width: fit-content;
+}
+
+.container li {
+	margin-bottom: 0.5em;
 }
 
 .name {
@@ -416,7 +440,7 @@ ul {
 }
 
 @media (min-width: 768px) {
-	#profile {
+	.profile-inner {
 		padding: 1em 2em;
 	}
 
@@ -454,7 +478,7 @@ ul {
 }
 
 @media (min-width: 992px) {
-	#profile {
+	.profile-inner {
 		padding: 2em 4em;
 	}
 

@@ -108,7 +108,7 @@ onMounted(() => {
 				</RouterLink>
 				<RouterLink to="/" @click="closeDialogs()" title="Home">Home</RouterLink>
 				<RouterLink to="/resume" @click="closeDialogs('resume')" title="Chris Hardwick Resume">Resume</RouterLink>
-				<RouterLink to="/chartjs" @click="closeDialogs('ChartJS')" title="ChartJS Graphing Library | Weather, Stocks">ChartJS Examples</RouterLink>
+				<RouterLink to="/chartjs" @click="closeDialogs('ChartJS')" title="ChartJS Graphing Library | Weather, Stocks">ChartJS Demos</RouterLink>
 				<RouterLink to="/movie-database" @click="closeDialogs('movie_db')" title="Movie Library | Database Management">Movie DB</RouterLink>
 				<RouterLink
 					v-if="appState?.isLoggedOn && allowed('verified', 'admin', 'siteAdmin') && !personalRestricted"

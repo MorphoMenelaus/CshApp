@@ -25,8 +25,8 @@ onBeforeUnmount(() => {
 	<div>
 		<div id="charts-header">
 			<h1 class="julius-sans center stroke">Visualizing Data</h1>
-			<h2>ChartJS Examples</h2>
-			<h3>Weather data and Market data represented in graphs using the ChartJS library</h3>
+			<h2>ChartJS Demos <i class="icon devicon-chartjs-plain" title="ChartJS"></i></h2>
+			<h3>Hourly Weather data and Daily Market data visualized using the ChartJS library</h3>
 		</div>
 		<WeatherBasic :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" :theme="theme" />
 		<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" :theme="theme" />
@@ -66,6 +66,11 @@ h1.julius-sans {
 #charts-header {
 	width: 95%;
 	margin: auto;
+}
+
+.icon {
+	top: 0.1em;
+	position: relative;
 }
 
 @media (max-width: 767px) {

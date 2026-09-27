@@ -19,6 +19,10 @@ const route = useRoute();
 </template>
 
 <style scoped>
+#available {
+	user-select: none;
+}
+
 #available span {
 	color: #b3ffb3;
 	background-color: rgb(0 128 0);

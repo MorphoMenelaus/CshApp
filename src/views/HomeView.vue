@@ -99,7 +99,7 @@ const showStockDetails = (id) => {
 						:title="urls.linkedin.title"
 						target="_blank"
 						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
-						>Linkedin<span v-if="!isMobile">&nbsp;Profile</span>
+						>{{ urls.linkedin.text }}
 					</a>
 					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
 						<span v-if="!isMobile">{{ lessText ? "Fewer " : "More " }}</span
@@ -117,25 +117,6 @@ const showStockDetails = (id) => {
 					<h1>No results found. Please refresh your browser.</h1>
 				</div>
 			</div>
-
-			<!-- <div id="stocks-container">
-				<div id="charts-header">
-					<h2 class="julius-sans" @click="showStockDetails('latest-stocks')" :title="`${showStocks ? 'Close' : 'Open'} Market Summary Graphs`">
-						Market Summary Graphs
-					</h2>
-					<span v-if="!isMobile">(Using REST APIs & ChartJS)</span>
-					<button id="stocks-anchor" class="btn" @click="showStockDetails('latest-stocks')">
-						<span v-if="!isMobile">{{ showStocks ? "Close " : "Open " }}</span
-						>Market Graphs
-						<span class="arrow" :class="showStocks ? 'rotated' : ''">▽</span>
-					</button>
-				</div>
-				<Transition name="slide-down">
-					<div v-if="showStocks" id="latest-stocks">
-						<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" />
-					</div>
-				</Transition>
-			</div> -->
 
 			<Disclaimers />
 		</div>
@@ -378,13 +359,14 @@ p {
 	position: relative;
 	display: flex;
 	justify-self: center;
+	padding-left: 2em;
 }
 
 .scroll-top span {
 	transform: rotate(180deg);
 	position: absolute;
 	top: 0;
-	left: 2px;
+	left: 8px;
 	font-size: 1.25em;
 }
 

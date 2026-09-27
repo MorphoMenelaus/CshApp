@@ -46,7 +46,8 @@ hr {
 }
 
 .details-ul {
-	background-color: #fff;
+	/* background-color: #fff; */
+	background-color: aliceblue;
 	padding: 15px;
 	margin-bottom: 30px;
 	border-radius: 0 0 8px 8px;

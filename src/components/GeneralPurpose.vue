@@ -58,6 +58,7 @@ strong {
 	flex-flow: row wrap;
 	justify-content: center;
 	align-items: center;
+	user-select: none;
 }
 
 img.logo {
