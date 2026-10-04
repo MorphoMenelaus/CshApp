@@ -1,14 +1,14 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { ref, inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
-const baseUrl = inject('baseUrl');
+const baseUrl = inject("baseUrl");
 const closeChat = inject("closeChat");
-const updateStatus = inject('sendUpdateStatus');
+const updateStatus = inject("sendUpdateStatus");
 
 const props = defineProps({
 	appState: Object,
-	isMobile: Boolean
+	isMobile: Boolean,
 });
 
 let showHideLoader = ref(false);
@@ -17,14 +17,13 @@ let profile = ref("");
 let analysis = ref("");
 
 const matchJob = async () => {
-
 	if (!jobDescription.value) {
 		console.error("Job Description field is required");
 		return;
 	}
 
 	// Remove html tags
-	let reg = new RegExp(/(<([^>]+)>)/ig);
+	let reg = new RegExp(/(<([^>]+)>)/gi);
 	let description = jobDescription.value.replace(reg, "");
 	let jobProfile = profile.value.replace(reg, "");
 
@@ -40,11 +39,10 @@ const matchJob = async () => {
 	headerObj.append("Content-Type", "application/json; charset=utf-8");
 	let requestUrl = new URL("/api/gemini/match", baseUrl);
 
-	let request = new Request(
-		requestUrl.toString(), {
-		method: 'POST',
+	let request = new Request(requestUrl.toString(), {
+		method: "POST",
 		headers: headerObj,
-		body: JSON.stringify(body)
+		body: JSON.stringify(body),
 	});
 
 	try {
@@ -55,16 +53,24 @@ const matchJob = async () => {
 			updateStatus(data);
 		}
 
-		let formattedJson = JSON.stringify(data.analysis, null, '\t');
-		analysis.value = formattedJson;
+		if (data?.code === 429) {
+			let serverStatus = {
+				code: 429,
+				message: "This request exceeds current quota. Try again in several minutes.",
+				success: false,
+			};
+			updateStatus(serverStatus);
+		}
 
+		let formattedJson = JSON.stringify(data.analysis, null, "\t");
+		analysis.value = formattedJson;
 	} catch (error) {
-		console.error('Error posting data:', error);
+		console.error("Error posting data:", error);
 		let serverStatus = {
 			code: 500,
 			message: `Error getting data: ${error}`,
-			success: false
-		}
+			success: false,
+		};
 		updateStatus(serverStatus);
 	} finally {
 		showHideLoader.value = false;
@@ -75,8 +81,7 @@ const clear = () => {
 	jobDescription.value = "";
 	profile.value = "";
 	analysis.value = "";
-}
-
+};
 </script>
 
 <template>
@@ -97,16 +102,27 @@ const clear = () => {
 				</div>
 				<form @submit.prevent="matchJob" method="get">
 					<div class="form-group">
-						<a class="external" href="https://www.minifier.org/text-minifier"
-							title="Minifier | minifier.org" target="_blank">Minifier &#128279;</a>
+						<a class="external" href="https://www.minifier.org/text-minifier" title="Minifier | minifier.org" target="_blank">Minifier &#128279;</a>
 						<label for="description">Job Description:</label>
-						<textarea id="description" title="Job Description" v-model="jobDescription" type="text"
-							name="description" class="form-control"
-							placeholder="Paste minified job description here."></textarea>
+						<textarea
+							id="description"
+							title="Job Description"
+							v-model="jobDescription"
+							type="text"
+							name="description"
+							class="form-control"
+							placeholder="Paste minified job description here."
+						></textarea>
 						<label for="profile">Additional Profile Info (optional):</label>
-						<textarea id="profile" title="Additional Profile Info (optional)" v-model="profile" type="text"
-							name="Profile" class="form-control"
-							placeholder="Profile info in addition to DB resume..."></textarea>
+						<textarea
+							id="profile"
+							title="Additional Profile Info (optional)"
+							v-model="profile"
+							type="text"
+							name="Profile"
+							class="form-control"
+							placeholder="Profile info in addition to DB resume..."
+						></textarea>
 					</div>
 					<div class="button-container">
 						<button class="btn" @click="matchJob()">Submit</button>
@@ -117,8 +133,7 @@ const clear = () => {
 			</div>
 			<Transition name="slide-up">
 				<div id="answer" v-if="analysis">
-					<h2 class="output-header">AI Output <small v-if="isMobile" class="link"
-							@click="clear()">Clear</small></h2>
+					<h2 class="output-header">AI Output <small v-if="isMobile" class="link" @click="clear()">Clear</small></h2>
 					<pre class="output">{{ analysis }}</pre>
 				</div>
 			</Transition>
@@ -292,7 +307,8 @@ textarea {
 	left: 40px;
 }
 
-@media (max-width: 767px) {}
+@media (max-width: 767px) {
+}
 
 @media (min-width: 768px) {
 	#chat {
@@ -316,7 +332,9 @@ textarea {
 	}
 }
 
-@media (min-width: 992px) {}
+@media (min-width: 992px) {
+}
 
-@media (min-width: 1200px) {}
+@media (min-width: 1200px) {
+}
 </style>

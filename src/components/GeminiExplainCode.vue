@@ -1,14 +1,14 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { ref, inject } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 
-const baseUrl = inject('baseUrl');
+const baseUrl = inject("baseUrl");
 const closeChat = inject("closeChat");
-const updateStatus = inject('sendUpdateStatus');
+const updateStatus = inject("sendUpdateStatus");
 
 const props = defineProps({
 	appState: Object,
-	isMobile: Boolean
+	isMobile: Boolean,
 });
 
 let showHideLoader = ref(false);
@@ -19,7 +19,6 @@ let techStack = ref("");
 let analysis = ref("");
 
 const explainCode = async () => {
-
 	if (!codeSnippet.value || !techStack.value) {
 		console.error("Code snippet and tech stack inputs are required");
 		return;
@@ -31,7 +30,7 @@ const explainCode = async () => {
 		codeSnippet: codeSnippet.value,
 		projectTitle: projectTitle.value,
 		description: description.value,
-		techStack: techStack.value
+		techStack: techStack.value,
 	};
 
 	let headerObj = new Headers();
@@ -39,11 +38,10 @@ const explainCode = async () => {
 	headerObj.append("Content-Type", "application/json; charset=utf-8");
 	let requestUrl = new URL("/api/gemini/explain-code", baseUrl);
 
-	let request = new Request(
-		requestUrl.toString(), {
-		method: 'POST',
+	let request = new Request(requestUrl.toString(), {
+		method: "POST",
 		headers: headerObj,
-		body: JSON.stringify(body)
+		body: JSON.stringify(body),
 	});
 
 	try {
@@ -54,16 +52,24 @@ const explainCode = async () => {
 			updateStatus(data);
 		}
 
-		let formattedJson = JSON.stringify(data.analysis, null, '\t');
-		analysis.value = formattedJson;
+		if (data?.code === 429) {
+			let serverStatus = {
+				code: 429,
+				message: "This request exceeds current quota. Try again in several minutes.",
+				success: false,
+			};
+			updateStatus(serverStatus);
+		}
 
+		let formattedJson = JSON.stringify(data.analysis, null, "\t");
+		analysis.value = formattedJson;
 	} catch (error) {
-		console.error('Error posting data:', error);
+		console.error("Error posting data:", error);
 		let serverStatus = {
 			code: 500,
 			message: `Error getting data: ${error}`,
-			success: false
-		}
+			success: false,
+		};
 		updateStatus(serverStatus);
 	} finally {
 		showHideLoader.value = false;
@@ -74,8 +80,7 @@ const clear = () => {
 	jobDescription.value = "";
 	profile.value = "";
 	analysis.value = "";
-}
-
+};
 </script>
 
 <template>
@@ -96,20 +101,51 @@ const clear = () => {
 				</div>
 				<form @submit.prevent="explainCode" method="get">
 					<div class="form-group">
-						<a class="external" href="https://www.minifier.org/text-minifier"
-							title="Minifier | minifier.org" target="_blank">Minifier &#128279;</a>
+						<a class="external" href="https://www.minifier.org/text-minifier" title="Minifier | minifier.org" target="_blank">Minifier &#128279;</a>
 						<label for="projectTitle">Project Title:</label>
-						<input id="projectTitle" title="Project Title" v-model="projectTitle" type="text"
-							name="projectTitle" class="form-control" placeholder="Project Title" />
+						<input
+							id="projectTitle"
+							title="Project Title"
+							v-model="projectTitle"
+							type="text"
+							name="projectTitle"
+							class="form-control"
+							placeholder="Project Title"
+						/>
 						<label for="description">Description:</label>
-						<textarea id="description" title="Description" v-model="description" type="text"
-							name="description" class="form-control" placeholder="Description">Description</textarea>
+						<textarea
+							id="description"
+							title="Description"
+							v-model="description"
+							type="text"
+							name="description"
+							class="form-control"
+							placeholder="Description"
+						>
+Description</textarea
+						>
 						<label for="techStack">Tech Stack:</label>
-						<textarea id="techStack" title="Tech Stack" v-model="techStack" type="text" name="techStack"
-							class="form-control" placeholder="Tech Stack">Tech Stack</textarea>
+						<textarea
+							id="techStack"
+							title="Tech Stack"
+							v-model="techStack"
+							type="text"
+							name="techStack"
+							class="form-control"
+							placeholder="Tech Stack"
+						>
+Tech Stack</textarea
+						>
 						<label for="codeSnippet">Code Snippet:</label>
-						<textarea id="codeSnippet" title="Code Snippet" v-model="codeSnippet" type="text"
-							name="codeSnippet" class="form-control" placeholder="Code Snippet"></textarea>
+						<textarea
+							id="codeSnippet"
+							title="Code Snippet"
+							v-model="codeSnippet"
+							type="text"
+							name="codeSnippet"
+							class="form-control"
+							placeholder="Code Snippet"
+						></textarea>
 					</div>
 					<div class="button-container">
 						<button class="btn" @click="explainCode()">Submit</button>
@@ -120,8 +156,7 @@ const clear = () => {
 			</div>
 			<Transition name="slide-up">
 				<div id="answer" v-if="analysis">
-					<h2 class="output-header">AI Output <small v-if="isMobile" class="link"
-							@click="clear()">Clear</small></h2>
+					<h2 class="output-header">AI Output <small v-if="isMobile" class="link" @click="clear()">Clear</small></h2>
 					<pre class="output">{{ analysis }}</pre>
 				</div>
 			</Transition>
@@ -300,7 +335,8 @@ textarea {
 	left: 40px;
 }
 
-@media (max-width: 767px) {}
+@media (max-width: 767px) {
+}
 
 @media (min-width: 768px) {
 	#chat {
@@ -324,7 +360,9 @@ textarea {
 	}
 }
 
-@media (min-width: 992px) {}
+@media (min-width: 992px) {
+}
 
-@media (min-width: 1200px) {}
+@media (min-width: 1200px) {
+}
 </style>

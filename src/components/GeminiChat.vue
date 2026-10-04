@@ -50,7 +50,7 @@ const askQuestion = async () => {
 			updateStatus(data);
 		}
 
-		if (data.code === 429) {
+		if (data?.code === 429) {
 			let serverStatus = {
 				code: 429,
 				message: "This request exceeds current quota. Try again in several minutes.",
@@ -117,9 +117,7 @@ const clear = () => {
 			</div>
 			<Transition name="slide-up">
 				<div id="answer" v-if="answer">
-					<h2 class="output-header">
-						AI Output <small v-if="isMobile" class="link" @click="clear()">Clear</small>
-					</h2>
+					<h2 class="output-header">AI Output <small v-if="isMobile" class="link" @click="clear()">Clear</small></h2>
 					<div v-html="answer" class="output"></div>
 				</div>
 			</Transition>
