@@ -241,7 +241,16 @@ async function tokenCheck(appState) {
 async function accessTokenCheck(appState) {
 	// Check if the access token is valid and not expired.
 	if (!appState?.accessToken) {
-		throw new TokenCheckError("Invalid or missing arguments");
+		let message = "Invalid or missing arguments";
+		let res = {
+			code: 403,
+			message: message,
+			success: false,
+			forced: true,
+		};
+		dispatchCustomEvent("forceLogout", res);
+		return res;
+		// throw new TokenCheckError(message);
 	}
 
 	let body = {
