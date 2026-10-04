@@ -74,9 +74,16 @@ h2 {
 	margin: 1em auto 0.5em;
 }
 
+.h2-flex {
+	display: flex;
+	flex-flow: row wrap;
+	width: fit-content;
+}
+
 h2 span {
 	display: block;
 	margin: auto;
+	padding: 0 0.5em;
 	font-size: inherit;
 	font-weight: inherit;
 }
