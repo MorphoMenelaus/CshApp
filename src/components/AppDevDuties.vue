@@ -4,7 +4,7 @@ defineProps({
 });
 </script>
 <template>
-	<h2 class="julius-sans" title="Single Page Applications suite for Makrö Gaming Studios">SPA suite for Makrö Gaming Studios</h2>
+	<h2 class="julius-sans" title="Single Page Applications suite for Makrö Gaming Studios">App Suite for Makrö Gaming Studios</h2>
 	<hr />
 	<div class="details-ul" v-for="(app, index) in appDevDuties" :key="index">
 		<h3 class="julius-sans">{{ app.appName }}:</h3>

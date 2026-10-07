@@ -25,7 +25,7 @@
 			class="input-heading"
 			:class="appState.isLoggedOn ? 'logged-on' : ''"
 			v-if="!appState?.isLoggedOn && loginShow"
-			@click="handleClick($event)"
+			@mousedown="handleClick($event)"
 		>
 			<form class="input-section" :class="isMobile ? 'mobile' : ''">
 				<div id="form-header">

@@ -1,5 +1,5 @@
 <template>
-	<div id="contact" @click="handleClick($event)">
+	<div id="contact" @mousedown="handleClick($event)">
 		<div class="wrapper" v-if="!messageSent">
 			<div id="form-header">
 				<h1>I'd love to hear from you</h1>

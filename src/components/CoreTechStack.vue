@@ -30,8 +30,8 @@
 				<div class="card">
 					<h4>Backend &amp; Databases</h4>
 					<ul>
-						<li>Node.js (Recent)</li>
-						<li>Express.js (Recent)</li>
+						<li>Node.js</li>
+						<li>Express.js</li>
 						<li>RESTful APIs</li>
 						<li>Relational Databases (SQL)</li>
 					</ul>
@@ -134,6 +134,7 @@ hr {
 
 @media (min-width: 768px) {
 	.ul-grid {
+		width: 100%;
 		grid-template-columns: repeat(2, 1fr);
 	}
 }

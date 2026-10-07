@@ -19,7 +19,7 @@
 		<div class="logos">
 			<img class="logo" src="/icons/vue-logo.svg" title="Vue 3" alt="Vue 3 Logo" />
 			<img class="logo" src="/icons/pinia-logo.svg" title="Pinia" alt="Pinia Logo" />
-			<img class="logo" src="/icons/express-logo-white.svg" title="ExpressJS" alt="ExpressJS Logo" />
+			<img class="logo express" src="/icons/express-logo-white.svg" title="ExpressJS" alt="ExpressJS Logo" />
 			<img class="logo short-logo light" src="/icons/nodejsStackedDark.svg" title="NodeJS" alt="NodeJS Logo" />
 			<img class="logo short-logo dark" src="/icons/nodejsStackedLight.svg" title="NodeJS" alt="NodeJS Logo" />
 			<img class="logo short-logo" src="/icons/mysql-official.svg" title="MySQL" alt="MySQL Logo" />
@@ -82,6 +82,10 @@ img.short-logo {
 
 .uiDarkMode .dark {
 	display: inline;
+}
+
+.uiDarkMode .express {
+	filter: invert(0.8);
 }
 
 @media (min-width: 768px) {

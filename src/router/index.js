@@ -108,6 +108,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
+	dispatchCustomEvent("routerPathChange");
+
 	document.title = to.meta.title || "Hardwick Web Development";
 
 	// Checks for public path. Anything after this check requires loggedIn(true) minimum

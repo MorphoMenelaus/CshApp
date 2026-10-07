@@ -25,9 +25,9 @@
 					<div>
 						<p>{{ selectedMovie.summary }}</p>
 					</div>
-					<h3>Cast: {{ selectedMovie.tags_star.replaceAll("|", ", ") }}</h3>
-					<div>Writer: {{ selectedMovie.tags_writer.replaceAll("|", ", ") }}</div>
-					<div v-if="selectedMovie.studio">Studio: {{ selectedMovie.studio.replaceAll("|", ", ") }}</div>
+					<h3><strong>Cast:</strong> {{ selectedMovie.tags_star.replaceAll("|", ", ") }}</h3>
+					<div><strong>Writer:</strong> {{ selectedMovie.tags_writer.replaceAll("|", ", ") }}</div>
+					<div v-if="selectedMovie.studio"><strong>Studio:</strong> {{ selectedMovie.studio.replaceAll("|", ", ") }}</div>
 					<div class="btn-container">
 						<button @click="cancel()" class="btn" title="Close Details">Close Details</button>
 					</div>
