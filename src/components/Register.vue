@@ -1,5 +1,5 @@
 <template>
-	<div id="register" @click="handleClick($event)">
+	<div id="register" @mousedown="handleClick($event)">
 		<div class="wrapper">
 			<div id="form-header">
 				<h2>Register</h2>

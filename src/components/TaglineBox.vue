@@ -60,7 +60,7 @@ h3 {
 
 .map-pin::before {
 	content: "";
-	background: url(../icons/map_pin.png) 0 0 / contain no-repeat;
+	background: url(/icons/map_pin.png) 0 0 / contain no-repeat;
 	width: 18px;
 	height: 26px;
 	position: absolute;

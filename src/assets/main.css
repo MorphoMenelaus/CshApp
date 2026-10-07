@@ -141,24 +141,24 @@ table {
 }
 
 .csh-icon::after {
-	background: url(../icons/CS202609_32.png) 0 0 / contain no-repeat;
+	background: url(/icons/CS202609_32.png) 0 0 / contain no-repeat;
 }
 
 .linkedin-icon::after {
 	border-radius: 4px;
-	background: url(../icons/linkedIn_logo.png) 0 0 / contain no-repeat;
+	background: url(/icons/linkedIn_logo.png) 0 0 / contain no-repeat;
 }
 
 .email-icon::after {
-	background: url(../icons/email_send.png) 0 0 / contain no-repeat;
+	background: url(/icons/email_send.png) 0 0 / contain no-repeat;
 }
 
 .acrobat-icon::after {
-	background: url(../icons/acrobat64px.png) 0 0 / contain no-repeat;
+	background: url(/icons/acrobat64px.png) 0 0 / contain no-repeat;
 }
 
 .personal-icon::after {
-	background: url(../icons/Chris_Hardwick_200.webp) 0 0 / contain no-repeat;
+	background: url(/icons/Chris_Hardwick_200.webp) 0 0 / contain no-repeat;
 }
 
 button,

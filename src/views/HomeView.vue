@@ -80,32 +80,43 @@ const showStockDetails = (id) => {
 				</p>
 				<CoreTechStack />
 				<div class="btn-link-container">
-					<a
-						v-if="!isMobile"
-						class="btn acrobat-icon"
-						href="/pdf/ChrisHardwickResume2026-09nc.pdf"
-						title="Download Chris Hardwick Resume PDF"
-						download="ChrisHardwickResume2026.pdf"
-						@click="sendAnalyticsEvent('download', 'resume_link_home')"
-					>
-						Download Resume
-					</a>
-					<RouterLink to="/resume" title="Chris Hardwick Resume" class="btn personal-icon" @click="sendAnalyticsEvent('resume_online', 'resume_link')"
-						>Resume Page</RouterLink
-					>
-					<a
-						class="btn linkedin linkedin-icon"
-						:href="urls.linkedin.url"
-						:title="urls.linkedin.title"
-						target="_blank"
-						@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
-						>{{ urls.linkedin.text }}
-					</a>
-					<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
-						<span v-if="!isMobile">{{ lessText ? "Fewer " : "More " }}</span
-						>Details
-						<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
-					</button>
+					<div>
+						<a
+							class="btn acrobat-icon"
+							href="/pdf/ChrisHardwickResume2026-09nc.pdf"
+							title="Download Chris Hardwick Resume PDF"
+							download="ChrisHardwickResume2026.pdf"
+							@click="sendAnalyticsEvent('download', 'resume_link_home')"
+						>
+							Download&nbsp;Resume
+						</a>
+					</div>
+					<div>
+						<RouterLink
+							to="/resume"
+							title="Chris Hardwick Resume"
+							class="btn personal-icon"
+							@click="sendAnalyticsEvent('resume_online', 'resume_link')"
+							>Resume Page</RouterLink
+						>
+					</div>
+					<div>
+						<a
+							class="btn linkedin linkedin-icon"
+							:href="urls.linkedin.url"
+							:title="urls.linkedin.title"
+							target="_blank"
+							@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
+							>{{ urls.linkedin.text }}
+						</a>
+					</div>
+					<div>
+						<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
+							<span v-if="!isMobile">{{ lessText ? "Fewer " : "More " }}</span
+							>Details
+							<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
+						</button>
+					</div>
 				</div>
 				<Transition name="slide-down">
 					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
@@ -208,13 +219,6 @@ p {
 	flex-direction: column;
 }
 
-/* #stocks-container {
-	margin-top: 30px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-} */
-
 #latest-summary,
 #stocks-container {
 	background-color: #e7e7e7;
@@ -287,15 +291,25 @@ p {
 }
 
 .btn-link-container {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-	margin-top: 2em;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1em;
+	justify-items: center;
 }
 
-.mobile .btn-link-container > * {
-	margin: 5px 10px;
+.btn-link-container > div {
+	align-items: center;
+	justify-items: center;
+	width: fit-content;
+	margin: auto;
+}
+
+.btn-link-container > div > * {
+	min-width: 12em;
+}
+
+.mobile .btn-link-container > div {
+	margin: 10px;
 }
 
 .mobile .btn span {
@@ -332,7 +346,7 @@ p {
 
 .map-pin::before {
 	content: "";
-	background: url(../icons/map_pin.png) 0 0 / contain no-repeat;
+	background: url(/icons/map_pin.png) 0 0 / contain no-repeat;
 	width: 18px;
 	height: 26px;
 	position: absolute;
@@ -456,9 +470,33 @@ p {
 	}
 }
 
+@media (min-width: 1024px) {
+	.btn-link-container {
+		align-items: center;
+		margin-top: 2em;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1em;
+	}
+
+	.btn-link-container > div > * {
+		min-width: 12em;
+	}
+}
+
 @media (min-width: 1200px) {
 	#main-home-layout {
 		width: 80%;
+	}
+}
+
+@media (min-width: 1400px) {
+	.btn-link-container {
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+	.btn-link-container > div > * {
+		min-width: unset;
 	}
 }
 

@@ -259,6 +259,7 @@ export default {
 				this.recallAppState();
 			}
 		});
+		window.addEventListener("routerPathChange", () => (this.currentComponent = null));
 		this.checkOrientation();
 		this.initialSetup();
 	},
