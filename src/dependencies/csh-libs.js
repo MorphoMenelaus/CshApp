@@ -1,5 +1,5 @@
 /*!
- * CSH Classes and Utilities v0.4.0
+ * CSH Classes and Utilities v0.4.5
  * (c) 2026 Chris Hardwick
  */
 
@@ -123,9 +123,10 @@ const stateUpdateService = {
 	},
 };
 
-let permissions = { admin: false, siteAdmin: false, siteEditor: false, contributor: false, verified: false, loggedIn: false };
+const permissionsModel = { admin: false, siteAdmin: false, siteEditor: false, contributor: false, verified: false, loggedIn: false };
+let permissions = Object.assign({}, permissionsModel);
 const routerStateService = {
-	setPermissions(payload = permissions, loggedIn = false) {
+	setPermissions(payload = Object.assign({}, permissionsModel), loggedIn = false) {
 		payload.loggedIn = loggedIn;
 		permissions = payload;
 	},
@@ -202,7 +203,7 @@ function dispatchCustomEvent(name, payload = {}) {
 }
 
 async function tokenCheck(appState) {
-	// Check if the refresh token is valid and is no older that the max allowed by the server.
+	// Check if the refresh token is valid and is no older than the max allowed by the server.
 	if (!appState?.accessToken || !appState?.refreshToken) {
 		throw new TokenCheckError("Invalid or missing arguments");
 	}
