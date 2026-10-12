@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import { dispatchCustomEvent, routerStateService } from "@/dependencies/csh-libs.js";
 import HomeView from "@/views/HomeView.vue";
 
-// required(array): list of all permissions required for a path location
-// public(bool): Public path overrides any permissions declared in required
+// requiredPermissions(array): list of all permissions required for a path location
+// public(bool): Public path overrides any permissions declared in requiredPermissions
 // public = false: Requires loggedIn(true) minimum
 const router = createRouter({
 	history: createWebHistory(),
@@ -12,79 +12,79 @@ const router = createRouter({
 			path: "/",
 			name: "home",
 			component: HomeView,
-			meta: { public: true, required: [], title: "Hardwick Web Development | Home" },
+			meta: { public: true, requiredPermissions: [], title: "Hardwick Web Development | Home" },
 		},
 		{
 			path: "/movie-database",
 			name: "MovieDatabase",
 			component: () => import("../views/MovieDatabase.vue"),
-			meta: { public: true, required: [], title: "Movie Database | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "Movie Database | Hardwick Web Development" },
 		},
 		{
 			path: "/blog-reader",
 			name: "BlogReader",
 			component: () => import("../views/BlogReader.vue"),
-			meta: { public: false, required: ["siteAdmin", "admin"], title: "Blog Reader | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Blog Reader | Hardwick Web Development" },
 		},
 		{
 			path: "/verify",
 			name: "Verify",
 			component: () => import("../views/Verify.vue"),
-			meta: { public: false, required: [], title: "Verify Code | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: [], title: "Verify Code | Hardwick Web Development" },
 		},
 		{
 			path: "/userpreferences",
 			name: "User Preferences",
 			component: () => import("../views/UserPreferences.vue"),
-			meta: { public: false, required: [], title: "User Preferences | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: [], title: "User Preferences | Hardwick Web Development" },
 		},
 		{
 			path: "/chartjs",
 			name: "ChartJS",
 			component: () => import("../views/ChartJS.vue"),
-			meta: { public: true, required: [], title: "ChartJS | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "ChartJS | Hardwick Web Development" },
 		},
 		{
 			path: "/displayusers",
 			name: "DisplayUsers",
 			component: () => import("../views/DisplayUsers.vue"),
-			meta: { public: false, required: ["siteAdmin", "admin"], title: "Display Users | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Display Users | Hardwick Web Development" },
 		},
 		{
 			path: "/displayuserlogs",
 			name: "DisplayUserLogs",
 			component: () => import("../views/DisplayUserLogs.vue"),
-			meta: { public: false, required: ["verified"], title: "Display User Logs | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["verified"], title: "Display User Logs | Hardwick Web Development" },
 		},
 		{
 			path: "/resume",
 			name: "ResumeView",
 			component: () => import("../views/ResumeView.vue"),
-			meta: { public: true, required: [], title: "Chris Hardwick Resume | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "Chris Hardwick Resume | Hardwick Web Development" },
 		},
 		{
 			path: "/toggl",
 			name: "Toggl",
 			component: () => import("../views/Toggl.vue"),
-			meta: { public: false, required: ["admin"], title: "Toggl Time Tracker | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["admin"], title: "Toggl Time Tracker | Hardwick Web Development" },
 		},
 		{
 			path: "/simpleclock",
 			name: "SimpleClock",
 			component: () => import("../views/SimpleClock.vue"),
-			meta: { public: false, required: ["siteAdmin", "admin"], title: "Simple Clock | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Simple Clock | Hardwick Web Development" },
 		},
 		{
 			path: "/about",
 			name: "about",
 			component: () => import("../views/AboutView.vue"),
-			meta: { public: true, required: [], title: "About Chris Hardwick | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "About Chris Hardwick | Hardwick Web Development" },
 		},
 		{
 			path: "/:pathMatch(.*)*",
 			name: "NotFound",
 			component: () => import("@/views/NotFound.vue"),
-			meta: { public: true, required: [], title: "404 - Not Found | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "404 - Not Found | Hardwick Web Development" },
 		},
 	],
 	scrollBehavior(to, from, savedPosition) {
@@ -108,6 +108,17 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
+	// Force Canonical Route
+	// Strips trailing slash and triggers a clean redirect loop before permission parsing
+	if (to.path !== "/" && to.path.endsWith("/")) {
+		return {
+			path: to.path.slice(0, -1),
+			query: to.query,
+			hash: to.hash,
+		};
+	}
+
+	// Dispatch event must happen after the Force Canonical Route to prevent multiple events from executing
 	dispatchCustomEvent("routerPathChange");
 
 	document.title = to.meta.title || "Hardwick Web Development";
@@ -115,27 +126,32 @@ router.beforeEach((to, from) => {
 	// Checks for public path. Anything after this check requires loggedIn(true) minimum
 	if (to.meta.public) return true;
 
-	let permissions = routerStateService.getPermissions();
+	// Prevents crashes if a route configuration forgets to define 'requiredPermissions'
+	const requiredPerms = to.meta.requiredPermissions || [];
+
+	const permissions = routerStateService.getPermissions();
+
 	switch (true) {
-		case to.meta.required.includes("admin") && permissions.admin:
+		case requiredPerms.includes("admin") && permissions.admin:
 			return true;
-		case to.meta.required.includes("siteAdmin") && permissions.siteAdmin:
+		case requiredPerms.includes("siteAdmin") && permissions.siteAdmin:
 			return true;
-		case to.meta.required.includes("siteEditor") && permissions.siteEditor:
+		case requiredPerms.includes("siteEditor") && permissions.siteEditor:
 			return true;
-		case to.meta.required.includes("contributor") && permissions.contributor:
+		case requiredPerms.includes("contributor") && permissions.contributor:
 			return true;
-		case to.meta.required.includes("verified") && permissions.verified:
+		case requiredPerms.includes("verified") && permissions.verified:
 			return true;
-		case to.meta.required.length === 0 && permissions.loggedIn:
+		case requiredPerms.length === 0 && permissions.loggedIn:
 			return true;
 		default:
 			let res = {
-				message: "You do not have permission to access the requested location. Try logging in again.",
+				message: "You do not have permission to access the requested location. Please, try logging in again.",
 				success: false,
 			};
 			dispatchCustomEvent("routerNotify", res);
-			return from.path || { path: "/" };
+			// If from.path exists and isn't the current destination, go back. Otherwise drop to root.
+			return from.path && from.path !== to.path ? from.path : { path: "/" };
 	}
 });
 

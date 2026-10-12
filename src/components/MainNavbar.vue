@@ -125,7 +125,7 @@ onMounted(() => {
 					>Users
 				</RouterLink>
 				<RouterLink
-					v-if="appState?.isLoggedOn && allowed('verified')"
+					v-if="appState?.isLoggedOn && allowed('verified', 'admin', 'siteAdmin')"
 					to="/displayuserlogs"
 					@click="closeDialogs('user_logs')"
 					title="Display User Logs"
