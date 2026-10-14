@@ -30,6 +30,11 @@
 	transition: color 0.5s;
 }
 
+hr {
+	margin-bottom: 1em;
+	border-style: solid;
+}
+
 table {
 	position: relative;
 	width: 100%;

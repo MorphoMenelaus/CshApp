@@ -128,9 +128,9 @@ img.logo {
 	user-select: none;
 }
 
-hr {
+/* hr {
 	margin-bottom: 1em;
-}
+} */
 
 @media (min-width: 768px) {
 	.ul-grid {

@@ -22,9 +22,9 @@ h2 {
 	font-weight: bold;
 }
 
-hr {
+/* hr {
 	margin-bottom: 1em;
-}
+} */
 
 .details-ul h3 {
 	position: relative;

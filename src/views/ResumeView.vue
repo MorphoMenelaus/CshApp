@@ -182,7 +182,7 @@ onMounted(() => {
 					</div>
 				</div>
 				<div v-if="!isMobile">
-					<ResumeTable :resumeArray="resumeArray" />
+					<ResumeTable :resumeArray="resumeArray" :appState="appState" />
 				</div>
 				<div v-if="isMobile">
 					<ResumeTableMobile :resumeArray="resumeArray" />
