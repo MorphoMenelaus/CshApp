@@ -9,7 +9,6 @@ import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
 import skills from "@/dependencies/skills.json";
 
 const props = defineProps({
-	appState: Object,
 	isMobile: Boolean,
 });
 
@@ -20,6 +19,7 @@ const showHideLoader = inject("showHideLoader");
 const contactEmail = inject("contactEmail");
 const forceLogout = inject("forceLogout");
 const serverStatus = Object.assign({}, appNotify);
+const appDevDuties = ref([]);
 const resumeArray = ref([]);
 const allDutiesArray = ref([]);
 const keywords = ref("");
@@ -53,14 +53,42 @@ const keywordFilter = () => {
 const combineAllToNewArray = () => {
 	let newArr = [];
 	let duitiesArr = [];
-	if (props.appState?.appDevDuties?.length > 0) {
-		duitiesArr = props.appState?.appDevDuties.flatMap((app) => app.duties);
+	if (appDevDuties.value.length > 0) {
+		duitiesArr = appDevDuties.value.flatMap((app) => app.duties);
 		newArr = [...newArr, ...duitiesArr];
 	}
 	resumeArray.value.forEach((entry) => {
 		newArr = [...newArr, ...entry.duties];
 	});
 	allDutiesArray.value = newArr;
+};
+
+const getAppRolesData = async () => {
+	let headerObj = new Headers();
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/blog/appduties/", baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(requestUrl.toString(), {
+		method: "GET",
+		headers: headerObj,
+	});
+
+	try {
+		let response = await fetch(request);
+		let data = await response.json();
+
+		if (data?.success) {
+			appDevDuties.value = data.appDevDuties;
+		}
+
+		combineAllToNewArray();
+	} catch (error) {
+		console.error("Error reading data:", error);
+	}
 };
 
 const getResumeData = async () => {
@@ -90,7 +118,7 @@ const getResumeData = async () => {
 
 		if (data?.success) {
 			resumeArray.value = data.resume;
-			combineAllToNewArray();
+			getAppRolesData();
 		}
 	} catch (error) {
 		console.error("Error reading data:", error);
@@ -176,13 +204,13 @@ onMounted(() => {
 						<h2 class="julius-sans center bold core">Core Technical Skills</h2>
 						<ul>
 							<li><strong>Front-End:</strong> Vue 3, JavaScript, HTML5, CSS3, Responsive Design, UI/UX Design</li>
-							<li><strong>Back-End & Frameworks:</strong> Node.js, C#, ASP.NET (MVC), REST APIs, SQL</li>
+							<li><strong>Back-End & Frameworks:</strong> Node.js, Express.js, C#, ASP.NET (MVC), REST APIs, SQL</li>
 							<li><strong>Tools & Software:</strong> Webpack, Vite, Git, Godot, Adobe Photoshop, Adobe Illustrator</li>
 						</ul>
 					</div>
 				</div>
 				<div v-if="!isMobile">
-					<ResumeTable :resumeArray="resumeArray" />
+					<ResumeTable :resumeArray="resumeArray" :appDevDuties="appDevDuties" />
 				</div>
 				<div v-if="isMobile">
 					<ResumeTableMobile :resumeArray="resumeArray" />
@@ -190,7 +218,7 @@ onMounted(() => {
 			</div>
 			<div v-else>
 				<h1 class="center">Resume Data Failed to Load.</h1>
-				<h2 class="center">Please try again.</h2>
+				<h2 class="center">Please try again later.</h2>
 			</div>
 		</div>
 	</div>

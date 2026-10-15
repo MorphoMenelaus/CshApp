@@ -1,30 +1,39 @@
 <script setup>
 defineProps({
-	appDevDuties: Object,
+	appDevDuties: Array,
 });
 </script>
 <template>
 	<h2 class="julius-sans" title="Single Page Applications suite for Makrö Gaming Studios">App Suite for Makrö Gaming Studios</h2>
 	<hr />
-	<div class="details-ul" v-for="(app, index) in appDevDuties" :key="index">
-		<h3 class="julius-sans">{{ app.appName }}:</h3>
-		<ul>
-			<li v-for="(li, index) in app.duties" :key="index">{{ li }}</li>
-		</ul>
+	<div v-if="appDevDuties?.length > 0">
+		<div class="details-ul" v-for="(app, index) in appDevDuties" :key="index">
+			<h3 class="julius-sans">{{ app.appName }}:</h3>
+			<ul>
+				<li v-for="(li, index) in app.duties" :key="index">{{ li }}</li>
+			</ul>
+		</div>
+	</div>
+	<div v-else>
+		<h1>No results found. Please refresh your browser.</h1>
 	</div>
 </template>
 
 <style scoped>
 h2 {
 	margin: 0.75em auto 0.5em;
-	text-align: center;
 	font-size: 1.75em;
+}
+
+h1,
+h2 {
+	text-align: center;
 	font-weight: bold;
 }
 
-hr {
+/* hr {
 	margin-bottom: 1em;
-}
+} */
 
 .details-ul h3 {
 	position: relative;

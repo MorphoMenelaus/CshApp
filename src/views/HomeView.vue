@@ -1,12 +1,12 @@
 <script setup>
-import { ref, inject, onMounted, onUnmounted, nextTick } from "vue";
+import { inject } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "@/dependencies/commonUrls.json";
 import Disclaimers from "@/components/Disclaimers.vue";
-import StockCharts from "@/components/StockCharts.vue";
 import TaglineBox from "@/components/TaglineBox.vue";
 import SkillsHighlight from "@/components/SkillsHighlight.vue";
-import AppDevDuties from "@/components/AppDevDuties.vue";
+import ApplicationCoverBlurb from "@/components/ApplicationCoverBlurb.vue";
+import AdditionalBullets from "@/components/AdditionalBullets.vue";
 import CoreTechStack from "@/components/CoreTechStack.vue";
 
 const props = defineProps({
@@ -15,40 +15,8 @@ const props = defineProps({
 	windowWidth: Number,
 });
 
-const lessText = ref(false);
-const showStocks = ref(false);
+const contactEmail = inject("contactEmail");
 const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
-
-const scrollToId = (id) => {
-	const element = document.getElementById(id);
-	if (element) {
-		element.scrollIntoView({
-			behavior: "smooth",
-			block: "start",
-			inline: "nearest",
-		});
-	}
-};
-
-const scrollHomeLayout = () => {
-	lessText.value = false;
-	showStocks.value = false;
-	scrollToId("view");
-};
-const showDetails = (id) => {
-	lessText.value = lessText?.value ? false : true;
-	setTimeout(() => {
-		scrollToId(id);
-	}, 200);
-	sendAnalyticsEvent("show_details", "accomplishments");
-};
-const showStockDetails = (id) => {
-	showStocks.value = showStocks?.value ? false : true;
-	setTimeout(() => {
-		scrollToId(id);
-	}, 200);
-	sendAnalyticsEvent("stock_charts", "details");
-};
 </script>
 
 <template>
@@ -66,19 +34,9 @@ const showStockDetails = (id) => {
 				<SkillsHighlight />
 			</div>
 			<div id="latest-summary">
-				<h2 class="julius-sans">Proactive Upskilling &amp; Latest Accomplishments</h2>
-				<p>
-					I build high-performance, interactive web applications with clean architecture and seamless user experiences. Most recently,
-					I&nbsp;engineered a full suite of four interconnected Single Page Applications using Vue 3 for Makrö Gaming Studios, managing complex
-					dashboards and dynamic, role-based permission systems backed by relational databases via REST APIs.
-				</p>
-				<p>
-					Motivated by a commitment to self-driven upskilling and continuous growth, I have spent the past year expanding my engineering toolkit into
-					robust full-stack development. I have transitioned into the React and TypeScript ecosystems, styling responsive interfaces with Tailwind
-					CSS, and building scalable backend environments using Node.js and Express. I bridge the gap between beautiful client-side interactivity and
-					secure server-side logic.
-				</p>
+				<ApplicationCoverBlurb />
 				<CoreTechStack />
+				<AdditionalBullets />
 				<div class="btn-link-container">
 					<div>
 						<a
@@ -111,21 +69,8 @@ const showStockDetails = (id) => {
 						</a>
 					</div>
 					<div>
-						<button id="scroll-anchor" class="btn" @click="showDetails('latest-details')">
-							<span v-if="!isMobile">{{ lessText ? "Fewer " : "More " }}</span
-							>Details
-							<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
-						</button>
+						<a class="btn email-icon" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
 					</div>
-				</div>
-				<Transition name="slide-down">
-					<div v-if="appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
-						<AppDevDuties :appDevDuties="appState.appDevDuties" />
-						<button class="btn scroll-top" @click="scrollHomeLayout()"><span>▽</span>&nbsp;Scroll to Top</button>
-					</div>
-				</Transition>
-				<div v-if="!appState?.appDevDuties?.length > 0">
-					<h1>No results found. Please refresh your browser.</h1>
 				</div>
 			</div>
 
@@ -138,7 +83,6 @@ const showStockDetails = (id) => {
 </template>
 
 <style scoped>
-#stocks-anchor.btn .arrow,
 .btn-link-container .btn .arrow {
 	display: inline-block;
 	position: relative;
@@ -148,7 +92,6 @@ const showStockDetails = (id) => {
 	transition: transform 0.4s ease-in-out;
 }
 
-#stocks-anchor.btn .arrow.rotated,
 .btn-link-container .btn .arrow.rotated {
 	transform: rotate(0deg);
 }
@@ -174,21 +117,6 @@ h2 {
 
 h3 {
 	font-size: 1.25em;
-}
-
-#charts-header h2 {
-	font-size: 1.8em;
-	font-weight: bold;
-	cursor: pointer;
-	transition: color 0.25s ease-in-out;
-}
-
-.uiDarkMode #charts-header h2 {
-	font-weight: normal;
-}
-
-#charts-header h2:hover {
-	color: #4c88ff;
 }
 
 p {
@@ -219,16 +147,14 @@ p {
 	flex-direction: column;
 }
 
-#latest-summary,
-#stocks-container {
+#latest-summary {
 	background-color: #e7e7e7;
 	padding: 1em;
 	border: 1px #555 solid;
 	border-radius: 12px;
 }
 
-.uiDarkMode #latest-summary,
-.uiDarkMode #stocks-container {
+.uiDarkMode #latest-summary {
 	background-color: #000;
 }
 
@@ -266,17 +192,6 @@ p {
 	margin-bottom: 30px;
 }
 
-#charts-header {
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	width: 95%;
-}
-
-#latest-stocks {
-	overflow: hidden;
-}
-
 .not-verified {
 	position: absolute;
 	display: flex;
@@ -304,6 +219,11 @@ p {
 	margin: auto;
 }
 
+.btn-link-container .btn {
+	text-transform: uppercase;
+	font-size: inherit !important;
+}
+
 .btn-link-container > div > * {
 	min-width: 12em;
 }
@@ -318,7 +238,8 @@ p {
 
 .linkedin,
 .acrobat-icon,
-.personal-icon {
+.personal-icon,
+.email-icon {
 	display: inline-block;
 	position: relative;
 	right: 0;
@@ -332,56 +253,26 @@ p {
 	text-align: center;
 }
 
-#available {
-	position: absolute;
-	top: -18px;
-	left: 15px;
-}
-
-.map-pin {
-	position: relative;
-	width: fit-content;
-	margin: auto;
-}
-
-.map-pin::before {
-	content: "";
-	background: url(/icons/map_pin.png) 0 0 / contain no-repeat;
-	width: 18px;
-	height: 26px;
-	position: absolute;
-	top: 0;
-	left: -20px;
-}
-
-#scroll-anchor,
-#stocks-anchor,
 .btn.acrobat-icon,
 .btn.linkedin-icon,
-.btn.personal-icon {
+.btn.personal-icon,
+.btn.email-icon {
 	font-size: 0.8em;
 	text-align: center;
 }
 
 .acrobat-icon::after,
 .linkedin-icon::after,
-.personal-icon::after {
+.personal-icon::after,
+.email-icon::after {
 	content: unset;
 }
 
-.scroll-top {
-	position: relative;
-	display: flex;
-	justify-self: center;
-	padding-left: 2em;
-}
-
-.scroll-top span {
-	transform: rotate(180deg);
-	position: absolute;
-	top: 0;
-	left: 8px;
-	font-size: 1.25em;
+@media (max-width: 512px) {
+	.btn-link-container {
+		grid-template-columns: 1fr;
+		gap: 0.5em;
+	}
 }
 
 @media (max-width: 767px) {
@@ -392,53 +283,59 @@ p {
 	h3 {
 		font-size: 1.25em;
 	}
-
-	#charts-header h2 {
-		font-size: 1.5em;
-	}
 }
 
 @media (min-width: 768px) {
-	#latest-summary,
-	#stocks-container {
+	#latest-summary {
 		padding: 1em 2em;
 	}
 
-	#scroll-anchor,
-	#stocks-anchor,
 	.btn.acrobat-icon,
 	.btn.linkedin-icon,
 	.btn.personal-icon {
 		font-size: 1em;
 	}
 
-	#stocks-anchor.btn .arrow,
 	.btn-link-container .btn .arrow {
 		margin-left: 10px;
 	}
 
 	.btn.acrobat-icon,
 	.btn.linkedin-icon,
-	.btn.personal-icon {
+	.btn.personal-icon,
+	.btn.email-icon {
 		padding-right: 48px;
 	}
 
 	.acrobat-icon::after,
 	.linkedin-icon::after,
-	.personal-icon::after {
+	.personal-icon::after,
+	.email-icon::after {
 		content: "";
-		top: 4px;
+		top: 2px;
 		right: 10px;
 		width: 26px;
 		height: 26px;
+		box-shadow: 0px 0px 3px 1px rgb(0 0 0 / 30%);
+		border-radius: 50%;
+	}
+
+	.email-icon::after {
+		right: 13px;
+		border-radius: unset;
+		box-shadow: unset;
 	}
 
 	.personal-icon::after {
-		top: 5px;
-		width: 24px;
-		height: 24px;
+		top: 3px;
+		width: 26px;
+		height: 26px;
 		border-radius: 50%;
 		border: 1px #eee solid;
+	}
+
+	.email-icon::after {
+		top: 6px;
 	}
 
 	.linkedin-icon::after {
@@ -452,8 +349,7 @@ p {
 }
 
 @media (min-width: 992px) {
-	#latest-summary,
-	#stocks-container {
+	#latest-summary {
 		padding: 2em 4em;
 	}
 
@@ -498,11 +394,27 @@ p {
 	.btn-link-container > div > * {
 		min-width: unset;
 	}
+
+	.acrobat-icon::after,
+	.linkedin-icon::after,
+	.personal-icon::after {
+		top: 3px;
+	}
 }
 
 @media (min-width: 1800px) {
 	#main-home-layout {
 		width: 70%;
+	}
+
+	.acrobat-icon::after,
+	.linkedin-icon::after,
+	.personal-icon::after {
+		top: 5px;
+	}
+
+	.email-icon::after {
+		top: 8px;
 	}
 }
 

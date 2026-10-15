@@ -309,6 +309,7 @@ label[for="casinoId"] {
 	flex-direction: column;
 	overflow: hidden auto;
 	box-shadow: 2px 2px 6px #000;
+	max-height: calc(100vh - 160px);
 }
 
 .mobile .wrapper {

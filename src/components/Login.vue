@@ -182,7 +182,7 @@ export default {
 					this.updateAppState(updateAppState);
 
 					this.appNotify.code = 200;
-					this.appNotify.message = "Access Token acquired: Login Success";
+					this.appNotify.message = "Login Success";
 					this.appNotify.success = true;
 					this.forceLogout({});
 					this.loginRequest(false);

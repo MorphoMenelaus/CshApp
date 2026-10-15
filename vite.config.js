@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
 				},
 			},
 		],
-		base: "./",
+		base: "/",
 		define: {
 			APP_VERSION: JSON.stringify(packageJson.version),
 			API_ONSITE: JSON.stringify(onsiteServer),
