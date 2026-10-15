@@ -39,7 +39,7 @@ h3 {
 	padding: 15px 30px;
 	border-radius: 8px;
 	width: fit-content;
-	margin: 0 auto 30px;
+	margin: 15px auto 30px;
 }
 
 .uiDarkMode #tagline-box {
@@ -90,6 +90,12 @@ h3 {
 
 	h3 {
 		font-size: 1.5em;
+	}
+}
+
+@media (min-width: 1024px) {
+	#tagline-box {
+		margin: 0 auto 30px;
 	}
 }
 </style>

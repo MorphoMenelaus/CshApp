@@ -72,9 +72,6 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 						<a class="btn email-icon" @click="contactEmail(true)" title="Contact Me">Contact Me</a>
 					</div>
 				</div>
-				<div v-if="!appState?.appDevDuties?.length > 0">
-					<h1>No results found. Please refresh your browser.</h1>
-				</div>
 			</div>
 
 			<Disclaimers />

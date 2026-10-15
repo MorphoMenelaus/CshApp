@@ -4,7 +4,7 @@ import AppDevDuties from "@/components/AppDevDuties.vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 
 const props = defineProps({
-	appState: Object,
+	appDevDuties: Array,
 	resumeArray: Array,
 });
 
@@ -45,7 +45,7 @@ const showHideDetails = (id) => {
 							<div v-if="item.id === 1">
 								<button :class="['btn', { absolute: !lessText }]" @click="showHideDetails('latest-details')">
 									<span>{{ lessText ? "Hide" : "Show" }}</span
-									>&nbsp;Application Details
+									>&nbsp;App Suite Details
 									<span class="arrow" :class="lessText ? 'rotated' : ''">▽</span>
 								</button>
 							</div>
@@ -57,9 +57,10 @@ const showHideDetails = (id) => {
 						</div>
 					</div>
 					<Transition name="slide-down">
-						<div v-if="item.id === 1 && appState?.appDevDuties?.length > 0 && lessText" id="latest-details">
-							<AppDevDuties :appDevDuties="appState.appDevDuties" />
-							<button class="btn scroll-top" @click="showHideDetails('pseudo-table')"><span>▽</span>&nbsp;Hide Details</button>
+						<div v-if="item.id === 1 && appDevDuties?.length > 0 && lessText" id="latest-details">
+							<button class="btn scroll-top" @click="showHideDetails('pseudo-table')"><span>▽</span>&nbsp;Hide App Suite Details</button>
+							<AppDevDuties :appDevDuties="appDevDuties" />
+							<button class="btn scroll-top" @click="showHideDetails('pseudo-table')"><span>▽</span>&nbsp;Hide App Suite Details</button>
 						</div>
 					</Transition>
 				</div>

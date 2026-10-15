@@ -84,7 +84,6 @@ export default {
 			body: document.getElementsByTagName("body"),
 			serverVersion: "",
 			appState: {},
-			appDevDuties: [],
 			currentComponent: null,
 			isMobileDevice: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
 			isMobile: window.innerWidth < 1024,
@@ -148,9 +147,6 @@ export default {
 					this.forceLogoutEvent = res;
 				}
 			}
-			// The order of this getAppRolesData() call is important.
-			// The recall and access token check should be done first.
-			this.getAppRolesData();
 		},
 		showRegisterUserComponent(login = false, register = false) {
 			this.currentComponent = register ? "Register" : null;
@@ -182,47 +178,6 @@ export default {
 			} catch (error) {
 				console.error("Error fetching server version:", error);
 			}
-		},
-		async getAppRolesData() {
-			let headerObj = new Headers();
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/blog/appduties/", this.baseUrl);
-
-			let params = requestUrl.searchParams;
-			params.set("time", new Date().getTime());
-			requestUrl.search = params.toString();
-
-			let request = new Request(requestUrl.toString(), {
-				method: "GET",
-				headers: headerObj,
-			});
-
-			try {
-				let response = await fetch(request);
-				let data = await response.json();
-				if (data?.success) {
-					this.appDevDuties = data.appDevDuties;
-					let updateAppState = this.appState;
-					updateAppState.appDevDuties = this.appDevDuties = data.appDevDuties;
-					this.updateAppState(updateAppState);
-				}
-			} catch (error) {
-				console.error("Error reading data:", error);
-			}
-		},
-		handleScroll(e) {
-			// Not implemented yet.
-			// Will require some layout and CSS changes
-			const currentScrollTop = e.target.scrollTop;
-
-			if (Math.abs(currentScrollTop - this.lastScrollTop) <= this.threshold) return;
-
-			if (currentScrollTop > this.lastScrollTop && currentScrollTop > this.threshold) {
-				this.isHidden = true; // Scrolling down
-			} else {
-				this.isHidden = false; // Scrolling up
-			}
-			this.lastScrollTop = currentScrollTop;
 		},
 	},
 	async created() {
@@ -390,7 +345,7 @@ nav a:first-of-type {
 	z-index: 15000;
 }
 
-.loader-icon {
+/* .loader-icon {
 	height: 48px;
 	width: 48px;
 	border: 3px solid;
@@ -398,7 +353,7 @@ nav a:first-of-type {
 	border-color: red white blue black;
 	animation: loader 0.5s linear infinite;
 }
-
+ */
 #loading-icon.loading {
 	display: grid;
 }
@@ -407,6 +362,11 @@ nav a:first-of-type {
 	position: fixed;
 	bottom: 60px;
 	left: 1em;
+	z-index: 3;
+	background-color: hsl(250deg 100% 20% / 70%);
+	padding: 0.5em 0 0.5em 1em;
+	border-radius: 10px;
+	border: 1px solid;
 }
 
 #ai-button .btn {

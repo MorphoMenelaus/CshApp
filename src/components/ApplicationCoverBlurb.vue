@@ -1,14 +1,13 @@
-<script setup>
-// import AdditionalBullets from "@/components/AdditionalBullets.vue";
-</script>
+<script setup></script>
 
 <template>
 	<div id="cover-blurb">
 		<h2 class="julius-sans">Proactive Upskilling &amp; Latest Accomplishments</h2>
 		<p>
-			I build high-performance, interactive web applications with clean architecture and seamless user experiences. Most recently, I&nbsp;engineered a
-			full suite of four interconnected Single Page Applications using Vue 3 for Makrö Gaming Studios, managing complex dashboards and dynamic, role-based
-			permission systems backed by relational databases via REST APIs.
+			I build high-performance, interactive web applications and websites with clean architecture and seamless user experiences. Most recently, I
+			engineered the data-driven frontend interfaces for a full suite of four interconnected Single Page Applications using the Vue 3 framework. Makrö
+			Gaming Studios required those Vue apps to manage complex, dynamic dashboards and access relational databases via REST APIs and role-based permission
+			systems.
 		</p>
 		<p>
 			Motivated by a commitment to self-driven upskilling and continuous growth, I have spent the past year expanding my engineering toolkit into robust
@@ -16,7 +15,6 @@
 			scalable backend environments using Node.js and Express. I bridge the gap between beautiful client-side interactivity and secure server-side logic.
 		</p>
 	</div>
-	<!-- <AdditionalBullets /> -->
 </template>
 
 <style scoped>
