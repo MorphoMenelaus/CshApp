@@ -37,7 +37,7 @@ h3 {
 	border: 1px #555 solid;
 	background-color: #fff;
 	padding: 15px 30px;
-	border-radius: 8px;
+	border-radius: 12px;
 	width: fit-content;
 	margin: 15px auto 30px;
 }
@@ -48,7 +48,7 @@ h3 {
 
 #available {
 	position: absolute;
-	top: -18px;
+	top: -15px;
 	left: 15px;
 }
 

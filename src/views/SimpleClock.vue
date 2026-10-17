@@ -9,6 +9,7 @@ const props = defineProps({
 });
 
 const baseUrl = inject("baseUrl");
+const copyright = inject("copyright");
 const showHideLoader = inject("showHideLoader");
 const updateStatus = inject("sendUpdateStatus");
 const serverStatus = Object.assign({}, appNotify);
@@ -179,7 +180,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div id="clocklog-container">
+	<main id="clocklog-container">
 		<div id="clock">
 			<div id="time-container">
 				<span id="time">{{ timeLocal }}</span>
@@ -264,7 +265,10 @@ onMounted(() => {
 				<h1>Nothing more to display.</h1>
 			</div>
 		</div>
-	</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
+	</main>
 </template>
 
 <style scoped>

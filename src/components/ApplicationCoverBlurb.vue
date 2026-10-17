@@ -12,7 +12,8 @@
 		<p>
 			Motivated by a commitment to self-driven upskilling and continuous growth, I have spent the past year expanding my engineering toolkit into robust
 			full-stack development. I have transitioned into the React and TypeScript ecosystems, styling responsive interfaces with Tailwind CSS, and building
-			scalable backend environments using Node.js and Express. I bridge the gap between beautiful client-side interactivity and secure server-side logic.
+			scalable backend environments using Node.js and Express.js. I bridge the gap between beautiful client-side interactivity and secure server-side
+			logic.
 		</p>
 	</div>
 </template>

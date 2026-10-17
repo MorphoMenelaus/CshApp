@@ -9,6 +9,7 @@ const props = defineProps({
 });
 
 const baseUrl = inject("baseUrl");
+const copyright = inject("copyright");
 const showHideLoader = inject("showHideLoader");
 const serverStatus = Object.assign({}, appNotify);
 const limit = ref(10);
@@ -91,7 +92,7 @@ onMounted(() => {
 });
 </script>
 <template>
-	<div id="listUsers" class="input-heading">
+	<main id="listUsers" class="input-heading">
 		<h1>List Users</h1>
 
 		<div id="paging">
@@ -135,7 +136,10 @@ onMounted(() => {
 				<h1>Nothing more to display.</h1>
 			</div>
 		</div>
-	</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
+	</main>
 </template>
 
 <style scoped>

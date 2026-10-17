@@ -9,6 +9,7 @@ const props = defineProps({
 });
 
 const baseUrl = inject("baseUrl");
+const copyright = inject("copyright");
 const updateStatus = inject("sendUpdateStatus");
 const showHideLoader = inject("showHideLoader");
 const serverStatus = Object.assign({}, appNotify);
@@ -119,7 +120,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<div>
+	<main>
 		<div id="blogs">
 			<div>
 				<div class="blog-intro">
@@ -182,7 +183,10 @@ onMounted(() => {
 				<h1 v-else>Click a button to view a blog post</h1>
 			</div>
 		</div>
-	</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
+	</main>
 </template>
 
 <style>

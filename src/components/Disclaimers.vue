@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from "vue-router";
-import GeneralPurpose from "@/components/GeneralPurpose.vue";
+import SitePurpose from "@/components/SitePurpose.vue";
 
 const aiDisclaimer = `Hi! I am Chris' AI assistant, powered by Google Gemini. 
 			I am an experimental chatbot trained to answer questions about Chris' career, skills, and interests. 
@@ -12,7 +12,7 @@ const route = useRoute();
 
 <template>
 	<div id="disclaimers">
-		<GeneralPurpose />
+		<SitePurpose />
 		<p>
 			This site is protected by reCAPTCHA and the Google
 			<strong>
