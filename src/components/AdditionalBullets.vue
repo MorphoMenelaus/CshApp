@@ -1,7 +1,7 @@
 <template>
 	<ul id="cover-bullets">
 		<li>
-			<strong>Full-Stack Versatility:</strong> Offering 15+ years of cross-functional tech experience, spanning from early Software QA at Apple to
+			<strong>Development Versatility:</strong> Offering 15+ years of cross-functional tech experience, spanning from early Software QA at Apple to
 			designing and building complex, data-driven single-page applications.
 		</li>
 		<li>
@@ -14,8 +14,8 @@
 			efficiency.
 		</li>
 		<li>
-			<strong>Proven Backend Engine:</strong> Bringing strong, production-tested proficiency in Node.js, Express, and SQL database optimization to drive
-			multi-tenant enterprise applications and robust role-based access control systems.
+			<strong>Proven Backend Engine:</strong> Bringing strong, production-tested proficiency in Node.js, Express.js, and SQL database optimization to
+			drive multi-tenant enterprise applications and robust role-based access control systems.
 		</li>
 	</ul>
 </template>

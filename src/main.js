@@ -23,10 +23,12 @@ const baseUrl = allowedDomains.includes(origin) ? origin : "";
 
 const appCurrentVersion = APP_VERSION;
 const reCaptchaSiteKey = import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY;
+const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
 
 app.provide("reCaptchaSiteKey", reCaptchaSiteKey);
 app.provide("appCurrentVersion", appCurrentVersion);
 app.provide("personalRestricted", personalRestricted);
 app.provide("baseUrl", baseUrl);
+app.provide("copyright", copyright);
 
 app.mount("#app");

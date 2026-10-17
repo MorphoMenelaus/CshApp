@@ -13,6 +13,7 @@ const props = defineProps({
 });
 
 const baseUrl = inject("baseUrl");
+const copyright = inject("copyright");
 const personalRestricted = inject("personalRestricted");
 const updateStatus = inject("sendUpdateStatus");
 const showHideLoader = inject("showHideLoader");
@@ -140,7 +141,7 @@ onMounted(() => {
 });
 </script>
 <template>
-	<div>
+	<main>
 		<div id="layout-container">
 			<div id="resume-header">
 				<h1 class="julius-sans center name stroke">Chris Hardwick</h1>
@@ -221,7 +222,10 @@ onMounted(() => {
 				<h2 class="center">Please try again later.</h2>
 			</div>
 		</div>
-	</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
+	</main>
 </template>
 
 <style>

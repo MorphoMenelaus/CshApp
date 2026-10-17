@@ -16,7 +16,7 @@ const props = defineProps({
 });
 
 const contactEmail = inject("contactEmail");
-const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
+const copyright = inject("copyright");
 </script>
 
 <template>
@@ -94,10 +94,6 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 
 .btn-link-container .btn .arrow.rotated {
 	transform: rotate(0deg);
-}
-
-#copyright {
-	text-align: center;
 }
 
 h1,

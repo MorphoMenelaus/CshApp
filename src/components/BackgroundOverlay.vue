@@ -1,5 +1,9 @@
+<script setup>
+import { ref } from "vue";
+const animate = ref(false);
+</script>
 <template>
-	<div id="bg-parent" class="animate">
+	<div id="bg-parent" :class="{ animate: animate }">
 		<div class="one"></div>
 		<div class="two"></div>
 	</div>

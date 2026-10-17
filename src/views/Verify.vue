@@ -22,6 +22,9 @@
 			<h3 v-else>Click login in the upper right of the screen.</h3>
 		</div>
 	</div>
+	<div id="copyright">
+		<small v-html="copyright"></small>
+	</div>
 </template>
 
 <script>
@@ -34,6 +37,7 @@ export default {
 	},
 	data() {
 		return {
+			copyright: inject("copyright"),
 			baseUrl: inject("baseUrl"),
 			updateStatus: inject("sendUpdateStatus"),
 			forceLogout: inject("forceLogout"),

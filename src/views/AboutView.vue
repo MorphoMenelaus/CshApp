@@ -19,7 +19,7 @@ const contactEmail = inject("contactEmail", () => {
 	console.warn("Global function not found! contactEmail()");
 });
 
-const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, All Rights Reserved.`;
+const copyright = inject("copyright");
 </script>
 
 <template>
@@ -100,7 +100,7 @@ const copyright = `Copyright &copy;${new Date().getFullYear()} Chris Hardwick, A
 
 #available {
 	position: absolute;
-	top: -18px;
+	top: -15px;
 	left: 15px;
 }
 
@@ -175,10 +175,6 @@ h2.profile {
 	width: 100%;
 	margin: auto;
 	font-size: 18px;
-}
-
-#copyright {
-	text-align: center;
 }
 
 #serverInfo {

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<main>
 		<h1 class="julius-sans">Movie Database</h1>
 		<div id="movie-header">
 			<p>
@@ -107,7 +107,10 @@
 				</div>
 			</dialog>
 		</div>
-	</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
+	</main>
 </template>
 
 <script>
@@ -130,6 +133,7 @@ export default {
 	},
 	data() {
 		return {
+			copyright: inject("copyright"),
 			baseUrl: inject("baseUrl"),
 			showHideLoader: inject("showHideLoader"),
 			updateStatus: inject("sendUpdateStatus"),

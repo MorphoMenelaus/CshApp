@@ -1,5 +1,5 @@
 <template>
-	<div id="time-tracker">
+	<main id="time-tracker">
 		<div>
 			<div id="toggl-user" v-if="toggleUser">
 				<h1 id="toggl-heading">Toggl Project Tracker</h1>
@@ -20,7 +20,10 @@
 
 			<ProjectTable v-if="projects?.length > 0" :appState="appState" :projects="projects" :isMobile="isMobile" />
 		</div>
-	</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
+	</main>
 </template>
 
 <script>
@@ -41,6 +44,7 @@ export default {
 	},
 	data() {
 		return {
+			copyright: inject("copyright"),
 			baseUrl: inject("baseUrl"),
 			forceLogout: inject("forceLogout"),
 			updateStatus: inject("sendUpdateStatus"),

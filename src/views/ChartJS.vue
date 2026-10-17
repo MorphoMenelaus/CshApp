@@ -9,6 +9,7 @@ defineProps({
 	windowWidth: Number,
 });
 
+const copyright = inject("copyright");
 const theme = ref(localStorage.getItem("theme") || "light");
 
 const handleThemeChange = (e) => {
@@ -22,7 +23,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div>
+	<main>
 		<div id="charts-header">
 			<h1 class="julius-sans center stroke">Visualizing Data</h1>
 			<h2>ChartJS Demos <i class="icon devicon-chartjs-plain" title="ChartJS"></i></h2>
@@ -30,7 +31,10 @@ onBeforeUnmount(() => {
 		</div>
 		<WeatherBasic :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" :theme="theme" />
 		<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" :theme="theme" />
-	</div>
+		<div id="copyright">
+			<small v-html="copyright"></small>
+		</div>
+	</main>
 </template>
 
 <style scoped>
