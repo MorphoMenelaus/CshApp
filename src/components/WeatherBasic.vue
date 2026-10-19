@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount, inject } from "vue";
+import { nextTick, onBeforeUnmount, inject } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import locations from "@/dependencies/locations.json";
 import { appNotify } from "@/dependencies/models.js";
@@ -232,6 +232,7 @@ export default {
 				this.weatherRefreshButton = false;
 
 				this.formatWeatherTime();
+				await nextTick();
 				this.drawChart();
 			} catch (error) {
 				console.error("Error getting data:", error);

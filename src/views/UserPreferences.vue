@@ -1,3 +1,218 @@
+<script setup>
+import { ref, shallowRef, inject, provide, watch, onBeforeMount } from "vue";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import router from "@/router";
+import ChangePassword from "@/components/ChangePassword.vue";
+import DeleteUser from "@/components/DeleteUser.vue";
+import locations from "@/dependencies/locations.json";
+import { appNotify } from "@/dependencies/models.js";
+
+const props = defineProps({
+	appState: Object,
+	isMobile: Boolean,
+	forceLogoutEvent: Object,
+});
+
+const baseUrl = inject("baseUrl");
+const updateStatus = inject("sendUpdateStatus");
+const showHideLoader = inject("showHideLoader");
+const updateAppState = inject("updateAppState");
+const forceLogout = inject("forceLogout");
+const serverStatus = Object.assign({}, appNotify);
+const boolOptions = [
+	{ text: "True", value: "1" },
+	{ text: "False", value: "0" },
+];
+
+const admin = ref(props.appState?.permissions?.admin);
+const userId = ref(props.appState?.user?.userId);
+const user = ref({});
+const usersList = ref([]);
+const userAdmin = ref(false);
+const email = ref("");
+const lastName = ref("");
+const firstName = ref("");
+const siteAdmin = ref(0);
+const siteEditor = ref(0);
+const contributor = ref(0);
+const uiDarkMode = ref(0);
+const locationDefault = ref("Atlanta");
+const userNotes = ref("");
+const verified = ref(0);
+const currentComponent = shallowRef(null);
+const keyword = ref("");
+const maxlength = ref(1024);
+const charRemaining = ref(1024);
+const location = ref(locations.filter((loc) => loc.city === locationDefault.value)[0]);
+const locationOptions = ref(locations.toSorted((a, b) => a.city.localeCompare(b.city)));
+
+const findUserByName = async () => {
+	if (keyword.value >= 0) {
+		usersList.value = [];
+		return;
+	}
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL(`/api/users/name/${keyword.value}`, baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(requestUrl.toString(), {
+		method: "GET",
+		headers: headerObj,
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		if (data?.success) usersList.value = data.users;
+	} catch (error) {
+		console.error("Error fetching data:", error);
+	}
+};
+
+const getUser = async () => {
+	showHideLoader(true);
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL(`/api/users/${userId.value}`, baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(requestUrl.toString(), {
+		method: "GET",
+		headers: headerObj,
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		if (data?.success) populateFields(data.user);
+	} catch (error) {
+		console.error("Error fetching data:", error);
+	} finally {
+		showHideLoader(false);
+	}
+};
+
+const updateUser = async () => {
+	showHideLoader(true);
+
+	let body = {
+		email: email.value,
+		lastName: lastName.value,
+		firstName: firstName.value,
+		siteAdmin: siteAdmin.value,
+		siteEditor: siteEditor.value,
+		contributor: contributor.value,
+		uiDarkMode: uiDarkMode.value,
+		locationDefault: locationDefault.value,
+		userNotes: userNotes.value,
+		verified: verified.value,
+	};
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL(`/api/users/${userId.value}`, baseUrl);
+
+	let request = new Request(requestUrl.toString(), {
+		method: "PUT",
+		headers: headerObj,
+		body: JSON.stringify(body),
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		if (data.success && user.value.userName === props.appState.userName) {
+			let newAppState = props.appState;
+			newAppState.user = data.user;
+			updateAppState(newAppState);
+		}
+
+		getUser();
+
+		serverStatus.code = data.code;
+		serverStatus.message = data.message;
+		serverStatus.success = data.success;
+		updateStatus(serverStatus);
+	} catch (error) {
+		console.error("Error fetching data:", error);
+	} finally {
+		addUserLog(props.appState, "Update User Preferences");
+		showHideLoader(false);
+	}
+};
+
+const goBack = () => {
+	router.back();
+};
+
+const charCounter = () => {
+	let currCount = userNotes.value.length;
+	if (charRemaining.value <= maxlength.value) charRemaining.value = maxlength.value - currCount;
+};
+
+const populateFields = (usr) => {
+	usersList.value = [];
+	user.value = usr;
+	keyword.value = user.value.userName;
+
+	userId.value = user.value.userId;
+	email.value = user.value.email;
+	lastName.value = user.value.lastName;
+	firstName.value = user.value.firstName;
+	userAdmin.value = user.value.admin;
+	siteAdmin.value = user.value.siteAdmin;
+	siteEditor.value = user.value.siteEditor;
+	contributor.value = user.value.contributor;
+	uiDarkMode.value = user.value.uiDarkMode;
+	locationDefault.value = user.value.locationDefault || "Atlanta";
+	userNotes.value = user.value.userNotes;
+	verified.value = user.value.verified;
+	location.value = locations.filter((loc) => loc.city === locationDefault.value)[0];
+};
+
+watch(
+	() => props.appState,
+	() => {
+		admin.value = props.appState?.user?.permissions?.admin;
+	},
+	{ deep: true },
+);
+
+watch(location, () => {
+	locationDefault.value = location.value.city;
+});
+
+watch(
+	() => props.forceLogoutEvent,
+	(res) => {
+		currentComponent.value = null;
+		res.forced = true;
+		forceLogout(res);
+	},
+);
+
+onBeforeMount(() => {
+	getUser();
+	provide("cancelDeleteUser", (bool) => (currentComponent.value = bool ? DeleteUser : null));
+	provide("closeChangePassword", (bool) => (currentComponent.value = bool ? ChangePassword : null));
+});
+</script>
+
 <template>
 	<div id="preferences">
 		<div class="wrapper">
@@ -15,7 +230,7 @@
 							name="keyword"
 							class="form-control"
 							placeholder="User Name"
-							onfocus="this.select()"
+							onfocus="select()"
 						/>
 						<div id="user-select" v-if="usersList.length > 0">
 							<span v-for="(item, index) in usersList" :key="index" @click="populateFields(item)">
@@ -123,7 +338,7 @@
 					</form>
 					<div class="btn-container">
 						<button v-if="appState.userName !== 'guest'" @click="updateUser()" class="btn" title="Update User Prefernces">Save Prefernces</button>
-						<button v-if="appState.userName !== 'guest'" @click="currentComponent = 'ChangePassword'" class="btn" title="Change Password">
+						<button v-if="appState.userName !== 'guest'" @click="currentComponent = ChangePassword" class="btn" title="Change Password">
 							Change Password
 						</button>
 					</div>
@@ -133,230 +348,12 @@
 		<component :is="currentComponent" :appState="appState" />
 		<div id="change-btn" v-if="user.userId === appState?.user?.userId">
 			<button class="btn back" @click="goBack()">Exit</button>
-			<button v-if="appState.userName !== 'guest'" id="delete-button" class="btn delete" @click="currentComponent = 'DeleteUser'" title="Delete Account">
+			<button v-if="appState.userName !== 'guest'" id="delete-button" class="btn delete" @click="currentComponent = DeleteUser" title="Delete Account">
 				Delete Account
 			</button>
 		</div>
 	</div>
 </template>
-
-<script>
-import { inject, provide } from "vue";
-import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-import router from "@/router";
-import ChangePassword from "@/components/ChangePassword.vue";
-import DeleteUser from "@/components/DeleteUser.vue";
-import locations from "@/dependencies/locations.json";
-import { appNotify } from "@/dependencies/models.js";
-
-export default {
-	name: "UserPreferences",
-	props: {
-		appState: Object,
-		isMobile: Boolean,
-		forceLogoutEvent: Object,
-	},
-	components: {
-		ChangePassword,
-		DeleteUser,
-	},
-	data() {
-		return {
-			baseUrl: inject("baseUrl"),
-			updateStatus: inject("sendUpdateStatus"),
-			showHideLoader: inject("showHideLoader"),
-			updateAppState: inject("updateAppState"),
-			forceLogout: inject("forceLogout"),
-			serverStatus: Object.assign({}, appNotify),
-			admin: this.appState?.permissions?.admin,
-			userId: this.appState?.user?.userId,
-			boolOptions: [
-				{ text: "True", value: "1" },
-				{ text: "False", value: "0" },
-			],
-			user: {},
-			usersList: [],
-			userAdmin: false,
-			email: "",
-			lastName: "",
-			firstName: "",
-			siteAdmin: 0,
-			siteEditor: 0,
-			contributor: 0,
-			uiDarkMode: 0,
-			locationDefault: "Atlanta",
-			userNotes: "",
-			verified: 0,
-			currentComponent: null,
-			keyword: "",
-			maxlength: 1024,
-			charRemaining: 1024,
-			location: locations.filter((loc) => loc.city === this.locationDefault)[0],
-			locationOptions: locations.toSorted((a, b) => a.city.localeCompare(b.city)),
-		};
-	},
-	watch: {
-		appState: {
-			handler() {
-				this.admin = this.appState?.user?.permissions?.admin;
-			},
-			deep: true,
-		},
-		location() {
-			this.locationDefault = this.location.city;
-		},
-		forceLogoutEvent: {
-			handler(res) {
-				this.currentComponent = null;
-				res.forced = true;
-				this.forceLogout(res);
-			},
-			deep: true,
-		},
-	},
-	methods: {
-		goBack() {
-			router.back();
-		},
-		charCounter() {
-			let currCount = this.userNotes.length;
-			if (this.charRemaining <= this.maxlength) this.charRemaining = this.maxlength - currCount;
-		},
-		populateFields(user) {
-			this.usersList = [];
-			this.user = user;
-			this.keyword = user.userName;
-
-			this.userId = this.user.userId;
-			this.email = this.user.email;
-			this.lastName = this.user.lastName;
-			this.firstName = this.user.firstName;
-			this.userAdmin = this.user.admin;
-			this.siteAdmin = this.user.siteAdmin;
-			this.siteEditor = this.user.siteEditor;
-			this.contributor = this.user.contributor;
-			this.uiDarkMode = this.user.uiDarkMode;
-			this.locationDefault = this.user.locationDefault || "Atlanta";
-			this.userNotes = this.user.userNotes;
-			this.verified = this.user.verified;
-			this.location = locations.filter((loc) => loc.city === this.locationDefault)[0];
-		},
-		async findUserByName() {
-			if (this.keyword >= 0) {
-				this.usersList = [];
-				return;
-			}
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL(`/api/users/name/${this.keyword}`, this.baseUrl);
-
-			let params = requestUrl.searchParams;
-			params.set("time", new Date().getTime());
-			requestUrl.search = params.toString();
-
-			let request = new Request(requestUrl.toString(), {
-				method: "GET",
-				headers: headerObj,
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				if (data?.success) this.usersList = data.users;
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		},
-		async getUser() {
-			this.showHideLoader(true);
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL(`/api/users/${this.userId}`, this.baseUrl);
-
-			let params = requestUrl.searchParams;
-			params.set("time", new Date().getTime());
-			requestUrl.search = params.toString();
-
-			let request = new Request(requestUrl.toString(), {
-				method: "GET",
-				headers: headerObj,
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				if (data?.success) this.populateFields(data.user);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			} finally {
-				this.showHideLoader(false);
-			}
-		},
-		async updateUser() {
-			this.showHideLoader(true);
-
-			let body = {
-				email: this.email,
-				lastName: this.lastName,
-				firstName: this.firstName,
-				siteAdmin: this.siteAdmin,
-				siteEditor: this.siteEditor,
-				contributor: this.contributor,
-				uiDarkMode: this.uiDarkMode,
-				locationDefault: this.locationDefault,
-				userNotes: this.userNotes,
-				verified: this.verified,
-			};
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL(`/api/users/${this.userId}`, this.baseUrl);
-
-			let request = new Request(requestUrl.toString(), {
-				method: "PUT",
-				headers: headerObj,
-				body: JSON.stringify(body),
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				if (data.success && this.user.userName === this.appState.userName) {
-					let updateAppState = this.appState;
-					updateAppState.user = data.user;
-					this.updateAppState(updateAppState);
-				}
-
-				this.getUser();
-
-				this.serverStatus.code = data.code;
-				this.serverStatus.message = data.message;
-				this.serverStatus.success = data.success;
-				this.updateStatus(this.serverStatus);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			} finally {
-				addUserLog(this.appState, "Update User Preferences");
-				this.showHideLoader(false);
-			}
-		},
-	},
-	mounted() {},
-	created() {
-		this.getUser();
-		provide("cancelDeleteUser", (bool) => (this.currentComponent = bool ? "DeleteUser" : null));
-		provide("closeChangePassword", (bool) => (this.currentComponent = bool ? "ChangePassword" : null));
-	},
-};
-</script>
 
 <style scoped>
 #view {

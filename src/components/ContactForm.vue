@@ -299,7 +299,6 @@ label[for="casinoId"] {
 }
 
 .wrapper {
-	max-width: 24em;
 	align-content: center;
 	background-color: #313b64;
 	height: fit-content;
@@ -362,5 +361,11 @@ textarea#message {
 
 a:visited {
 	color: #f53cf5;
+}
+
+@media (max-width: 767px) {
+	.wrapper {
+		max-width: 24em;
+	}
 }
 </style>
