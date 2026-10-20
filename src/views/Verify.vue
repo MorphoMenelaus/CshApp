@@ -1,3 +1,123 @@
+<script setup>
+import { onBeforeMount, ref, inject } from "vue";
+import { appNotify } from "@/dependencies/models.js";
+
+defineOptions({
+	inheritAttrs: false,
+});
+
+const props = defineProps({
+	appState: Object,
+});
+
+const copyright = inject("copyright");
+const baseUrl = inject("baseUrl");
+const updateStatus = inject("sendUpdateStatus");
+const forceLogout = inject("forceLogout");
+const serverStatus = Object.assign({}, appNotify);
+const userName = ref("");
+const verificationCode = ref("");
+const success = ref(false);
+
+const verifyCode = async () => {
+	try {
+		let body = {
+			userName: userName.value,
+			verificationCode: verificationCode.value,
+		};
+
+		if (!userName.value || !verificationCode.value) {
+			serverStatus.message = "Please provide a user name and verification code.";
+			serverStatus.success = false;
+			updateStatus(serverStatus);
+			return serverStatus;
+		}
+
+		let headerObj = new Headers();
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL("/api/users/verify", baseUrl);
+
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
+			headers: headerObj,
+			body: JSON.stringify(body),
+		});
+
+		let response = await fetch(request);
+		const dataObj = await response.json();
+
+		if (dataObj?.code === 403) {
+			dataObj.forced = true;
+			forceLogout(dataObj);
+		}
+
+		if (dataObj?.success) {
+			serverStatus.code = 200;
+			serverStatus.message = "Verification success. Please Log in to continue.";
+			serverStatus.success = true;
+			success.value = true;
+		} else {
+			serverStatus.code = dataObj.code;
+			serverStatus.message = dataObj.message;
+			serverStatus.success = dataObj.success;
+		}
+
+		updateStatus(serverStatus);
+	} catch (e) {
+		console.error(e);
+	}
+};
+
+const resendVerifyCode = async () => {
+	try {
+		let body = {
+			userName: userName.value,
+			email: props.appState.user.email,
+		};
+
+		let headerObj = new Headers();
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL("/api/mail/verify", baseUrl);
+
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
+			headers: headerObj,
+			body: JSON.stringify(body),
+		});
+
+		let response = await fetch(request);
+		const dataObj = await response.json();
+
+		if (dataObj?.code === 403) {
+			dataObj.forced = true;
+			forceLogout(dataObj);
+		}
+
+		if (dataObj?.success) {
+			serverStatus.code = 200;
+			serverStatus.message = "Verification code resent.";
+			serverStatus.success = true;
+		} else {
+			serverStatus.code = dataObj.code;
+			serverStatus.message = dataObj.message;
+			serverStatus.success = dataObj.success;
+		}
+
+		updateStatus(serverStatus);
+	} catch (e) {
+		console.error(e);
+	}
+};
+
+onBeforeMount(() => {
+	let urlParams = new URLSearchParams(window.location.search);
+	userName.value = props.appState?.userName || urlParams.get("userName");
+	verificationCode.value = urlParams.get("verificationCode") || "";
+
+	if (userName.value && verificationCode.value) verifyCode();
+});
+</script>
+
 <template>
 	<div>
 		<div id="verify" v-if="!success">
@@ -26,127 +146,6 @@
 		<small v-html="copyright"></small>
 	</div>
 </template>
-
-<script>
-import { inject } from "vue";
-
-export default {
-	name: "Verify",
-	props: {
-		appState: Object,
-	},
-	data() {
-		return {
-			copyright: inject("copyright"),
-			baseUrl: inject("baseUrl"),
-			updateStatus: inject("sendUpdateStatus"),
-			forceLogout: inject("forceLogout"),
-			appNotify: Object.assign({}, this.appNotify),
-			userName: "",
-			verificationCode: "",
-			success: false,
-		};
-	},
-	watch: {},
-	methods: {
-		async verifyCode() {
-			try {
-				let body = {
-					userName: this.userName,
-					verificationCode: this.verificationCode,
-				};
-
-				if (!this.userName || !this.verificationCode) {
-					this.appNotify.message = "Please provide a user name and verification code.";
-					this.appNotify.success = false;
-					this.updateStatus(this.appNotify);
-					return this.appNotify;
-				}
-
-				let headerObj = new Headers();
-				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL("/api/users/verify", this.baseUrl);
-
-				let request = new Request(requestUrl.toString(), {
-					method: "POST",
-					headers: headerObj,
-					body: JSON.stringify(body),
-				});
-
-				let response = await fetch(request);
-				const dataObj = await response.json();
-
-				if (dataObj?.code === 403) {
-					dataObj.forced = true;
-					this.forceLogout(dataObj);
-				}
-
-				if (dataObj?.success) {
-					this.appNotify.code = 200;
-					this.appNotify.message = "Verification success. Please Log in to continue.";
-					this.appNotify.success = true;
-					this.success = true;
-				} else {
-					this.appNotify.code = dataObj.code;
-					this.appNotify.message = dataObj.message;
-					this.appNotify.success = dataObj.success;
-				}
-
-				this.updateStatus(this.appNotify);
-			} catch (e) {
-				console.error(e);
-			}
-		},
-		async resendVerifyCode() {
-			try {
-				let body = {
-					userName: this.userName,
-					email: this.appState.user.email,
-				};
-
-				let headerObj = new Headers();
-				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL("/api/mail/verify", this.baseUrl);
-
-				let request = new Request(requestUrl.toString(), {
-					method: "POST",
-					headers: headerObj,
-					body: JSON.stringify(body),
-				});
-
-				let response = await fetch(request);
-				const dataObj = await response.json();
-
-				if (dataObj?.code === 403) {
-					dataObj.forced = true;
-					this.forceLogout(dataObj);
-				}
-
-				if (dataObj?.success) {
-					this.appNotify.code = 200;
-					this.appNotify.message = "Verification code resent.";
-					this.appNotify.success = true;
-				} else {
-					this.appNotify.code = dataObj.code;
-					this.appNotify.message = dataObj.message;
-					this.appNotify.success = dataObj.success;
-				}
-
-				this.updateStatus(this.appNotify);
-			} catch (e) {
-				console.error(e);
-			}
-		},
-	},
-	created() {
-		let urlParams = new URLSearchParams(window.location.search);
-		this.userName = this.appState?.userName || urlParams.get("userName");
-		this.verificationCode = urlParams.get("verificationCode") || "";
-
-		if (this.userName && this.verificationCode) this.verifyCode();
-	},
-};
-</script>
 
 <style scoped>
 h1,

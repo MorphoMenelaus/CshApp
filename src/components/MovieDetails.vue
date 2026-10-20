@@ -1,3 +1,28 @@
+<script setup>
+import { inject } from "vue";
+
+const props = defineProps({
+	isMobile: Boolean,
+	selectedMovie: Object,
+});
+
+const movieUpdated = inject("movieUpdated");
+
+const cancel = () => {
+	// Event is movieUpdated but it can work as a cancel as well
+	// The event handler only closes conponent and refreshes movie list
+	movieUpdated(false);
+};
+
+const formatDuration = (ms) => {
+	const seconds = Math.floor((ms / 1000) % 60);
+	const minutes = Math.floor((ms / (1000 * 60)) % 60);
+	const hours = Math.floor(ms / (1000 * 60 * 60));
+
+	return [String(hours).padStart(2, "0"), String(minutes).padStart(2, "0"), String(seconds).padStart(2, "0")].join(":");
+};
+</script>
+
 <template>
 	<div>
 		<div id="movie-details" :class="isMobile ? 'mobile' : ''">
@@ -36,37 +61,6 @@
 		</div>
 	</div>
 </template>
-
-<script>
-import { inject } from "vue";
-
-export default {
-	name: "MovieDetails",
-	props: {
-		isMobile: Boolean,
-		selectedMovie: Object,
-	},
-	data() {
-		return {
-			movieUpdated: inject("movieUpdated"),
-		};
-	},
-	methods: {
-		cancel() {
-			// Event is movieUpdated but it can work as a cancel as well
-			// The event handler only closes conponent and refreshes movie list
-			this.movieUpdated(false);
-		},
-		formatDuration(ms) {
-			const seconds = Math.floor((ms / 1000) % 60);
-			const minutes = Math.floor((ms / (1000 * 60)) % 60);
-			const hours = Math.floor(ms / (1000 * 60 * 60));
-
-			return [String(hours).padStart(2, "0"), String(minutes).padStart(2, "0"), String(seconds).padStart(2, "0")].join(":");
-		},
-	},
-};
-</script>
 
 <style scoped>
 p {

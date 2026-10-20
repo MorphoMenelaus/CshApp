@@ -51,9 +51,13 @@ const animate = ref(false);
 	background: radial-gradient(circle, rgb(253 0 255 / 50%) 0%, rgba(2, 6, 24, 0) 20%);
 }
 
-.two {
+/* .two {
 	transform: translateY(15%) translateX(-15%) scaleX(1.75) scaleY(1.25);
 	background: radial-gradient(circle, rgb(0 112 255 / 90%) 0%, rgba(2, 6, 24, 0) 55%);
+} */
+.two {
+	transform: translateY(25%) translateX(-15%) scaleX(1.75) scaleY(1.25);
+	background: radial-gradient(circle, rgb(0 112 255 / 90%) 10%, rgba(2, 6, 24, 0) 55%);
 }
 
 .mobile .two {
@@ -61,9 +65,9 @@ const animate = ref(false);
 	background: radial-gradient(circle, rgb(0 112 255 / 90%) 0%, rgba(2, 6, 24, 0) 20%);
 }
 
-.uiDarkMode .two {
+/* .uiDarkMode .two {
 	background: radial-gradient(circle, rgb(0 112 255 / 70%) 0%, rgba(2, 6, 24, 0) 55%);
-}
+} */
 
 .uiDarkMode .mobile .two {
 	background: radial-gradient(circle, rgb(0 112 255 / 70%) 0%, rgba(2, 6, 24, 0) 20%);

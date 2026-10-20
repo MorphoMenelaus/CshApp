@@ -1,3 +1,24 @@
+<script setup>
+import { inject } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
+import urls from "@/dependencies/commonUrls.json";
+
+const props = defineProps({
+	isMobile: Boolean,
+});
+
+const contactEmail = inject("contactEmail");
+const loginShow = inject("loginShow");
+const registerUser = inject("registerUser");
+
+const openThisModalCloseOthers = () => {
+	loginShow(false);
+	registerUser(false);
+	contactEmail(true);
+	sendAnalyticsEvent("contact_form_footer", "contact_modal");
+};
+</script>
+
 <template>
 	<footer>
 		<div class="flex-between">
@@ -15,36 +36,6 @@
 		</div>
 	</footer>
 </template>
-
-<script>
-import { inject } from "vue";
-import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
-import urls from "@/dependencies/commonUrls.json";
-
-export default {
-	name: "FooterMain",
-	props: {
-		// serverVersion: String,
-		isMobile: Boolean,
-	},
-	data() {
-		return {
-			urls: urls,
-			contactEmail: inject("contactEmail"),
-			loginShow: inject("loginShow"),
-			registerUser: inject("registerUser"),
-		};
-	},
-	methods: {
-		openThisModalCloseOthers() {
-			this.loginShow(false);
-			this.registerUser(false);
-			this.contactEmail(true);
-			sendAnalyticsEvent("contact_form_footer", "contact_modal");
-		},
-	},
-};
-</script>
 
 <style scoped>
 footer {

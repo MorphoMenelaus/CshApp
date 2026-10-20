@@ -1,3 +1,408 @@
+<script setup>
+import { ref, shallowRef, computed, watch, onMounted, onBeforeMount, onBeforeUnmount, inject, provide } from "vue";
+import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import EditMovieDetails from "@/components/EditMovieDetails.vue";
+import MovieDetails from "@/components/MovieDetails.vue";
+import { appNotify } from "@/dependencies/models.js";
+
+const props = defineProps({
+	appState: Object,
+	isMobile: Boolean,
+	windowWidth: Number,
+});
+
+const serverStatus = Object.assign({}, appNotify);
+const copyright = inject("copyright");
+const baseUrl = inject("baseUrl");
+const showHideLoader = inject("showHideLoader");
+const updateStatus = inject("sendUpdateStatus");
+const forceLogout = inject("forceLogout");
+const loginShow = inject("loginShow");
+const registerUser = inject("registerUser");
+const sortByOptions = [
+	{ text: "Title", value: "title" },
+	{ text: "Rating", value: "rating" },
+	{ text: "Year", value: "year" },
+	{ text: "Director", value: "tags_director" },
+	{ text: "Genre", value: "tags_genre" },
+];
+
+const dialog = ref(null);
+const modalContainer = ref(null);
+const limit = ref(10);
+const offset = ref(0);
+const currentPage = ref(1);
+const pages = ref(0);
+const totalMovies = ref(0);
+const totalMoviesFromKeywords = ref(0);
+const limitOptions = ref([]);
+const sortBy = ref("year");
+const orderDir = ref("DESC");
+const contains = ref("");
+const movieList = ref([]);
+const currentComponent = shallowRef(null);
+const selectedMovie = ref({});
+const favoritesList = ref([]);
+const movieFavorites = ref([]);
+const favoritesOnly = ref(false);
+const columns = ref(1);
+
+const prevDisable = computed(() => currentPage.value <= 1);
+const nextDisable = computed(() => currentPage.value >= pages.value);
+
+const getMovieList = async () => {
+	showHideLoader(true);
+
+	let headerObj = new Headers();
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/movies/", baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("limit", limit.value);
+	params.set("offset", offset.value);
+	params.set("sort", sortBy.value);
+	params.set("order", orderDir.value);
+	params.set("keyword", contains.value);
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(requestUrl.toString(), {
+		method: "GET",
+		headers: headerObj,
+	});
+
+	try {
+		let response = await fetch(request);
+		let data = await response.json();
+
+		if (data?.code === 403) {
+			data.forced = true;
+			forceLogout(data);
+		}
+
+		movieList.value = data.movies;
+		totalMovies.value = data.tableRowCount;
+		totalMoviesFromKeywords.value = data.totalLikeRows;
+		pages.value = contains.value.length > 0 ? Math.ceil(data.totalLikeRows / limit.value) : Math.ceil(totalMovies.value / limit.value);
+
+		getFavoriteList();
+	} catch (error) {
+		console.error("Error posting data:", error);
+		serverStatus.code = 500;
+		serverStatus.message = `Error getting data: ${error}`;
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+	} finally {
+		scrollToTop();
+		showHideLoader(false);
+	}
+};
+
+const getFavoriteList = async () => {
+	if (!props.appState?.permissions?.verified) {
+		return;
+	}
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL(`/api/movies/favorites/${props.appState.user.userId}`, baseUrl);
+
+	let params = requestUrl.searchParams;
+	params.set("time", new Date().getTime());
+	requestUrl.search = params.toString();
+
+	let request = new Request(requestUrl.toString(), {
+		method: "GET",
+		headers: headerObj,
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		favoritesList.value = data?.userFavorites || [];
+	} catch (error) {
+		console.error("Error posting data:", error);
+		serverStatus.code = 500;
+		serverStatus.message = `Error getting data: ${error}`;
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+	}
+};
+
+const getMovieByFavorites = async () => {
+	showHideLoader(true);
+
+	let body = {
+		movieIds: favoritesList.value,
+	};
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/movies/", baseUrl);
+
+	let request = new Request(requestUrl.toString(), {
+		method: "POST",
+		headers: headerObj,
+		body: JSON.stringify(body),
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		movieFavorites.value = data.movies;
+	} catch (error) {
+		console.error("Error posting data:", error);
+		serverStatus.code = 500;
+		serverStatus.message = `Error getting data: ${error}`;
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+	} finally {
+		scrollToTop();
+		showHideLoader(false);
+	}
+};
+
+const setFavorite = async (movieId) => {
+	let body = {
+		userId: props.appState.user.userId,
+		movieId: movieId,
+	};
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/movies/favorites", baseUrl);
+
+	let request = new Request(requestUrl.toString(), {
+		method: "POST",
+		headers: headerObj,
+		body: JSON.stringify(body),
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		if (data.success) {
+			getFavoriteList();
+		}
+
+		serverStatus.code = data.code;
+		serverStatus.message = data.message;
+		serverStatus.success = data.success;
+		if (serverStatus.code !== 200) updateStatus(serverStatus);
+	} catch (error) {
+		console.error("Error fetching data:", error);
+	}
+};
+
+const removeFavorite = async (movieId) => {
+	let body = {
+		movieId: movieId,
+	};
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL(`/api/movies/favorites/${props.appState.user.userId}`, baseUrl);
+
+	let request = new Request(requestUrl.toString(), {
+		method: "PUT",
+		headers: headerObj,
+		body: JSON.stringify(body),
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		if (data.success) {
+			getFavoriteList();
+		}
+
+		serverStatus.code = data.code;
+		serverStatus.message = data.message;
+		serverStatus.success = data.success;
+		if (serverStatus.code !== 200) updateStatus(serverStatus);
+	} catch (error) {
+		console.error("Error fetching data:", error);
+	}
+};
+
+const refreshMoviesWithFaves = async () => {
+	if (favoritesOnly.value) {
+		await getMovieByFavorites();
+		movieList.value = movieFavorites.value;
+	} else {
+		getMovieList();
+	}
+};
+
+const previousPage = () => {
+	if (currentPage.value == 1) return;
+	currentPage.value--;
+	offset.value = offset.value - limit.value;
+	getMovieList();
+};
+
+const nextPage = () => {
+	if (movieList.value.length < limit.value) return;
+	offset.value = offset.value + limit.value;
+	currentPage.value++;
+	getMovieList();
+};
+
+const closeModal = (refresh = true) => {
+	currentComponent.value = null;
+	selectedMovie.value = null;
+	if (refresh) refreshMoviesWithFaves();
+};
+
+const keyDown = (e) => {
+	if (e.key === "Escape") {
+		currentComponent.value = null;
+		dialog.value.close();
+	}
+};
+
+const clickHandler = (e) => {
+	if (e.target.id === "movie-details") currentComponent.value = null;
+};
+
+const showRegisterUserComponent = (login = false, register = false) => {
+	dialog.value.close();
+	loginShow(login);
+	registerUser(register);
+};
+
+const openPermissionsDialog = () => {
+	dialog.value.showModal();
+};
+
+const populateLimits = () => {
+	let width = props.windowWidth;
+	let multiplier;
+	switch (true) {
+		case width < 576:
+			multiplier = 1;
+			break;
+		case width < 768:
+			multiplier = 1;
+			break;
+		case width < 1024:
+			multiplier = 2;
+			break;
+		case width < 1200:
+			multiplier = 3;
+			break;
+		case width < 1800:
+			multiplier = 4;
+			break;
+		case width < 2400:
+			multiplier = 5;
+			break;
+		case width < 2800:
+			multiplier = 6;
+			break;
+		case width >= 2800:
+			multiplier = 7;
+			break;
+		default:
+			multiplier = 1;
+	}
+	let limitBase = [2, 4, 6, 8, 10];
+	limitOptions.value = [];
+	limitBase.forEach((limit) => {
+		let limitObj = { text: "", value: null };
+		limitObj.text = (limit * multiplier).toString();
+		limitObj.value = limit * multiplier;
+		limitOptions.value.push(limitObj);
+	});
+
+	// set defaults for limit and columns
+	limit.value = 2 * multiplier;
+	columns.value = multiplier;
+};
+
+const favoritesHandler = (movieId) => {
+	if (!props.appState?.permissions?.verified) {
+		openPermissionsDialog();
+		return;
+	}
+
+	if (favoritesList.value.includes(movieId)) {
+		removeFavorite(movieId);
+	} else {
+		setFavorite(movieId);
+	}
+};
+
+const viewThisEntry = (movie) => {
+	selectedMovie.value = movie;
+	currentComponent.value = MovieDetails;
+};
+
+const editThisEntry = (movie) => {
+	selectedMovie.value = movie;
+	currentComponent.value = EditMovieDetails;
+};
+
+const scrollToTop = () => {
+	let container = document.getElementById("app");
+	container.scrollTo({
+		top: 0,
+		behavior: "smooth",
+	});
+};
+
+watch([sortBy, orderDir, contains], () => {
+	currentPage.value = 1;
+	offset.value = 0;
+	getMovieList();
+});
+
+watch(limit, (newLimit) => {
+	currentPage.value = 1;
+	offset.value = 0;
+	pages.value = contains.value.length > 0 ? Math.ceil(totalMoviesFromKeywords.value / newLimit) : Math.ceil(totalMovies.value / newLimit);
+	refreshMoviesWithFaves();
+});
+
+watch(
+	() => props.windowWidth,
+	() => {
+		populateLimits();
+	},
+);
+
+watch(favoritesOnly, () => {
+	refreshMoviesWithFaves();
+});
+
+onBeforeMount(() => {
+	provide("movieUpdated", closeModal);
+	window.addEventListener("keydown", keyDown);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener("keydown", keyDown);
+	modalContainer.value.removeEventListener("click", clickHandler);
+});
+
+onMounted(() => {
+	limit.value = columns.value * 2;
+	populateLimits();
+	getMovieList();
+	dialog.value = document.getElementById("not-allowed");
+	modalContainer.value = document.getElementById("modal-container");
+	modalContainer.value.addEventListener("click", clickHandler);
+});
+</script>
+
 <template>
 	<main>
 		<h1 class="julius-sans">Movie Database</h1>
@@ -112,412 +517,6 @@
 		</div>
 	</main>
 </template>
-
-<script>
-import { onBeforeUnmount, inject, provide } from "vue";
-import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-import EditMovieDetails from "@/components/EditMovieDetails.vue";
-import MovieDetails from "@/components/MovieDetails.vue";
-import { appNotify } from "@/dependencies/models.js";
-
-export default {
-	name: "MovieDatabase",
-	props: {
-		appState: Object,
-		isMobile: Boolean,
-		windowWidth: Number,
-	},
-	components: {
-		EditMovieDetails,
-		MovieDetails,
-	},
-	data() {
-		return {
-			copyright: inject("copyright"),
-			baseUrl: inject("baseUrl"),
-			showHideLoader: inject("showHideLoader"),
-			updateStatus: inject("sendUpdateStatus"),
-			forceLogout: inject("forceLogout"),
-			loginShow: inject("loginShow"),
-			registerUser: inject("registerUser"),
-			serverStatus: Object.assign({}, appNotify),
-			limit: 10,
-			offset: 0,
-			currentPage: 1,
-			pages: 0,
-			totalMovies: 0,
-			totalMoviesFromKeywords: 0,
-			limitOptions: [],
-			sortByOptions: [
-				{ text: "Title", value: "title" },
-				{ text: "Rating", value: "rating" },
-				{ text: "Year", value: "year" },
-				{ text: "Director", value: "tags_director" },
-				{ text: "Genre", value: "tags_genre" },
-			],
-			sortBy: "year",
-			orderDir: "DESC",
-			contains: "",
-			movieList: [],
-			currentComponent: null,
-			selectedMovie: {},
-			favoritesList: [],
-			movieFavorites: [],
-			favoritesOnly: false,
-			columns: 1,
-			modalContainer: null,
-			prevDisable: false,
-			nextDisable: false,
-		};
-	},
-	watch: {
-		async limit() {
-			this.currentPage = 1;
-			this.offset = 0;
-			this.pages = this.contains.length > 0 ? Math.ceil(this.totalMoviesFromKeywords / this.limit) : Math.ceil(this.totalMovies / this.limit);
-			this.refreshMoviesWithFaves();
-		},
-		sortBy() {
-			this.currentPage = 1;
-			this.offset = 0;
-			this.getMovieList();
-		},
-		orderDir() {
-			this.currentPage = 1;
-			this.offset = 0;
-			this.getMovieList();
-		},
-		contains() {
-			this.currentPage = 1;
-			this.offset = 0;
-			this.getMovieList();
-		},
-		windowWidth() {
-			this.populateLimits();
-		},
-		favoritesOnly() {
-			this.refreshMoviesWithFaves();
-		},
-		currentPage() {
-			this.prevDisable = this.currentPage <= 1;
-			this.nextDisable = this.currentPage >= this.pages;
-		},
-		movieList() {
-			this.prevDisable = this.currentPage <= 1;
-			this.nextDisable = this.currentPage >= this.pages;
-		},
-	},
-	methods: {
-		showRegisterUserComponent(login = false, register = false) {
-			this.dialog.close();
-			this.loginShow(login);
-			this.registerUser(register);
-		},
-		openPermissionsDialog() {
-			this.dialog.showModal();
-		},
-		scrollToTop() {
-			let container = document.getElementById("app");
-			container.scrollTo({
-				top: 0,
-				behavior: "smooth",
-			});
-		},
-		populateLimits() {
-			let width = this.windowWidth;
-			let multiplier;
-			switch (true) {
-				case width < 576:
-					multiplier = 1;
-					break;
-				case width < 768:
-					multiplier = 1;
-					break;
-				case width < 1024:
-					multiplier = 2;
-					break;
-				case width < 1200:
-					multiplier = 3;
-					break;
-				case width < 1800:
-					multiplier = 4;
-					break;
-				case width < 2400:
-					multiplier = 5;
-					break;
-				case width < 2800:
-					multiplier = 6;
-					break;
-				case width >= 2800:
-					multiplier = 7;
-					break;
-				default:
-					multiplier = 1;
-			}
-			let limitBase = [2, 4, 6, 8, 10];
-			this.limitOptions = [];
-			limitBase.forEach((limit) => {
-				let limitCbj = { text: "", value: null };
-				limitCbj.text = (limit * multiplier).toString();
-				limitCbj.value = limit * multiplier;
-				this.limitOptions.push(limitCbj);
-			});
-
-			// set defaults for limit and columns
-			this.limit = 2 * multiplier;
-			this.columns = multiplier;
-		},
-		favoritesHandler(movieId) {
-			if (!this.appState?.permissions?.verified) {
-				this.openPermissionsDialog();
-				return;
-			}
-
-			if (this.favoritesList.includes(movieId)) {
-				this.removeFavorite(movieId);
-			} else {
-				this.setFavorite(movieId);
-			}
-		},
-		viewThisEntry(movie) {
-			this.selectedMovie = movie;
-			this.currentComponent = "MovieDetails";
-		},
-		editThisEntry(movie) {
-			this.selectedMovie = movie;
-			this.currentComponent = "EditMovieDetails";
-		},
-		async setFavorite(movieId) {
-			let body = {
-				userId: this.appState.user.userId,
-				movieId: movieId,
-			};
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/movies/favorites", this.baseUrl);
-
-			let request = new Request(requestUrl.toString(), {
-				method: "POST",
-				headers: headerObj,
-				body: JSON.stringify(body),
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				if (data.success) {
-					this.getFavoriteList();
-				}
-
-				this.serverStatus.code = data.code;
-				this.serverStatus.message = data.message;
-				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200) this.updateStatus(this.serverStatus);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		},
-		async removeFavorite(movieId) {
-			let body = {
-				movieId: movieId,
-			};
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL(`/api/movies/favorites/${this.appState.user.userId}`, this.baseUrl);
-
-			let request = new Request(requestUrl.toString(), {
-				method: "PUT",
-				headers: headerObj,
-				body: JSON.stringify(body),
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				if (data.success) {
-					this.getFavoriteList();
-				}
-
-				this.serverStatus.code = data.code;
-				this.serverStatus.message = data.message;
-				this.serverStatus.success = data.success;
-				if (this.serverStatus.code !== 200) this.updateStatus(this.serverStatus);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			}
-		},
-		async getFavoriteList() {
-			if (!this.appState?.permissions?.verified) {
-				return;
-			}
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL(`/api/movies/favorites/${this.appState.user.userId}`, this.baseUrl);
-
-			let params = requestUrl.searchParams;
-			params.set("time", new Date().getTime());
-			requestUrl.search = params.toString();
-
-			let request = new Request(requestUrl.toString(), {
-				method: "GET",
-				headers: headerObj,
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				this.favoritesList = data?.userFavorites || [];
-			} catch (error) {
-				console.error("Error posting data:", error);
-				this.serverStatus.code = 500;
-				this.serverStatus.message = `Error getting data: ${error}`;
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-			}
-		},
-		async getMovieByFavorites() {
-			this.showHideLoader(true);
-
-			let body = {
-				movieIds: this.favoritesList,
-			};
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/movies/", this.baseUrl);
-
-			let request = new Request(requestUrl.toString(), {
-				method: "POST",
-				headers: headerObj,
-				body: JSON.stringify(body),
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				this.movieFavorites = data.movies;
-			} catch (error) {
-				console.error("Error posting data:", error);
-				this.serverStatus.code = 500;
-				this.serverStatus.message = `Error getting data: ${error}`;
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-			} finally {
-				this.scrollToTop();
-				this.showHideLoader(false);
-			}
-		},
-		async getMovieList() {
-			this.showHideLoader(true);
-
-			let headerObj = new Headers();
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL("/api/movies/", this.baseUrl);
-
-			let params = requestUrl.searchParams;
-			params.set("limit", this.limit);
-			params.set("offset", this.offset);
-			params.set("sort", this.sortBy);
-			params.set("order", this.orderDir);
-			params.set("keyword", this.contains);
-			params.set("time", new Date().getTime());
-			requestUrl.search = params.toString();
-
-			let request = new Request(requestUrl.toString(), {
-				method: "GET",
-				headers: headerObj,
-			});
-
-			try {
-				let response = await fetch(request);
-				let data = await response.json();
-
-				if (data?.code === 403) {
-					data.forced = true;
-					this.forceLogout(data);
-				}
-
-				this.movieList = data.movies;
-				this.totalMovies = data.tableRowCount;
-				this.totalMoviesFromKeywords = data.totalLikeRows;
-				this.pages = this.contains.length > 0 ? Math.ceil(data.totalLikeRows / this.limit) : Math.ceil(this.totalMovies / this.limit);
-
-				this.getFavoriteList();
-			} catch (error) {
-				console.error("Error posting data:", error);
-				this.serverStatus.code = 500;
-				this.serverStatus.message = `Error getting data: ${error}`;
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-			} finally {
-				this.scrollToTop();
-				this.showHideLoader(false);
-			}
-		},
-		async refreshMoviesWithFaves() {
-			if (this.favoritesOnly) {
-				await this.getMovieByFavorites();
-				this.movieList = this.movieFavorites;
-			} else {
-				this.getMovieList();
-			}
-		},
-		previousPage() {
-			if (this.currentPage == 1) return;
-			this.currentPage--;
-			this.offset = this.offset - this.limit;
-			this.getMovieList();
-		},
-		nextPage() {
-			if (this.movieList?.length < this.limit) return;
-			this.offset = this.offset + this.limit;
-			this.currentPage++;
-			this.getMovieList();
-		},
-		closeModal(refresh = true) {
-			this.currentComponent = null;
-			this.selectedMovie = null;
-			if (refresh) this.refreshMoviesWithFaves();
-		},
-		keyDown(e) {
-			if (e.key === "Escape") {
-				this.currentComponent = null;
-				this.dialog.close();
-			}
-		},
-		clickHandler(e) {
-			if (e.target.id === "movie-details") this.currentComponent = null;
-		},
-	},
-	mounted() {
-		this.limit = this.columns * 2;
-		this.populateLimits();
-		this.getMovieList();
-		this.dialog = document.getElementById("not-allowed");
-		this.modalContainer = document.getElementById("modal-container");
-		this.modalContainer.addEventListener("click", this.clickHandler);
-	},
-	created() {
-		provide("movieUpdated", this.closeModal);
-		window.addEventListener("keydown", this.keyDown);
-		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.keyDown);
-			this.modalContainer.removeEventListener("click", this.clickHandler);
-		});
-	},
-};
-</script>
 
 <style scoped>
 h1,

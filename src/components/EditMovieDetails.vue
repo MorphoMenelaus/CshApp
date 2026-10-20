@@ -1,3 +1,110 @@
+<script setup>
+import { ref, inject, onMounted } from "vue";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
+
+const props = defineProps({
+	appState: Object,
+	selectedMovie: Object,
+	favoritesList: Array,
+});
+
+const baseUrl = inject("baseUrl");
+const updateStatus = inject("sendUpdateStatus");
+const showHideLoader = inject("showHideLoader");
+const movieUpdated = inject("movieUpdated");
+const serverStatus = Object.assign({}, appNotify);
+
+const dialog = ref(null);
+const disableBtn = ref(false);
+const movie = ref({});
+const title = ref(props.selectedMovie.title);
+const original_title = ref(props.selectedMovie.original_title);
+const tagline = ref(props.selectedMovie.tagline);
+const summary = ref(props.selectedMovie.summary);
+const studio = ref(props.selectedMovie.studio);
+const rating = ref(props.selectedMovie.rating);
+const content_rating = ref(props.selectedMovie.content_rating);
+const duration = ref(props.selectedMovie.duration);
+const tags_genre = ref(props.selectedMovie.tags_genre);
+const tags_director = ref(props.selectedMovie.tags_director);
+const tags_writer = ref(props.selectedMovie.tags_writer);
+const tags_star = ref(props.selectedMovie.tags_star);
+const year = ref(props.selectedMovie.year);
+const tags_country = ref(props.selectedMovie.tags_country);
+const audience_rating = ref(props.selectedMovie.audience_rating);
+const slug = ref(props.selectedMovie.slug);
+
+const updateMovie = async () => {
+	showHideLoader(true);
+	disableBtn.value = true;
+
+	let body = {
+		title: title.value,
+		original_title: original_title.value,
+		tagline: tagline.value,
+		summary: summary.value,
+		studio: studio.value,
+		rating: rating.value,
+		content_rating: content_rating.value,
+		duration: duration.value,
+		tags_genre: tags_genre.value,
+		tags_director: tags_director.value,
+		tags_writer: tags_writer.value,
+		tags_star: tags_star.value,
+		year: year.value,
+		tags_country: tags_country.value,
+		audience_rating: audience_rating.value,
+		slug: slug.value,
+	};
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL(`/api/movies/${props.selectedMovie.movieId}`, baseUrl);
+
+	let request = new Request(requestUrl.toString(), {
+		method: "PUT",
+		headers: headerObj,
+		body: JSON.stringify(body),
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		if (data.success) {
+			movieUpdated(true);
+		}
+
+		serverStatus.code = data.code;
+		serverStatus.message = data.message;
+		serverStatus.success = data.success;
+		updateStatus(serverStatus);
+	} catch (error) {
+		console.error("Error fetching data:", error);
+	} finally {
+		showHideLoader(false);
+		disableBtn.value = false;
+		addUserLog(props.appState, `Update Movie Details. MovieId: ${props.selectedMovie.movieId}`);
+	}
+};
+
+const openConfirmDialog = () => {
+	dialog.value.showModal();
+};
+
+const cancel = () => {
+	// Event is movieUpdated() but it can work as a cancel as well
+	// false only closes component and true closes and refreshes movie list
+	movieUpdated(false);
+};
+
+onMounted(() => {
+	dialog.value = document.getElementById("confirmEdit");
+});
+</script>
+
 <template>
 	<div id="edit-movies" @keyup.esc="cancel()">
 		<div class="wrapper">
@@ -37,10 +144,6 @@
 								</div>
 							</div>
 							<div id="fieldset-two">
-								<!-- <div class="form-group">
-									<label for="duration">Duration</label>
-									<input id="duration" v-model="duration" />
-								</div> -->
 								<div class="form-group">
 									<label for="tags_genre">Genre</label>
 									<input id="tags_genre" v-model="tags_genre" />
@@ -98,118 +201,6 @@
 		</div>
 	</div>
 </template>
-
-<script>
-import { inject } from "vue";
-import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-import { appNotify } from "@/dependencies/models.js";
-
-export default {
-	name: "EditMovieDetails",
-	props: {
-		appState: Object,
-		selectedMovie: Object,
-		favoritesList: Array,
-	},
-	data() {
-		return {
-			baseUrl: inject("baseUrl"),
-			updateStatus: inject("sendUpdateStatus"),
-			showHideLoader: inject("showHideLoader"),
-			movieUpdated: inject("movieUpdated"),
-			serverStatus: Object.assign({}, appNotify),
-			dialog: null,
-			disableBtn: false,
-			movie: {},
-			// currentComponent: null,
-			title: this.selectedMovie.title,
-			original_title: this.selectedMovie.original_title,
-			tagline: this.selectedMovie.tagline,
-			summary: this.selectedMovie.summary,
-			studio: this.selectedMovie.studio,
-			rating: this.selectedMovie.rating,
-			content_rating: this.selectedMovie.content_rating,
-			duration: this.selectedMovie.duration,
-			tags_genre: this.selectedMovie.tags_genre,
-			tags_director: this.selectedMovie.tags_director,
-			tags_writer: this.selectedMovie.tags_writer,
-			tags_star: this.selectedMovie.tags_star,
-			year: this.selectedMovie.year,
-			tags_country: this.selectedMovie.tags_country,
-			audience_rating: this.selectedMovie.audience_rating,
-			slug: this.selectedMovie.slug,
-		};
-	},
-	watch: {},
-	methods: {
-		openConfirmDialog() {
-			this.dialog.showModal();
-		},
-		async updateMovie() {
-			this.showHideLoader(true);
-			this.disableBtn = true;
-
-			let body = {
-				title: this.title,
-				original_title: this.original_title,
-				tagline: this.tagline,
-				summary: this.summary,
-				studio: this.studio,
-				rating: this.rating,
-				content_rating: this.content_rating,
-				duration: this.duration,
-				tags_genre: this.tags_genre,
-				tags_director: this.tags_director,
-				tags_writer: this.tags_writer,
-				tags_star: this.tags_star,
-				year: this.year,
-				tags_country: this.tags_country,
-				audience_rating: this.audience_rating,
-				slug: this.slug,
-			};
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL(`/api/movies/${this.selectedMovie.movieId}`, this.baseUrl);
-
-			let request = new Request(requestUrl.toString(), {
-				method: "PUT",
-				headers: headerObj,
-				body: JSON.stringify(body),
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				if (data.success) {
-					this.movieUpdated(true);
-				}
-
-				this.serverStatus.code = data.code;
-				this.serverStatus.message = data.message;
-				this.serverStatus.success = data.success;
-				this.updateStatus(this.serverStatus);
-			} catch (error) {
-				console.error("Error fetching data:", error);
-			} finally {
-				this.showHideLoader(false);
-				this.disableBtn = false;
-				addUserLog(this.appState, `Update Movie Details. MovieId: ${this.selectedMovie.movieId}`);
-			}
-		},
-		cancel() {
-			// Event is movieUpdated() but it can work as a cancel as well
-			// false only closes component and true closes and refreshes movie list
-			this.movieUpdated(false);
-		},
-	},
-	mounted() {
-		this.dialog = document.getElementById("confirmEdit");
-	},
-};
-</script>
 
 <style scoped>
 #view {
