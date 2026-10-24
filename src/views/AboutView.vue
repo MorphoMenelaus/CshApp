@@ -6,8 +6,14 @@ import ProfessionalProfile from "@/components/ProfessionalProfile.vue";
 import Disclaimers from "../components/Disclaimers.vue";
 import PrivacyDisclaimer from "../components/PrivacyDisclaimer.vue";
 import TaglineBox from "@/components/TaglineBox.vue";
+import TechStackIconGrid from "@/components/TechStackIconGrid.vue";
+import CarouselTechStack from "@/components/CarouselTechStack.vue";
 
 const appCurrentVersion = inject("appCurrentVersion");
+
+defineOptions({
+	inheritAttrs: false,
+});
 
 const props = defineProps({
 	appState: Object,
@@ -23,7 +29,8 @@ const copyright = inject("copyright");
 </script>
 
 <template>
-	<div>
+	<CarouselTechStack />
+	<main>
 		<div id="about">
 			<div id="serverInfo" v-if="appState?.isLoggedOn">
 				<small class="version" v-if="serverVersion"
@@ -59,13 +66,15 @@ const copyright = inject("copyright");
 			<div id="profile">
 				<ProfessionalProfile />
 			</div>
+			<TechStackIconGrid />
 			<Disclaimers />
 			<PrivacyDisclaimer />
+			<!-- <GitHubContributions /> -->
 		</div>
 		<div id="copyright">
 			<small v-html="copyright"></small>
 		</div>
-	</div>
+	</main>
 </template>
 
 <style scoped>
@@ -92,10 +101,6 @@ const copyright = inject("copyright");
 	height: 64px;
 	object-fit: contain;
 	margin: 30px 0 15px;
-}
-
-.uiDarkMode #about {
-	/* color: #aaa; */
 }
 
 #available {

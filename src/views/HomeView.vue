@@ -8,6 +8,8 @@ import SkillsHighlight from "@/components/SkillsHighlight.vue";
 import ApplicationCoverBlurb from "@/components/ApplicationCoverBlurb.vue";
 import AdditionalBullets from "@/components/AdditionalBullets.vue";
 import CoreTechStack from "@/components/CoreTechStack.vue";
+import GitHubCommitEvents from "@/components/GitHubCommitEvents.vue";
+import GitHubContributions from "@/components/GitHubContributions.vue";
 
 const props = defineProps({
 	appState: Object,
@@ -20,6 +22,7 @@ const copyright = inject("copyright");
 </script>
 
 <template>
+	<!-- <CarouselTechStack /> -->
 	<main class="roboto-body">
 		<div v-if="appState?.isLoggedOn && !appState?.permissions.verified" class="not-verified">
 			<span>Not Verified. </span>
@@ -74,6 +77,10 @@ const copyright = inject("copyright");
 				</div>
 			</div>
 
+			<div class="git-container">
+				<GitHubContributions />
+				<GitHubCommitEvents />
+			</div>
 			<Disclaimers />
 		</div>
 		<div id="copyright">
@@ -83,6 +90,11 @@ const copyright = inject("copyright");
 </template>
 
 <style scoped>
+.git-container {
+	display: grid;
+	grid-template-columns: 1fr;
+}
+
 .btn-link-container .btn .arrow {
 	display: inline-block;
 	position: relative;
@@ -134,12 +146,14 @@ p {
 	padding-bottom: 45px;
 }
 
-#title-block {
+#title-block,
+.flex-block {
 	display: flex;
 	font-size: 18px;
 }
 
-.mobile #title-block {
+.mobile #title-block,
+.mobile .flex-block {
 	flex-direction: column;
 }
 
@@ -271,6 +285,18 @@ p {
 	}
 }
 
+@media (max-width: 623px) {
+	.git-container {
+		display: none;
+	}
+}
+
+@media (min-width: 624px) {
+	#disclaimers {
+		margin-top: 0;
+	}
+}
+
 @media (max-width: 767px) {
 	h2 {
 		font-size: 1.5em;
@@ -363,6 +389,11 @@ p {
 }
 
 @media (min-width: 1024px) {
+	.git-container {
+		grid-template-columns: 1fr 1fr;
+		gap: 1em;
+	}
+
 	.btn-link-container {
 		align-items: center;
 		margin-top: 2em;

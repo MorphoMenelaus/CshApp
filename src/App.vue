@@ -10,7 +10,7 @@
 		<p>Please rotate your mobile device to portrait view.</p>
 	</div>
 
-	<div v-if="!appState?.isLoggedOn || appState?.userName == 'guest'" id="dark-mode-check" :class="userSetTheme ? 'themed' : ''">
+	<div v-if="!appState?.isLoggedOn || appState?.userName == 'guest'" id="dark-mode-check" :class="{ themed: userSetTheme, about: route.name === 'about' }">
 		<label for="uiDarkMode" title="Toggle dark theme">Dark Theme</label>
 		<input id="uiDarkMode" title="Toggle dark theme" type="checkbox" v-model="uiDarkMode" />
 	</div>
@@ -51,6 +51,7 @@
 
 <script>
 import { provide, inject } from "vue";
+import { useRoute } from "vue-router";
 import BackgroundOverlay from "@/components/BackgroundOverlay.vue";
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
@@ -76,6 +77,7 @@ export default {
 	},
 	data() {
 		return {
+			route: useRoute(),
 			baseUrl: inject("baseUrl"),
 			sharedUpdateStatus: {},
 			forceLogoutEvent: {},
@@ -249,6 +251,14 @@ span.link {
 	width: 6em;
 	z-index: 1;
 	transition: opacity 0.2s;
+	user-select: none;
+}
+
+#dark-mode-check.about {
+	position: fixed;
+	right: 15px;
+	top: unset;
+	bottom: 4em;
 }
 
 .themed {

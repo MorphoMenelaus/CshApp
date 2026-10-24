@@ -1,0 +1,142 @@
+[
+	{
+		"title": "HTML5",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "CSS3",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "JavaScript",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-plain.svg",
+		"class": "logo"
+	},
+	{
+		"title": "TypeScript",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Vue 3",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vuejs/vuejs-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Vite",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vitejs/vitejs-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Vitest",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vitest/vitest-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Pinia",
+		"src": "/icons/pinia-logo.svg",
+		"class": "logo"
+	},
+	{
+		"title": "React",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg",
+		"class": "logo filter"
+	},
+	{
+		"title": "Tailwind CSS",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg",
+		"class": "logo filter"
+	},
+	{
+		"title": "Git",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "GitHub",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg",
+		"class": "logo invert"
+	},
+	{
+		"title": "NodeJS",
+		"src": "/icons/nodejs.svg",
+		"class": "logo filter"
+	},
+	{
+		"title": "ExpressJS",
+		"src": "/icons/express-logo-white.svg",
+		"class": "logo invert"
+	},
+	{
+		"title": "MySQL",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original-wordmark.svg",
+		"class": "logo"
+	},
+	{
+		"title": "ChartJS",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chartjs/chartjs-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Webpack",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/webpack/webpack-original.svg",
+		"class": "logo filter"
+	},
+	{
+		"title": "Docker",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Jest",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jest/jest-plain.svg",
+		"class": "logo"
+	},
+	{
+		"title": "JSON",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/json/json-plain.svg",
+		"class": "logo invert"
+	},
+	{
+		"title": "jQuery",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jquery/jquery-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "WordPress",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/wordpress/wordpress-plain.svg",
+		"class": "logo invert"
+	},
+	{
+		"title": "PHP",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/php/php-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Magento",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/magento/magento-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Photoshop",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/photoshop/photoshop-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Illustrator",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/illustrator/illustrator-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "3Dsmax",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/threedsmax/threedsmax-original.svg",
+		"class": "logo"
+	},
+	{
+		"title": "Godot",
+		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/godot/godot-original.svg",
+		"class": "logo"
+	}
+]

@@ -12,79 +12,79 @@ const router = createRouter({
 			path: "/",
 			name: "home",
 			component: HomeView,
-			meta: { public: true, requiredPermissions: [], title: "Hardwick Web Development | Home" },
+			meta: { public: true, requiredPermissions: [], title: "Chris Hardwick Web Development | Home" },
 		},
 		{
 			path: "/movie-database",
 			name: "MovieDatabase",
 			component: () => import("../views/MovieDatabase.vue"),
-			meta: { public: true, requiredPermissions: [], title: "Movie Database | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "Movie Database" },
 		},
 		{
 			path: "/blog-reader",
 			name: "BlogReader",
 			component: () => import("../views/BlogReader.vue"),
-			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Blog Reader | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Blog Reader" },
 		},
 		{
 			path: "/verify",
 			name: "Verify",
 			component: () => import("../views/Verify.vue"),
-			meta: { public: false, requiredPermissions: [], title: "Verify Code | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: [], title: "Verify Code" },
 		},
 		{
 			path: "/userpreferences",
 			name: "User Preferences",
 			component: () => import("../views/UserPreferences.vue"),
-			meta: { public: false, requiredPermissions: [], title: "User Preferences | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: [], title: "User Preferences" },
 		},
 		{
 			path: "/chartjs",
 			name: "ChartJS",
 			component: () => import("../views/ChartJS.vue"),
-			meta: { public: true, requiredPermissions: [], title: "ChartJS | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "ChartJS" },
 		},
 		{
 			path: "/displayusers",
 			name: "DisplayUsers",
 			component: () => import("../views/DisplayUsers.vue"),
-			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Display Users | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Display Users" },
 		},
 		{
 			path: "/displayuserlogs",
 			name: "DisplayUserLogs",
 			component: () => import("../views/DisplayUserLogs.vue"),
-			meta: { public: false, requiredPermissions: ["verified"], title: "Display User Logs | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["verified"], title: "Display User Logs" },
 		},
 		{
 			path: "/resume",
 			name: "ResumeView",
 			component: () => import("../views/ResumeView.vue"),
-			meta: { public: true, requiredPermissions: [], title: "Chris Hardwick Resume | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "Chris Hardwick Resume" },
 		},
 		{
 			path: "/toggl",
 			name: "Toggl",
 			component: () => import("../views/Toggl.vue"),
-			meta: { public: false, requiredPermissions: ["admin"], title: "Toggl Time Tracker | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["admin"], title: "Toggl Time Tracker" },
 		},
 		{
 			path: "/simpleclock",
 			name: "SimpleClock",
 			component: () => import("../views/SimpleClock.vue"),
-			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Simple Clock | Hardwick Web Development" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Simple Clock" },
 		},
 		{
 			path: "/about",
 			name: "about",
 			component: () => import("../views/AboutView.vue"),
-			meta: { public: true, requiredPermissions: [], title: "About Chris Hardwick | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "About Chris Hardwick" },
 		},
 		{
 			path: "/:pathMatch(.*)*",
 			name: "NotFound",
 			component: () => import("@/views/NotFound.vue"),
-			meta: { public: true, requiredPermissions: [], title: "404 - Not Found | Hardwick Web Development" },
+			meta: { public: true, requiredPermissions: [], title: "404 - Not Found" },
 		},
 	],
 	scrollBehavior(to, from, savedPosition) {
@@ -121,7 +121,7 @@ router.beforeEach((to, from) => {
 	// Dispatch event must happen after the Force Canonical Route to prevent multiple events from executing
 	dispatchCustomEvent("routerPathChange");
 
-	document.title = to.meta.title || "Hardwick Web Development";
+	document.title = to?.meta?.title ? `${to.meta.title} | Hardwick Web Development` : "Chris Hardwick Web Development";
 
 	// Checks for public path. Anything after this check requires loggedIn(true) minimum
 	if (to.meta.public) return true;
