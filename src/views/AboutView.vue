@@ -6,7 +6,6 @@ import ProfessionalProfile from "@/components/ProfessionalProfile.vue";
 import Disclaimers from "../components/Disclaimers.vue";
 import PrivacyDisclaimer from "../components/PrivacyDisclaimer.vue";
 import TaglineBox from "@/components/TaglineBox.vue";
-// import GitHubContributions from "@/components/GitHubContributions.vue";
 import TechStackIconGrid from "@/components/TechStackIconGrid.vue";
 import CarouselTechStack from "@/components/CarouselTechStack.vue";
 

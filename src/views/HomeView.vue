@@ -10,7 +10,6 @@ import AdditionalBullets from "@/components/AdditionalBullets.vue";
 import CoreTechStack from "@/components/CoreTechStack.vue";
 import GitHubCommitEvents from "@/components/GitHubCommitEvents.vue";
 import GitHubContributions from "@/components/GitHubContributions.vue";
-// import CarouselTechStack from "@/components/CarouselTechStack.vue";
 
 const props = defineProps({
 	appState: Object,
@@ -94,10 +93,6 @@ const copyright = inject("copyright");
 .git-container {
 	display: grid;
 	grid-template-columns: 1fr;
-	/* grid-template-rows: 1fr; */
-	/* gap: 1em; */
-	/* grid-auto-flow: row;
-	grid-template-areas: "cell1 cell2 cell2"; */
 }
 
 .btn-link-container .btn .arrow {
