@@ -10,6 +10,7 @@ import AdditionalBullets from "@/components/AdditionalBullets.vue";
 import CoreTechStack from "@/components/CoreTechStack.vue";
 import GitHubCommitEvents from "@/components/GitHubCommitEvents.vue";
 import GitHubContributions from "@/components/GitHubContributions.vue";
+// import CarouselTechStack from "@/components/CarouselTechStack.vue";
 
 const props = defineProps({
 	appState: Object,

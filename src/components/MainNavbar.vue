@@ -262,6 +262,7 @@ nav {
 	border-bottom: 1px #fff solid;
 	background-color: #313b64;
 	font-size: 18px;
+	text-transform: uppercase;
 }
 
 nav a.router-link-exact-active {

@@ -15,7 +15,7 @@
 		<input id="uiDarkMode" title="Toggle dark theme" type="checkbox" v-model="uiDarkMode" />
 	</div>
 
-	<div class="register-link" v-if="!appState?.isLoggedOn && !isMobile">
+	<div v-if="!appState?.isLoggedOn && !isMobile" :class="['register-link', { about: route.name === 'about' }]">
 		<span
 			>New User? <span class="link" @click="showRegisterUserComponent(false, true)" title="Click to register">Click to register</span>.<br />Or login with
 			username "guest"</span
@@ -254,9 +254,10 @@ span.link {
 	user-select: none;
 }
 
-#dark-mode-check.about {
+#dark-mode-check.about,
+.register-link.about {
 	position: fixed;
-	right: 15px;
+	/* right: 15px; */
 	top: unset;
 	bottom: 4em;
 }
