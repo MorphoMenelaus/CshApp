@@ -19,6 +19,8 @@ const getGitHubCommits = async () => {
 
 		commitEvents.value = data.filter((e) => e.type === "PullRequestEvent" && e.payload.action === "merged");
 		createEvents.value = data.filter((e) => e.type === "CreateEvent");
+		commitEvents.value = commitEvents.value.toSorted((a, b) => b.created_at.localeCompare(a.created_at));
+		createEvents.value = createEvents.value.toSorted((a, b) => b.created_at.localeCompare(a.created_at));
 	} catch (error) {
 		console.error("Error posting data:", error);
 		serverStatus.code = 500;
