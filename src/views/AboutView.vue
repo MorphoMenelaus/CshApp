@@ -183,11 +183,11 @@ h2.profile {
 }
 
 #serverInfo {
-	position: absolute;
+	position: fixed;
 	display: flex;
 	flex-direction: column;
-	top: 0;
-	right: 0;
+	bottom: 60px;
+	right: 15px;
 	padding: 5px 15px;
 	z-index: 500;
 	font-size: 18px;

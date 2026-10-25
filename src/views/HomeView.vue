@@ -22,7 +22,6 @@ const copyright = inject("copyright");
 </script>
 
 <template>
-	<!-- <CarouselTechStack /> -->
 	<main class="roboto-body">
 		<div v-if="appState?.isLoggedOn && !appState?.permissions.verified" class="not-verified">
 			<span>Not Verified. </span>

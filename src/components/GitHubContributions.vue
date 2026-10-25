@@ -14,6 +14,7 @@ const eventTotalCount = ref(0);
 const contributionsCount = ref(0);
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const bgColors = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
 
 const getEventTotalCount = (eventWeeks = []) => {
 	let newArr = [];
@@ -86,8 +87,8 @@ onBeforeMount(() => {
 <template>
 	<div id="github-grid">
 		<h2 class="text-center">
-			<i class="devicon-github-original"></i>
-			<i class="devicon-github-original colored"></i>
+			<i class="devicon-github-original" title="GitHub"></i>
+			<i class="devicon-github-original colored" title="GitHub"></i>
 			GitHub contributions for this project
 		</h2>
 		<h4 class="text-center">{{ contributionsCount }} commits in the last 6 months</h4>
@@ -98,16 +99,29 @@ onBeforeMount(() => {
 			<div class="calendar-grid">
 				<div v-for="(week, wIndex) in contributionWeeks" :key="wIndex" class="calendar-column">
 					<div
-						v-for="(day, i) in week.contributionDays"
-						:key="i"
-						class="calendar-cell"
-						:style="{ '--cell-bg': day?.color && day.color != '#ebedf0' ? day.color : 'rgb(128 128 128 / 20%)' }"
+						v-for="(day, di) in week.contributionDays"
+						:key="di"
+						:class="[
+							'calendar-cell',
+							{
+								lvl0: day.color === bgColors[0],
+								lvl1: day.color === bgColors[1],
+								lvl2: day.color === bgColors[2],
+								lvl3: day.color === bgColors[3],
+								lvl4: day.color === bgColors[4],
+							},
+						]"
 						:title="getTooltipText(day)"
 					>
-						<span v-if="i === 0 && isFirstWeek(day)" class="month-name">{{ getMonthName(day) }}</span>
+						<span v-if="di === 0 && isFirstWeek(day)" class="month-name">{{ getMonthName(day) }}</span>
 					</div>
 				</div>
 			</div>
+		</div>
+		<div class="legend">
+			<span class="label">Fewer</span>
+			<div v-for="(color, ci) in bgColors" :key="ci" class="calendar-cell" :class="`lvl${ci}`"></div>
+			<span class="label">More</span>
 		</div>
 	</div>
 </template>
@@ -164,7 +178,7 @@ i:not(.colored) {
 
 .calendar-grid {
 	display: grid;
-	grid-template-columns: repeat(25, 1fr);
+	grid-template-columns: repeat(26, 1fr);
 	gap: 4px;
 }
 
@@ -178,13 +192,71 @@ i:not(.colored) {
 	width: 1em;
 	height: 1em;
 	border-radius: 0.2em;
-	background-color: var(--cell-bg);
 	outline: 1px solid rgba(27, 31, 35, 0.8);
 	outline-offset: -1px;
 	transition: background-color 0.1s ease;
 }
 
+.uiDarkMode .calendar-cell {
+	outline: 1px solid rgb(89 102 115 / 80%);
+}
+
 .calendar-cell:hover {
 	outline: 1px solid #24292f;
+}
+
+.legend {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.legend .calendar-cell {
+	margin: 0 0.1em;
+}
+
+.legend .label {
+	margin: auto 0.25em;
+	font-size: 0.75em;
+}
+
+.calendar-cell.lvl0 {
+	background-color: #eff2f5;
+}
+
+.calendar-cell.lvl1 {
+	background-color: #aceebb;
+}
+
+.calendar-cell.lvl2 {
+	background-color: #4ac26b;
+}
+
+.calendar-cell.lvl3 {
+	background-color: #2da44e;
+}
+
+.calendar-cell.lvl4 {
+	background-color: #116329;
+}
+
+.uiDarkMode .calendar-cell.lvl0 {
+	background-color: #151b23;
+}
+
+.uiDarkMode .calendar-cell.lvl1 {
+	background-color: #033a16;
+}
+
+.uiDarkMode .calendar-cell.lvl2 {
+	background-color: #196c2e;
+}
+
+.uiDarkMode .calendar-cell.lvl3 {
+	background-color: #2ea043;
+}
+
+.uiDarkMode .calendar-cell.lvl4 {
+	background-color: #56d364;
 }
 </style>
