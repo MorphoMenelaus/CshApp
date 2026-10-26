@@ -8,11 +8,29 @@
 			<form @submit.prevent="registerHandler" method="post">
 				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
 					<label for="username">Username</label>
-					<input id="username" title="Username" autocomplete="username" v-model.trim="userName" type="text" name="userName" class="form-control" />
+					<input
+						id="username"
+						title="Username"
+						autocomplete="username"
+						v-model.trim="userName"
+						type="text"
+						name="userName"
+						class="form-control"
+						placeholder="Username"
+					/>
 				</div>
 				<div class="form-group" :class="errState && !email.length > 0 ? 'err' : ''">
 					<label for="email">Email <small>*required to verify account</small></label>
-					<input id="email" title="Username" autocomplete="email" v-model.trim="email" type="text" name="email" class="form-control" />
+					<input
+						id="email"
+						title="email"
+						autocomplete="email"
+						v-model.trim="email"
+						type="text"
+						name="email"
+						class="form-control"
+						placeholder="Your Email"
+					/>
 				</div>
 				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
 					<label for="password">Password</label>
@@ -24,6 +42,7 @@
 						type="password"
 						name="password"
 						class="form-control"
+						placeholder="Password"
 					/>
 				</div>
 				<div class="form-group">
@@ -36,6 +55,7 @@
 						type="password"
 						name="confirmPassword"
 						class="form-control"
+						placeholder="Confirm Password"
 					/>
 				</div>
 				<small>By registering, you agree to receive a verification code by email. Your email will not be shared or used for any other purpose. </small>
@@ -237,6 +257,11 @@ h2 {
 form {
 	display: flex;
 	flex-direction: column;
+	margin-top: 0.5em;
+}
+
+label {
+	display: none;
 }
 
 .input-section {
