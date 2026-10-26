@@ -14,27 +14,28 @@
 			<form @submit.prevent="contactHandler" method="post">
 				<div class="form-group">
 					<label for="name" title="Name">Name<span v-if="!name && errState" class="err"> * required</span></label>
-					<input v-model.trim="name" id="name" type="text" name="name" class="form-control" />
+					<input v-model.trim="name" id="name" type="text" name="name" class="form-control" placeholder="Your Name" />
 				</div>
 
 				<div class="form-group">
 					<label for="email" title="Email Address">Email Address<span v-if="!email && errState" class="err"> * required</span></label>
-					<input v-model.trim="email" id="email" type="text" name="email" class="form-control" />
+					<input v-model.trim="email" id="email" type="text" name="email" class="form-control" placeholder="Your Email" />
 				</div>
 
 				<div class="form-group" title="Subject">
 					<label for="subject">Subject<span v-if="!subject && errState" class="err"> * required</span></label>
-					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control" />
+					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control" placeholder="Subject" />
 				</div>
 
 				<div class="form-group">
 					<label for="message" title="Message">Message<span v-if="!message && errState" class="err"> * required</span></label>
-					<small>(characters remaining: {{ charRemaining }})</small>
+					<small>Characters remaining: {{ charRemaining }}</small>
 					<textarea
 						v-model.trim="message"
 						id="message"
 						type="text"
 						name="message"
+						placeholder="Your Message"
 						class="form-control"
 						:maxlength="maxlength"
 						@keyup="charCounter()"
@@ -234,6 +235,11 @@ h2 {
 form {
 	display: flex;
 	flex-direction: column;
+	margin-top: 0.5em;
+}
+
+label {
+	display: none;
 }
 
 .input-section {
@@ -344,6 +350,10 @@ label[for="casinoId"] {
 	color: #ddd;
 	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
 	border-bottom: 1px #fff solid;
+}
+
+.form-group small {
+	color: rgb(221 221 221 / 60%);
 }
 
 textarea#message {

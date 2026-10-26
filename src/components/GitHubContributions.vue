@@ -12,6 +12,7 @@ const currentIso = ref(new Date().toISOString());
 const weekOffest = ref(24);
 const eventTotalCount = ref(0);
 const contributionsCount = ref(0);
+const firstEntryMonth = ref("");
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const bgColors = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
@@ -56,6 +57,7 @@ const getGitHubEvents = async () => {
 		getEventTotalCount(data.contributionWeeks);
 
 		contributionWeeks.value = data.contributionWeeks;
+		firstEntryMonth.value = getMonthName(contributionWeeks.value[0].contributionDays[0]);
 	} catch (error) {
 		console.error("Error posting data:", error);
 		serverStatus.code = 500;
@@ -91,7 +93,7 @@ onBeforeMount(() => {
 			<i class="devicon-github-original colored" title="GitHub"></i>
 			GitHub contributions for this project
 		</h2>
-		<h4 class="text-center">{{ contributionsCount }} commits in the last 6 months</h4>
+		<h4 class="text-center">{{ contributionsCount }} contributions merged since {{ firstEntryMonth }}</h4>
 		<div class="calendar-wrapper" v-if="contributionWeeks.length > 0">
 			<div class="day-labels">
 				<span v-for="(day, dayI) in days" :key="dayI">{{ day }}</span>
@@ -209,6 +211,7 @@ i:not(.colored) {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
+	user-select: none;
 }
 
 .legend .calendar-cell {

@@ -11,8 +11,10 @@
 	</div>
 
 	<div v-if="!appState?.isLoggedOn || appState?.userName == 'guest'" id="dark-mode-check" :class="{ themed: userSetTheme, about: route.name === 'about' }">
-		<label for="uiDarkMode" title="Toggle dark theme">Dark Theme</label>
-		<input id="uiDarkMode" title="Toggle dark theme" type="checkbox" v-model="uiDarkMode" />
+		<label for="uiDarkMode" title="Toggle light/dark theme">
+			<img class="theme-icon" src="/icons/theme.png" alt="Theme" />
+		</label>
+		<input id="uiDarkMode" title="Toggle light/dark theme" type="checkbox" v-model="uiDarkMode" />
 	</div>
 
 	<div v-if="!appState?.isLoggedOn && !isMobile" :class="['register-link', { about: route.name === 'about' }]">
@@ -248,7 +250,7 @@ span.link {
 	align-items: center;
 	justify-content: space-between;
 	flex-direction: column;
-	width: 6em;
+	/* width: 6em; */
 	z-index: 1;
 	transition: opacity 0.2s;
 	user-select: none;
@@ -289,6 +291,20 @@ span.link {
 
 .uiDarkMode #dark-mode-check label {
 	font-weight: normal;
+}
+
+input[type="checkbox"] {
+	display: none;
+}
+
+.theme-icon {
+	width: 32px;
+	height: 32px;
+	object-fit: contain;
+}
+
+.uiDarkMode .theme-icon {
+	filter: invert(1);
 }
 
 header {

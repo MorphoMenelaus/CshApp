@@ -57,6 +57,23 @@ table {
 	user-select: all;
 }
 
+input,
+textarea {
+	border-radius: .5em;
+	border: 1px #000 solid;
+	font-size: 1.2em;
+	margin-top: .25em;
+	margin-bottom: .25em;
+	padding: .4em .8em;
+	background-color: #435189;
+	color: #ddd;
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: rgb(221 221 221 / 60%);
+}
+
 #paging {
 	display: flex;
 	justify-content: space-evenly;
