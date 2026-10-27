@@ -1,7 +1,7 @@
 <template>
 	<div id="markets">
 		<div id="description-box">
-			<h1 class="julius-sans">Market Summary Graphs</h1>
+			<h1 class="julius-sans">📈 Market Summary Graphs</h1>
 			<p>
 				REST API data provided by the Federal Reserve Bank of St. Louis (FRED&reg;) and contains frequently updated US and regional economic series (end
 				of day trading, for this API), updated from a variety of sources most of which are US government agencies.

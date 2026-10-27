@@ -2,11 +2,11 @@
 	<div id="register" @mousedown="handleClick($event)">
 		<div class="wrapper">
 			<div id="form-header">
-				<h2>Register</h2>
+				<h2>📝 Register</h2>
 				<p>Please fill out this form to create an account.</p>
 			</div>
 			<form @submit.prevent="registerHandler" method="post">
-				<div class="form-group" :class="errState && !userName.length > 0 ? 'err' : ''">
+				<div class="form-group" :class="{ err: errState && !userName.length > 0 }">
 					<label for="username">Username</label>
 					<input
 						id="username"
@@ -19,7 +19,7 @@
 						placeholder="Username"
 					/>
 				</div>
-				<div class="form-group" :class="errState && !email.length > 0 ? 'err' : ''">
+				<div class="form-group" :class="{ err: errState && !email.length > 0 }">
 					<label for="email">Email <small>*required to verify account</small></label>
 					<input
 						id="email"
@@ -32,7 +32,7 @@
 						placeholder="Your Email"
 					/>
 				</div>
-				<div class="form-group" :class="errState && !password.length > 0 ? 'err' : ''">
+				<div class="form-group" :class="{ err: errState && !password.length > 0 }">
 					<label for="password">Password</label>
 					<input
 						id="password"
@@ -45,7 +45,7 @@
 						placeholder="Password"
 					/>
 				</div>
-				<div class="form-group">
+				<div class="form-group" :class="{ err: errState && !confirmPassword.length > 0 }">
 					<label for="confirmPassword">Confirm Password</label>
 					<input
 						id="confirmPassword"

@@ -2,7 +2,7 @@
 	<div>
 		<div id="weather-container">
 			<div id="description-box">
-				<h1 class="julius-sans">{{ forecastDayText }} Weather Forecast</h1>
+				<h1 class="julius-sans">⛅ {{ forecastDayText }} Weather Forecast</h1>
 				<p>
 					This data is retrieved by a REST API call for up-to-date weather and is the combined reliable NOAA GFS weather model with rapid updating
 					HRRR weather model.

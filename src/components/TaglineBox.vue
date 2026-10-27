@@ -1,9 +1,14 @@
 <script setup>
+import { useRoute } from "vue-router";
 import Available from "@/components/Available.vue";
+
+const route = useRoute();
 </script>
 
 <template>
-	<h1 class="julius-sans stroke">Chris Hardwick</h1>
+	<h1 :class="['julius-sans stroke name', { about: route.name === 'about' }]">
+		<RouterLink to="/about" title="Chris Hardwick | Professional Profile" :disabled="route.name === 'about'">Chris Hardwick</RouterLink>
+	</h1>
 	<div id="tagline-box">
 		<Available />
 		<h2>Vue 3 &amp; Node.js Full-Stack Developer</h2>
@@ -14,6 +19,11 @@ import Available from "@/components/Available.vue";
 </template>
 
 <style scoped>
+.about a:hover {
+	background: unset;
+	cursor: default;
+}
+
 h1,
 h2,
 h3 {
@@ -30,6 +40,18 @@ h2 {
 
 h3 {
 	font-size: 1.25em;
+}
+
+.name a {
+	text-decoration: none;
+	color: inherit;
+}
+
+a.name:hover h1 {
+	color: #000;
+}
+.uiDarkMode a.name:hover h1 {
+	color: #fff;
 }
 
 #tagline-box {

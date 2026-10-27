@@ -2,7 +2,10 @@
 
 <template>
 	<div id="cover-blurb">
-		<h2 class="julius-sans">Proactive Upskilling &amp; Latest Accomplishments</h2>
+		<div id="profile-header">
+			<img class="upskill-icon" src="/icons/upskill-icon.svg" alt="Upskill Icon" />
+			<h2 class="julius-sans">Proactive Upskilling &amp; Latest Accomplishments</h2>
+		</div>
 		<p>
 			I build high-performance, interactive web applications and websites with clean architecture and seamless user experiences. Most recently, I
 			engineered the data-driven frontend interfaces for a full suite of four interconnected Single Page Applications using the Vue 3 framework. Makrö
@@ -19,6 +22,23 @@
 </template>
 
 <style scoped>
+#profile-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.upskill-icon {
+	width: 2.5em;
+	height: 2.5em;
+	margin: 0 0.5em 0.5em 2px;
+	filter: invert(0.2);
+}
+
+.uiDarkMode .upskill-icon {
+	filter: invert(0.7);
+}
+
 h2 {
 	text-align: center;
 	font-size: 1.5em;

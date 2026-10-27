@@ -113,25 +113,16 @@ h2:hover {
 .active::after {
 	content: "🠔";
 	position: absolute;
-	top: -0.2em;
+	top: -0.25em;
 	margin-left: 0.25em;
 	font-size: 1.5em;
 	font-weight: bold;
 	color: #08c;
 	color: #00aaff;
-	/* text-shadow: 1px 1px 1px #000,
-		-1px -1px 1px #000,
-		1px -1px 1px #000,
-		-1px 1px 1px #000; */
 }
 
 .uiDarkMode .active::after {
 	color: #00aaff;
-	/* text-shadow:
-		1px 1px 1px #fff,
-		-1px -1px 1px #fff,
-		1px -1px 1px #fff,
-		-1px 1px 1px #fff; */
 }
 
 .slider {

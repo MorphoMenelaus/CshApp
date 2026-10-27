@@ -17,7 +17,7 @@ onMounted(async () => {
 
 <template>
 	<div id="privacy">
-		<h2 class="julius-sans">Privacy Policy</h2>
+		<h2 class="julius-sans">🛡️ Privacy Policy</h2>
 		<h3>User Accounts &amp; Authentication</h3>
 		<p>
 			When you create an account on our website, we collect your email address solely for account security and spam prevention. To finalize your login,
