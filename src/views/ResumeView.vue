@@ -478,21 +478,22 @@ ul {
 
 	.btn.acrobat-icon,
 	.btn.linkedin-icon {
-		padding-right: 48px;
+		padding-right: 2.5em;
 	}
 
-	.acrobat-icon::after,
+	.csh-icon::after,
 	.linkedin-icon::after,
-	.email-icon::after {
+	.email-icon::after,
+	.acrobat-icon::after {
 		content: "";
-		top: 4px;
-		right: 10px;
-		width: 28px;
-		height: 28px;
+		top: 0.25em;
+		right: 0.5em;
+		width: 1.5em;
+		height: 1.5em;
 	}
 
 	.email-icon::after {
-		top: 8px;
+		top: 0.5em;
 	}
 
 	.linkedin-icon::after {
@@ -501,7 +502,7 @@ ul {
 	}
 
 	.btn.email-icon {
-		padding-right: 45px;
+		padding-right: 2.5em;
 	}
 
 	.btn-container.top {

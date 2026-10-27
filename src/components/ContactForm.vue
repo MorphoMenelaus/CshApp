@@ -2,7 +2,10 @@
 	<div id="contact" @mousedown="handleClick($event)">
 		<div class="wrapper" v-if="!messageSent">
 			<div id="form-header">
-				<h1>I'd love to hear from you</h1>
+				<div class="email-header">
+					<img v-if="!isMobile" src="/icons/EmailClean2.png" alt="Email Icon" />
+					<h1>I'd love to hear from you</h1>
+				</div>
 				<h3 style="text-align: center">Schedule an interview or just let me know what you think.</h3>
 				<small
 					>Your email will not be shared or used for any other purpose.
@@ -11,23 +14,41 @@
 					<RouterLink class="privacy-link link" to="/about#privacy" @click="registerUser(false)" title="Privacy Policy">privacy policy</RouterLink>
 				</small>
 			</div>
+			<div v-if="!isMobile" class="contact-btn">
+				<a
+					class="btn linkedin-icon"
+					:href="urls.linkedin.url"
+					:title="urls.linkedin.title"
+					target="_blank"
+					@click="sendAnalyticsEvent('linkedin', 'linkedin_link')"
+					>{{ urls.linkedin.text }}</a
+				>
+				<a
+					class="btn github-icon white"
+					:href="urls.github.url"
+					:title="urls.github.title"
+					target="_blank"
+					@click="sendAnalyticsEvent('hardwick_design', 'hardwick_design_link')"
+					>{{ urls.github.text }}</a
+				>
+			</div>
 			<form @submit.prevent="contactHandler" method="post">
-				<div class="form-group">
+				<div class="form-group" :class="{ err: errState && !name.length > 0 }">
 					<label for="name" title="Name">Name<span v-if="!name && errState" class="err"> * required</span></label>
 					<input v-model.trim="name" id="name" type="text" name="name" class="form-control" placeholder="Your Name" />
 				</div>
 
-				<div class="form-group">
+				<div class="form-group" :class="{ err: errState && !email.length > 0 }">
 					<label for="email" title="Email Address">Email Address<span v-if="!email && errState" class="err"> * required</span></label>
 					<input v-model.trim="email" id="email" type="text" name="email" class="form-control" placeholder="Your Email" />
 				</div>
 
-				<div class="form-group" title="Subject">
+				<div class="form-group" title="Subject" :class="{ err: errState && !subject.length > 0 }">
 					<label for="subject">Subject<span v-if="!subject && errState" class="err"> * required</span></label>
 					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control" placeholder="Subject" />
 				</div>
 
-				<div class="form-group">
+				<div class="form-group" :class="{ err: errState && !message.length > 0 }">
 					<label for="message" title="Message">Message<span v-if="!message && errState" class="err"> * required</span></label>
 					<small>Characters remaining: {{ charRemaining }}</small>
 					<textarea
@@ -42,7 +63,7 @@
 					/>
 				</div>
 				<div style="display: flex">
-					<button class="btn" type="submit" @click.prevent="contactHandler" title="Send email">Send</button>
+					<button class="btn email-icon" type="submit" @click.prevent="contactHandler" title="Send email">Send</button>
 					<button class="btn" type="button" @click="contactEmail(false)" title="Cancel">Cancel</button>
 				</div>
 			</form>
@@ -66,11 +87,13 @@
 import { onBeforeUnmount, inject } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import { appNotify } from "@/dependencies/models.js";
+import urls from "../dependencies/commonUrls.json";
 
 export default {
 	name: "ContactForm",
 	props: {
 		appState: Object,
+		isMobile: Boolean,
 	},
 	data() {
 		return {
@@ -81,7 +104,9 @@ export default {
 			forceLogout: inject("forceLogout"),
 			registerUser: inject("registerUser"),
 			siteKey: inject("reCaptchaSiteKey"),
+			sendAnalyticsEvent: sendAnalyticsEvent,
 			serverStatus: Object.assign({}, appNotify),
+			urls: urls,
 			token: "",
 			name: this.appState?.userName || "",
 			email: this.appState?.user?.email || "",
@@ -212,6 +237,17 @@ export default {
 </script>
 
 <style scoped>
+.email-header {
+	display: flex;
+	justify-content: center;
+}
+
+.email-header img {
+	object-fit: contain;
+	width: 2.25em;
+	margin-right: 1em;
+}
+
 h2 {
 	text-align: center;
 }
@@ -235,7 +271,11 @@ h2 {
 form {
 	display: flex;
 	flex-direction: column;
-	margin-top: 0.5em;
+	margin: 1em 0;
+	padding: 1em;
+	border-radius: 0.8em;
+	border: 1px #9676bc solid;
+	background-color: rgb(13 12 39 / 10%);
 }
 
 label {
@@ -336,7 +376,8 @@ label[for="casinoId"] {
 
 #contact button {
 	display: block;
-	margin: 15px auto;
+	margin: 1em auto;
+	font-size: 1em;
 }
 
 #form-header {
@@ -369,13 +410,63 @@ textarea#message {
 	font-weight: bold;
 }
 
-a:visited {
+a:not(.btn):visited {
 	color: #f53cf5;
+}
+
+.contact-btn {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin: 1em 0;
+}
+
+.contact-btn .btn {
+	font-size: 1em;
+	line-height: 1.5em;
+	padding: 5px 2.8em 5px 15px;
+	border: 1px #000 solid;
+	text-transform: uppercase;
+}
+
+.email-icon::after {
+	right: 0.5em;
+	top: 0.4em;
+	width: 1.3em;
+	height: 1.3em;
+}
+
+.email-icon {
+	padding-right: 2.5em;
+}
+
+.linkedin-icon::after,
+.github-icon::after {
+	width: 1.5em;
+	height: 1.5em;
+	right: 0.5em;
+	top: 0.25em;
+	border: 1px #ddd solid;
+}
+
+.linkedin-icon::after {
+	border-radius: 4px;
+}
+
+.github-icon::after {
+	border: unset;
+}
+
+.err {
+	border: 2px #f00 solid;
 }
 
 @media (max-width: 767px) {
 	.wrapper {
 		max-width: 24em;
 	}
+}
+
+@media (min-width: 768px) {
 }
 </style>

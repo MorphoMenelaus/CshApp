@@ -333,30 +333,26 @@ p {
 	.personal-icon::after,
 	.email-icon::after {
 		content: "";
-		top: 2px;
-		right: 10px;
-		width: 26px;
-		height: 26px;
+		top: 0.25em;
+		right: 0.5em;
+		width: 1.25em;
+		height: 1.25em;
 		box-shadow: 0px 0px 3px 1px rgb(0 0 0 / 30%);
 		border-radius: 50%;
 	}
 
 	.email-icon::after {
-		right: 13px;
 		border-radius: unset;
 		box-shadow: unset;
 	}
 
 	.personal-icon::after {
-		top: 3px;
-		width: 26px;
-		height: 26px;
 		border-radius: 50%;
 		border: 1px #eee solid;
 	}
 
 	.email-icon::after {
-		top: 6px;
+		top: 0.45em;
 	}
 
 	.linkedin-icon::after {
@@ -420,27 +416,11 @@ p {
 	.btn-link-container > div > * {
 		min-width: unset;
 	}
-
-	.acrobat-icon::after,
-	.linkedin-icon::after,
-	.personal-icon::after {
-		top: 3px;
-	}
 }
 
 @media (min-width: 1800px) {
 	#main-home-layout {
 		width: 70%;
-	}
-
-	.acrobat-icon::after,
-	.linkedin-icon::after,
-	.personal-icon::after {
-		top: 5px;
-	}
-
-	.email-icon::after {
-		top: 8px;
 	}
 }
 

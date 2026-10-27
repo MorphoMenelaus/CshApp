@@ -405,7 +405,7 @@ onMounted(() => {
 
 <template>
 	<main>
-		<h1 class="julius-sans">Movie Database</h1>
+		<h1 class="julius-sans">🎞️ Movie Database</h1>
 		<div id="movie-header">
 			<p>
 				This page queries a searchable list of more than 1500 movies in my database containing cast, crew, ratings, etc., and sortable by title, rating,

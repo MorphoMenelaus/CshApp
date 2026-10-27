@@ -57,8 +57,8 @@ table {
 	user-select: all;
 }
 
-input,
-textarea {
+form input,
+form textarea {
 	border-radius: .5em;
 	border: 1px #000 solid;
 	font-size: 1.2em;
@@ -69,8 +69,8 @@ textarea {
 	color: #ddd;
 }
 
-input::placeholder,
-textarea::placeholder {
+form input::placeholder,
+form textarea::placeholder {
 	color: rgb(221 221 221 / 60%);
 }
 
@@ -151,7 +151,8 @@ textarea::placeholder {
 .linkedin-icon,
 .email-icon,
 .acrobat-icon,
-.personal-icon {
+.personal-icon, 
+.github-icon {
 	position: relative;
 }
 
@@ -159,7 +160,8 @@ textarea::placeholder {
 .linkedin-icon::after,
 .email-icon::after,
 .acrobat-icon::after,
-.personal-icon::after {
+.personal-icon::after, 
+.github-icon::after {
 	content: '';
 	position: absolute;
 	width: 32px;
@@ -185,6 +187,14 @@ textarea::placeholder {
 
 .personal-icon::after {
 	background: url(/icons/Chris_Hardwick_200.webp) 0 0 / contain no-repeat;
+}
+
+.github-icon::after {
+	background: url(/icons/github-original.svg) 0 0 / contain no-repeat;
+}
+
+.github-icon.white::after {
+	background: url(/icons/github-original-white.svg) 0 0 / contain no-repeat;
 }
 
 button,

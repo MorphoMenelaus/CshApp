@@ -31,7 +31,7 @@ const copyright = inject("copyright");
 <template>
 	<CarouselTechStack />
 	<main>
-		<div id="about">
+		<div id="about" :class="isMobile ? 'mobile' : ''">
 			<div id="serverInfo" v-if="appState?.isLoggedOn">
 				<small class="version" v-if="serverVersion"
 					>Server Version: <span>{{ serverVersion }}</span></small
@@ -64,9 +64,9 @@ const copyright = inject("copyright");
 				>
 			</div>
 			<div id="profile">
-				<ProfessionalProfile />
+				<ProfessionalProfile :isMobile="isMobile" />
 			</div>
-			<TechStackIconGrid />
+			<TechStackIconGrid v-if="!isMobile" />
 			<Disclaimers />
 			<PrivacyDisclaimer />
 			<!-- <GitHubContributions /> -->
@@ -274,14 +274,14 @@ a.about-img:hover {
 	.linkedin-icon::after,
 	.email-icon::after {
 		content: "";
-		top: 4px;
-		right: 10px;
-		width: 28px;
-		height: 28px;
+		top: 0.25em;
+		right: 0.5em;
+		width: 1.5em;
+		height: 1.5em;
 	}
 
 	.email-icon::after {
-		top: 8px;
+		top: 0.45em;
 	}
 
 	.linkedin-icon::after {

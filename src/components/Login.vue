@@ -32,7 +32,7 @@
 					<h1>Chris Hardwick's SPA</h1>
 					<h2>Welcome</h2>
 				</div>
-				<h2>Login to continue</h2>
+				<h2>🔑 Login to continue</h2>
 				<div class="inputs">
 					<label for="username">User Name</label>
 					<input
