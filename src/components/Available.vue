@@ -64,6 +64,13 @@ const route = useRoute();
 	height: 12px;
 	animation-delay: -0.32s;
 }
+/* .pulse::before {
+	top: -0.3em;
+	left: -0.3em;
+	width: 1.8em;
+	height: 1.8em;
+	animation-delay: -0.16s;
+} */
 
 .pulse::after {
 	top: 1px;
@@ -72,6 +79,13 @@ const route = useRoute();
 	height: 22px;
 	animation-delay: -0.16s;
 }
+/* .pulse::after {
+	top: 0.15em;
+	left: 0.2em;
+	width: 1em;
+	height: 1em;
+	animation-delay: -0.32s;
+} */
 
 @keyframes pulse {
 	0%,

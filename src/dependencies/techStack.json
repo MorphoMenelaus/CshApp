@@ -85,11 +85,6 @@
 		"class": "logo filter"
 	},
 	{
-		"title": "Docker",
-		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg",
-		"class": "logo"
-	},
-	{
 		"title": "Jest",
 		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jest/jest-plain.svg",
 		"class": "logo"
