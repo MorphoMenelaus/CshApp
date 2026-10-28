@@ -1,3 +1,157 @@
+<script setup>
+import { ref, onMounted, onBeforeMount, onBeforeUnmount, inject } from "vue";
+import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
+import urls from "../dependencies/commonUrls.json";
+
+defineOptions({
+	inheritAttrs: false,
+});
+const props = defineProps({
+	appState: Object,
+	isMobile: Boolean,
+});
+
+const serverStatus = Object.assign({}, appNotify);
+const baseUrl = inject("baseUrl");
+const updateStatus = inject("sendUpdateStatus");
+const showHideLoader = inject("showHideLoader");
+const contactEmail = inject("contactEmail");
+const forceLogout = inject("forceLogout");
+const registerUser = inject("registerUser");
+const siteKey = inject("reCaptchaSiteKey");
+const maxlength = 1024;
+
+const token = ref("");
+const name = ref(props.appState?.userName || "");
+const email = ref(props.appState?.user?.email || "");
+const phone = ref("");
+const subject = ref("");
+const message = ref("");
+const errState = ref(false);
+const charRemaining = ref(1024);
+const messageSent = ref(false);
+
+const charCounter = () => {
+	let currCount = message.value.length;
+	if (charRemaining.value <= maxlength) charRemaining.value = maxlength - currCount;
+};
+
+const sendEmail = async () => {
+	showHideLoader(true);
+
+	try {
+		let body = {
+			name: name.value,
+			email: email.value,
+			phone: phone.value,
+			subject: subject.value,
+			message: message.value,
+			token: token.value,
+		};
+
+		if (!name.value || !email.value || !subject.value || !message.value) {
+			serverStatus.message = "Please fill in all required fields.";
+			serverStatus.success = false;
+			updateStatus(serverStatus);
+			errState.value = true;
+			return serverStatus;
+		}
+
+		let headerObj = new Headers();
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL("/api/mail", baseUrl);
+
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
+			headers: headerObj,
+			body: JSON.stringify(body),
+		});
+
+		let response = await fetch(request);
+		const data = await response.json();
+
+		if (data?.code === 403) {
+			this.updateStatus(data);
+			data.forced = true;
+			this.forceLogout(data);
+		}
+
+		serverStatus.code = data?.code;
+		serverStatus.message = data?.message;
+		serverStatus.success = data?.success;
+
+		if (data.success) {
+			sendAnalyticsEvent("contact_form_send", "contact_modal");
+			messageSent.value = true;
+		}
+		errState.value = data?.success;
+	} catch (error) {
+		console.error("Error posting data:", error.message);
+		serverStatus.code = 400;
+		serverStatus.message = `Error posting data: ${error.message}`;
+		serverStatus.success = false;
+	} finally {
+		updateStatus(serverStatus);
+		showHideLoader(false);
+	}
+};
+
+const contactHandler = async () => {
+	try {
+		// Ensure the reCAPTCHA API has finished loading globally
+		if (!window.grecaptcha || !window.grecaptcha.enterprise) {
+			console.error("reCAPTCHA script has not loaded yet.");
+			return;
+		}
+
+		// Wrap execution in grecaptcha.enterprise.ready to guarantee the library is initialized
+		window.grecaptcha.enterprise.ready(async () => {
+			try {
+				// Execute reCAPTCHA
+				token.value = await window.grecaptcha.enterprise.execute(siteKey, {
+					action: "sendEmail",
+				});
+
+				await sendEmail();
+			} catch (error) {
+				console.error("reCAPTCHA execution failed:", error);
+			}
+		});
+	} catch (err) {
+		console.error("Email failed:", err);
+	}
+};
+
+const keyDown = (e) => {
+	if (e.key === "Escape") contactEmail(false);
+};
+
+const handleClick = (event) => {
+	if (event.target.id === "contact") contactEmail(false);
+};
+
+onBeforeMount(() => {
+	window.addEventListener("keydown", keyDown);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener("keydown", keyDown);
+});
+
+onMounted(() => {
+	sendAnalyticsEvent("contact_form_load", "contact_modal");
+	if (!document.getElementById("recaptcha-script")) {
+		const script = document.createElement("script");
+		script.id = "recaptcha-script";
+		script.src = `https://google.com/recaptcha/enterprise.js?render=${siteKey}`;
+		script.async = true;
+		script.defer = true;
+		document.head.appendChild(script);
+	}
+});
+</script>
+
 <template>
 	<div id="contact" @mousedown="handleClick($event)">
 		<div class="wrapper" v-if="!messageSent">
@@ -82,159 +236,6 @@
 		</div>
 	</div>
 </template>
-
-<script>
-import { onBeforeUnmount, inject } from "vue";
-import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
-import { appNotify } from "@/dependencies/models.js";
-import urls from "../dependencies/commonUrls.json";
-
-export default {
-	name: "ContactForm",
-	props: {
-		appState: Object,
-		isMobile: Boolean,
-	},
-	data() {
-		return {
-			baseUrl: inject("baseUrl"),
-			updateStatus: inject("sendUpdateStatus"),
-			showHideLoader: inject("showHideLoader"),
-			contactEmail: inject("contactEmail"),
-			forceLogout: inject("forceLogout"),
-			registerUser: inject("registerUser"),
-			siteKey: inject("reCaptchaSiteKey"),
-			sendAnalyticsEvent: sendAnalyticsEvent,
-			serverStatus: Object.assign({}, appNotify),
-			urls: urls,
-			token: "",
-			name: this.appState?.userName || "",
-			email: this.appState?.user?.email || "",
-			phone: "",
-			subject: "",
-			message: "",
-			errState: false,
-			maxlength: 1024,
-			charRemaining: 1024,
-			messageSent: false,
-		};
-	},
-	watch: {},
-	methods: {
-		charCounter() {
-			let currCount = this.message.length;
-			if (this.charRemaining <= this.maxlength) this.charRemaining = this.maxlength - currCount;
-		},
-		async sendEmail() {
-			this.showHideLoader(true);
-
-			try {
-				let body = {
-					name: this.name,
-					email: this.email,
-					phone: this.phone,
-					subject: this.subject,
-					message: this.message,
-					token: this.token,
-				};
-
-				if (!this.name || !this.email || !this.subject || !this.message) {
-					this.serverStatus.message = "Please fill in all required fields.";
-					this.serverStatus.success = false;
-					this.updateStatus(this.serverStatus);
-					this.errState = true;
-					return this.serverStatus;
-				}
-
-				let headerObj = new Headers();
-				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL("/api/mail", this.baseUrl);
-
-				let request = new Request(requestUrl.toString(), {
-					method: "POST",
-					headers: headerObj,
-					body: JSON.stringify(body),
-				});
-
-				let response = await fetch(request);
-				const data = await response.json();
-
-				if (data?.code === 403) {
-					this.updateStatus(data);
-					data.forced = true;
-					this.forceLogout(data);
-				}
-
-				this.serverStatus.code = data?.code;
-				this.serverStatus.message = data?.message;
-				this.serverStatus.success = data?.success;
-
-				if (data.success) {
-					sendAnalyticsEvent("contact_form_send", "contact_modal");
-					this.messageSent = true;
-				}
-				this.errState = data?.success;
-			} catch (error) {
-				console.error("Error posting data:", error.message);
-				this.serverStatus.code = 400;
-				this.serverStatus.message = `Error posting data: ${error.message}`;
-				this.serverStatus.success = false;
-			} finally {
-				this.updateStatus(this.serverStatus);
-				this.showHideLoader(false);
-			}
-		},
-		async contactHandler() {
-			try {
-				// Ensure the reCAPTCHA API has finished loading globally
-				if (!window.grecaptcha || !window.grecaptcha.enterprise) {
-					console.error("reCAPTCHA script has not loaded yet.");
-					return;
-				}
-
-				// Wrap execution in grecaptcha.enterprise.ready to guarantee the library is initialized
-				window.grecaptcha.enterprise.ready(async () => {
-					try {
-						// Execute reCAPTCHA
-						this.token = await window.grecaptcha.enterprise.execute(this.siteKey, {
-							action: "sendEmail",
-						});
-
-						await this.sendEmail();
-					} catch (error) {
-						console.error("reCAPTCHA execution failed:", error);
-					}
-				});
-			} catch (err) {
-				console.error("Email failed:", err);
-			}
-		},
-		keyDown(e) {
-			if (e.key === "Escape") this.contactEmail(false);
-		},
-		handleClick(event) {
-			if (event.target.id === "contact") this.contactEmail(false);
-		},
-	},
-	mounted() {
-		sendAnalyticsEvent("contact_form_load", "contact_modal");
-		if (!document.getElementById("recaptcha-script")) {
-			const script = document.createElement("script");
-			script.id = "recaptcha-script";
-			script.src = `https://google.com/recaptcha/enterprise.js?render=${this.siteKey}`;
-			script.async = true;
-			script.defer = true;
-			document.head.appendChild(script);
-		}
-	},
-	created() {
-		window.addEventListener("keydown", this.keyDown);
-		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.keyDown);
-		});
-	},
-};
-</script>
 
 <style scoped>
 .email-header {
@@ -376,7 +377,7 @@ label[for="casinoId"] {
 
 #contact button {
 	display: block;
-	margin: 1em auto;
+	margin: auto;
 	font-size: 1em;
 }
 
@@ -418,7 +419,7 @@ a:not(.btn):visited {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin: 1em 0;
+	margin: 0.25em 0;
 }
 
 .contact-btn .btn {
