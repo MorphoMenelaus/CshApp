@@ -23,16 +23,15 @@ const CHART_COLORS = {
 	siteThemeWhite: "rgb(235 235 235 / 64%)",
 	siteThemeBlack: "rgb(32 32 32 / 80%)",
 	siteThemeBlue: "rgb(90 135 191)",
+	siteThemeGray: "rgb(128 128 128 / 50%)",
 };
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const theme = ref(localStorage.getItem("theme") || "light");
 const chartElem = ref(null);
-const observations = ref([]);
-const seriesDetails = ref({});
 const barData = ref([]);
 
 const drawChart = () => {
-	theme.value = localStorage.getItem("theme") === "dark";
+	theme.value = localStorage.getItem("theme") || "light";
 
 	setupForGraph();
 
@@ -91,7 +90,7 @@ const drawChart = () => {
 				legend: {
 					display: false,
 					// labels: {
-					// 	color: theme.value ? CHART_COLORS.grey : CHART_COLORS.medBlack,
+					// 	color: theme.value === "light" ? CHART_COLORS.grey : CHART_COLORS.medBlack,
 					// },
 				},
 				title: {
@@ -115,7 +114,7 @@ const drawChart = () => {
 						},
 					},
 					grid: {
-						color: theme.value ? CHART_COLORS.grey : CHART_COLORS.medBlack,
+						color: theme.value === "light" ? CHART_COLORS.medBlack : CHART_COLORS.siteThemeGray,
 					},
 				},
 				y: {
@@ -129,7 +128,7 @@ const drawChart = () => {
 						},
 					},
 					grid: {
-						color: theme.value ? CHART_COLORS.grey : CHART_COLORS.medBlack,
+						color: theme.value === "light" ? CHART_COLORS.medBlack : CHART_COLORS.siteThemeGray,
 					},
 					suggestedMin: 0,
 					suggestedMax: Math.max(...extractedValues) + 5,
@@ -139,7 +138,7 @@ const drawChart = () => {
 	};
 
 	Chart.defaults.font.size = 16;
-	Chart.defaults.color = theme.value ? CHART_COLORS.siteThemeWhite : CHART_COLORS.siteThemeBlack;
+	Chart.defaults.color = theme.value === "light" ? CHART_COLORS.siteThemeBlack : CHART_COLORS.siteThemeWhite;
 	new Chart(chartElem.value, chartConfig);
 };
 
@@ -192,7 +191,7 @@ onBeforeUnmount(() => {
 #contributions-container {
 	margin-top: 1em;
 	background-color: aliceblue;
-	border: 1px solid rgb(171, 171, 171);
+	border: 1px solid rgb(128 128 128 / 50%);
 	border-radius: 12px;
 	padding: 0.5em;
 }
@@ -205,7 +204,6 @@ canvas#contributions-graph {
 	width: 100%;
 	height: calc(100vw / 2);
 	max-height: 300px;
-	/* border: 1px #000 solid; */
 }
 
 @media (max-width: 767px) {
