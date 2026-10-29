@@ -1,12 +1,19 @@
 <script setup>
 import { ref, inject, onBeforeMount } from "vue";
 import { appNotify } from "@/dependencies/models.js";
+import CommitsOverTimeGraph from "@/components/CommitsOverTimeGraph.vue";
+
+const props = defineProps({
+	isMobile: Boolean,
+	windowWidth: Number,
+});
 
 const serverStatus = Object.assign({}, appNotify);
 const baseUrl = inject("baseUrl");
 const updateStatus = inject("sendUpdateStatus");
 const forceLogout = inject("forceLogout");
 
+const blueTheme = ref(true);
 const contributionWeeks = ref([]);
 const currentIso = ref(new Date().toISOString());
 const weekOffest = ref(24);
@@ -95,35 +102,50 @@ onBeforeMount(() => {
 		</h2>
 		<h4 class="text-center">{{ contributionsCount }} contributions merged since {{ firstEntryMonth }}</h4>
 		<div class="calendar-wrapper" v-if="contributionWeeks.length > 0">
-			<div class="day-labels">
-				<span v-for="(day, dayI) in days" :key="dayI">{{ day }}</span>
-			</div>
-			<div class="calendar-grid">
-				<div v-for="(week, wIndex) in contributionWeeks" :key="wIndex" class="calendar-column">
-					<div
-						v-for="(day, di) in week.contributionDays"
-						:key="di"
-						:class="[
-							'calendar-cell',
-							{
-								lvl0: day.color === bgColors[0],
-								lvl1: day.color === bgColors[1],
-								lvl2: day.color === bgColors[2],
-								lvl3: day.color === bgColors[3],
-								lvl4: day.color === bgColors[4],
-							},
-						]"
-						:title="getTooltipText(day)"
-					>
-						<span v-if="di === 0 && isFirstWeek(day)" class="month-name">{{ getMonthName(day) }}</span>
+			<div class="flex-row">
+				<div class="day-labels">
+					<span v-for="(day, dayI) in days" :key="dayI">{{ day }}</span>
+				</div>
+				<div class="calendar-grid">
+					<div v-for="(week, wIndex) in contributionWeeks" :key="wIndex" class="calendar-column">
+						<div
+							v-for="(day, di) in week.contributionDays"
+							:key="di"
+							:class="[
+								'calendar-cell',
+								{
+									lvl0: day.color === bgColors[0],
+									lvl1: day.color === bgColors[1],
+									lvl2: day.color === bgColors[2],
+									lvl3: day.color === bgColors[3],
+									lvl4: day.color === bgColors[4],
+									blue: blueTheme,
+								},
+							]"
+							:title="getTooltipText(day)"
+						>
+							<span v-if="di === 0 && isFirstWeek(day)" class="month-name">{{ getMonthName(day) }}</span>
+						</div>
 					</div>
 				</div>
 			</div>
+			<div class="legend" v-if="contributionWeeks.length > 0">
+				<span class="label">Fewer</span>
+				<div v-for="(color, ci) in bgColors" :key="ci" :class="['calendar-cell', `lvl${ci}`, { blue: blueTheme }]"></div>
+				<span class="label">More</span>
+			</div>
 		</div>
-		<div class="legend">
+		<div v-else>
+			<h1 class="text-center">No Contributions Found</h1>
+			<h3 class="text-center">Please Refresh Page</h3>
+		</div>
+		<!-- <div class="legend" v-if="contributionWeeks.length > 0">
 			<span class="label">Fewer</span>
-			<div v-for="(color, ci) in bgColors" :key="ci" class="calendar-cell" :class="`lvl${ci}`"></div>
+			<div v-for="(color, ci) in bgColors" :key="ci" :class="['calendar-cell', `lvl${ci}`, { blue: blueTheme }]"></div>
 			<span class="label">More</span>
+		</div> -->
+		<div v-if="contributionWeeks.length > 0">
+			<CommitsOverTimeGraph :isMobile="isMobile" :windowWidth="windowWidth" :contributionWeeks="contributionWeeks" />
 		</div>
 	</div>
 </template>
@@ -155,11 +177,25 @@ i:not(.colored) {
 
 .calendar-wrapper {
 	display: flex;
-	justify-content: center;
+	/* justify-content: center; */
 	font-size: 1em;
 	user-select: none;
 	margin-top: 1em;
-	padding: 0.5em;
+	margin-bottom: 0.5em;
+	padding: 1.75em 0.5em 0.8em;
+	background-color: aliceblue;
+	border: 1px solid rgb(171, 171, 171);
+	border-radius: 12px;
+	flex-direction: column;
+}
+
+.uiDarkMode .calendar-wrapper {
+	background-color: #1c2138;
+}
+
+.flex-row {
+	display: flex;
+	justify-content: center;
 }
 
 .day-labels {
@@ -212,6 +248,7 @@ i:not(.colored) {
 	justify-content: flex-end;
 	align-items: center;
 	user-select: none;
+	margin-top: 0.5em;
 }
 
 .legend .calendar-cell {
@@ -261,5 +298,45 @@ i:not(.colored) {
 
 .uiDarkMode .calendar-cell.lvl4 {
 	background-color: #56d364;
+}
+
+.calendar-cell.lvl4.blue {
+	background-color: #1f66ad;
+}
+
+.calendar-cell.lvl3.blue {
+	background-color: #2d7ca4;
+}
+
+.calendar-cell.lvl2.blue {
+	background-color: #4b9bc3;
+}
+
+.calendar-cell.lvl1.blue {
+	background-color: #9dd1ec;
+}
+
+.calendar-cell.lvl0.blue {
+	background-color: #eff2f5;
+}
+
+.uiDarkMode .calendar-cell.lvl4.blue {
+	background-color: #55a9d3;
+}
+
+.uiDarkMode .calendar-cell.lvl3.blue {
+	background-color: #2e799e;
+}
+
+.uiDarkMode .calendar-cell.lvl2.blue {
+	background-color: #19506b;
+}
+
+.uiDarkMode .calendar-cell.lvl1.blue {
+	background-color: #043249;
+}
+
+.uiDarkMode .calendar-cell.lvl0.blue {
+	background-color: #151e23;
 }
 </style>

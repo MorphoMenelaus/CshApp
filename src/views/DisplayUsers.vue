@@ -91,6 +91,7 @@ onMounted(() => {
 	getUsers();
 });
 </script>
+
 <template>
 	<main id="listUsers" class="input-heading">
 		<h1>List Users</h1>
