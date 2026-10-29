@@ -9,7 +9,7 @@ const forceLogout = inject("forceLogout");
 
 const commitEvents = ref([]);
 const createEvents = ref([]);
-const showMerged = ref(false);
+const showMerged = ref(true);
 const showPushed = ref(false);
 
 const getGitHubCommits = async () => {
@@ -181,8 +181,8 @@ i:not(.colored) {
 
 .bg {
 	background: url(/img/git-merge.png) no-repeat;
-	background-position: center 90%;
-	background-size: 80% 50%;
+	background-position: center 60%;
+	background-size: 90% 30%;
 	background-repeat: no-repeat;
 	background-blend-mode: color-burn;
 }

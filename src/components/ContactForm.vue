@@ -227,7 +227,7 @@ onMounted(() => {
 			<div id="form-header">
 				<h2>Message sent</h2>
 			</div>
-			<div>
+			<div class="response">
 				<h3>I'll get back to you as soon as I can.</h3>
 			</div>
 			<div style="display: flex">
@@ -462,12 +462,13 @@ a:not(.btn):visited {
 	border: 2px #f00 solid;
 }
 
+.response h3 {
+	margin-bottom: 0.8em;
+}
+
 @media (max-width: 767px) {
 	.wrapper {
 		max-width: 24em;
 	}
-}
-
-@media (min-width: 768px) {
 }
 </style>

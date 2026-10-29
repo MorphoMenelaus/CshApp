@@ -77,7 +77,7 @@ const copyright = inject("copyright");
 			</div>
 
 			<div class="git-container">
-				<GitHubContributions />
+				<GitHubContributions :isMobile="isMobile" :windowWidth="windowWidth" />
 				<GitHubCommitEvents />
 			</div>
 			<Disclaimers />

@@ -1,3 +1,74 @@
+<script setup>
+import { ref, inject, onBeforeMount, onMounted, watch } from "vue";
+import { appNotify } from "@/dependencies/models.js";
+import MainNavbar from "@/components/MainNavbar.vue";
+
+const props = defineProps({
+	appState: Object,
+	serverVersion: String,
+	isMobile: Boolean,
+	sharedUpdateStatus: Object,
+	mobileDropdownClose: Boolean,
+});
+
+const updateStatus = inject("sendUpdateStatus");
+const statusArray = ref([]);
+const dayLocal = ref("");
+const dateLocal = ref("");
+const timeLocal = ref("");
+
+const handleUpdateStatus = (payload) => {
+	let notification = Object.assign({}, appNotify);
+	notification.code = payload?.code;
+	notification.message = payload?.message;
+	notification.success = payload?.success;
+	let date = new Date();
+	notification.expireTime = date.getTime() + 10000;
+	notification.eventTimeDisplay = date.toLocaleTimeString();
+	statusArray.value.push(notification);
+};
+
+const updateDateTime = () => {
+	let date = new Date();
+	dayLocal.value = date.toLocaleDateString("en-US", { weekday: "long" });
+	dateLocal.value = date.toLocaleDateString("en-US");
+	timeLocal.value = date.toLocaleTimeString();
+	if (statusArray.value.length > 0) removeStaleEvents();
+};
+
+const removeStaleEvents = () => {
+	let currentTime = new Date().getTime();
+	let newArray = statusArray.value.filter((item) => item.expireTime > currentTime);
+	statusArray.value = newArray;
+};
+
+const closeNotification = (timeCode) => {
+	let newArray = statusArray.value.filter((item) => item.expireTime !== timeCode.expireTime);
+	statusArray.value = newArray;
+};
+
+watch(
+	() => props.sharedUpdateStatus,
+	(newVal) => {
+		if (newVal && Object.keys(newVal).length > 0) {
+			handleUpdateStatus(newVal);
+			updateStatus({});
+		}
+	},
+	{ deep: true },
+);
+
+onBeforeMount(() => {
+	updateDateTime();
+});
+
+onMounted(() => {
+	setInterval(() => {
+		updateDateTime();
+	}, 1000);
+});
+</script>
+
 <template>
 	<header>
 		<div v-if="statusArray.length > 0" id="notifications" :class="isMobile ? 'mobile' : ''">
@@ -22,82 +93,6 @@
 		<MainNavbar :appState="appState" :isMobile="isMobile" :mobileDropdownClose="mobileDropdownClose" />
 	</header>
 </template>
-
-<script>
-import { inject } from "vue";
-import MainNavbar from "@/components/MainNavbar.vue";
-
-export default {
-	name: "HeaderMain",
-	components: {
-		MainNavbar,
-	},
-	props: {
-		appState: Object,
-		serverVersion: String,
-		isMobile: Boolean,
-		sharedUpdateStatus: Object,
-		mobileDropdownClose: Boolean,
-	},
-	data() {
-		return {
-			updateStatus: inject("sendUpdateStatus"),
-			appNotify: Object.assign({}, this.appNotify),
-			statusArray: [],
-			dayLocal: "",
-			dateLocal: "",
-			timeLocal: "",
-		};
-	},
-	watch: {
-		sharedUpdateStatus: {
-			handler(newVal) {
-				if (newVal && Object.keys(newVal).length > 0) {
-					this.handleUpdateStatus(newVal);
-					this.updateStatus({});
-				}
-			},
-			deep: true,
-		},
-	},
-	created() {
-		this.updateDateTime();
-	},
-	mounted() {
-		setInterval(() => {
-			this.updateDateTime();
-		}, 1000);
-	},
-	methods: {
-		handleUpdateStatus(payload) {
-			let notification = Object.assign({}, this.appNotify);
-			notification.code = payload?.code;
-			notification.message = payload?.message;
-			notification.success = payload?.success;
-			let date = new Date();
-			notification.expireTime = date.getTime() + 10000;
-			notification.eventTimeDisplay = date.toLocaleTimeString();
-			this.statusArray.push(notification);
-		},
-		updateDateTime() {
-			let date = new Date();
-			this.dayLocal = date.toLocaleDateString("en-US", { weekday: "long" });
-			this.dateLocal = date.toLocaleDateString("en-US");
-			this.timeLocal = date.toLocaleTimeString();
-			if (this.statusArray.length > 0) this.removeStaleEvents();
-		},
-		removeStaleEvents() {
-			let currentTime = new Date().getTime();
-			let newArray = this.statusArray.filter((item) => item.expireTime > currentTime);
-			this.statusArray = newArray;
-		},
-		closeNotification(timeCode) {
-			let newArray = this.statusArray.filter((item) => item.expireTime !== timeCode.expireTime);
-			this.statusArray = newArray;
-		},
-	},
-};
-</script>
 
 <style scoped>
 header {
