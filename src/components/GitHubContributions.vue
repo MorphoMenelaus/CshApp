@@ -184,7 +184,7 @@ i:not(.colored) {
 	margin-bottom: 0.5em;
 	padding: 1.75em 0.5em 0.8em;
 	background-color: aliceblue;
-	border: 1px solid rgb(171, 171, 171);
+	border: 1px solid rgb(128 128 128 / 50%);
 	border-radius: 12px;
 	flex-direction: column;
 }
@@ -240,6 +240,11 @@ i:not(.colored) {
 }
 
 .calendar-cell:hover {
+	outline: 1px solid rgb(0 90 255 / 80%);
+	filter: brightness(0.8);
+}
+
+.uiDarkMode .calendar-cell:hover {
 	outline: 1px solid #24292f;
 }
 

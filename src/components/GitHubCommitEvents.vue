@@ -79,9 +79,12 @@ onBeforeMount(() => {
 				<span class="descip" :title="commit.payload.pull_request.head.ref.replaceAll('---', ' | ').replaceAll('-', ' ')">
 					{{ commit.payload.pull_request.head.ref.replaceAll("-", " ") }}</span
 				>
-				<small :title="`Merged on: ${new Date(commit.created_at).toLocaleString()}`"
-					>Merged on: {{ new Date(commit.created_at).toLocaleString() }}</small
-				>
+				<div class="flex-detail">
+					<small :title="`Merged on: ${new Date(commit.created_at).toLocaleString()}`"
+						>Merged on: {{ new Date(commit.created_at).toLocaleString() }}</small
+					>
+					<img class="author-icon" :src="commit.actor.avatar_url" :title="`Author: ${commit.actor.login}`" />
+				</div>
 			</div>
 		</div>
 		<div v-if="createEvents.length > 0 && showPushed" class="slider">
@@ -89,9 +92,12 @@ onBeforeMount(() => {
 				<span class="descip" :title="create.payload.ref.replaceAll('---', ' | ').replaceAll('-', ' ')">
 					{{ create.payload.ref.replaceAll("-", " ") }}</span
 				>
-				<small :title="`Created on: ${new Date(create.created_at).toLocaleString()}`"
-					>Created on: {{ new Date(create.created_at).toLocaleString() }}</small
-				>
+				<div class="flex-detail">
+					<small :title="`Created on: ${new Date(create.created_at).toLocaleString()}`"
+						>Created on: {{ new Date(create.created_at).toLocaleString() }}</small
+					>
+					<img class="author-icon" :src="create.actor.avatar_url" :title="`Author: ${create.actor.login}`" />
+				</div>
 			</div>
 		</div>
 	</div>
@@ -134,7 +140,7 @@ h2:hover {
 	background-color: #e7e7e7;
 	width: fit-content;
 	padding: 1em;
-	border: 1px #555 solid;
+	border: 1px solid rgb(128 128 128 / 50%);
 	border-radius: 12px;
 	width: 100%;
 	min-width: 0;
@@ -189,5 +195,18 @@ i:not(.colored) {
 
 .uiDarkMode .bg {
 	background-blend-mode: screen;
+}
+
+.flex-detail {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+.author-icon {
+	width: 28px;
+	height: 28px;
+	object-fit: contain;
+	cursor: help;
 }
 </style>

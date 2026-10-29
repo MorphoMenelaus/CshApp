@@ -57,7 +57,7 @@ a.name:hover h1 {
 #tagline-box {
 	position: relative;
 	border: 1px #555 solid;
-	background-color: #fff;
+	background-color: aliceblue;
 	padding: 15px 30px;
 	border-radius: 12px;
 	width: fit-content;
