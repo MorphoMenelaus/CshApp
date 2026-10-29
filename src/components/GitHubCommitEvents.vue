@@ -1,14 +1,13 @@
 <script setup>
 import { ref, inject, onBeforeMount } from "vue";
-import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import { appNotify } from "@/dependencies/models.js";
 
 const serverStatus = Object.assign({}, appNotify);
 const updateStatus = inject("sendUpdateStatus");
 const forceLogout = inject("forceLogout");
 
+const limitList = 9;
 const commitEvents = ref([]);
-const createEvents = ref([]);
 const showMerged = ref(true);
 const showPushed = ref(false);
 
@@ -17,34 +16,16 @@ const getGitHubCommits = async () => {
 		let response = await fetch("https://api.github.com/users/MorphoMenelaus/events/public");
 		let data = await response.json();
 
-		commitEvents.value = data.filter((e) => e.type === "PullRequestEvent" && e.payload.action === "merged");
-		createEvents.value = data.filter((e) => e.type === "CreateEvent");
+		commitEvents.value = data.filter((e) => (e.type === "PullRequestEvent" && e.payload?.action === "merged") || e.type === "CreateEvent");
+		// limit list length
+		commitEvents.value = commitEvents.value.slice(0, limitList);
 		commitEvents.value = commitEvents.value.toSorted((a, b) => b.created_at.localeCompare(a.created_at));
-		createEvents.value = createEvents.value.toSorted((a, b) => b.created_at.localeCompare(a.created_at));
 	} catch (error) {
 		console.error("Error posting data:", error);
 		serverStatus.code = 500;
 		serverStatus.message = `Error getting data: ${error}`;
 		serverStatus.success = false;
 		updateStatus(serverStatus);
-	}
-};
-
-const toggleHandler = (toggle) => {
-	switch (toggle) {
-		case "showMerged":
-			showMerged.value = !showMerged.value;
-			showPushed.value = false;
-			sendAnalyticsEvent("github_event", "show_merged");
-			break;
-		case "showPushed":
-			showPushed.value = !showPushed.value;
-			showMerged.value = false;
-			sendAnalyticsEvent("github_event", "show_pushed");
-			break;
-		default:
-			showPushed.value = showMerged.value = false;
-			return;
 	}
 };
 
@@ -55,48 +36,36 @@ onBeforeMount(() => {
 
 <template>
 	<div id="github-commits" :class="{ bg: !showMerged && !showPushed }">
-		<h2
-			:class="['text-center', { active: showMerged }]"
-			@click="toggleHandler('showMerged')"
-			:title="`${showMerged ? 'Hide ' : 'Show '}Latest Merged Commits`"
-		>
+		<h2 class="text-center" title="Latest Merged Commits">
 			<i class="devicon-github-original" title="GitHub"></i>
 			<i class="devicon-github-original colored" title="GitHub"></i>
-			{{ `${showMerged ? "Hide" : "Show"}` }} Latest Merged Commits
+			Latest GitHub Commits
 		</h2>
-		<h2
-			:class="['text-center', { active: showPushed }]"
-			@click="toggleHandler('showPushed')"
-			:title="`${showPushed ? 'Hide ' : 'Show '}Latest Push Events`"
-		>
-			<i class="devicon-github-original" title="GitHub"></i>
-			<i class="devicon-github-original colored" title="GitHub"></i>
-			{{ `${showPushed ? "Hide" : "Show"}` }} Latest Push Events
-		</h2>
-
-		<div v-if="commitEvents.length > 0 && showMerged" class="slider">
+		<div v-if="commitEvents.length > 0" class="slider">
 			<div v-for="(commit, i) in commitEvents" :key="i" class="event">
-				<span class="descip" :title="commit.payload.pull_request.head.ref.replaceAll('---', ' | ').replaceAll('-', ' ')">
-					{{ commit.payload.pull_request.head.ref.replaceAll("-", " ") }}</span
+				<span
+					v-if="commit.type === 'PullRequestEvent'"
+					class="descip"
+					:title="commit.payload?.pull_request?.head?.ref.replaceAll('---', ' | ').replaceAll('-', ' ')"
+				>
+					{{ commit.payload?.pull_request?.head?.ref.replaceAll("-", " ") }}</span
+				>
+				<span v-else class="descip" :title="commit.payload?.ref.replaceAll('---', ' | ').replaceAll('-', ' ')">
+					{{ commit.payload?.ref.replaceAll("-", " ") }}</span
 				>
 				<div class="flex-detail">
-					<small :title="`Merged on: ${new Date(commit.created_at).toLocaleString()}`"
-						>Merged on: {{ new Date(commit.created_at).toLocaleString() }}</small
+					<small
+						:title="
+							(commit.payload?.action === 'merged' ? `Merged #${commit.payload?.number} on: ` : `Created on: `) +
+							new Date(commit.created_at).toLocaleString()
+						"
+					>
+						<span :class="['event-action', { merged: commit.payload?.action === 'merged' }]">{{
+							commit.payload?.action === "merged" ? `Merged #${commit.payload?.number}:` : "Created:"
+						}}</span>
+						{{ new Date(commit.created_at).toLocaleString() }}</small
 					>
 					<img class="author-icon" :src="commit.actor.avatar_url" :title="`Author: ${commit.actor.login}`" />
-				</div>
-			</div>
-		</div>
-		<div v-if="createEvents.length > 0 && showPushed" class="slider">
-			<div v-for="(create, ci) in createEvents" :key="ci" class="event">
-				<span class="descip" :title="create.payload.ref.replaceAll('---', ' | ').replaceAll('-', ' ')">
-					{{ create.payload.ref.replaceAll("-", " ") }}</span
-				>
-				<div class="flex-detail">
-					<small :title="`Created on: ${new Date(create.created_at).toLocaleString()}`"
-						>Created on: {{ new Date(create.created_at).toLocaleString() }}</small
-					>
-					<img class="author-icon" :src="create.actor.avatar_url" :title="`Author: ${create.actor.login}`" />
 				</div>
 			</div>
 		</div>
@@ -109,11 +78,6 @@ h2 {
 	margin: 0.25em auto;
 	border-radius: 8px;
 	user-select: none;
-	cursor: pointer;
-}
-
-h2:hover {
-	background-color: rgb(90 135 191 / 30%);
 }
 
 .active::after {
@@ -208,5 +172,17 @@ i:not(.colored) {
 	height: 28px;
 	object-fit: contain;
 	cursor: help;
+}
+
+.event-action {
+	background-color: #5a87bf;
+	color: white;
+	/* font-weight: bold; */
+	padding: 1px 4px;
+	border-radius: 4px;
+}
+
+.merged {
+	background-color: green;
 }
 </style>
