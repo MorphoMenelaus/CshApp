@@ -36,7 +36,7 @@ onBeforeMount(() => {
 
 <template>
 	<div id="github-commits" :class="{ bg: !showMerged && !showPushed }">
-		<h2 class="text-center" title="Latest Merged Commits">
+		<h2 class="julius-sans text-center" title="Latest Merged Commits">
 			<i class="devicon-github-original" title="GitHub"></i>
 			<i class="devicon-github-original colored" title="GitHub"></i>
 			Latest GitHub Commits
@@ -78,6 +78,7 @@ h2 {
 	margin: 0.25em auto;
 	border-radius: 8px;
 	user-select: none;
+	font-weight: bold;
 }
 
 .active::after {
