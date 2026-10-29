@@ -95,13 +95,13 @@ onBeforeMount(() => {
 
 <template>
 	<div id="github-grid">
-		<h2 class="text-center">
+		<h2 class="julius-sans text-center">
 			<i class="devicon-github-original" title="GitHub"></i>
 			<i class="devicon-github-original colored" title="GitHub"></i>
-			GitHub contributions for this project
+			Project Contributions
 		</h2>
-		<h4 class="text-center">{{ contributionsCount }} contributions merged since {{ firstEntryMonth }}</h4>
 		<div class="calendar-wrapper" v-if="contributionWeeks.length > 0">
+			<h3 class="text-center">{{ contributionsCount }} contributions merged since {{ firstEntryMonth }}</h3>
 			<div class="flex-row">
 				<div class="day-labels">
 					<span v-for="(day, dayI) in days" :key="dayI">{{ day }}</span>
@@ -139,11 +139,6 @@ onBeforeMount(() => {
 			<h1 class="text-center">No Contributions Found</h1>
 			<h3 class="text-center">Please Refresh Page</h3>
 		</div>
-		<!-- <div class="legend" v-if="contributionWeeks.length > 0">
-			<span class="label">Fewer</span>
-			<div v-for="(color, ci) in bgColors" :key="ci" :class="['calendar-cell', `lvl${ci}`, { blue: blueTheme }]"></div>
-			<span class="label">More</span>
-		</div> -->
 		<div v-if="contributionWeeks.length > 0">
 			<CommitsOverTimeGraph :isMobile="isMobile" :windowWidth="windowWidth" :contributionWeeks="contributionWeeks" />
 		</div>
@@ -151,6 +146,15 @@ onBeforeMount(() => {
 </template>
 
 <style scoped>
+h2 {
+	font-weight: bold;
+}
+
+h3 {
+	margin-top: -1em;
+	margin-bottom: 1.2em;
+}
+
 #github-grid {
 	margin: 1em auto;
 	background-color: #e7e7e7;
@@ -177,10 +181,9 @@ i:not(.colored) {
 
 .calendar-wrapper {
 	display: flex;
-	/* justify-content: center; */
 	font-size: 1em;
 	user-select: none;
-	margin-top: 1em;
+	margin-top: 0.65em;
 	margin-bottom: 0.5em;
 	padding: 1.75em 0.5em 0.8em;
 	background-color: aliceblue;
