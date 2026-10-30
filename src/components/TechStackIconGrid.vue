@@ -39,7 +39,6 @@ import techStack from "@/dependencies/techStack.json";
 	border-radius: 8px;
 	display: flex;
 	justify-content: center;
-	cursor: pointer;
 	position: relative;
 	overflow: hidden;
 }

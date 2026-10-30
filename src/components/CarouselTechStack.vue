@@ -80,12 +80,14 @@ onMounted(() => {
 }
 
 .item-container {
+	display: flex;
+	justify-content: center;
+	align-content: center;
 	background-image: linear-gradient(#0f438f, #020618);
 	border-radius: 8px;
 	height: 100%;
 	width: 100%;
 	padding: 0.5em;
-	align-content: center;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
@@ -123,7 +125,6 @@ img.logo {
 	position: absolute;
 	left: 0;
 	bottom: -100px;
-	cursor: pointer;
 }
 
 .icon-overlay span {

@@ -325,7 +325,7 @@ p {
 	.btn.linkedin-icon,
 	.btn.personal-icon,
 	.btn.email-icon {
-		padding-right: 48px;
+		padding-right: 2.2em;
 	}
 
 	.acrobat-icon::after,

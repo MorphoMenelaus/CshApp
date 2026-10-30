@@ -251,6 +251,10 @@ i:not(.colored) {
 	outline: 1px solid #24292f;
 }
 
+.uiDarkMode .calendar-cell.blue:hover {
+	outline: 1px solid #4e5865;
+}
+
 .legend {
 	display: flex;
 	justify-content: flex-end;
