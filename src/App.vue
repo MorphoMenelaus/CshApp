@@ -1,5 +1,6 @@
 <template>
 	<BackgroundOverlay :class="isMobile ? 'mobile' : ''" />
+	<HalloweenOvelay v-if="!isMobile" />
 
 	<div id="loading-icon" :class="showHideLoader ? 'loading' : ''">
 		<div class="spinner-comet"></div>
@@ -64,6 +65,7 @@ import GeminiChat from "@/components/GeminiChat.vue";
 import GeminiJobMatch from "@/components/GeminiJobMatch.vue";
 import GeminiExplainCode from "@/components/GeminiExplainCode.vue";
 import { Storage, tokenCheck, dispatchCustomEvent, stateUpdateService, routerStateService } from "@/dependencies/csh-libs.js";
+import HalloweenOvelay from "@/components/HalloweenOvelay.vue";
 
 export default {
 	components: {
@@ -76,6 +78,7 @@ export default {
 		GeminiChat,
 		GeminiJobMatch,
 		GeminiExplainCode,
+		HalloweenOvelay,
 	},
 	data() {
 		return {

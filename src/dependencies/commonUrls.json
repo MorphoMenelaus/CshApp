@@ -13,5 +13,10 @@
 		"url": "https://github.com/MorphoMenelaus",
 		"text": "GitHub Repos",
 		"title": "Chris Hardwick | GitHub Repositories"
+	},
+	"hdCdn": {
+		"url": "https://cdn.hardwick.design/js/",
+		"text": "Hardwick Design CDN",
+		"title": "Chris Hardwick | CDN"
 	}
 }
