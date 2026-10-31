@@ -13,6 +13,7 @@ import GitHubContributions from "@/components/GitHubContributions.vue";
 
 const props = defineProps({
 	appState: Object,
+	uiDarkMode: Boolean,
 	isMobile: Boolean,
 	windowWidth: Number,
 });
@@ -77,7 +78,7 @@ const copyright = inject("copyright");
 			</div>
 
 			<div class="git-container">
-				<GitHubContributions :isMobile="isMobile" :windowWidth="windowWidth" />
+				<GitHubContributions :uiDarkMode="uiDarkMode" :isMobile="isMobile" :windowWidth="windowWidth" />
 				<GitHubCommitEvents />
 			</div>
 			<Disclaimers />

@@ -11,6 +11,29 @@ const commitEvents = ref([]);
 const showMerged = ref(true);
 const showPushed = ref(false);
 
+const idToHexColor = (id) => {
+	// Ensure it's a number and map/modulo it into the 24-bit color space (0 to 16777215)
+	const num = Math.abs(Number(id)) % 16777215;
+	const hex = num.toString(16).padStart(6, "0");
+	return `#${hex}`;
+};
+
+const hashIdToHexColor = (id) => {
+	let hash = 0;
+	const str = String(id);
+
+	for (let i = 0; i < str.length; i++) {
+		hash = str.charCodeAt(i) + ((hash << 5) - hash);
+	}
+
+	let color = "#";
+	for (let i = 0; i < 3; i++) {
+		const value = (hash >> (i * 8)) & 0xff;
+		color += ("00" + value.toString(16)).slice(-2);
+	}
+	return color;
+};
+
 const getGitHubCommits = async () => {
 	try {
 		let response = await fetch("https://api.github.com/users/MorphoMenelaus/events/public");
@@ -63,9 +86,16 @@ onBeforeMount(() => {
 						<span :class="['event-action', { merged: commit.payload?.action === 'merged' }]">{{
 							commit.payload?.action === "merged" ? `Merged #${commit.payload?.number}:` : "Created:"
 						}}</span>
+						║
+						<!-- <span class="repo" :style="`background-color: #${commit.repo.id.toString().slice(4, 10)}`"
+							>Repo: {{ commit.repo.name.split("/")[1] }}</span
+						> -->
 						{{ new Date(commit.created_at).toLocaleString() }}</small
 					>
-					<img class="author-icon" :src="commit.actor.avatar_url" :title="`Author: ${commit.actor.login}`" />
+					<div class="author-block" :title="`Author: ${commit.actor.login}`">
+						<small class="repo" :style="`background-color: ${idToHexColor(commit.repo.id)}`">Repo: {{ commit.repo.name.split("/")[1] }}</small>
+						<img class="author-icon" :src="commit.actor.avatar_url" />
+					</div>
 				</div>
 			</div>
 		</div>
@@ -168,11 +198,24 @@ i:not(.colored) {
 	align-items: flex-end;
 }
 
+.author-block {
+	display: flex;
+	align-items: center;
+	cursor: help;
+}
+
+.repo {
+	color: aliceblue;
+	padding: 0 0.4em;
+	border-radius: 0.25em;
+	margin-right: 0.5em;
+	filter: hue-rotate(300deg);
+}
+
 .author-icon {
 	width: 28px;
 	height: 28px;
 	object-fit: contain;
-	cursor: help;
 }
 
 .event-action {

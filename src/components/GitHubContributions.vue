@@ -1,9 +1,10 @@
 <script setup>
-import { ref, inject, onBeforeMount } from "vue";
+import { ref, provide, inject, onBeforeMount } from "vue";
 import { appNotify } from "@/dependencies/models.js";
 import CommitsOverTimeGraph from "@/components/CommitsOverTimeGraph.vue";
 
 const props = defineProps({
+	uiDarkMode: Boolean,
 	isMobile: Boolean,
 	windowWidth: Number,
 });
@@ -13,7 +14,9 @@ const baseUrl = inject("baseUrl");
 const updateStatus = inject("sendUpdateStatus");
 const forceLogout = inject("forceLogout");
 
-const blueTheme = ref(true);
+// Halloween Theme -> blueTheme: false, hwTheme: true
+const hwTheme = ref(true);
+const blueTheme = ref(false);
 const contributionWeeks = ref([]);
 const currentIso = ref(new Date().toISOString());
 const weekOffest = ref(24);
@@ -22,7 +25,13 @@ const contributionsCount = ref(0);
 const firstEntryMonth = ref("");
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const bgColors = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"];
+const levelMap = {
+	NONE: "lvl0",
+	FIRST_QUARTILE: "lvl1",
+	SECOND_QUARTILE: "lvl2",
+	THIRD_QUARTILE: "lvl3",
+	FOURTH_QUARTILE: "lvl4",
+};
 
 const getEventTotalCount = (eventWeeks = []) => {
 	let newArr = [];
@@ -106,20 +115,27 @@ onBeforeMount(() => {
 				<div class="day-labels">
 					<span v-for="(day, dayI) in days" :key="dayI">{{ day }}</span>
 				</div>
-				<div class="calendar-grid">
-					<div v-for="(week, wIndex) in contributionWeeks" :key="wIndex" class="calendar-column">
+				<div
+					:class="[
+						'heatmap-grid',
+						{
+							blue: blueTheme,
+							dark: uiDarkMode,
+							hw: hwTheme,
+						},
+					]"
+				>
+					<div v-for="(week, wIndex) in contributionWeeks" :key="wIndex" class="heatmap-column">
 						<div
 							v-for="(day, di) in week.contributionDays"
 							:key="di"
 							:class="[
-								'calendar-cell',
+								'heatmap-cell',
+								levelMap[day.contributionLevel],
 								{
-									lvl0: day.color === bgColors[0],
-									lvl1: day.color === bgColors[1],
-									lvl2: day.color === bgColors[2],
-									lvl3: day.color === bgColors[3],
-									lvl4: day.color === bgColors[4],
 									blue: blueTheme,
+									dark: uiDarkMode,
+									hw: hwTheme,
 								},
 							]"
 							:title="getTooltipText(day)"
@@ -129,9 +145,19 @@ onBeforeMount(() => {
 					</div>
 				</div>
 			</div>
-			<div class="legend" v-if="contributionWeeks.length > 0">
+			<div
+				:class="[
+					'legend',
+					{
+						blue: blueTheme,
+						dark: uiDarkMode,
+						hw: hwTheme,
+					},
+				]"
+				v-if="contributionWeeks.length > 0"
+			>
 				<span class="label">Fewer</span>
-				<div v-for="(color, ci) in bgColors" :key="ci" :class="['calendar-cell', `lvl${ci}`, { blue: blueTheme }]"></div>
+				<div v-for="(key, ci) in levelMap" :key="ci" :class="['heatmap-cell', key, { blue: blueTheme, dark: uiDarkMode, hw: hwTheme }]"></div>
 				<span class="label">More</span>
 			</div>
 		</div>
@@ -217,42 +243,25 @@ i:not(.colored) {
 	font-size: 0.75em;
 }
 
-.calendar-grid {
+.heatmap-grid {
 	display: grid;
 	grid-template-columns: repeat(26, 1fr);
 	gap: 4px;
 }
 
-.calendar-column {
+.heatmap-column {
 	display: grid;
 	grid-template-rows: repeat(7, 1fr);
 	gap: 2px;
 }
 
-.calendar-cell {
+.heatmap-cell {
 	width: 1em;
 	height: 1em;
 	border-radius: 0.2em;
 	outline: 1px solid rgba(27, 31, 35, 0.8);
 	outline-offset: -1px;
 	transition: background-color 0.1s ease;
-}
-
-.uiDarkMode .calendar-cell {
-	outline: 1px solid rgb(89 102 115 / 80%);
-}
-
-.calendar-cell:hover {
-	outline: 1px solid rgb(0 90 255 / 80%);
-	filter: brightness(0.8);
-}
-
-.uiDarkMode .calendar-cell:hover {
-	outline: 1px solid #24292f;
-}
-
-.uiDarkMode .calendar-cell.blue:hover {
-	outline: 1px solid #4e5865;
 }
 
 .legend {
@@ -263,7 +272,7 @@ i:not(.colored) {
 	margin-top: 0.5em;
 }
 
-.legend .calendar-cell {
+.legend .heatmap-cell {
 	margin: 0 0.1em;
 }
 
@@ -272,83 +281,76 @@ i:not(.colored) {
 	font-size: 0.75em;
 }
 
-.calendar-cell.lvl0 {
-	background-color: #eff2f5;
+/* Default Theme (Light/Standard Green) */
+.heatmap-grid,
+.legend {
+	--cell-bg-0: #ebedf0;
+	--cell-bg-1: #9be9a8;
+	--cell-bg-2: #40c463;
+	--cell-bg-3: #30a14e;
+	--cell-bg-4: #216e39;
+	--cell-outline: rgba(27, 31, 35, 0.8);
+	--cell-hover: #24292f;
 }
 
-.calendar-cell.lvl1 {
-	background-color: #aceebb;
+/* Blue Theme */
+.heatmap-grid.blue,
+.legend.blue {
+	--cell-bg-0: #eff2f5;
+	--cell-bg-1: #9dd1ec;
+	--cell-bg-2: #4b9bc3;
+	--cell-bg-3: #2d7ca4;
+	--cell-bg-4: #1f66ad;
+	--cell-outline: rgba(27, 31, 35, 0.8);
+	--cell-hover: #000;
 }
 
-.calendar-cell.lvl2 {
-	background-color: #4ac26b;
+/* Dark Theme */
+.heatmap-grid.dark,
+.legend.dark {
+	--cell-bg-0: #151e23;
+	--cell-bg-1: #043249;
+	--cell-bg-2: #19506b;
+	--cell-bg-3: #2e799e;
+	--cell-bg-4: #55a9d3;
+	--cell-outline: rgb(89 102 115 / 80%);
+	--cell-hover: #4e5865;
 }
 
-.calendar-cell.lvl3 {
-	background-color: #2da44e;
+/* Halloween Theme */
+.heatmap-grid.hw,
+.legend.hw {
+	--cell-bg-0: #211c27; /* Dark purple/black base */
+	--cell-bg-1: #ffee4a;
+	--cell-bg-2: #ffc501;
+	--cell-bg-3: #fe9600;
+	--cell-bg-4: #c93c00;
+	--cell-outline: #c93c00;
+	--cell-hover: #000;
 }
 
-.calendar-cell.lvl4 {
-	background-color: #116329;
+.heatmap-cell {
+	outline-color: var(--cell-outline);
 }
 
-.uiDarkMode .calendar-cell.lvl0 {
-	background-color: #151b23;
+.heatmap-cell:hover {
+	outline-color: var(--cell-hover);
+	filter: brightness(0.9);
 }
 
-.uiDarkMode .calendar-cell.lvl1 {
-	background-color: #033a16;
+.heatmap-cell.lvl0 {
+	background-color: var(--cell-bg-0);
 }
-
-.uiDarkMode .calendar-cell.lvl2 {
-	background-color: #196c2e;
+.heatmap-cell.lvl1 {
+	background-color: var(--cell-bg-1);
 }
-
-.uiDarkMode .calendar-cell.lvl3 {
-	background-color: #2ea043;
+.heatmap-cell.lvl2 {
+	background-color: var(--cell-bg-2);
 }
-
-.uiDarkMode .calendar-cell.lvl4 {
-	background-color: #56d364;
+.heatmap-cell.lvl3 {
+	background-color: var(--cell-bg-3);
 }
-
-.calendar-cell.lvl4.blue {
-	background-color: #1f66ad;
-}
-
-.calendar-cell.lvl3.blue {
-	background-color: #2d7ca4;
-}
-
-.calendar-cell.lvl2.blue {
-	background-color: #4b9bc3;
-}
-
-.calendar-cell.lvl1.blue {
-	background-color: #9dd1ec;
-}
-
-.calendar-cell.lvl0.blue {
-	background-color: #eff2f5;
-}
-
-.uiDarkMode .calendar-cell.lvl4.blue {
-	background-color: #55a9d3;
-}
-
-.uiDarkMode .calendar-cell.lvl3.blue {
-	background-color: #2e799e;
-}
-
-.uiDarkMode .calendar-cell.lvl2.blue {
-	background-color: #19506b;
-}
-
-.uiDarkMode .calendar-cell.lvl1.blue {
-	background-color: #043249;
-}
-
-.uiDarkMode .calendar-cell.lvl0.blue {
-	background-color: #151e23;
+.heatmap-cell.lvl4 {
+	background-color: var(--cell-bg-4);
 }
 </style>
