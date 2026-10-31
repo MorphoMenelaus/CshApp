@@ -33,6 +33,7 @@
 		id="view"
 		:serverVersion="serverVersion"
 		:appState="appState"
+		:uiDarkMode="uiDarkMode"
 		:isMobile="isMobile"
 		:windowWidth="windowWidth"
 		:forceLogoutEvent="forceLogoutEvent"

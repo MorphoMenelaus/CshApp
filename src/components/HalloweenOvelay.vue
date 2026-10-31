@@ -51,7 +51,7 @@ onBeforeMount(() => {
 
 <template>
 	<div id="hw-parent">
-		<h1 v-if="showH1" class="halloween nosi text-stroke animated bounceInDown" title="Click to hide" @click="showH1 = false">
+		<h1 v-if="showH1" class="halloween nosi text-stroke animated-css bounceInDown" title="Click to hide" @click="showH1 = false">
 			Happy Halloween!<span class="close">✕</span>
 		</h1>
 		<img class="spider1" src="/img/SpiderWeb2.png" alt="Spider" />
@@ -94,9 +94,9 @@ h1.halloween {
 }
 
 span.close {
-	position: relative;
-	top: -2.5em;
-	right: -2.5em;
+	position: absolute;
+	top: -0.8em;
+	right: -0.8em;
 	font-size: 24px;
 	padding: 0.35em 0.5em 0;
 	background-color: rgb(29 58 73 / 80%);
@@ -156,100 +156,8 @@ span.close {
 	filter: invert(0.8);
 }
 
-.animated {
-	-webkit-animation-duration: 1s;
-	animation-duration: 1s;
-	-webkit-animation-fill-mode: both;
-	animation-fill-mode: both;
+.animated-css {
 	animation-delay: 2s;
 	-webkit-animation-delay: 2s;
-}
-
-.animated.bounceInDown,
-.animated.bounceIn,
-.animated.bounceOut {
-	-webkit-animation-duration: 0.75s;
-	animation-duration: 0.75s;
-}
-
-@-webkit-keyframes bounceInDown {
-	from,
-	60%,
-	75%,
-	90%,
-	to {
-		-webkit-animation-timing-function: cubic-bezier(3.215, 3.61, 3.355, 4);
-		animation-timing-function: cubic-bezier(3.215, 3.61, 3.355, 4);
-	}
-
-	0% {
-		opacity: 0;
-		-webkit-transform: translate3d(0, -3000px, 0);
-		transform: translate3d(0, -3000px, 0);
-	}
-
-	60% {
-		opacity: 1;
-		-webkit-transform: translate3d(0, 25px, 0);
-		transform: translate3d(0, 25px, 0);
-	}
-
-	75% {
-		-webkit-transform: translate3d(0, -10px, 0);
-		transform: translate3d(0, -10px, 0);
-	}
-
-	90% {
-		-webkit-transform: translate3d(0, 5px, 0);
-		transform: translate3d(0, 5px, 0);
-	}
-
-	to {
-		-webkit-transform: none;
-		transform: none;
-	}
-}
-
-@keyframes bounceInDown {
-	from,
-	60%,
-	75%,
-	90%,
-	to {
-		-webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-		animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-	}
-
-	0% {
-		opacity: 0;
-		-webkit-transform: translate3d(0, -3000px, 0);
-		transform: translate3d(0, -3000px, 0);
-	}
-
-	60% {
-		opacity: 1;
-		-webkit-transform: translate3d(0, 25px, 0);
-		transform: translate3d(0, 25px, 0);
-	}
-
-	75% {
-		-webkit-transform: translate3d(0, -12px, 0);
-		transform: translate3d(0, -12px, 0);
-	}
-
-	90% {
-		-webkit-transform: translate3d(0, 15px, 0);
-		transform: translate3d(0, 15px, 0);
-	}
-
-	to {
-		-webkit-transform: none;
-		transform: none;
-	}
-}
-
-.bounceInDown {
-	-webkit-animation-name: bounceInDown;
-	animation-name: bounceInDown;
 }
 </style>
