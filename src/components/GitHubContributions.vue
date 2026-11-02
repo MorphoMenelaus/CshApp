@@ -15,8 +15,8 @@ const updateStatus = inject("sendUpdateStatus");
 const forceLogout = inject("forceLogout");
 
 // Halloween Theme -> blueTheme: false, hwTheme: true
-const hwTheme = ref(true);
-const blueTheme = ref(false);
+const hwTheme = ref(false);
+const blueTheme = ref(true);
 const contributionWeeks = ref([]);
 const currentIso = ref(new Date().toISOString());
 const weekOffest = ref(24);

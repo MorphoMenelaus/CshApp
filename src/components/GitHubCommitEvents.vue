@@ -201,14 +201,13 @@ i:not(.colored) {
 .author-block {
 	display: flex;
 	align-items: center;
-	cursor: help;
 }
 
 .repo {
 	color: aliceblue;
 	padding: 0 0.4em;
 	border-radius: 0.25em;
-	margin-right: 0.5em;
+	margin-right: 1em;
 	filter: hue-rotate(300deg);
 }
 

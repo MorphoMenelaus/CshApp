@@ -1,9 +1,104 @@
+<script setup>
+import { ref, inject, onBeforeUnmount, onBeforeMount } from "vue";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
+
+const props = defineProps({
+	appState: Object,
+});
+
+const baseUrl = inject("baseUrl");
+const updateStatus = inject("sendUpdateStatus");
+const showHideLoader = inject("showHideLoader");
+const closeChangePassword = inject("closeChangePassword");
+const forceLogout = inject("forceLogout");
+const currentPassword = ref("");
+const password = ref("");
+const confirmPassword = ref("");
+const errState = ref(false);
+
+const changePassword = async () => {
+	let serverStatus = Object.assign({}, appNotify);
+
+	if (!currentPassword.value || !password.value) {
+		serverStatus.message = "Please provide current password and new password.";
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+		return;
+	}
+
+	if (password.value !== confirmPassword.value) {
+		serverStatus.message = "New Password and Confirm Password do not match.";
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+		showHideLoader(false);
+		return;
+	}
+
+	try {
+		showHideLoader(true);
+
+		let body = {
+			userId: props.appState.user.userId,
+			currentPassword: currentPassword.value,
+			password: password.value,
+		};
+
+		let headerObj = new Headers();
+		headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+		headerObj.append("Content-Type", "application/json; charset=utf-8");
+		let requestUrl = new URL("/api/users/password", baseUrl);
+
+		let request = new Request(requestUrl.toString(), {
+			method: "POST",
+			headers: headerObj,
+			body: JSON.stringify(body),
+		});
+
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		serverStatus.code = data?.code;
+		serverStatus.message = data?.message;
+		serverStatus.success = data?.success;
+
+		if (serverStatus.code === 401) {
+			updateStatus(serverStatus);
+			showHideLoader(false);
+			return;
+		}
+
+		if (serverStatus.success) {
+			addUserLog(props.appState, "User Changed Password");
+			forceLogout(data);
+		}
+	} catch (error) {
+		console.error("Error posting data:", error);
+		serverStatus.code = 400;
+		serverStatus.message = `Error posting data: ${error}`;
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+	} finally {
+		showHideLoader(false);
+	}
+};
+
+const keyDown = (e) => {
+	if (e?.key === "Escape") closeChangePassword();
+};
+
+onBeforeMount(() => {
+	window.addEventListener("keydown", keyDown);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener("keydown", keyDown);
+});
+</script>
+
 <template>
 	<div id="change-password">
 		<div class="wrapper">
-			<!-- <div class="btn-container">
-				<button @click="closePopup()" class="close-modal" title="Close This Dialog">✕</button>
-			</div> -->
 			<h1>Password Change</h1>
 			<p style="margin: 15px 0"><span class="warning">Warning!</span> After changing your password you will have to log in again.</p>
 			<form method="post">
@@ -27,112 +122,6 @@
 		</div>
 	</div>
 </template>
-
-<script>
-import { onBeforeUnmount, inject } from "vue";
-import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-import { appNotify } from "@/dependencies/models.js";
-
-export default {
-	name: "RegisterUser",
-	props: {
-		appState: Object,
-	},
-	data() {
-		return {
-			baseUrl: inject("baseUrl"),
-			updateStatus: inject("sendUpdateStatus"),
-			showHideLoader: inject("showHideLoader"),
-			closeChangePassword: inject("closeChangePassword"),
-			forceLogout: inject("forceLogout"),
-			serverStatus: Object.assign({}, appNotify),
-			currentPassword: "",
-			password: "",
-			confirmPassword: "",
-			errState: false,
-		};
-	},
-	watch: {},
-	methods: {
-		closePopup() {
-			this.closeChangePassword();
-		},
-		async changePassword() {
-			if (!this.currentPassword || !this.password) {
-				this.serverStatus.message = "Please provide current password and new password.";
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-				return;
-			}
-
-			if (this.password !== this.confirmPassword) {
-				this.serverStatus.message = "New Password and Confirm Password do not match.";
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-				this.showHideLoader(false);
-				return;
-			}
-
-			try {
-				this.showHideLoader(true);
-
-				let body = {
-					userId: this.appState.user.userId,
-					currentPassword: this.currentPassword,
-					password: this.password,
-				};
-
-				let headerObj = new Headers();
-				headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-				headerObj.append("Content-Type", "application/json; charset=utf-8");
-				let requestUrl = new URL("/api/users/password", this.baseUrl);
-
-				let request = new Request(requestUrl.toString(), {
-					method: "POST",
-					headers: headerObj,
-					body: JSON.stringify(body),
-				});
-
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				this.serverStatus.code = data?.code;
-				this.serverStatus.message = data?.message;
-				this.serverStatus.success = data?.success;
-
-				if (this.serverStatus.code === 401) {
-					this.updateStatus(this.serverStatus);
-					this.showHideLoader(false);
-					return;
-				}
-
-				if (this.serverStatus.success) {
-					addUserLog(this.appState, "User Changed Password");
-					this.forceLogout(data);
-				}
-			} catch (error) {
-				console.error("Error posting data:", error);
-				this.serverStatus.code = 400;
-				this.serverStatus.message = `Error posting data: ${error}`;
-				this.serverStatus.success = false;
-				this.updateStatus(this.serverStatus);
-			} finally {
-				this.showHideLoader(false);
-			}
-		},
-		keyDown(e) {
-			if (e.key === "Escape") this.closePopup();
-		},
-	},
-	mounted() {},
-	created() {
-		window.addEventListener("keydown", this.keyDown);
-		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.keyDown);
-		});
-	},
-};
-</script>
 
 <style scoped>
 h1 {

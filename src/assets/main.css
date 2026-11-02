@@ -58,15 +58,21 @@ table {
 }
 
 form input,
-form textarea {
+form textarea,
+form select {
+	padding: .4em .8em;
+	font-family: inherit;
+	font-size: 1em;
+	color: #ddd;
+	background-color: #435189;
 	border-radius: .5em;
 	border: 1px #000 solid;
-	font-size: 1em;
+}
+
+form input,
+form textarea {
 	margin-top: .25em;
 	margin-bottom: .25em;
-	padding: .4em .8em;
-	background-color: #435189;
-	color: #ddd;
 }
 
 form input::placeholder,
@@ -151,7 +157,7 @@ form textarea::placeholder {
 .linkedin-icon,
 .email-icon,
 .acrobat-icon,
-.personal-icon, 
+.personal-icon,
 .github-icon {
 	position: relative;
 }
@@ -160,7 +166,7 @@ form textarea::placeholder {
 .linkedin-icon::after,
 .email-icon::after,
 .acrobat-icon::after,
-.personal-icon::after, 
+.personal-icon::after,
 .github-icon::after {
 	content: '';
 	position: absolute;
@@ -374,6 +380,7 @@ button.close-modal {
 }
 
 @-webkit-keyframes bounceInDown {
+
 	from,
 	60%,
 	75%,
@@ -412,6 +419,7 @@ button.close-modal {
 }
 
 @keyframes bounceInDown {
+
 	from,
 	60%,
 	75%,

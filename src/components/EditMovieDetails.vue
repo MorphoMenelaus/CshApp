@@ -214,6 +214,14 @@ h2,
 	text-align: center;
 }
 
+small {
+	font-size: 0.6em;
+}
+
+#edit {
+	padding-bottom: 4em;
+}
+
 #edit-movies h1 {
 	font-size: 2.5em;
 }
@@ -261,13 +269,6 @@ h2,
 	font-size: 1.52em;
 }
 
-textarea#summary {
-	font-size: 1.3em;
-	font-family: inherit;
-	font-weight: 500;
-	color: #000;
-}
-
 .button-container {
 	display: flex;
 	justify-self: center;
@@ -285,11 +286,6 @@ textarea#summary {
 
 .form-group * {
 	margin: 5px 0 0;
-}
-
-input {
-	font-weight: bold;
-	font-size: 1.25em;
 }
 
 textarea {
