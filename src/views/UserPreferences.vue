@@ -275,11 +275,9 @@ onBeforeMount(() => {
 						</div>
 						<div class="drop-downs">
 							<div class="form-group">
-								<label for="location"
-									>Location Default<br />
-									<small>(for weather charts)</small>
-								</label>
+								<label for="location">Location Default<br /> </label>
 								<select v-model="location">
+									<option value="" disabled selected hidden>Optional (for weather charts)</option>
 									<option v-for="(item, index) in locationOptions" :key="index" :value="item">
 										{{ item.city }}
 									</option>
@@ -416,13 +414,17 @@ h3,
 	margin: 5px 0 0;
 }
 
+.form-group label {
+	font-weight: bold;
+}
+
 .mobile .form-group small {
 	margin-top: 0;
 }
 
 input {
 	font-weight: normal;
-	font-size: 1.25em;
+	/* font-size: 1.25em; */
 }
 
 #userNotes {

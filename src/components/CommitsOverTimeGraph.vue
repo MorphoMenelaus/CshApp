@@ -50,8 +50,8 @@ const drawChart = () => {
 				type: "bar",
 				label: "Contributions",
 				data: extractedValues,
-				backgroundColor: CHART_COLORS.orange,
-				borderColor: CHART_COLORS.orange,
+				backgroundColor: CHART_COLORS.siteThemeBlue, // Use .orange for Halloween theme
+				borderColor: CHART_COLORS.siteThemeBlue, // Use .orange for Halloween theme
 				hoverBackgroundColor: CHART_COLORS.purple,
 			},
 		],

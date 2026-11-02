@@ -30,7 +30,7 @@ const router = createRouter({
 			path: "/verify",
 			name: "Verify",
 			component: () => import("../views/Verify.vue"),
-			meta: { public: false, requiredPermissions: [], title: "Verify Code" },
+			meta: { public: true, requiredPermissions: [], title: "Verify Code" },
 		},
 		{
 			path: "/userpreferences",

@@ -1,3 +1,71 @@
+<script setup>
+import { inject, onBeforeMount, onBeforeUnmount } from "vue";
+import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { appNotify } from "@/dependencies/models.js";
+
+const props = defineProps({
+	appState: Object,
+});
+
+const baseUrl = inject("baseUrl");
+const updateStatus = inject("sendUpdateStatus");
+const showHideLoader = inject("showHideLoader");
+const cancelDeleteUser = inject("cancelDeleteUser");
+const closeChangePassword = inject("closeChangePassword");
+const forceLogout = inject("forceLogout");
+// const serverStatus = Object.assign({}, appNotify);
+
+const deleteUser = async () => {
+	let confirmDelete = confirm(`Are you sure you want to DELETE, ${props.appState.user.userName}`);
+	if (!confirmDelete) return false;
+
+	showHideLoader(true);
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL(`/api/users/${props.appState.user.userId}`, baseUrl);
+
+	let request = new Request(requestUrl.toString(), {
+		method: "DELETE",
+		headers: headerObj,
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		if (data.success) {
+			let serverStatus = data;
+			serverStatus.message = data?.success ? "Your account has been deleted." : data?.message;
+			serverStatus.forced = true;
+			forceLogout(serverStatus);
+			addUserLog(props.appState, "User Deleted Account");
+		}
+	} catch (error) {
+		console.error("Error posting data:", error);
+		let serverStatus = Object.assign({}, appNotify);
+		serverStatus.code = 400;
+		serverStatus.message = `Error deleting user: ${error}`;
+		serverStatus.success = true;
+		updateStatus(serverStatus);
+	} finally {
+		showHideLoader(false);
+	}
+};
+
+const keyDown = (e) => {
+	if (e.key === "Escape") closeChangePassword();
+};
+
+onBeforeMount(() => {
+	window.addEventListener("keydown", keyDown);
+});
+
+onBeforeUnmount(() => {
+	window.removeEventListener("keydown", keyDown);
+});
+</script>
 <template>
 	<div id="delete">
 		<div class="wrapper">
@@ -11,80 +79,6 @@
 		</div>
 	</div>
 </template>
-
-<script>
-// @ is an alias to /src
-import { onBeforeUnmount, inject } from "vue";
-import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
-import { appNotify } from "@/dependencies/models.js";
-
-export default {
-	name: "DeleteUser",
-	props: {
-		appState: Object,
-	},
-	data() {
-		return {
-			baseUrl: inject("baseUrl"),
-			updateStatus: inject("sendUpdateStatus"),
-			showHideLoader: inject("showHideLoader"),
-			cancelDeleteUser: inject("cancelDeleteUser"),
-			forceLogout: inject("forceLogout"),
-			serverStatus: Object.assign({}, appNotify),
-		};
-	},
-	watch: {},
-	methods: {
-		async deleteUser() {
-			let confirmDelete = confirm(`Are you sure you want to DELETE, ${this.appState.user.userName}`);
-			if (!confirmDelete) return false;
-
-			this.showHideLoader(true);
-
-			let headerObj = new Headers();
-			headerObj.append("Authorization", `Bearer ${this.appState.accessToken}`);
-			headerObj.append("Content-Type", "application/json; charset=utf-8");
-			let requestUrl = new URL(`/api/users/${this.appState.user.userId}`, this.baseUrl);
-
-			let request = new Request(requestUrl.toString(), {
-				method: "DELETE",
-				headers: headerObj,
-			});
-
-			try {
-				const response = await tokenInterceptFetch(request);
-				const data = await response.json();
-
-				if (data.success) {
-					this.serverStatus = data;
-					this.serverStatus.message = data?.success ? "Your account has been deleted." : data?.message;
-					this.serverStatus.forced = true;
-					this.forceLogout(this.serverStatus);
-					addUserLog(this.appState, "User Deleted Account");
-				}
-			} catch (error) {
-				console.error("Error posting data:", error);
-				this.serverStatus.code = 400;
-				this.serverStatus.message = `Error deleting user: ${error}`;
-				this.serverStatus.success = true;
-				this.updateStatus(this.serverStatus);
-			} finally {
-				this.showHideLoader(false);
-			}
-		},
-		keyDown(e) {
-			if (e.key === "Escape") this.closePopup();
-		},
-	},
-	mounted() {},
-	created() {
-		window.addEventListener("keydown", this.keyDown);
-		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.keyDown);
-		});
-	},
-};
-</script>
 
 <style scoped>
 h2 {
