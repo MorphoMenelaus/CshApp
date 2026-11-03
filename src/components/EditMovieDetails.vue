@@ -15,9 +15,8 @@ const showHideLoader = inject("showHideLoader");
 const movieUpdated = inject("movieUpdated");
 const serverStatus = Object.assign({}, appNotify);
 
-const dialog = ref(null);
+const confirmEdit = ref(null);
 const disableBtn = ref(false);
-const movie = ref({});
 const title = ref(props.selectedMovie.title);
 const original_title = ref(props.selectedMovie.original_title);
 const tagline = ref(props.selectedMovie.tagline);
@@ -91,7 +90,7 @@ const updateMovie = async () => {
 };
 
 const openConfirmDialog = () => {
-	dialog.value.showModal();
+	confirmEdit.value.showModal();
 };
 
 const cancel = () => {
@@ -99,10 +98,6 @@ const cancel = () => {
 	// false only closes component and true closes and refreshes movie list
 	movieUpdated(false);
 };
-
-onMounted(() => {
-	dialog.value = document.getElementById("confirmEdit");
-});
 </script>
 
 <template>
@@ -188,13 +183,13 @@ onMounted(() => {
 		</div>
 
 		<div id="edit-dialog-container">
-			<dialog id="confirmEdit">
+			<dialog id="confirmEdit" ref="confirmEdit">
 				<div>
 					<h2>Are you sure you want to edit movie?</h2>
 					<p>This cannot be undone.</p>
 					<div class="dialog-buttons">
 						<button class="btn" @click="updateMovie()" :disabled="disableBtn">Update</button>
-						<button class="btn cancel" @click="dialog.close()">Cancel</button>
+						<button class="btn cancel" @click="confirmEdit.close()">Cancel</button>
 					</div>
 				</div>
 			</dialog>

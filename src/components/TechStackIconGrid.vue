@@ -7,7 +7,7 @@ import techStack from "@/dependencies/techStack.json";
 		<div v-for="(icon, i) in techStack" :key="i" class="icon" :title="icon.title">
 			<img :class="icon.class" :src="icon.src" />
 			<div class="icon-overlay">
-				<span class="roboto-body text-stroke">{{ icon.title }}</span>
+				<span class="text-stroke">{{ icon.title }}</span>
 			</div>
 		</div>
 	</div>

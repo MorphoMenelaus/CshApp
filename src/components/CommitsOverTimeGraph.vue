@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeMount, onBeforeUnmount } from "vue";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 import Chart from "chart.js/auto";
 
 const props = defineProps({
@@ -142,10 +143,6 @@ const drawChart = () => {
 	new Chart(chartElem.value, chartConfig);
 };
 
-const handleThemeChange = (e) => {
-	theme.value = e.detail ? "dark" : "light";
-};
-
 const setupForGraph = () => {
 	barData.value = [];
 	props.contributionWeeks.forEach((week) => {
@@ -162,20 +159,19 @@ watch([theme, () => props.windowWidth, () => props.contributionWeeks], () => {
 	drawChart();
 });
 
-onBeforeMount(() => {
-	window.addEventListener("uiDarkModeChange", (e) => handleThemeChange(e));
-});
-
 onMounted(() => {
 	drawChart();
 });
 
 onBeforeUnmount(() => {
-	window.removeEventListener("uiDarkModeChange", (e) => handleThemeChange(e));
 	const existingChart = Chart.getChart("contributions-graph");
 	if (existingChart) {
 		existingChart.destroy();
 	}
+});
+
+useWindowEvent("uiDarkModeChange", (e) => {
+	theme.value = e.detail ? "dark" : "light";
 });
 </script>
 

@@ -5,7 +5,6 @@ import MainNavbar from "@/components/MainNavbar.vue";
 
 const props = defineProps({
 	appState: Object,
-	serverVersion: String,
 	isMobile: Boolean,
 	sharedUpdateStatus: Object,
 	mobileDropdownClose: Boolean,

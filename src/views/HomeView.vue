@@ -10,6 +10,11 @@ import AdditionalBullets from "@/components/AdditionalBullets.vue";
 import CoreTechStack from "@/components/CoreTechStack.vue";
 import GitHubCommitEvents from "@/components/GitHubCommitEvents.vue";
 import GitHubContributions from "@/components/GitHubContributions.vue";
+import CarouselTechStack from "@/components/CarouselTechStack.vue";
+
+defineOptions({
+	inheritAttrs: false,
+});
 
 const props = defineProps({
 	appState: Object,
@@ -23,7 +28,8 @@ const copyright = inject("copyright");
 </script>
 
 <template>
-	<main class="roboto-body">
+	<CarouselTechStack />
+	<main>
 		<div v-if="appState?.isLoggedOn && !appState?.permissions.verified" class="not-verified">
 			<span>Not Verified. </span>
 			<RouterLink class="unverified" to="/verify">Click to Verify Account</RouterLink>

@@ -72,6 +72,7 @@
 <script>
 import { provide, inject } from "vue";
 import router from "@/router";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 
 const user = import.meta.env.VITE_APP_GUEST_USER;
 const password = import.meta.env.VITE_APP_GUEST_PASS;
@@ -239,9 +240,6 @@ export default {
 				router.push("/");
 			}
 		},
-		keyDown(e) {
-			if (e.key === "Escape") this.loginShowEvent(false);
-		},
 		handleClick(event) {
 			if (event.target.id === "login") this.loginShowEvent(false);
 		},
@@ -251,7 +249,9 @@ export default {
 	},
 	created() {
 		provide("forceLogout", this.logout);
-		window.addEventListener("keydown", this.keyDown);
+		useWindowEvent("keydown", (e) => {
+			if (e.key === "Escape") this.loginShowEvent(false);
+		});
 	},
 };
 </script>

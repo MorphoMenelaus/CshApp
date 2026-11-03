@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeMount, onBeforeUnmount, inject } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 import { appNotify } from "@/dependencies/models.js";
 import urls from "../dependencies/commonUrls.json";
 
@@ -123,21 +124,9 @@ const contactHandler = async () => {
 	}
 };
 
-const keyDown = (e) => {
-	if (e.key === "Escape") contactEmail(false);
-};
-
 const handleClick = (event) => {
 	if (event.target.id === "contact") contactEmail(false);
 };
-
-onBeforeMount(() => {
-	window.addEventListener("keydown", keyDown);
-});
-
-onBeforeUnmount(() => {
-	window.removeEventListener("keydown", keyDown);
-});
 
 onMounted(() => {
 	sendAnalyticsEvent("contact_form_load", "contact_modal");
@@ -149,6 +138,10 @@ onMounted(() => {
 		script.defer = true;
 		document.head.appendChild(script);
 	}
+});
+
+useWindowEvent("keydown", (e) => {
+	if (e.key === "Escape") contactEmail(false);
 });
 </script>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { inject } from "vue";
+import { ref, inject, onBeforeMount } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "../dependencies/commonUrls.json";
 import ProfessionalProfile from "@/components/ProfessionalProfile.vue";
@@ -7,9 +7,6 @@ import Disclaimers from "../components/Disclaimers.vue";
 import PrivacyDisclaimer from "../components/PrivacyDisclaimer.vue";
 import TaglineBox from "@/components/TaglineBox.vue";
 import TechStackIconGrid from "@/components/TechStackIconGrid.vue";
-import CarouselTechStack from "@/components/CarouselTechStack.vue";
-
-const appCurrentVersion = inject("appCurrentVersion");
 
 defineOptions({
 	inheritAttrs: false,
@@ -17,19 +14,36 @@ defineOptions({
 
 const props = defineProps({
 	appState: Object,
-	serverVersion: String,
 	isMobile: Boolean,
 });
 
+const baseUrl = inject("baseUrl");
+const appCurrentVersion = inject("appCurrentVersion");
+const copyright = inject("copyright");
 const contactEmail = inject("contactEmail", () => {
 	console.warn("Global function not found! contactEmail()");
 });
 
-const copyright = inject("copyright");
+const serverVersion = ref({});
+
+const getServerVersion = async () => {
+	try {
+		const response = await fetch(`${baseUrl}/api/serverInfo`);
+		if (response?.ok) {
+			let data = await response.json();
+			serverVersion.value = data?.version || "";
+		}
+	} catch (error) {
+		console.error("Error fetching server version:", error);
+	}
+};
+
+onBeforeMount(() => {
+	getServerVersion();
+});
 </script>
 
 <template>
-	<CarouselTechStack />
 	<main>
 		<div id="about" :class="isMobile ? 'mobile' : ''">
 			<div id="serverInfo" v-if="appState?.isLoggedOn">

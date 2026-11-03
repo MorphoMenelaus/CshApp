@@ -14,9 +14,8 @@ const shuffledTech = ref([]);
 const config = {
 	itemsToShow: 1.5,
 	snapAlign: "center",
-	autoplay: 3000,
-	// marquee: true,
-	// marqueeSpeed: 100,
+	marquee: true,
+	marqueeSpeed: 50,
 	wrapAround: true,
 	breakpoints: {
 		320: { itemsToShow: 3, snapAlign: "start" },
@@ -52,7 +51,7 @@ onMounted(() => {
 					<div class="item-container" :title="slide.title">
 						<img :class="slide.class" :src="slide.src" />
 						<div class="icon-overlay">
-							<span class="roboto-body text-stroke">{{ slide.title }}</span>
+							<span class="text-stroke">{{ slide.title }}</span>
 						</div>
 					</div>
 				</div>

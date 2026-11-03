@@ -19,7 +19,7 @@
 
 	<div v-if="!appState?.isLoggedOn && !isMobile" :class="['register-link', { about: route.name === 'about' }]">
 		<span
-			>New User? <span class="link" @click="showRegisterUserComponent(false, true)" title="Click to register">Click to register</span>.<br />Or login with
+			>New User? <span class="link" @click="showRegisterUserComponent(false, true)" title="Click to register">Register here</span>.<br />Or login as
 			username "guest"</span
 		>
 	</div>
@@ -30,7 +30,6 @@
 
 	<RouterView
 		id="view"
-		:serverVersion="serverVersion"
 		:appState="appState"
 		:uiDarkMode="uiDarkMode"
 		:isMobile="isMobile"
@@ -87,7 +86,6 @@ export default {
 			mobileDropdownClose: null,
 			recall: new Storage(),
 			body: document.getElementsByTagName("body"),
-			serverVersion: "",
 			appState: {},
 			currentComponent: null,
 			isMobileDevice: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent),
@@ -138,7 +136,6 @@ export default {
 				screen.orientation.type.includes("landscape") && window.innerHeight < 600 && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 		},
 		async initialSetup() {
-			this.getServerVersion();
 			this.recallAppState();
 			if (this.appState?.accessToken) {
 				let checkTokens = await tokenCheck(this.appState);
@@ -171,17 +168,6 @@ export default {
 			this.recall.save(this.appState);
 			if (this.appState.hasOwnProperty("user")) {
 				this.uiDarkMode = this.appState.user?.uiDarkMode || false;
-			}
-		},
-		async getServerVersion() {
-			try {
-				const response = await fetch(`${this.baseUrl}/api/serverInfo`);
-				if (response?.ok) {
-					let data = await response.json();
-					this.serverVersion = data?.version || "";
-				}
-			} catch (error) {
-				console.error("Error fetching server version:", error);
 			}
 		},
 	},
@@ -245,7 +231,8 @@ span.link {
 
 #dark-mode-check {
 	position: absolute;
-	top: 15px;
+	position: fixed;
+	bottom: 4em;
 	left: 15px;
 	display: flex;
 	align-items: center;
@@ -274,8 +261,10 @@ span.link {
 }
 
 .register-link {
-	right: 15px;
+	right: 20px;
 	position: absolute;
+	position: fixed;
+	bottom: 4em;
 	font-weight: bold;
 	z-index: 1;
 	color: #000;

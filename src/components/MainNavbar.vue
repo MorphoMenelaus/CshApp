@@ -145,7 +145,7 @@ onMounted(() => {
 					title="Simple Clock"
 					>Simple Clock
 				</RouterLink>
-				<RouterLink to="/about" @click="closeDialogs('about')" title="About Chris Hardwick">About</RouterLink>
+				<RouterLink to="/about" @click="closeDialogs('about')" title="Chris Hardwick Professional Profile">Profile</RouterLink>
 			</nav>
 		</Transition>
 	</div>
@@ -261,7 +261,7 @@ nav {
 	padding: 15px;
 	border-bottom: 1px #fff solid;
 	background-color: #313b64;
-	font-size: 18px;
+	font-size: 20px;
 	text-transform: uppercase;
 }
 

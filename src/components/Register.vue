@@ -80,6 +80,7 @@
 <script>
 import { onBeforeUnmount, inject } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 import { appNotify } from "@/dependencies/models.js";
 
 export default {
@@ -207,9 +208,6 @@ export default {
 				console.error("Registration failed:", err);
 			}
 		},
-		keyDown(e) {
-			if (e.key === "Escape") this.registerUser(false);
-		},
 		handleClick(event) {
 			if (event.target.id === "register") this.registerUser(false);
 		},
@@ -226,9 +224,8 @@ export default {
 		}
 	},
 	created() {
-		window.addEventListener("keydown", this.keyDown);
-		onBeforeUnmount(() => {
-			window.removeEventListener("keydown", this.keyDown);
+		useWindowEvent("keydown", (e) => {
+			if (e.key === "Escape") this.registerUser(false);
 		});
 	},
 };
