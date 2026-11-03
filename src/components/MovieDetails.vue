@@ -1,5 +1,5 @@
 <script setup>
-import { inject } from "vue";
+import { ref, inject } from "vue";
 
 const props = defineProps({
 	isMobile: Boolean,
@@ -7,6 +7,7 @@ const props = defineProps({
 });
 
 const movieUpdated = inject("movieUpdated");
+const posterImage = ref(props.selectedMovie.slug ? `url('/media-poster/${props.selectedMovie.slug}-poster.jpg')` : null);
 
 const cancel = () => {
 	// Event is movieUpdated but it can work as a cancel as well
@@ -38,9 +39,9 @@ const formatDuration = (ms) => {
 					<small>Directed By: {{ selectedMovie.tags_director.replaceAll("|", ", ") }}</small>
 					<h2>{{ selectedMovie.tagline }}</h2>
 					<div class="year-block">
+						<div class="rating">{{ selectedMovie.content_rating }}</div>
 						<div>{{ selectedMovie.year }}</div>
 						<div>{{ formatDuration(selectedMovie.duration) }}</div>
-						<div>{{ selectedMovie.content_rating }}</div>
 					</div>
 					<div>{{ selectedMovie.tags_genre.replaceAll("|", ", ") }}</div>
 					<div class="rating-block">
@@ -65,6 +66,17 @@ const formatDuration = (ms) => {
 <style scoped>
 p {
 	margin: 30px auto;
+	font-size: 1.25rem;
+}
+
+.details-box h1 {
+	font-size: 3.25rem;
+	font-weight: bold;
+}
+
+.details-box h2 {
+	font-size: 2.25rem;
+	font-weight: bold;
 }
 
 #movie-details {
@@ -87,15 +99,27 @@ p {
 }
 
 .card {
-	max-height: calc(100vh - 190px);
+	height: 80%;
+	/* max-height: calc(100vh - 190px); */
 	margin: auto;
 	padding: 30px;
-	background-color: #c7c7c7;
+	/* background-color: #c7c7c7; */
+	background-color: #ababab;
+	background-image: v-bind(posterImage);
+	background-image: v-bind(posterImage), radial-gradient(rgb(171 171 171 / 60%), transparent);
+	background-repeat: no-repeat;
+	background-position:
+		center center,
+		center center;
+	background-size: cover, contain;
+	background-blend-mode: overlay;
 	border-radius: 15px;
 	color: #000;
 	overflow: hidden auto;
 	display: grid;
 	grid-template-columns: 1fr 2fr;
+	border: 2px rgb(255 255 255 / 50%) solid;
+	align-items: center;
 }
 
 .mobile .card {
@@ -116,8 +140,22 @@ p {
 }
 
 .details-box {
+	background-color: rgb(255 255 255 / 60%);
+	/* padding-left: 1em;
+	padding-right: 1em; */
+	padding: 1em;
+	border-radius: 12px;
+	border: 1px rgb(128 128 128 / 70%) solid;
+	height: fit-content;
+}
+
+.details-box {
 	flex: 1 1 auto;
-	height: 100%;
+	/* height: 100%; */
+}
+
+.details-box * {
+	font-weight: 500;
 }
 
 .details-box small {
@@ -133,7 +171,8 @@ p {
 .mobile .img-box {
 	align-items: center;
 	padding: unset;
-	margin: auto;
+	/* margin: auto; */
+	margin: auto auto 1em;
 }
 
 img.poster {
@@ -149,6 +188,7 @@ img.poster {
 .rating-block {
 	display: flex;
 	justify-content: flex-start;
+	align-items: center;
 }
 
 .year-block div,
@@ -164,34 +204,46 @@ img.poster {
 	margin: 30px auto 15px;
 }
 
+button.btn {
+	font-size: 1.5rem;
+}
+
+.rating {
+	background-color: rgb(0 0 0 / 75%);
+	padding: 0.1em 0.5em 0;
+	border-radius: 0.3em;
+	color: white;
+	font-weight: bold;
+}
+
 @media (max-width: 767px) {
-	.card {
+	/* .card {
 		max-height: calc(100vh - 245px);
-	}
+	} */
 }
 
 @media (min-width: 768px) {
 	.card {
-		width: 85%;
+		width: 90%;
 	}
 }
 
 @media (min-width: 992px) {
 	.card {
-		width: 75%;
+		width: 85%;
 	}
 }
 
 @media (min-width: 1200px) {
 	.card {
-		width: 65%;
-		max-height: 75%;
+		width: 80%;
+		/* max-height: 75%; */
 	}
 }
 
 @media (min-width: 2200px) {
 	.card {
-		width: 50%;
+		width: 60%;
 	}
 }
 </style>

@@ -1,5 +1,6 @@
 <script setup>
 import { ref, inject, onBeforeUnmount } from "vue";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 import WeatherBasic from "@/components/WeatherBasic.vue";
 import StockCharts from "@/components/StockCharts.vue";
 
@@ -12,13 +13,8 @@ defineProps({
 const copyright = inject("copyright");
 const theme = ref(localStorage.getItem("theme") || "light");
 
-const handleThemeChange = (e) => {
+useWindowEvent("uiDarkModeChange", (e) => {
 	theme.value = e.detail ? "dark" : "light";
-};
-
-window.addEventListener("uiDarkModeChange", (e) => handleThemeChange(e));
-onBeforeUnmount(() => {
-	window.removeEventListener("uiDarkModeChange", (e) => handleThemeChange(e));
 });
 </script>
 

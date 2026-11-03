@@ -1,6 +1,7 @@
 <script setup>
 import { ref, shallowRef, computed, watch, onMounted, onBeforeMount, onBeforeUnmount, inject, provide } from "vue";
 import { tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { useWindowEvent, useElementEvent } from "@/composables/useCommonEvents.js";
 import EditMovieDetails from "@/components/EditMovieDetails.vue";
 import MovieDetails from "@/components/MovieDetails.vue";
 import { appNotify } from "@/dependencies/models.js";
@@ -262,17 +263,6 @@ const closeModal = (refresh = true) => {
 	if (refresh) refreshMoviesWithFaves();
 };
 
-const keyDown = (e) => {
-	if (e.key === "Escape") {
-		currentComponent.value = null;
-		dialog.value.close();
-	}
-};
-
-const clickHandler = (e) => {
-	if (e.target.id === "movie-details") currentComponent.value = null;
-};
-
 const showRegisterUserComponent = (login = false, register = false) => {
 	dialog.value.close();
 	loginShow(login);
@@ -385,21 +375,23 @@ watch(favoritesOnly, () => {
 
 onBeforeMount(() => {
 	provide("movieUpdated", closeModal);
-	window.addEventListener("keydown", keyDown);
-});
-
-onBeforeUnmount(() => {
-	window.removeEventListener("keydown", keyDown);
-	modalContainer.value.removeEventListener("click", clickHandler);
 });
 
 onMounted(() => {
 	limit.value = columns.value * 2;
 	populateLimits();
 	getMovieList();
-	dialog.value = document.getElementById("not-allowed");
-	modalContainer.value = document.getElementById("modal-container");
-	modalContainer.value.addEventListener("click", clickHandler);
+});
+
+useElementEvent(modalContainer, "click", (e) => {
+	if (e.target.id === "movie-details") currentComponent.value = null;
+});
+
+useWindowEvent("keydown", (e) => {
+	if (e.key === "Escape") {
+		currentComponent.value = null;
+		dialog.value.close();
+	}
 });
 </script>
 
@@ -455,7 +447,7 @@ onMounted(() => {
 		</div>
 		<div id="movies">
 			<div id="cards" v-if="movieList?.length > 0">
-				<div class="card" v-for="(item, index) in movieList" :key="index">
+				<div class="card" v-for="item in movieList" :key="item.movieId">
 					<button v-if="appState?.permissions?.admin" class="btn edit" @click="editThisEntry(item)" title="Edit this movie's detils">Edit</button>
 					<!-- <div v-if="item.original_title" class="summary-pop">
 							<p>{{ item.summary }}</p>
@@ -495,12 +487,12 @@ onMounted(() => {
 			</div>
 		</div>
 
-		<div id="modal-container">
+		<div id="modal-container" ref="modalContainer">
 			<component :is="currentComponent" :appState="appState" :selectedMovie="selectedMovie" :favoritesList="favoritesList" :isMobile="isMobile" />
 		</div>
 
 		<div id="permissions-dialog-container">
-			<dialog id="not-allowed">
+			<dialog id="not-allowed" ref="dialog">
 				<div>
 					<h2>Saving Favorites requires a verified account</h2>
 					<p>You must be logged in with a verified account to save to your fovorites list.</p>

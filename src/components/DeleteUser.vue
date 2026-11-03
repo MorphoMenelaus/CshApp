@@ -1,6 +1,7 @@
 <script setup>
 import { inject, onBeforeMount, onBeforeUnmount } from "vue";
 import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 import { appNotify } from "@/dependencies/models.js";
 
 const props = defineProps({
@@ -54,16 +55,8 @@ const deleteUser = async () => {
 	}
 };
 
-const keyDown = (e) => {
+useWindowEvent("keydown", (e) => {
 	if (e.key === "Escape") closeChangePassword();
-};
-
-onBeforeMount(() => {
-	window.addEventListener("keydown", keyDown);
-});
-
-onBeforeUnmount(() => {
-	window.removeEventListener("keydown", keyDown);
 });
 </script>
 <template>
