@@ -1,10 +1,17 @@
 <script setup>
+import { ref } from "vue";
 import techStack from "@/dependencies/techStack.json";
+const loadDarkVersion = ref(false);
 </script>
 
 <template>
 	<div id="tech-stack-grid">
-		<div v-for="(icon, i) in techStack" :key="i" class="icon" :title="icon.title">
+		<div
+			v-for="(icon, i) in techStack"
+			:key="i"
+			:class="['icon', { light: icon.class.includes('sql-light'), dark: icon.class.includes('sql-dark') }]"
+			:title="icon.title"
+		>
 			<img :class="icon.class" :src="icon.src" />
 			<div class="icon-overlay">
 				<span class="text-stroke">{{ icon.title }}</span>
@@ -95,5 +102,17 @@ img.logo {
 	bottom: 0.25em;
 	text-align: center;
 	width: 100%;
+}
+
+.icon.dark {
+	display: none;
+}
+
+.uiDarkMode .icon.light {
+	display: none;
+}
+
+.uiDarkMode .icon.dark {
+	display: flex;
 }
 </style>

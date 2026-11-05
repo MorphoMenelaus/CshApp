@@ -12,10 +12,6 @@ import GitHubCommitEvents from "@/components/GitHubCommitEvents.vue";
 import GitHubContributions from "@/components/GitHubContributions.vue";
 import CarouselTechStack from "@/components/CarouselTechStack.vue";
 
-defineOptions({
-	inheritAttrs: false,
-});
-
 const props = defineProps({
 	appState: Object,
 	uiDarkMode: Boolean,
@@ -29,7 +25,7 @@ const copyright = inject("copyright");
 
 <template>
 	<CarouselTechStack />
-	<main>
+	<main v-bind="$attrs">
 		<div v-if="appState?.isLoggedOn && !appState?.permissions.verified" class="not-verified">
 			<span>Not Verified. </span>
 			<RouterLink class="unverified" to="/verify">Click to Verify Account</RouterLink>
@@ -140,8 +136,8 @@ p {
 
 #view {
 	width: 100%;
-	margin: 15px auto;
-	padding: 15px;
+	margin: 0 auto 15px;
+	padding: 0 15px 15px;
 	position: relative;
 	inset: 0;
 }

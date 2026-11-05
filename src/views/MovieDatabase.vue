@@ -396,7 +396,7 @@ useWindowEvent("keydown", (e) => {
 </script>
 
 <template>
-	<main>
+	<main v-bind="$attrs">
 		<h1 class="julius-sans">🎞️ Movie Database</h1>
 		<div id="movie-header">
 			<p>
@@ -449,11 +449,8 @@ useWindowEvent("keydown", (e) => {
 			<div id="cards" v-if="movieList?.length > 0">
 				<div class="card" v-for="item in movieList" :key="item.movieId">
 					<button v-if="appState?.permissions?.admin" class="btn edit" @click="editThisEntry(item)" title="Edit this movie's detils">Edit</button>
-					<!-- <div v-if="item.original_title" class="summary-pop">
-							<p>{{ item.summary }}</p>
-						</div> -->
-					<div class="inner">
-						<div class="title-description" :title="`View details for ${item.title}`" @click="viewThisEntry(item)">
+					<div class="inner" @click="viewThisEntry(item)" :title="`View details for ${item.title}`">
+						<div class="title-description">
 							<h2 :title="item.original_title ? item.original_title : ''">
 								{{ item.title }}
 							</h2>
@@ -462,20 +459,19 @@ useWindowEvent("keydown", (e) => {
 								<small>{{ item.tags_genre }}</small>
 								<small>{{ item.year }}</small>
 							</p>
-							<!-- <p>{{ item.summary }}</p> -->
 						</div>
-						<div class="image-container" :title="`View details for ${item.title}`" @click="viewThisEntry(item)">
+						<div class="image-container">
 							<img :alt="item.title" :src="`./media-poster/${item.slug}.jpg`" />
 						</div>
-						<span
-							id="favorite"
-							:class="favoritesList.includes(item.movieId) ? 'favs' : ''"
-							@click="favoritesHandler(item.movieId)"
-							:title="`${favoritesList.includes(item.movieId) ? 'Remove from' : 'Add to'} favorites`"
-							>🔖</span
-						>
 						<span v-if="item.content_rating.length > 0" class="content-rating">{{ item.content_rating }}</span>
 					</div>
+					<span
+						id="favorite"
+						:class="favoritesList.includes(item.movieId) ? 'favs' : ''"
+						@click="favoritesHandler(item.movieId)"
+						:title="`${favoritesList.includes(item.movieId) ? 'Remove from' : 'Add to'} favorites`"
+						>🔖</span
+					>
 				</div>
 			</div>
 			<div v-else>
@@ -517,8 +513,8 @@ h2 {
 }
 
 h1 {
-	margin-top: 1em;
-	font-size: 3em;
+	margin-top: 1rem;
+	font-size: 3.75rem;
 }
 
 #movie-header {
@@ -572,6 +568,7 @@ h1 {
 	height: 460px;
 	margin: 30px auto;
 	display: flex;
+	cursor: pointer;
 }
 
 .uiDarkMode .card .inner {
@@ -582,7 +579,6 @@ h1 {
 .title-description {
 	padding: 5px 15px;
 	text-align: center;
-	cursor: pointer;
 }
 
 .genr-year {
@@ -598,7 +594,6 @@ h1 {
 	border-radius: 8px;
 	border: 1px #999 solid;
 	user-select: none;
-	cursor: pointer;
 }
 
 img {

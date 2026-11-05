@@ -329,7 +329,7 @@ label[for="casinoId"] {
 	background-color: #313b64;
 	height: fit-content;
 	padding: 15px 30px;
-	border-radius: 8px;
+	border-radius: 12px;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden auto;

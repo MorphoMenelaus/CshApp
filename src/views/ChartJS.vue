@@ -19,7 +19,7 @@ useWindowEvent("uiDarkModeChange", (e) => {
 </script>
 
 <template>
-	<main>
+	<main v-bind="$attrs">
 		<div id="charts-header">
 			<h1 class="julius-sans center stroke">Visualizing Data</h1>
 			<h2>ChartJS Demos <i class="icon devicon-chartjs-plain" title="ChartJS"></i></h2>
@@ -45,16 +45,16 @@ h3 {
 }
 
 h2 {
-	font-size: 2.25em;
+	font-size: 2.25rem;
 }
 
 h3 {
-	font-size: 1.8em;
+	font-size: 1.5rem;
 }
 
 h1.julius-sans {
-	margin-top: 0.5em;
-	font-size: 3.5em;
+	margin-top: 1rem;
+	font-size: 3.75rem;
 	font-weight: bold;
 	color: var(--vt-c-text-light-3);
 }

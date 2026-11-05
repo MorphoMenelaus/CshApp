@@ -180,7 +180,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<main id="clocklog-container">
+	<main v-bind="$attrs">
 		<div id="clock">
 			<div id="time-container">
 				<span id="time">{{ timeLocal }}</span>

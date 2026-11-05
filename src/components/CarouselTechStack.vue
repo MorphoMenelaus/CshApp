@@ -39,7 +39,8 @@ function shuffleArray(array) {
 }
 
 onMounted(() => {
-	shuffledTech.value = shuffleArray(techStack);
+	let newTechStack = techStack.filter((icon) => !icon.class.includes("sql-light"));
+	shuffledTech.value = shuffleArray(newTechStack);
 });
 </script>
 

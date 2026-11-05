@@ -6,7 +6,7 @@
 				<i class="icon devicon-javascript-plain" title="JavaScript"></i>
 				<i class="icon devicon-html5-plain" title="HTML5"></i>
 				<i class="icon devicon-css3-plain" title="CSS3"></i>
-				<img class="icon logo" src="/icons/vue-logo.svg" title="Vue 3" alt="Vue 3 Logo" />
+				<img class="icon logo" src="https://cdn.hardwick.design/svg/vue-logo.svg" title="Vue 3" alt="Vue 3 Logo" />
 				<i class="icon devicon-react-original" title="React"></i>
 				<i class="icon devicon-git-plain" title="Git"></i>
 			</span>

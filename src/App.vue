@@ -35,13 +35,13 @@
 		:isMobile="isMobile"
 		:windowWidth="windowWidth"
 		:forceLogoutEvent="forceLogoutEvent"
-		:class="isMobile ? 'mobile' : ''"
+		:class="{ mobile: isMobile }"
 	/>
 
 	<FooterMain :isMobile="isMobile" />
 
 	<Transition name="fade">
-		<component :is="currentComponent" :appState="appState" :isMobile="isMobile" :class="isMobile ? 'mobile' : ''" />
+		<component :is="currentComponent" :appState="appState" :isMobile="isMobile" :class="{ mobile: isMobile }" />
 	</Transition>
 
 	<div id="ai-button" v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)">
@@ -266,7 +266,7 @@ span.link {
 	position: fixed;
 	bottom: 4em;
 	font-weight: bold;
-	z-index: 1;
+	z-index: 4;
 	color: #000;
 }
 

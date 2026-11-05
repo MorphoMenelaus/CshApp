@@ -3,7 +3,7 @@
 <template>
 	<div id="cover-blurb">
 		<div id="profile-header">
-			<img class="upskill-icon" src="/icons/upskill-icon.svg" alt="Upskill Icon" />
+			<img class="upskill-icon" src="https://cdn.hardwick.design/svg/upskill-icon.svg" alt="Upskill Icon" />
 			<h2 class="julius-sans">Proactive Upskilling &amp; Latest Accomplishments</h2>
 		</div>
 		<p>

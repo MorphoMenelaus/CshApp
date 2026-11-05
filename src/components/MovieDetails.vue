@@ -70,12 +70,12 @@ p {
 }
 
 .details-box h1 {
-	font-size: 3.25rem;
+	font-size: 3rem;
 	font-weight: bold;
 }
 
 .details-box h2 {
-	font-size: 2.25rem;
+	font-size: 2rem;
 	font-weight: bold;
 }
 
@@ -99,7 +99,7 @@ p {
 }
 
 .card {
-	height: 80%;
+	height: 90%;
 	/* max-height: calc(100vh - 190px); */
 	margin: auto;
 	padding: 30px;
@@ -201,11 +201,11 @@ img.poster {
 	display: flex;
 	width: 100%;
 	justify-content: center;
-	margin: 30px auto 15px;
+	margin: 15px auto;
 }
 
 button.btn {
-	font-size: 1.5rem;
+	font-size: 1.25rem;
 }
 
 .rating {

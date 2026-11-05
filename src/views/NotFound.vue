@@ -2,7 +2,7 @@
 const copyright = inject("copyright");
 </script>
 <template>
-	<main>
+	<main v-bind="$attrs">
 		<div class="centered">
 			<h1>404</h1>
 			<h2>Page Not Found</h2>

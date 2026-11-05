@@ -31,15 +31,15 @@ h3 {
 }
 
 h1 {
-	font-size: 2.5em;
+	font-size: 3rem;
 }
 
 h2 {
-	font-size: 1.5em;
+	font-size: 1.75rem;
 }
 
 h3 {
-	font-size: 1.25em;
+	font-size: 1.4rem;
 }
 
 .name a {
@@ -68,12 +68,6 @@ a.name:hover h1 {
 	background-color: #222;
 }
 
-#available {
-	position: absolute;
-	top: -15px;
-	left: 15px;
-}
-
 .map-pin {
 	position: relative;
 	width: fit-content;
@@ -97,21 +91,21 @@ a.name:hover h1 {
 
 @media (min-width: 768px) {
 	h1 {
-		font-size: 3.25em;
+		font-size: 3.75rem;
 	}
 }
 
 @media (min-width: 992px) {
 	h1 {
-		font-size: 3.75em;
+		font-size: 4.25rem;
 	}
 
 	h2 {
-		font-size: 2em;
+		font-size: 2.25rem;
 	}
 
 	h3 {
-		font-size: 1.5em;
+		font-size: 1.75rem;
 	}
 }
 
