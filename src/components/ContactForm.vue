@@ -8,6 +8,7 @@ import urls from "../dependencies/commonUrls.json";
 defineOptions({
 	inheritAttrs: false,
 });
+
 const props = defineProps({
 	appState: Object,
 	isMobile: Boolean,
@@ -146,7 +147,7 @@ useWindowEvent("keydown", (e) => {
 </script>
 
 <template>
-	<div id="contact" @mousedown="handleClick($event)">
+	<div id="contact" @mousedown="handleClick($event)" v-bind="$attrs">
 		<div class="wrapper" v-if="!messageSent">
 			<div id="form-header">
 				<div class="email-header">
@@ -343,7 +344,7 @@ label[for="casinoId"] {
 	background-color: #313b64;
 	height: fit-content;
 	padding: 15px 30px;
-	border-radius: 8px;
+	border-radius: 12px;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden auto;
@@ -392,7 +393,7 @@ label[for="casinoId"] {
 }
 
 textarea#message {
-	min-height: 5em;
+	min-height: 4em;
 }
 
 #form-header small {

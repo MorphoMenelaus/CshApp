@@ -36,7 +36,7 @@
 	},
 	{
 		"title": "Pinia",
-		"src": "/icons/pinia-logo.svg",
+		"src": "https://cdn.hardwick.design/svg/pinia-logo.svg",
 		"class": "logo"
 	},
 	{
@@ -61,18 +61,23 @@
 	},
 	{
 		"title": "NodeJS",
-		"src": "/icons/nodejs.svg",
+		"src": "https://cdn.hardwick.design/svg/nodejs.svg",
 		"class": "logo filter"
 	},
 	{
 		"title": "ExpressJS",
-		"src": "/icons/express-logo-white.svg",
+		"src": "https://cdn.hardwick.design/svg/express-logo-white.svg",
 		"class": "logo invert"
 	},
 	{
 		"title": "MySQL",
-		"src": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original-wordmark.svg",
-		"class": "logo"
+		"src": "https://cdn.hardwick.design/svg/mysql-original.svg",
+		"class": "logo sql-light"
+	},
+	{
+		"title": "MySQL",
+		"src": "https://cdn.hardwick.design/svg/mysql-white.svg",
+		"class": "logo sql-dark"
 	},
 	{
 		"title": "ChartJS",

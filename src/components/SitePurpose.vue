@@ -17,12 +17,12 @@
 			</p>
 		</div>
 		<div class="logos">
-			<img class="logo" src="/icons/vue-logo.svg" title="Vue 3" alt="Vue 3 Logo" />
-			<img class="logo" src="/icons/pinia-logo.svg" title="Pinia" alt="Pinia Logo" />
-			<img class="logo express" src="/icons/express-logo-white.svg" title="ExpressJS" alt="ExpressJS Logo" />
-			<img class="logo short-logo light" src="/icons/nodejsStackedDark.svg" title="NodeJS" alt="NodeJS Logo" />
-			<img class="logo short-logo dark" src="/icons/nodejsStackedLight.svg" title="NodeJS" alt="NodeJS Logo" />
-			<img class="logo short-logo" src="/icons/mysql-official.svg" title="MySQL" alt="MySQL Logo" />
+			<img class="logo" src="https://cdn.hardwick.design/svg/vue-logo.svg" title="Vue 3" alt="Vue 3 Logo" />
+			<img class="logo" src="https://cdn.hardwick.design/svg/pinia-logo.svg" title="Pinia" alt="Pinia Logo" />
+			<img class="logo express" src="https://cdn.hardwick.design/svg/express-logo-white.svg" title="ExpressJS" alt="ExpressJS Logo" />
+			<img class="logo short-logo light" src="https://cdn.hardwick.design/svg/nodejsStackedDark.svg" title="NodeJS" alt="NodeJS Logo" />
+			<img class="logo short-logo dark" src="https://cdn.hardwick.design/svg/nodejsStackedLight.svg" title="NodeJS" alt="NodeJS Logo" />
+			<img class="logo short-logo" src="https://cdn.hardwick.design/svg/mysql-official.svg" title="MySQL" alt="MySQL Logo" />
 		</div>
 	</div>
 </template>

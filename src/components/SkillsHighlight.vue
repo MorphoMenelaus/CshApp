@@ -28,7 +28,7 @@
 	justify-content: space-around;
 	/* align-items: center; */
 	margin: 30px auto;
-	font-size: 1.25em;
+	font-size: 1.4rem;
 	width: 50%;
 	padding: 0 30px;
 	color: rgb(25 25 25);

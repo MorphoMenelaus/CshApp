@@ -349,7 +349,7 @@ h2 {
 	padding: 30px 30px 45px;
 	margin: 30px auto;
 	background: rgb(49 59 100 / 90%);
-	border-radius: 8px;
+	border-radius: 12px;
 	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
 	overflow: hidden auto;
 }

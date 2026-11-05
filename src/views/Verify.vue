@@ -2,10 +2,6 @@
 import { onBeforeMount, ref, inject } from "vue";
 import { appNotify } from "@/dependencies/models.js";
 
-defineOptions({
-	inheritAttrs: false,
-});
-
 const props = defineProps({
 	appState: Object,
 });
@@ -119,7 +115,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-	<div>
+	<div v-bind="$attrs">
 		<div id="verify" v-if="!success">
 			<div id="form-header">
 				<h1>Please enter code to verify</h1>

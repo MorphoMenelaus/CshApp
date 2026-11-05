@@ -1,5 +1,5 @@
 <template>
-	<main id="time-tracker">
+	<main v-bind="$attrs">
 		<div>
 			<div id="toggl-user" v-if="toggleUser">
 				<h1 id="toggl-heading">Toggl Project Tracker</h1>

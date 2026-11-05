@@ -120,7 +120,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<main>
+	<main v-bind="$attrs">
 		<div id="blogs">
 			<div>
 				<div class="blog-intro">

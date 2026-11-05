@@ -84,7 +84,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<main id="listUsersLogs" class="input-heading">
+	<main v-bind="$attrs" class="input-heading">
 		<h1>User Logs</h1>
 
 		<div id="paging">

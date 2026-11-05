@@ -1,9 +1,7 @@
 <script setup>
 import { inject } from "vue";
-import { useRoute } from "vue-router";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 const contactEmail = inject("contactEmail");
-const route = useRoute();
 </script>
 <template>
 	<div
@@ -11,22 +9,26 @@ const route = useRoute();
 		title="Schedule an Interview or inquire about my services"
 		@click="
 			contactEmail(true);
-			sendAnalyticsEvent('contact_form_footer', 'contact_modal');
+			sendAnalyticsEvent('contact_form_available', 'contact_modal');
 		"
 	>
-		<span class="pulse" :class="route.name === 'about' ? 'about' : ''">Available</span>
+		<span class="pulse">Available</span>
 	</div>
 </template>
 
 <style scoped>
 #available {
+	position: absolute;
+	top: -1rem;
+	left: 1.5rem;
 	user-select: none;
+	font-size: 1.25rem;
 }
 
 #available span {
 	color: #b3ffb3;
 	background-color: rgb(0 128 0);
-	padding: 1px 15px 0 25px;
+	padding: 1px 1em 0 1.5em;
 	border-radius: 1em;
 	border: 1px #0f0 solid;
 	position: relative;
@@ -36,10 +38,6 @@ const route = useRoute();
 		color 0.2s,
 		border-color 0.2s,
 		background-color 0.2s;
-}
-
-#available span.about {
-	padding-top: 0;
 }
 
 #available:hover span {
@@ -58,34 +56,20 @@ const route = useRoute();
 }
 
 .pulse::before {
-	top: 7px;
-	left: 8px;
-	width: 12px;
-	height: 12px;
-	animation-delay: -0.32s;
-}
-/* .pulse::before {
 	top: -0.3em;
 	left: -0.3em;
 	width: 1.8em;
 	height: 1.8em;
 	animation-delay: -0.16s;
-} */
+}
 
 .pulse::after {
-	top: 1px;
-	left: 2px;
-	width: 22px;
-	height: 22px;
-	animation-delay: -0.16s;
-}
-/* .pulse::after {
-	top: 0.15em;
+	top: 0.125em;
 	left: 0.2em;
 	width: 1em;
 	height: 1em;
 	animation-delay: -0.32s;
-} */
+}
 
 @keyframes pulse {
 	0%,

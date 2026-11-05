@@ -4,6 +4,7 @@ import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import urls from "@/dependencies/commonUrls.json";
 import { appNotify } from "@/dependencies/models.js";
 import ProfessionalProfile from "@/components/ProfessionalProfile.vue";
+import CoreTechnicalSkills from "@/components/CoreTechnicalSkills.vue";
 import ResumeTable from "@/components/ResumeTable.vue";
 import ResumeTableMobile from "@/components/ResumeTableMobile.vue";
 import skills from "@/dependencies/skills.json";
@@ -141,7 +142,7 @@ onMounted(() => {
 });
 </script>
 <template>
-	<main>
+	<main v-bind="$attrs">
 		<div id="layout-container">
 			<div id="resume-header">
 				<h1 class="julius-sans center name stroke">Chris Hardwick</h1>
@@ -202,12 +203,7 @@ onMounted(() => {
 				<div id="profile">
 					<div class="profile-inner">
 						<ProfessionalProfile />
-						<h2 class="julius-sans center bold core">Core Technical Skills</h2>
-						<ul>
-							<li><strong>Front-End:</strong> Vue 3, JavaScript, HTML5, CSS3, Responsive Design, UI/UX Design</li>
-							<li><strong>Back-End & Frameworks:</strong> Node.js, Express.js, C#, ASP.NET (MVC), REST APIs, SQL</li>
-							<li><strong>Tools & Software:</strong> Webpack, Vite, Git, Godot, Adobe Photoshop, Adobe Illustrator</li>
-						</ul>
+						<CoreTechnicalSkills />
 					</div>
 				</div>
 				<div v-if="!isMobile">
@@ -307,15 +303,6 @@ onMounted(() => {
 	width: fit-content;
 }
 
-.bold,
-strong {
-	font-weight: bold;
-}
-
-.core {
-	margin-top: 1em;
-}
-
 #layout-container {
 	width: 98%;
 	margin: 15px auto;
@@ -323,7 +310,7 @@ strong {
 }
 
 #resume-header {
-	margin-top: 15px;
+	margin-top: 1rem;
 }
 
 #resume-header h1,
@@ -332,7 +319,7 @@ strong {
 }
 
 #resume-header h2 {
-	font-size: 2em;
+	font-size: 2.25rem;
 }
 
 .form-group {
@@ -354,17 +341,12 @@ strong {
 	border: 1px solid #fff;
 }
 
-ul {
-	margin: auto;
-	width: fit-content;
-}
-
 .container li {
 	margin-bottom: 0.5em;
 }
 
 .name {
-	font-size: 3.5em;
+	font-size: 3.75rem;
 }
 
 .center {
@@ -452,15 +434,15 @@ ul {
 
 @media (max-width: 767px) {
 	#resume-header h1 {
-		font-size: 2.5em;
+		font-size: 2.5rem;
 	}
 
 	#resume-header h2 {
-		font-size: 1.5em;
+		font-size: 2rem;
 	}
 
 	h3 {
-		font-size: 1.25em;
+		font-size: 1.5rem;
 	}
 }
 
