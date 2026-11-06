@@ -6,8 +6,11 @@ const props = defineProps({
 	selectedMovie: Object,
 });
 
+const cdnBaseUrl = inject("cdnBaseUrl");
+const cdnImageBaseUrl = `${cdnBaseUrl}/media-poster/`;
 const movieUpdated = inject("movieUpdated");
-const posterImage = ref(props.selectedMovie.slug ? `url('/media-poster/${props.selectedMovie.slug}-poster.jpg')` : null);
+const posterImageJpg = ref(props.selectedMovie.slug ? `url('${cdnImageBaseUrl}${props.selectedMovie.slug}-poster.jpg')` : null);
+const posterImageWebP = ref(props.selectedMovie.slug ? `url('${cdnImageBaseUrl}${props.selectedMovie.slug}-poster.webp')` : null);
 
 const cancel = () => {
 	// Event is movieUpdated but it can work as a cancel as well
@@ -30,7 +33,12 @@ const formatDuration = (ms) => {
 			<div class="card">
 				<div class="img-box-container">
 					<div class="img-box">
-						<img class="poster" :src="`./media-poster/${selectedMovie.slug}.jpg`" />
+						<!-- <img class="poster" :src="`./media-poster/${selectedMovie.slug}.jpg`" /> -->
+						<picture>
+							<source :srcset="`${cdnImageBaseUrl}${selectedMovie.slug}.webp`" type="image/webp" />
+							<source :srcset="`${cdnImageBaseUrl}${selectedMovie.slug}.jpg`" type="image/jpeg" />
+							<img class="poster" :src="`${cdnImageBaseUrl}${selectedMovie.slug}.jpg`" :alt="selectedMovie.title" :title="selectedMovie.title" />
+						</picture>
 					</div>
 				</div>
 				<div class="details-box">
@@ -70,12 +78,12 @@ p {
 }
 
 .details-box h1 {
-	font-size: 3rem;
+	font-size: 2rem;
 	font-weight: bold;
 }
 
 .details-box h2 {
-	font-size: 2rem;
+	font-size: 1.5rem;
 	font-weight: bold;
 }
 
@@ -100,13 +108,11 @@ p {
 
 .card {
 	height: 90%;
-	/* max-height: calc(100vh - 190px); */
 	margin: auto;
-	padding: 30px;
-	/* background-color: #c7c7c7; */
+	padding: 0.8em;
 	background-color: #ababab;
-	background-image: v-bind(posterImage);
-	background-image: v-bind(posterImage), radial-gradient(rgb(171 171 171 / 60%), transparent);
+	background-image:
+		image-set(v-bind(posterImageWebP) type("image/webp"), v-bind(posterImageJpg) type("image/jpeg")), radial-gradient(rgb(171 171 171 / 60%), transparent);
 	background-repeat: no-repeat;
 	background-position:
 		center center,
@@ -231,6 +237,22 @@ button.btn {
 @media (min-width: 992px) {
 	.card {
 		width: 85%;
+	}
+}
+
+@media (min-width: 1024px) {
+	.details-box h1 {
+		font-size: 3rem;
+		font-weight: bold;
+	}
+
+	.details-box h2 {
+		font-size: 2rem;
+		font-weight: bold;
+	}
+
+	.card {
+		padding: 1.6em;
 	}
 }
 

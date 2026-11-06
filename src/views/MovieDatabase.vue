@@ -11,7 +11,8 @@ const props = defineProps({
 	isMobile: Boolean,
 	windowWidth: Number,
 });
-
+const cdnBaseUrl = inject("cdnBaseUrl");
+const cdnImageBaseUrl = `${cdnBaseUrl}/media-poster/`;
 const serverStatus = Object.assign({}, appNotify);
 const copyright = inject("copyright");
 const baseUrl = inject("baseUrl");
@@ -461,7 +462,12 @@ useWindowEvent("keydown", (e) => {
 							</p>
 						</div>
 						<div class="image-container">
-							<img :alt="item.title" :src="`./media-poster/${item.slug}.jpg`" />
+							<!-- <img :alt="item.title" :src="`/media-poster/${item.slug}.jpg`" /> -->
+							<picture>
+								<source :srcset="`${cdnImageBaseUrl}${item.slug}.webp`" type="image/webp" />
+								<source :srcset="`${cdnImageBaseUrl}${item.slug}.jpg`" type="image/jpeg" />
+								<img :src="`${cdnImageBaseUrl}${item.slug}.jpg`" :alt="item.title" :title="item.title" />
+							</picture>
 						</div>
 						<span v-if="item.content_rating.length > 0" class="content-rating">{{ item.content_rating }}</span>
 					</div>
