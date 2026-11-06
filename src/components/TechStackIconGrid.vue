@@ -1,7 +1,5 @@
 <script setup>
-import { ref } from "vue";
 import techStack from "@/dependencies/techStack.json";
-const loadDarkVersion = ref(false);
 </script>
 
 <template>

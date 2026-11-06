@@ -216,7 +216,7 @@ onBeforeMount(() => {
 <template>
 	<div id="preferences">
 		<div class="wrapper">
-			<h1>User Preferences</h1>
+			<h1>⛭ User Preferences</h1>
 			<div v-if="admin">
 				<p style="text-align: center">Please enter user name to search.</p>
 				<form id="userid-input" @submit.prevent="handleSubmit" method="get">
