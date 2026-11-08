@@ -1,5 +1,5 @@
 /*!
- * CSH Models and Constants v0.0.5
+ * CSH Models and Constants v0.0.6
  * (c) 2026 Chris Hardwick
  */
 
@@ -87,4 +87,23 @@ const permissionsModel = {
 	loggedIn: false,
 };
 
-export { trackerModel, candidateProfile, dutiesModel, appNotify, dateOptions, timeOptions, permissionsModel };
+const movieModel = {
+	title: "",
+	original_title: "",
+	tagline: "",
+	summary: "",
+	studio: "",
+	rating: "",
+	content_rating: "",
+	duration: "",
+	tags_genre: "",
+	tags_director: "",
+	tags_writer: "",
+	tags_star: "",
+	year: "",
+	tags_country: "",
+	audience_rating: "",
+	slug: "",
+};
+
+export { trackerModel, candidateProfile, dutiesModel, appNotify, dateOptions, timeOptions, permissionsModel, movieModel };

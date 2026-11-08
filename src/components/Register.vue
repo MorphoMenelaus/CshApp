@@ -323,6 +323,17 @@ label[for="casinoId"] {
 	backdrop-filter: blur(10px);
 }
 
+#register input,
+#register textarea,
+#register select {
+	color: #ddd;
+	background-color: #435189;
+}
+
+#register ::placeholder {
+	color: rgb(255 255 255 / 50%);
+}
+
 .wrapper {
 	max-width: 24em;
 	align-content: center;

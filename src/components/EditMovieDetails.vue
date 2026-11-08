@@ -168,7 +168,7 @@ const cancel = () => {
 									<input id="audience_rating" v-model="audience_rating" />
 								</div>
 								<div class="form-group">
-									<label for="slug">Image Name <small>(file type assumed to be .jpg)</small></label>
+									<label for="slug">Image Name <small>(Exclude file type extention... jpg or webp will be appended.)</small></label>
 									<input id="slug" v-model="slug" />
 								</div>
 							</div>

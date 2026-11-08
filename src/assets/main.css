@@ -16,6 +16,33 @@
 	background: linear-gradient(#72a8be, #dbf0db 90%);
 }
 
+h1.page-header,
+h2.page-header,
+h3.page-header {
+	text-align: center;
+	color: var(--vt-c-text-light-3);
+}
+
+.uiDarkMode h1.page-header,
+.uiDarkMode h2.page-header,
+.uiDarkMode h3.page-header {
+	color: var(--vt-c-text-dark-2);
+}
+
+h1.page-header {
+	margin-top: 1rem;
+	font-size: 2.25rem;
+	font-weight: bold;
+}
+
+h2.page-header {
+	font-size: 1.25rem;
+}
+
+h3.page-header {
+	font-size: 1rem;
+}
+
 .uiDarkMode #app,
 .background-img {
 	/* background: linear-gradient(rgb(2 6 24), rgb(2 6 24) 90%); */
@@ -57,17 +84,33 @@ table {
 	user-select: all;
 }
 
-form input,
-form textarea,
-form select {
-	padding: .4em .8em;
+input,
+textarea,
+select {
 	font-family: inherit;
 	font-size: 1em;
 	line-height: 1.6;
-	color: #ddd;
-	background-color: #435189;
+	color: #000;
+	background-color: #949ed1;
 	border-radius: .5em;
 	border: 1px #000 solid;
+}
+
+.uiDarkMode input,
+.uiDarkMode textarea,
+.uiDarkMode select {
+	color: #ddd;
+	background-color: #435189;
+}
+
+input,
+textarea,
+form select {
+	padding: .4em .8em;
+}
+
+select {
+	padding: 0.1em .4em;
 }
 
 form input,
@@ -76,9 +119,12 @@ form textarea {
 	margin-bottom: .25em;
 }
 
-form input::placeholder,
-form textarea::placeholder {
-	color: rgb(221 221 221 / 60%);
+::placeholder {
+	color: rgb(0 0 0 / 60%);
+}
+
+.uiDarkMode ::placeholder {
+	color: rgb(255 255 255 / 50%);
 }
 
 .bold,
@@ -90,7 +136,7 @@ strong {
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	width: 45%;
+	width: 50%;
 	max-width: 50em;
 	margin: 30px auto 15px;
 	background-color: #e7e7e7;
@@ -481,6 +527,18 @@ button.close-modal {
 	#app {
 		height: calc(100vh - 160px);
 	}
+
+	h1.page-header {
+		font-size: 3rem;
+	}
+
+	h2.page-header {
+		font-size: 1.5rem;
+	}
+
+	h3.page-header {
+		font-size: 1.25rem;
+	}
 }
 
 @media (min-width: 992px) {}
@@ -491,8 +549,32 @@ button.close-modal {
 	#app {
 		margin: 106px auto 50px;
 	}
+
+	h1.page-header {
+		font-size: 3.25rem;
+	}
+
+	h2.page-header {
+		font-size: 1.75rem;
+	}
+
+	h3.page-header {
+		font-size: 1.5rem;
+	}
 }
 
-@media (min-width: 1200px) {}
+@media (min-width: 1200px) {
+	h1.page-header {
+		font-size: 3.75rem;
+	}
+
+	h2.page-header {
+		font-size: 2.25rem;
+	}
+
+	h3.page-header {
+		font-size: 1.75rem;
+	}
+}
 
 @media (min-width: 1920px) {}

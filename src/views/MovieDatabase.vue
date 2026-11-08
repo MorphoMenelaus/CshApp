@@ -398,7 +398,7 @@ useWindowEvent("keydown", (e) => {
 
 <template>
 	<main v-bind="$attrs">
-		<h1 class="julius-sans">🎞️ Movie Database</h1>
+		<h1 class="page-header julius-sans">🎞️ Movie Database</h1>
 		<div id="movie-header">
 			<p>
 				This page queries a searchable list of more than 1500 movies in my database containing cast, crew, ratings, etc., and sortable by title, rating,
@@ -437,13 +437,13 @@ useWindowEvent("keydown", (e) => {
 				</div>
 			</div>
 			<div class="form-group">
-				<input v-model="contains" placeholder="Title contains..." />
+				<input v-model="contains" class="contains" placeholder="Title contains..." />
 				<span v-if="contains.length > 0" title="Clear search" @click="contains = ''" class="clear-field">✕</span>
 			</div>
-			<div>
+			<div class="page-numbers">
 				<button class="prev-button btn" :disabled="prevDisable" type="button" @click="previousPage()" title="Previous Page">previous</button>
 				<button class="next-button btn" :disabled="nextDisable" type="button" @click="nextPage()" title="Next Page">next</button>
-				<span :currentPage="currentPage">page {{ currentPage }} / {{ pages.toFixed() }}</span>
+				<span class="page-number" :currentPage="currentPage">page {{ currentPage }} / {{ pages.toFixed() }}</span>
 			</div>
 		</div>
 		<div id="movies">
@@ -516,11 +516,6 @@ useWindowEvent("keydown", (e) => {
 h1,
 h2 {
 	text-align: center;
-}
-
-h1 {
-	margin-top: 1rem;
-	font-size: 3.75rem;
 }
 
 #movie-header {
@@ -639,8 +634,23 @@ label[for="limitOptions"] {
 	margin: 15px auto 0;
 }
 
+.contains {
+	max-width: 10em;
+}
+
 #paging .flex-row * {
 	margin: auto 3px;
+}
+
+.page-numbers {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	align-items: center;
+}
+
+.page-number {
+	text-wrap: nowrap;
 }
 
 .clear-field {
@@ -741,6 +751,10 @@ label[for="limitOptions"] {
 
 .favorite-check input {
 	margin-left: 10px;
+}
+
+input {
+	padding: 0 0.8em;
 }
 
 label[for="favoritesOnly"] {

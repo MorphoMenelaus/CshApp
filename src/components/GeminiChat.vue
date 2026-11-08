@@ -144,6 +144,7 @@ h2 {
 
 #chat-container {
 	position: fixed;
+	top: 11em;
 	left: 0;
 	right: 0;
 	width: 95%;

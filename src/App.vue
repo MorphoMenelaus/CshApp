@@ -45,15 +45,21 @@
 	</Transition>
 
 	<div id="ai-button" v-if="appState?.isLoggedOn && (appState?.permissions.admin || appState?.permissions.siteAdmin)">
-		<button class="btn" @click="currentComponent = 'GeminiChat'">AI Answers</button>
-		<button class="btn" @click="currentComponent = 'GeminiJobMatch'">AI Job Match</button>
-		<button class="btn" @click="currentComponent = 'GeminiExplainCode'">AI Code Review</button>
+		<img class="gemini" title="Gemini AI" src="https://cdn.hardwick.design/svg/google_gemini_icon_2025.svg" />
+		<button class="btn" @click="currentComponent = 'GeminiJobMatch'" title="Gemini Job Match">
+			<img class="g-icon" src="https://cdn.hardwick.design/svg/job-search-symbol-white.svg" />
+		</button>
+		<button class="btn" @click="currentComponent = 'GeminiExplainCode'" title="Gemini Code Review">
+			<img class="g-icon" src="https://cdn.hardwick.design/svg/code-review-white.svg" />
+		</button>
+		<button class="btn question" @click="currentComponent = 'GeminiChat'" title="Gemini Questions">❓</button>
 	</div>
 </template>
 
 <script>
 import { provide, inject } from "vue";
 import { useRoute } from "vue-router";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 import BackgroundOverlay from "@/components/BackgroundOverlay.vue";
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
@@ -189,23 +195,23 @@ export default {
 		provide("mobileDropdownEvent", (bool) => (this.mobileDropdownClose = bool));
 		provide("closeChat", () => (this.currentComponent = null));
 		screen.orientation.addEventListener("change", this.checkOrientation);
-		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
-		window.addEventListener("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));
-		window.addEventListener("routerNotify", (e) => (this.sharedUpdateStatus = e?.detail));
-		window.addEventListener("keydown", (down) => {
+		useWindowEvent("appStateChange", this.handleStateUpdateEvent);
+		useWindowEvent("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));
+		useWindowEvent("routerNotify", (e) => (this.sharedUpdateStatus = e?.detail));
+		useWindowEvent("keydown", (down) => {
 			if (down.key === "Escape") this.currentComponent = null;
 		});
-		window.addEventListener("resize", () => {
+		useWindowEvent("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
 			this.windowWidth = window.innerWidth;
 			this.checkOrientation();
 		});
-		window.addEventListener("storage", (event) => {
+		useWindowEvent("storage", (event) => {
 			if (event.key === this.recall.getstorageKey()) {
 				this.recallAppState();
 			}
 		});
-		window.addEventListener("routerPathChange", () => (this.currentComponent = null));
+		useWindowEvent("routerPathChange", () => (this.currentComponent = null));
 		this.checkOrientation();
 		this.initialSetup();
 	},
@@ -362,32 +368,60 @@ nav a:first-of-type {
 	z-index: 15000;
 }
 
-/* .loader-icon {
-	height: 48px;
-	width: 48px;
-	border: 3px solid;
-	border-radius: 100%;
-	border-color: red white blue black;
-	animation: loader 0.5s linear infinite;
-}
- */
 #loading-icon.loading {
 	display: grid;
 }
 
 #ai-button {
+	display: flex;
+	flex-direction: column;
 	position: fixed;
 	bottom: 60px;
 	left: 1em;
 	z-index: 3;
 	background-color: hsl(250deg 100% 20% / 70%);
-	padding: 0.5em 0 0.5em 1em;
+	padding: 0.5em;
 	border-radius: 10px;
 	border: 1px solid;
+	height: 2.8em;
+	overflow: hidden;
+	transition: 0.2s;
+	interpolate-size: allow-keywords;
+	cursor: pointer;
+}
+
+#ai-button:hover {
+	height: 12em;
+	height: fit-content;
 }
 
 #ai-button .btn {
-	margin-right: 15px;
+	margin-bottom: 1em;
+	padding: 0.25em 0.5em;
+}
+
+#ai-button .btn:last-child {
+	margin-bottom: 0.2em;
+}
+
+#ai-button .question {
+	font-size: 22px;
+	margin-bottom: 0.5em;
+}
+
+.gemini,
+.g-icon {
+	width: 32px;
+	height: 32px;
+	align-self: center;
+}
+
+.gemini {
+	margin-bottom: 0.6em;
+}
+
+.g-icon {
+	margin-top: 0.2em;
 }
 
 @media (min-width: 1024px) {
