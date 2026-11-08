@@ -59,6 +59,7 @@
 <script>
 import { provide, inject } from "vue";
 import { useRoute } from "vue-router";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 import BackgroundOverlay from "@/components/BackgroundOverlay.vue";
 import HeaderMain from "@/components/HeaderMain.vue";
 import FooterMain from "@/components/FooterMain.vue";
@@ -194,23 +195,23 @@ export default {
 		provide("mobileDropdownEvent", (bool) => (this.mobileDropdownClose = bool));
 		provide("closeChat", () => (this.currentComponent = null));
 		screen.orientation.addEventListener("change", this.checkOrientation);
-		window.addEventListener("appStateChange", this.handleStateUpdateEvent);
-		window.addEventListener("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));
-		window.addEventListener("routerNotify", (e) => (this.sharedUpdateStatus = e?.detail));
-		window.addEventListener("keydown", (down) => {
+		useWindowEvent("appStateChange", this.handleStateUpdateEvent);
+		useWindowEvent("forceLogout", (e) => (this.forceLogoutEvent = e?.detail));
+		useWindowEvent("routerNotify", (e) => (this.sharedUpdateStatus = e?.detail));
+		useWindowEvent("keydown", (down) => {
 			if (down.key === "Escape") this.currentComponent = null;
 		});
-		window.addEventListener("resize", () => {
+		useWindowEvent("resize", () => {
 			this.isMobile = window.innerWidth < 1024;
 			this.windowWidth = window.innerWidth;
 			this.checkOrientation();
 		});
-		window.addEventListener("storage", (event) => {
+		useWindowEvent("storage", (event) => {
 			if (event.key === this.recall.getstorageKey()) {
 				this.recallAppState();
 			}
 		});
-		window.addEventListener("routerPathChange", () => (this.currentComponent = null));
+		useWindowEvent("routerPathChange", () => (this.currentComponent = null));
 		this.checkOrientation();
 		this.initialSetup();
 	},
@@ -385,11 +386,13 @@ nav a:first-of-type {
 	height: 2.8em;
 	overflow: hidden;
 	transition: 0.2s;
+	interpolate-size: allow-keywords;
 	cursor: pointer;
 }
 
 #ai-button:hover {
 	height: 12em;
+	height: fit-content;
 }
 
 #ai-button .btn {
