@@ -85,7 +85,7 @@ onMounted(() => {
 
 <template>
 	<main v-bind="$attrs" class="input-heading">
-		<h1>User Logs</h1>
+		<h1 class="page-header julius-sans">User Logs</h1>
 
 		<div id="paging">
 			<label for="limitOptions">Limit{{ isMobile ? "" : " List" }}</label>

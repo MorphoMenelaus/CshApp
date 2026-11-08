@@ -21,9 +21,9 @@ useWindowEvent("uiDarkModeChange", (e) => {
 <template>
 	<main v-bind="$attrs">
 		<div id="charts-header">
-			<h1 class="julius-sans center stroke">Visualizing Data</h1>
-			<h2>ChartJS Demos <i class="icon devicon-chartjs-plain" title="ChartJS"></i></h2>
-			<h3>Hourly Weather data and Daily Market data visualized using the ChartJS library</h3>
+			<h1 class="page-header julius-sans center stroke">Visualizing Data</h1>
+			<h2 class="page-header">ChartJS Demos <i class="icon devicon-chartjs-plain" title="ChartJS"></i></h2>
+			<h3 class="page-header">Hourly Weather data and Daily Market data visualized using the ChartJS library</h3>
 		</div>
 		<WeatherBasic :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" :theme="theme" />
 		<StockCharts :appState="appState" :isMobile="isMobile" :windowWidth="windowWidth" :theme="theme" />
@@ -36,31 +36,6 @@ useWindowEvent("uiDarkModeChange", (e) => {
 <style scoped>
 #view {
 	padding-bottom: 4em;
-}
-
-h1,
-h2,
-h3 {
-	text-align: center;
-}
-
-h2 {
-	font-size: 2.25rem;
-}
-
-h3 {
-	font-size: 1.5rem;
-}
-
-h1.julius-sans {
-	margin-top: 1rem;
-	font-size: 3.75rem;
-	font-weight: bold;
-	color: var(--vt-c-text-light-3);
-}
-
-.uiDarkMode .stroke {
-	color: #aaa;
 }
 
 #charts-header {

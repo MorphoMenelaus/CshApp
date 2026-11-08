@@ -145,8 +145,8 @@ onMounted(() => {
 	<main v-bind="$attrs">
 		<div id="layout-container">
 			<div id="resume-header">
-				<h1 class="julius-sans center name stroke">Chris Hardwick</h1>
-				<h2>Resume</h2>
+				<h1 class="page-header julius-sans stroke">Chris Hardwick</h1>
+				<h2 class="page-header">Resume</h2>
 			</div>
 			<div class="btn-container top">
 				<a
@@ -345,21 +345,12 @@ onMounted(() => {
 	margin-bottom: 0.5em;
 }
 
-.name {
-	font-size: 3.75rem;
-}
-
 .center {
 	text-align: center;
 }
 
 #keywords {
 	align-self: center;
-}
-
-#keywords::placeholder {
-	font-weight: 500;
-	color: #000;
 }
 
 .btn-container .btn {

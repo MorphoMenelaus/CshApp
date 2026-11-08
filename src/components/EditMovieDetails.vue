@@ -1,7 +1,8 @@
 <script setup>
-import { ref, inject, onMounted } from "vue";
+import { ref, inject, onBeforeMount, onMounted } from "vue";
 import { addUserLog, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import { appNotify } from "@/dependencies/models.js";
+import { movieModel } from "@/dependencies/models.js";
 
 const props = defineProps({
 	appState: Object,
@@ -15,6 +16,7 @@ const showHideLoader = inject("showHideLoader");
 const movieUpdated = inject("movieUpdated");
 const serverStatus = Object.assign({}, appNotify);
 
+const mergedObj = ref({});
 const confirmEdit = ref(null);
 const disableBtn = ref(false);
 const title = ref(props.selectedMovie.title);
@@ -33,6 +35,7 @@ const year = ref(props.selectedMovie.year);
 const tags_country = ref(props.selectedMovie.tags_country);
 const audience_rating = ref(props.selectedMovie.audience_rating);
 const slug = ref(props.selectedMovie.slug);
+const useMovieModel = ref(false);
 
 const updateMovie = async () => {
 	showHideLoader(true);
@@ -89,6 +92,64 @@ const updateMovie = async () => {
 	}
 };
 
+const createMovie = async () => {
+	showHideLoader(true);
+	disableBtn.value = true;
+
+	// Body object is optional
+	// This endpoint will create a new movie with default values if no body is provided
+
+	let body = {
+		title: title.value,
+		original_title: original_title.value,
+		tagline: tagline.value,
+		summary: summary.value,
+		studio: studio.value,
+		rating: rating.value,
+		content_rating: content_rating.value,
+		duration: duration.value,
+		tags_genre: tags_genre.value,
+		tags_director: tags_director.value,
+		tags_writer: tags_writer.value,
+		tags_star: tags_star.value,
+		year: year.value,
+		tags_country: tags_country.value,
+		audience_rating: audience_rating.value,
+		slug: slug.value,
+	};
+
+	let headerObj = new Headers();
+	headerObj.append("Authorization", `Bearer ${props.appState.accessToken}`);
+	headerObj.append("Content-Type", "application/json; charset=utf-8");
+	let requestUrl = new URL("/api/movies/create", baseUrl);
+
+	let request = new Request(requestUrl.toString(), {
+		method: "POST",
+		headers: headerObj,
+		body: useMovieModel.value ? JSON.stringify(movieModel) : JSON.stringify(body),
+	});
+
+	try {
+		const response = await tokenInterceptFetch(request);
+		const data = await response.json();
+
+		if (data.success) {
+			console.log("Success", data);
+		}
+
+		serverStatus.code = data.code;
+		serverStatus.message = data.message;
+		serverStatus.success = data.success;
+		updateStatus(serverStatus);
+	} catch (error) {
+		console.error("Error fetching data:", error);
+	} finally {
+		showHideLoader(false);
+		disableBtn.value = false;
+		addUserLog(props.appState, "Movie created.");
+	}
+};
+
 const openConfirmDialog = () => {
 	confirmEdit.value.showModal();
 };
@@ -98,6 +159,17 @@ const cancel = () => {
 	// false only closes component and true closes and refreshes movie list
 	movieUpdated(false);
 };
+
+onBeforeMount(() => {
+	// Create a merged object of the movieModel and selectedMovie props
+	// This ensures that all properties from the movieModel are present, even if they are not in selectedMovie
+	mergedObj.value = Object.keys(movieModel).reduce((prop, key) => {
+		// Use source value if available; otherwise, keep model default
+		prop[key] = key in props.selectedMovie ? props.selectedMovie[key] : movieModel[key];
+		return prop;
+	}, {});
+	console.log(mergedObj);
+});
 </script>
 
 <template>
@@ -168,7 +240,7 @@ const cancel = () => {
 									<input id="audience_rating" v-model="audience_rating" />
 								</div>
 								<div class="form-group">
-									<label for="slug">Image Name <small>(file type assumed to be .jpg)</small></label>
+									<label for="slug">Image Name <small>(Exclude file type extention... jpg or webp will be appended.)</small></label>
 									<input id="slug" v-model="slug" />
 								</div>
 							</div>

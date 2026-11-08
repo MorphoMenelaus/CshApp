@@ -86,10 +86,16 @@ const getClockLog = async () => {
 };
 
 const logSimpleClock = async () => {
-	showHideLoader(true);
+	if (!eventType.value) {
+		serverStatus.message = "Please Select an Event Type.";
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+		return serverStatus;
+	}
 
 	let data;
 	try {
+		showHideLoader(true);
 		let body = {
 			userId: props.appState.user.userId,
 			userName: props.appState.user.userName,
@@ -159,11 +165,14 @@ const setWakeupBool = (array = []) => {
 	return array;
 };
 
-watch(limit, (newLimit, oldLimit) => {
+watch([limit, eventType], ([newLimit, newEventType], [oldLimit, oldEventType]) => {
 	if (newLimit !== oldLimit) {
 		currentPage.value = 1;
 		offset.value = null;
 		getClockLog();
+	}
+	if (newEventType !== oldEventType) {
+		isWakeupEvent.value = newEventType === "fromBed" || newEventType === "wakeUp" ? 1 : 0;
 	}
 });
 
@@ -181,6 +190,7 @@ onMounted(() => {
 
 <template>
 	<main v-bind="$attrs">
+		<h1 class="page-header julius-sans">Simple Event Log</h1>
 		<div id="clock">
 			<div id="time-container">
 				<span id="time">{{ timeLocal }}</span>
@@ -195,6 +205,7 @@ onMounted(() => {
 			<div class="checkbox-container">
 				<label for="eventType" title="Event Type">Event Type</label>
 				<select v-model="eventType">
+					<option value="" disabled selected hidden>Select Event</option>
 					<option v-for="(item, index) in eventOptions" :key="index" :value="item.value">
 						{{ item.text }}
 					</option>
@@ -340,8 +351,9 @@ h1 {
 	align-items: center;
 }
 
-select {
-	margin-left: 15px;
+select,
+label[for="iswakeupevent"] {
+	margin-left: 0.8em;
 }
 
 #notes {

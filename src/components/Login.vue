@@ -321,6 +321,17 @@ h2 {
 	z-index: 10000;
 }
 
+#login input,
+#login textarea,
+#login select {
+	color: #ddd;
+	background-color: #435189;
+}
+
+#login ::placeholder {
+	color: rgb(255 255 255 / 50%);
+}
+
 .login-btn {
 	margin-top: 15px !important;
 }

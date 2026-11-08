@@ -121,10 +121,10 @@ onMounted(() => {
 
 <template>
 	<main v-bind="$attrs">
+		<h1 class="page-header julius-sans">Blog</h1>
 		<div id="blogs">
 			<div>
 				<div class="blog-intro">
-					<h1>Blog</h1>
 					<p>
 						These are all old blog posts from a blog I had over ten years ago. It was originally a Wordpress site but I found an old backup of that
 						site including the SQL backup files. All are pretty dated and not using the Wordpress themes and styles but kind of amusing to see past
@@ -261,14 +261,6 @@ h1,
 h2,
 h3 {
 	text-align: center;
-}
-
-#view {
-	width: 100%;
-	margin: 15px auto;
-	padding: 15px;
-	position: relative;
-	inset: 0;
 }
 
 #posts {

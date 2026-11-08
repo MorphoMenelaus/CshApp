@@ -339,6 +339,17 @@ label[for="casinoId"] {
 	backdrop-filter: blur(10px);
 }
 
+#contact input,
+#contact textarea,
+#contact select {
+	color: #ddd;
+	background-color: #435189;
+}
+
+#contact ::placeholder {
+	color: rgb(255 255 255 / 50%);
+}
+
 .wrapper {
 	align-content: center;
 	background-color: #313b64;
