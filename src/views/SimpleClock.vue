@@ -1,7 +1,9 @@
 <script setup>
-import { ref, inject, watch, onBeforeMount, onMounted } from "vue";
+import { ref, reactive, provide, inject, watch, onBeforeMount, onMounted } from "vue";
 import { isUTCtime, toTitleCase, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import { appNotify } from "@/dependencies/models.js";
+import BaseTextarea from "@/components/base/BaseTextarea.vue";
+import BaseSelect from "@/components/base/BaseSelect.vue";
 
 const props = defineProps({
 	appState: Object,
@@ -20,11 +22,6 @@ const dayLocal = ref("");
 const dateLocal = ref("");
 const timeLocal = ref("");
 const eventLogList = ref([]);
-const charRemaining = ref(512);
-const eventType = ref("");
-const isWakeupEvent = ref(0);
-const notes = ref("");
-const maxlength = 512;
 const boolOptions = [
 	{ text: "True", value: "1" },
 	{ text: "False", value: "0" },
@@ -45,9 +42,57 @@ const limitOptions = [
 	{ text: "200", value: 200 },
 ];
 
-const charCounter = () => {
-	let currCount = notes.value.length;
-	if (charRemaining.value <= maxlength) charRemaining.value = maxlength - currCount;
+const formData = reactive({
+	eventType: "",
+	isWakeupEvent: "0",
+	message: "",
+});
+
+const formErrors = reactive({});
+const fieldsToValidate = new Set();
+
+// Allow deep nested parts to register their validation function
+const registerField = (fieldId, validateFn) => {
+	fieldsToValidate.add({ fieldId, validateFn });
+};
+
+const unregisterField = (fieldId) => {
+	fieldsToValidate.delete(fieldId);
+	delete formErrors[fieldId];
+};
+
+// Provide the centralized validation bridge to all descendants
+provide("FormValidation", {
+	registerField,
+	unregisterField,
+	errors: formErrors,
+});
+
+const validateFields = () => {
+	// Trigger all registered child validation rules in one pass
+	fieldsToValidate.forEach(({ fieldId, validateFn }) => {
+		const error = validateFn();
+		if (error) {
+			formErrors[fieldId] = error;
+		} else {
+			delete formErrors[fieldId];
+		}
+	});
+};
+
+const handleSubmit = async () => {
+	// Validate fields and stop executiion if any are registered
+	validateFields();
+
+	if (Object.keys(formErrors).length > 0) {
+		serverStatus.message = "Please complete in all required fields.";
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+		return serverStatus;
+	}
+
+	// Log event
+	logSimpleClock();
 };
 
 const getClockLog = async () => {
@@ -86,22 +131,15 @@ const getClockLog = async () => {
 };
 
 const logSimpleClock = async () => {
-	if (!eventType.value) {
-		serverStatus.message = "Please Select an Event Type.";
-		serverStatus.success = false;
-		updateStatus(serverStatus);
-		return serverStatus;
-	}
-
 	let data;
 	try {
 		showHideLoader(true);
 		let body = {
 			userId: props.appState.user.userId,
 			userName: props.appState.user.userName,
-			eventType: eventType.value,
-			isWakeupEvent: isWakeupEvent.value,
-			notes: notes.value,
+			eventType: formData.eventType,
+			isWakeupEvent: formData.isWakeupEvent,
+			notes: formData.message,
 		};
 
 		let headerObj = new Headers();
@@ -123,8 +161,8 @@ const logSimpleClock = async () => {
 		serverStatus.success = data?.success;
 		updateStatus(serverStatus);
 
-		isWakeupEvent.value = false;
-		notes.value = "";
+		formData.isWakeupEvent = false;
+		formData.notes = "";
 		getClockLog();
 	} catch (error) {
 		console.error("Error posting data:", error);
@@ -165,15 +203,19 @@ const setWakeupBool = (array = []) => {
 	return array;
 };
 
-watch([limit, eventType], ([newLimit, newEventType], [oldLimit, oldEventType]) => {
-	if (newLimit !== oldLimit) {
-		currentPage.value = 1;
-		offset.value = null;
-		getClockLog();
-	}
-	if (newEventType !== oldEventType) {
-		isWakeupEvent.value = newEventType === "fromBed" || newEventType === "wakeUp" ? 1 : 0;
-	}
+watch(
+	() => formData,
+	() => {
+		formData.isWakeupEvent = formData.eventType === "fromBed" || formData.eventType === "wakeUp" ? "1" : "0";
+		if (Object.keys(formErrors).length > 0) validateFields();
+	},
+	{ deep: true },
+);
+
+watch(limit, () => {
+	currentPage.value = 1;
+	offset.value = null;
+	getClockLog();
 });
 
 onBeforeMount(() => {
@@ -200,39 +242,42 @@ onMounted(() => {
 				<span id="dateLong">{{ dateLocal }}</span>
 			</div>
 		</div>
-
 		<form method="post" @submit.prevent="handleSubmit">
 			<div class="checkbox-container">
-				<label for="eventType" title="Event Type">Event Type</label>
-				<select v-model="eventType">
-					<option value="" disabled selected hidden>Select Event</option>
-					<option v-for="(item, index) in eventOptions" :key="index" :value="item.value">
-						{{ item.text }}
-					</option>
-				</select>
-				<label for="iswakeupevent" title="Wakeup Event">Wakeup Event</label>
-				<select v-model="isWakeupEvent">
-					<option v-for="(item, index) in boolOptions" :key="index" :value="item.value">
-						{{ item.text }}
-					</option>
-				</select>
+				<BaseSelect
+					v-model="formData.eventType"
+					:options="eventOptions"
+					id="eventType"
+					defaultSelect="Select Event"
+					label="Event Type"
+					:required="true"
+					:hiddenLabel="false"
+					:error="formErrors.eventType"
+				/>
+				<BaseSelect
+					v-model="formData.isWakeupEvent"
+					:options="boolOptions"
+					id="wakeup"
+					label="Wakeup Event"
+					:required="true"
+					:hiddenLabel="false"
+					:error="formErrors.wakeup"
+				/>
 			</div>
-
 			<div class="notes-container">
-				<label for="notes">
-					<small>(characters remaining: {{ charRemaining }})</small>
-				</label>
-				<textarea
-					v-model="notes"
-					class="notes"
-					name="notes"
+				<BaseTextarea
+					v-model="formData.message"
 					id="notes"
-					:maxlength="maxlength"
-					placeholder="Type notes here..."
-					@keyup="charCounter()"
-				></textarea>
+					label="Notes"
+					:required="false"
+					:hiddenLabel="true"
+					:maxlength="512"
+					:error="formErrors.notes"
+				/>
 			</div>
-			<button @click="logSimpleClock()" class="btn time-log" type="submit" name="submit" value="submit" title="Submit Time Log">Submit Time Log</button>
+			<button @click.prevent="handleSubmit()" class="btn time-log" type="submit" name="submit" value="submit" title="Submit Time Log">
+				Submit Time Log
+			</button>
 		</form>
 
 		<div id="paging">
@@ -291,20 +336,6 @@ h1 {
 	padding-bottom: 60px;
 }
 
-#clocklog-container {
-	overflow: hidden auto;
-}
-
-.form-container {
-	margin: auto;
-	width: 80%;
-	max-width: 800px;
-}
-
-#wakeup-event + label {
-	margin-left: 15px;
-}
-
 #clock {
 	width: 15em;
 	margin: 30px auto;
@@ -347,19 +378,15 @@ h1 {
 .checkbox-container {
 	display: flex;
 	flex-flow: row nowrap;
-	justify-content: center;
+	justify-content: space-around;
 	align-items: center;
+	width: 25%;
+	margin: auto;
+	text-align: center;
 }
 
-select,
-label[for="iswakeupevent"] {
+select {
 	margin-left: 0.8em;
-}
-
-#notes {
-	height: 5em;
-	width: 25em;
-	align-items: center;
 }
 
 #time {
@@ -416,23 +443,6 @@ th {
 
 td {
 	border-bottom: 1px #aaa solid;
-}
-
-.thumbs td,
-.thumbs th {
-	width: 50%;
-}
-
-.thumbs:hover {
-	transform: scale(2, 2);
-}
-
-.thumbs img {
-	margin-bottom: 15px;
-}
-
-.slideContainer img {
-	height: unset;
 }
 
 .grid-border-bg > div {
