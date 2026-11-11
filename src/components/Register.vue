@@ -297,16 +297,6 @@ label {
 	padding: 5px;
 }
 
-label[for="casinoId"] {
-	text-align: center;
-	text-transform: uppercase;
-	text-shadow:
-		-1px -1px 0px #000,
-		1px -1px 0px #000,
-		-1px 1px 0px #000,
-		1px 1px 0px #000;
-}
-
 #register {
 	position: fixed;
 	z-index: 10000;

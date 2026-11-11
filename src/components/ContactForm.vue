@@ -1,9 +1,11 @@
 <script setup>
-import { ref, onMounted, onBeforeMount, onBeforeUnmount, inject } from "vue";
+import { ref, watch, onMounted, onBeforeMount, onBeforeUnmount, inject, provide, reactive } from "vue";
 import { sendAnalyticsEvent } from "@/dependencies/csh-libs.js";
 import { useWindowEvent } from "@/composables/useCommonEvents.js";
 import { appNotify } from "@/dependencies/models.js";
 import urls from "../dependencies/commonUrls.json";
+import BaseInput from "@/components/base/BaseInput.vue";
+import BaseTextarea from "@/components/base/BaseTextarea.vue";
 
 defineOptions({
 	inheritAttrs: false,
@@ -25,40 +27,42 @@ const siteKey = inject("reCaptchaSiteKey");
 const maxlength = 1024;
 
 const token = ref("");
-const name = ref(props.appState?.userName || "");
-const email = ref(props.appState?.user?.email || "");
-const phone = ref("");
-const subject = ref("");
-const message = ref("");
-const errState = ref(false);
-const charRemaining = ref(1024);
 const messageSent = ref(false);
 
-const charCounter = () => {
-	let currCount = message.value.length;
-	if (charRemaining.value <= maxlength) charRemaining.value = maxlength - currCount;
+const formData = reactive({
+	name: "",
+	email: "",
+	phone: "",
+	subject: "",
+	message: "",
+});
+
+const formErrors = reactive({});
+const fieldsToValidate = new Set();
+
+// Allow deep nested parts to register their validation function
+const registerField = (fieldId, validateFn) => {
+	fieldsToValidate.add({ fieldId, validateFn });
 };
+
+const unregisterField = (fieldId) => {
+	fieldsToValidate.delete(fieldId);
+	delete formErrors[fieldId];
+};
+
+// Provide the centralized validation bridge to all descendants
+provide("FormValidation", {
+	registerField,
+	unregisterField,
+	errors: formErrors,
+});
 
 const sendEmail = async () => {
 	showHideLoader(true);
 
 	try {
-		let body = {
-			name: name.value,
-			email: email.value,
-			phone: phone.value,
-			subject: subject.value,
-			message: message.value,
-			token: token.value,
-		};
-
-		if (!name.value || !email.value || !subject.value || !message.value) {
-			serverStatus.message = "Please fill in all required fields.";
-			serverStatus.success = false;
-			updateStatus(serverStatus);
-			errState.value = true;
-			return serverStatus;
-		}
+		let body = formData;
+		body.token = token.value;
 
 		let headerObj = new Headers();
 		headerObj.append("Content-Type", "application/json; charset=utf-8");
@@ -87,7 +91,6 @@ const sendEmail = async () => {
 			sendAnalyticsEvent("contact_form_send", "contact_modal");
 			messageSent.value = true;
 		}
-		errState.value = data?.success;
 	} catch (error) {
 		console.error("Error posting data:", error.message);
 		serverStatus.code = 400;
@@ -99,7 +102,7 @@ const sendEmail = async () => {
 	}
 };
 
-const contactHandler = async () => {
+const captchaHandler = async () => {
 	try {
 		// Ensure the reCAPTCHA API has finished loading globally
 		if (!window.grecaptcha || !window.grecaptcha.enterprise) {
@@ -125,9 +128,35 @@ const contactHandler = async () => {
 	}
 };
 
-const handleClick = (event) => {
-	if (event.target.id === "contact") contactEmail(false);
+const validateFields = () => {
+	// Trigger all registered child validation rules in one pass
+	fieldsToValidate.forEach(({ fieldId, validateFn }) => {
+		const error = validateFn();
+		if (error) {
+			formErrors[fieldId] = error;
+		} else {
+			delete formErrors[fieldId];
+		}
+	});
 };
+
+const handleSubmit = async () => {
+	// Validate fields and stop executiion if any are registered
+	validateFields();
+	if (Object.keys(formErrors).length > 0) {
+		serverStatus.message = "Please fill in all required fields.";
+		serverStatus.success = false;
+		updateStatus(serverStatus);
+		return serverStatus;
+	}
+
+	// Validate recaptcha and send email
+	captchaHandler();
+};
+
+watch(formData, () => {
+	if (Object.keys(formErrors).length > 0) validateFields();
+});
 
 onMounted(() => {
 	sendAnalyticsEvent("contact_form_load", "contact_modal");
@@ -144,6 +173,10 @@ onMounted(() => {
 useWindowEvent("keydown", (e) => {
 	if (e.key === "Escape") contactEmail(false);
 });
+
+const handleClick = (event) => {
+	if (event.target.id === "contact") contactEmail(false);
+};
 </script>
 
 <template>
@@ -180,38 +213,21 @@ useWindowEvent("keydown", (e) => {
 					>{{ urls.github.text }}</a
 				>
 			</div>
-			<form @submit.prevent="contactHandler" method="post">
-				<div class="form-group" :class="{ err: errState && !name.length > 0 }">
-					<label for="name" title="Name">Name<span v-if="!name && errState" class="err"> * required</span></label>
-					<input v-model.trim="name" id="name" type="text" name="name" class="form-control" placeholder="Your Name" />
-				</div>
-
-				<div class="form-group" :class="{ err: errState && !email.length > 0 }">
-					<label for="email" title="Email Address">Email Address<span v-if="!email && errState" class="err"> * required</span></label>
-					<input v-model.trim="email" id="email" type="text" name="email" class="form-control" placeholder="Your Email" />
-				</div>
-
-				<div class="form-group" title="Subject" :class="{ err: errState && !subject.length > 0 }">
-					<label for="subject">Subject<span v-if="!subject && errState" class="err"> * required</span></label>
-					<input v-model.trim="subject" id="subject" type="text" name="subject" class="form-control" placeholder="Subject" />
-				</div>
-
-				<div class="form-group" :class="{ err: errState && !message.length > 0 }">
-					<label for="message" title="Message">Message<span v-if="!message && errState" class="err"> * required</span></label>
-					<small>Characters remaining: {{ charRemaining }}</small>
-					<textarea
-						v-model.trim="message"
-						id="message"
-						type="text"
-						name="message"
-						placeholder="Your Message"
-						class="form-control"
-						:maxlength="maxlength"
-						@keyup="charCounter()"
-					/>
-				</div>
+			<form @submit.prevent="handleSubmit" method="post">
+				<BaseInput v-model="formData.name" id="name" label="Name" :required="true" :hiddenLabel="true" :error="formErrors.name" />
+				<BaseInput v-model="formData.email" id="email" label="Email" :required="true" :hiddenLabel="true" :error="formErrors.email" />
+				<BaseInput v-model="formData.subject" id="subject" label="Subject" :required="true" :hiddenLabel="true" :error="formErrors.subject" />
+				<BaseTextarea
+					v-model="formData.message"
+					id="message"
+					label="Message"
+					:required="true"
+					:hiddenLabel="true"
+					:maxlength="1024"
+					:error="formErrors.message"
+				/>
 				<div style="display: flex">
-					<button class="btn email-icon" type="submit" @click.prevent="contactHandler" title="Send email">Send</button>
+					<button class="btn email-icon" type="submit" @click.prevent="handleSubmit" title="Send email">Send</button>
 					<button class="btn" type="button" @click="contactEmail(false)" title="Cancel">Cancel</button>
 				</div>
 			</form>
@@ -231,25 +247,22 @@ useWindowEvent("keydown", (e) => {
 	</div>
 </template>
 
+<style>
+#contact input,
+#contact textarea,
+#contact select {
+	color: #ddd;
+	background-color: #435189;
+}
+
+#contact ::placeholder {
+	color: rgb(255 255 255 / 50%);
+}
+</style>
+
 <style scoped>
-.email-header {
-	display: flex;
-	justify-content: center;
-}
-
-.email-header img {
-	object-fit: contain;
-	width: 2.25em;
-	margin-right: 1em;
-}
-
 h2 {
 	text-align: center;
-}
-
-.err {
-	color: #f00;
-	font-weight: bold;
 }
 
 #view {
@@ -263,6 +276,17 @@ h2 {
 	border-radius: 8px;
 }
 
+.email-header {
+	display: flex;
+	justify-content: center;
+}
+
+.email-header img {
+	object-fit: contain;
+	width: 2.25em;
+	margin-right: 1em;
+}
+
 form {
 	display: flex;
 	flex-direction: column;
@@ -271,26 +295,6 @@ form {
 	border-radius: 0.8em;
 	border: 1px #9676bc solid;
 	background-color: rgb(13 12 39 / 10%);
-}
-
-label {
-	display: none;
-}
-
-.input-section {
-	background: rgb(49 59 100 / 90%);
-	padding: 30px;
-	position: relative;
-	top: 0;
-	-webkit-backdrop-filter: blur(10px);
-	backdrop-filter: blur(10px);
-	border-radius: 12px;
-	box-shadow: inset -1px -1px 15px 1px rgb(13 28 37 / 50%);
-	max-width: 30em;
-}
-
-.uiDarkMode .input-section[data-v-3bd1a200] {
-	background: rgb(49 59 100 / 70%);
 }
 
 .login-status {
@@ -313,16 +317,6 @@ label {
 	padding: 5px;
 }
 
-label[for="casinoId"] {
-	text-align: center;
-	text-transform: uppercase;
-	text-shadow:
-		-1px -1px 0px #000,
-		1px -1px 0px #000,
-		-1px 1px 0px #000,
-		1px 1px 0px #000;
-}
-
 #contact {
 	position: fixed;
 	z-index: 10000;
@@ -337,17 +331,6 @@ label[for="casinoId"] {
 	color: #aaa;
 	-webkit-backdrop-filter: blur(10px);
 	backdrop-filter: blur(10px);
-}
-
-#contact input,
-#contact textarea,
-#contact select {
-	color: #ddd;
-	background-color: #435189;
-}
-
-#contact ::placeholder {
-	color: rgb(255 255 255 / 50%);
 }
 
 .wrapper {
@@ -365,13 +348,6 @@ label[for="casinoId"] {
 
 .mobile .wrapper {
 	max-height: calc(100vh - 150px);
-}
-
-.wrapper .form-group {
-	display: flex;
-	align-content: center;
-	flex-direction: column;
-	margin-bottom: 15px;
 }
 
 .btn-container {
@@ -397,14 +373,6 @@ label[for="casinoId"] {
 	color: #ddd;
 	box-shadow: 0px 2px 3px rgb(0 0 0 / 70%);
 	border-bottom: 1px #fff solid;
-}
-
-.form-group small {
-	color: rgb(221 221 221 / 60%);
-}
-
-textarea#message {
-	min-height: 4em;
 }
 
 #form-header small {
@@ -461,10 +429,6 @@ a:not(.btn):visited {
 
 .github-icon::after {
 	border: unset;
-}
-
-.err {
-	border: 2px #f00 solid;
 }
 
 .response h3 {
