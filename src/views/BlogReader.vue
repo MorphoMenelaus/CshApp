@@ -2,6 +2,7 @@
 import { ref, inject, watch, onMounted } from "vue";
 import { isObjNullOrEmpty, tokenInterceptFetch } from "@/dependencies/csh-libs.js";
 import { appNotify } from "@/dependencies/models.js";
+import WpPlayground from "@/components/WpPlayground.vue";
 
 const props = defineProps({
 	appState: Object,
@@ -182,6 +183,7 @@ onMounted(() => {
 				</div>
 				<h1 v-else>Click a button to view a blog post</h1>
 			</div>
+			<WpPlayground />
 		</div>
 		<div id="copyright">
 			<small v-html="copyright"></small>
