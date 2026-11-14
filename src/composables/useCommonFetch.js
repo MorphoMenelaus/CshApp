@@ -1,4 +1,43 @@
 /**
+ * useCommonFetch: Contains GET and POST methods designed for most use cases.
+ * Headers and Query Params are accepted as Arrays
+ */
+
+/**
+ * Try and determine what data type an endpoint is returning
+ *
+ * @name parseFetchResponse
+ *
+ * @param {response} response
+ * @returns {Object}
+ */
+async function parseFetchResponse(response) {
+	// Check the header first as a quick hint
+	const contentType = response.headers.get("content-type") || "";
+
+	// Read the stream as plain text so it can be safely inspected
+	const rawText = await response.text();
+
+	try {
+		const parsed = JSON.parse(rawText);
+
+		// JSON.parse can return primitives (e.g., "123" -> 123, "true" -> true)
+		// Verify it is actually an object or array
+		if (parsed !== null && typeof parsed === "object") {
+			return { type: "json-object", data: parsed };
+		}
+
+		return { type: "json-primitive", data: parsed };
+	} catch (error) {
+		// If JSON.parse fails, it is plain text, HTML, XML, or malformed JSON
+		if (contentType.includes("text/html")) {
+			return { type: "html", data: rawText };
+		}
+		return { type: "text-or-other", data: rawText };
+	}
+}
+
+/**
  * GET json from any REST API endpoint
  *
  * @name useFetchJson
@@ -37,10 +76,9 @@ const useFetchJson = async (endpoint, baseUrl, paramArgs = [], headerArgs = []) 
 			headers: headerObj,
 		});
 
-		let response = await fetch(request);
-		let data = response.json();
-
-		return data;
+		const response = await fetch(request);
+		const result = await parseFetchResponse(response);
+		return result.data;
 	} catch (error) {
 		throw new useFetchError(`useFetch Error: ${error}`);
 	}
