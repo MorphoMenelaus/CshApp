@@ -26,6 +26,10 @@
 					<select id="location" v-model="location">
 						<option v-for="(item, index) in locationOptions" :key="index" :value="item">{{ item.city }}</option>
 					</select>
+					<label v-if="!isMobile" for="units">Units</label>
+					<select v-if="!isMobile" id="units" v-model="selectedUnits">
+						<option v-for="(item, index) in unitsOptions" :key="index" :value="item">{{ item }}</option>
+					</select>
 					<small v-if="!isMobile"
 						>Latitude: {{ location.lat }} | Longitude: {{ location.long }}<br /><span :title="`${weatherData?.elevation} meters above sea level`">
 							Elevation: {{ weatherData?.elevation }}m asl
@@ -145,9 +149,20 @@ export default {
 			weatherDateTime: null,
 			weatherRefreshButton: false,
 			refreshTimer: null,
+			unitsOptions: ["Metric", "Imperial"],
+			selectedUnits: "Imperial",
+			temperature_unit: "fahrenheit",
+			precipitation_unit: "inch",
+			tempUnitOffset: { min: 50, max: 80 },
 		};
 	},
 	watch: {
+		selectedUnits() {
+			this.temperature_unit = this.selectedUnits === "Metric" ? "celsius" : "fahrenheit";
+			this.precipitation_unit = this.selectedUnits === "Metric" ? "millimeter" : "inch";
+			this.tempUnitOffset = this.selectedUnits === "Metric" ? { min: 0, max: 30 } : { min: 50, max: 80 };
+			this.getWeatherData();
+		},
 		theme() {
 			this.drawChart();
 		},
@@ -196,8 +211,9 @@ export default {
 			params.set("longitude", this.location.long);
 			params.set("hourly", this.location.hourly);
 			params.set("forecast_days", this.forecastDays);
-			params.set("temperature_unit", "fahrenheit");
-			params.set("precipitation_unit", "inch");
+			params.set("temperature_unit", this.temperature_unit);
+			// The API precipitation_unit defaults to millimeter. To avoid invalid request, only add this param if inches
+			if (this.precipitation_unit === "inch") params.set("precipitation_unit", this.precipitation_unit);
 			params.set("timezone", "auto");
 			requestUrl.search = params.toString();
 
@@ -284,7 +300,7 @@ export default {
 					},
 					{
 						type: "bar",
-						label: "Precipitation Inches",
+						label: `Precipitation ${this.precipitation_unit === "millimeter" ? "mm" : "in"}`,
 						data: precipitation,
 						backgroundColor: this.CHART_COLORS.purple,
 						borderColor: this.CHART_COLORS.purple,
@@ -333,14 +349,16 @@ export default {
 							display: this.isMobile ? false : true,
 							title: {
 								display: true,
-								text: "Temperature °F",
+								text: `Temperature ${this.temperature_unit === "celsius" ? "°C" : "°F"}`,
 								color: this.CHART_COLORS.blue,
 							},
 							grid: {
 								color: this.darkMode ? this.CHART_COLORS.grey : this.CHART_COLORS.medBlack,
 							},
-							suggestedMin: (Math.min(...temperatureData) < 50 ? Math.min(...temperatureData) : 50) - 10,
-							suggestedMax: (Math.max(...temperatureData) > 80 ? Math.max(...temperatureData) : 80) + 10,
+							suggestedMin:
+								(Math.min(...temperatureData) < this.tempUnitOffset.min ? Math.min(...temperatureData) : this.tempUnitOffset.min) - 10,
+							suggestedMax:
+								(Math.max(...temperatureData) > this.tempUnitOffset.max ? Math.max(...temperatureData) : this.tempUnitOffset.max) + 10,
 						},
 						y2: {
 							display: this.isMobile ? false : true,
@@ -356,7 +374,7 @@ export default {
 							display: this.isMobile ? false : true,
 							title: {
 								display: true,
-								text: "Precip. inch",
+								text: `Precip. ${this.precipitation_unit === "millimeter" ? "mm" : "in"}`,
 								color: this.CHART_COLORS.purple,
 							},
 							suggestedMin: 0,
@@ -503,7 +521,7 @@ canvas#weather-graph {
 	justify-content: space-evenly;
 	align-items: center;
 	width: 100%;
-	max-width: 35em;
+	max-width: 50em;
 	margin: 15px auto;
 	padding: 5px 15px;
 	display: flex;
