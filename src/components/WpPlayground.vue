@@ -16,6 +16,7 @@
 
 import { ref, onBeforeMount } from "vue";
 import { useFetchJson } from "@/composables/useCommonFetch";
+import { useWindowEvent } from "@/composables/useCommonEvents.js";
 
 const wpApiUrlBase = import.meta.env.VITE_APP_CSHWP_API_BASE;
 const wpApiJsonBase = "/wp-json/wp/v2";
@@ -23,7 +24,29 @@ const wpApiJsonBase = "/wp-json/wp/v2";
 const showHideLoader = ref(false);
 const posts = ref([]);
 const selectedPost = ref({});
-const per_page = ref(5);
+const per_page = ref(35);
+
+const cleanHtmlAnchors = (html) => {
+	const doc = new DOMParser().parseFromString(html, "text/html");
+
+	doc.querySelectorAll("a").forEach((anchor) => {
+		// Replace the <a> tag with its own child nodes (preserves inner text & nested tags)
+		let span = document.createElement("span");
+		span.classList.add("removed-link", ...anchor.classList);
+		span.append(...anchor.childNodes);
+		anchor.replaceWith(span);
+	});
+
+	return doc.body.innerHTML;
+};
+
+const removeAnchors = (html) => {
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	doc.querySelectorAll("a").forEach((anchor) => {
+		anchor.parentNode.removeChild(anchor);
+	});
+	return doc.body.innerHTML;
+};
 
 const getPostList = async () => {
 	showHideLoader.value = true;
@@ -42,7 +65,7 @@ const getPostList = async () => {
 const getPost = async (postId) => {
 	showHideLoader.value = true;
 	try {
-		const response = await fetch(`${wpApiUrlBase}${wpApiJsonBase}/posts/${postId}`);
+		const response = await fetch(`${wpApiUrlBase}${wpApiJsonBase}/posts/${postId}?_embed`);
 		if (response?.ok) {
 			let data = await response.json();
 			selectedPost.value = data;
@@ -56,6 +79,10 @@ const getPost = async (postId) => {
 
 onBeforeMount(() => {
 	getPostList();
+});
+
+useWindowEvent("keydown", (e) => {
+	if (e.key === "Escape") selectedPost.value = {};
 });
 </script>
 
@@ -79,16 +106,54 @@ onBeforeMount(() => {
 			/>
 			<h2 v-html="post.title.rendered"></h2>
 			<small>{{ new Date(post.date).toLocaleString("en-US") }}</small>
-			<div v-html="post.excerpt.rendered" class="excerpt"></div>
-			<a :href="`${wpApiUrlBase}${wpApiJsonBase}/posts/${post.id}`" class="read-more" target="_blank"> Read Post → </a>
+			<div v-html="removeAnchors(post.excerpt.rendered)" class="excerpt"></div>
+			<span class="read-more link" @click="getPost(post.id)"> Read Post → </span>
 		</article>
-		<div v-if="Object.keys(selectedPost).length > 0 && !selectedPost?.content?.protected" v-html="selectedPost.content.rendered"></div>
-		<h2 class="text-center" v-else-if="selectedPost?.content?.protected">Post is protected</h2>
-		<h2 class="text-center" v-else>No post loaded</h2>
+		<Transition name="fade">
+			<div v-if="Object.keys(selectedPost).length > 0 && !selectedPost?.content?.protected" id="selected-post">
+				<div id="post-inner">
+					<img
+						v-if="selectedPost._embedded?.['wp:featuredmedia']?.[0]?.source_url"
+						:src="selectedPost._embedded['wp:featuredmedia'][0].source_url"
+						:alt="selectedPost._embedded['wp:featuredmedia'][0].alt_text"
+						:title="selectedPost._embedded['wp:featuredmedia'][0].alt_text"
+						class="post-thumbnail"
+					/>
+					<h2 class="title" v-html="selectedPost.title.rendered"></h2>
+					<div v-html="cleanHtmlAnchors(selectedPost.content.rendered)"></div>
+				</div>
+				<button class="btn close-post" @click="selectedPost = {}">Close</button>
+			</div>
+			<h2 class="text-center" v-else-if="selectedPost?.content?.protected">Post is protected</h2>
+			<!-- <h2 class="text-center" v-else>No post loaded</h2> -->
+		</Transition>
 	</div>
 </template>
 
 <style scoped>
+h2.title {
+	font-size: 3rem;
+	text-align: center;
+}
+
+#selected-post {
+	position: fixed;
+	inset: 5em 0 3em 0;
+	z-index: 50000;
+	background-color: rgb(0 0 0 / 80%);
+	backdrop-filter: blur(10px);
+	padding: 2em;
+	overflow: hidden auto;
+}
+
+.btn.close-post {
+	position: fixed;
+	top: 1em;
+	right: 1em;
+	z-index: 50000;
+	font-size: 1.5rem;
+}
+
 article h2 {
 	margin: 0.5rem auto;
 	text-align: center;
@@ -172,8 +237,16 @@ small {
 .spinner-pulse:after {
 	left: 40px;
 }
+</style>
 
+<style>
 /* WP STYLING START */
+#post-inner {
+	background-color: rgb(49 49 49 / 80%);
+	padding: 4rem;
+	width: 80%;
+	margin: auto;
+}
 #wp-blogs main.site-main {
 }
 #wp-blogs article.post {
@@ -187,6 +260,19 @@ small {
 }
 #wp-blogs .entry-content {
 }
+#wp-blogs h3.wp-block-heading,
+#wp-blogs h4.wp-block-heading {
+	line-height: 1.5rem;
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+	text-align: center;
+}
+#wp-blogs h3.wp-block-heading {
+	font-size: 2.7rem;
+}
+#wp-blogs h4.wp-block-heading {
+	font-size: 2rem;
+}
 #wp-blogs .fineP {
 	font-size: 0.7em;
 }
@@ -198,6 +284,10 @@ small {
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
 	margin: 1em 2em 1.3em;
+}
+#wp-blogs p {
+	text-indent: 2rem;
+	margin-bottom: 1rem;
 }
 #wp-blogs .wp-caption {
 }
@@ -211,17 +301,23 @@ small {
 #wp-blogs .alignright {
 	clear: both;
 	display: inline;
+	width: fit-content;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 #wp-blogs .alignleft {
 	float: left;
+	margin-right: 2rem;
 }
 #wp-blogs .alignright {
 	float: right;
+	margin-left: 2rem;
 }
 #wp-blogs .aligncenter {
 	display: block;
 	margin-right: auto;
 	margin-left: auto;
+	width: fit-content;
 }
 
 @media screen and (min-width: 38.75em) {

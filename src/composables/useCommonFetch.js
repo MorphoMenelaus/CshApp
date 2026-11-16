@@ -29,6 +29,7 @@ async function parseFetchResponse(response) {
 
 		return { type: "json-primitive", data: parsed };
 	} catch (error) {
+		console.trace(error);
 		// If JSON.parse fails, it is plain text, HTML, XML, or malformed JSON
 		if (contentType.includes("text/html")) {
 			return { type: "html", data: rawText };
