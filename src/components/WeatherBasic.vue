@@ -277,7 +277,7 @@ export default {
 				datasets: [
 					{
 						type: "line",
-						label: "Temperature",
+						label: `Temperature ${this.temperature_unit === "celsius" ? "°C" : "°F"}`,
 						data: temperatureData,
 						backgroundColor: this.CHART_COLORS.blue,
 						borderColor: this.CHART_COLORS.blue,
