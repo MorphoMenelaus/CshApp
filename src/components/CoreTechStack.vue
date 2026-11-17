@@ -19,8 +19,8 @@
 					<ul>
 						<li>Vue 3</li>
 						<li>Vuex / Pinia</li>
-						<li>React (Recent)</li>
-						<li>TypeScript (Recent)</li>
+						<li>React</li>
+						<li>TypeScript</li>
 						<li>JavaScript (ES6+)</li>
 						<li>HTML5 / CSS3</li>
 					</ul>
@@ -41,7 +41,7 @@
 				<div class="card">
 					<h4>UI &amp; Styling</h4>
 					<ul>
-						<li>Tailwind CSS (Recent)</li>
+						<li>Tailwind CSS</li>
 						<li>Responsive Web Design</li>
 						<li>Clean &amp; Readable UI Design</li>
 					</ul>

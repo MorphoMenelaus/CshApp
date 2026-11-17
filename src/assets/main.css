@@ -120,7 +120,7 @@ form textarea {
 }
 
 ::placeholder {
-	color: rgb(0 0 0 / 60%);
+	color: rgb(255 255 255 / 90%);
 }
 
 .uiDarkMode ::placeholder {
