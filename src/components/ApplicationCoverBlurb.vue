@@ -4,7 +4,7 @@
 	<div id="cover-blurb">
 		<div id="profile-header">
 			<img class="upskill-icon" src="https://cdn.hardwick.design/svg/upskill-icon.svg" alt="Upskill Icon" />
-			<h2 class="julius-sans">Proactive Upskilling &amp; Latest Accomplishments</h2>
+			<h2 class="julius-sans">Engineering Impact &amp; Recent Architecture</h2>
 		</div>
 		<p>
 			I build high-performance, interactive web applications and websites with clean architecture and seamless user experiences. Most recently, I

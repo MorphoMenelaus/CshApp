@@ -1,6 +1,6 @@
 <template>
 	<div id="general-description">
-		<h3 class="julius-sans">This site built using a Vue 3 frontend with a NodeJS / ExpressJS backend.</h3>
+		<h3 class="julius-sans">Built with a Vue 3 Frontend & Node.JS / Express Backend</h3>
 		<div>
 			<p>
 				I designed and built a backend server featuring more than 40 <strong>REST API</strong> endpoints, utilizing optimized
@@ -8,8 +8,8 @@
 				enforce strong authentication with role-based access control <strong>(RBAC)</strong>.
 			</p>
 			<p>
-				Each page of this demonstration website showcases end-to-end features that cleanly integrate a responsive frontend UI with a well-organized
-				relational database.
+				Each page of this demonstration website showcases end-to-end features that cleanly integrate a responsive frontend UI with
+				a&nbsp;well&nbsp;organized relational database.
 			</p>
 			<p>
 				While public and guest users have access to many features, certain areas require creating and verifying a user account to mitigate spam and
