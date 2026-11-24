@@ -12,7 +12,7 @@ const router = createRouter({
 			path: "/",
 			name: "home",
 			component: HomeView,
-			meta: { public: true, requiredPermissions: [], title: "Chris Hardwick Web Development | Home" },
+			meta: { public: true, requiredPermissions: [] },
 		},
 		{
 			path: "/movie-database",
@@ -24,7 +24,7 @@ const router = createRouter({
 			path: "/blog-reader",
 			name: "BlogReader",
 			component: () => import("../views/BlogReader.vue"),
-			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Blog Reader" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Blogs" },
 		},
 		{
 			path: "/verify",
@@ -48,19 +48,19 @@ const router = createRouter({
 			path: "/displayusers",
 			name: "DisplayUsers",
 			component: () => import("../views/DisplayUsers.vue"),
-			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Display Users" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "Users" },
 		},
 		{
 			path: "/displayuserlogs",
 			name: "DisplayUserLogs",
 			component: () => import("../views/DisplayUserLogs.vue"),
-			meta: { public: false, requiredPermissions: ["verified"], title: "Display User Logs" },
+			meta: { public: false, requiredPermissions: ["siteAdmin", "admin"], title: "User Logs" },
 		},
 		{
 			path: "/resume",
 			name: "ResumeView",
 			component: () => import("../views/ResumeView.vue"),
-			meta: { public: true, requiredPermissions: [], title: "Chris Hardwick Resume" },
+			meta: { public: true, requiredPermissions: [], title: "Resume" },
 		},
 		{
 			path: "/toggl",
@@ -78,7 +78,7 @@ const router = createRouter({
 			path: "/about",
 			name: "about",
 			component: () => import("../views/AboutView.vue"),
-			meta: { public: true, requiredPermissions: [], title: "About Chris Hardwick" },
+			meta: { public: true, requiredPermissions: [], title: "Profile" },
 		},
 		{
 			path: "/:pathMatch(.*)*",
@@ -121,7 +121,7 @@ router.beforeEach((to, from) => {
 	// Dispatch event must happen after the Force Canonical Route to prevent multiple events from executing
 	dispatchCustomEvent("routerPathChange");
 
-	document.title = to?.meta?.title ? `${to.meta.title} | Hardwick Web Development` : "Chris Hardwick Web Development";
+	document.title = to?.meta?.title ? `${to.meta.title} | Chris Hardwick | Web Developer` : "Chris Hardwick | Web Developer";
 
 	// Checks for public path. Anything after this check requires loggedIn(true) minimum
 	if (to.meta.public) return true;
