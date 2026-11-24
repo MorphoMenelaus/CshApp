@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onBeforeMount, onMounted } from "vue";
 import { Carousel, Slide, Pagination, Navigation } from "vue3-carousel";
 import "vue3-carousel/carousel.css";
 import techStack from "@/dependencies/techStack.json";
@@ -8,6 +8,7 @@ const props = defineProps({
 	isMobile: Boolean,
 });
 
+const wrapperRef = ref(null);
 const shuffledTech = ref([]);
 
 // Configuration options
@@ -17,16 +18,17 @@ const config = {
 	marquee: true,
 	marqueeSpeed: 50,
 	wrapAround: true,
-	breakpoints: {
-		320: { itemsToShow: 3, snapAlign: "start" },
-		480: { itemsToShow: 4, snapAlign: "start" },
-		768: { itemsToShow: 6, snapAlign: "start" },
-		992: { itemsToShow: 8, snapAlign: "start" },
-		1024: { itemsToShow: 10, snapAlign: "start" },
-		1200: { itemsToShow: 14, snapAlign: "start" },
-		1920: { itemsToShow: 18, snapAlign: "start" },
-		2200: { itemsToShow: 20, snapAlign: "start" },
-	},
+};
+
+const createBreakpointConfig = () => {
+	// setup all the breakpoints to keep the icons even and consistent
+	let offset = 110;
+	let breakItems = {};
+	let maxWidth = 3400; // max viewport width
+	for (let i = 300; i < maxWidth; i += 200) {
+		breakItems[i] = { itemsToShow: Math.round(i / offset) };
+	}
+	config.breakpoints = breakItems;
 };
 
 function shuffleArray(array) {
@@ -41,16 +43,35 @@ function shuffleArray(array) {
 onMounted(() => {
 	let newTechStack = techStack.filter((icon) => !icon.class.includes("sql-light"));
 	shuffledTech.value = shuffleArray(newTechStack);
+
+	// This is to fix race conditions on layout calculations for vue3-carousel in marquee mode
+	// Issue found only on Firefox, so far...
+	// but probably good to have for any unforseen layout calculation race conditions that might come up
+	requestAnimationFrame(() => {
+		requestAnimationFrame(() => {
+			if (wrapperRef.value) {
+				// Forces Firefox ResizeObserver to fire just like a real window resize
+				wrapperRef.value.style.width = "calc(100% - 1px)";
+				requestAnimationFrame(() => {
+					wrapperRef.value.style.width = "";
+				});
+			}
+		});
+	});
+});
+
+onBeforeMount(() => {
+	createBreakpointConfig();
 });
 </script>
 
 <template>
-	<div id="tech-container">
+	<div id="tech-container" ref="wrapperRef">
 		<Carousel v-bind="config">
 			<Slide class="tech-container" v-for="(slide, i) in shuffledTech" :key="i">
 				<div class="carousel__item">
 					<div class="item-container" :title="slide.title">
-						<img :class="slide.class" :src="slide.src" />
+						<img :class="slide.class" :src="slide.src" width="50" height="50" />
 						<div class="icon-overlay">
 							<span class="text-stroke">{{ slide.title }}</span>
 						</div>
@@ -93,8 +114,6 @@ onMounted(() => {
 }
 
 img.logo {
-	max-width: 50px;
-	max-height: 50px;
 	display: flex;
 	justify-self: center;
 }

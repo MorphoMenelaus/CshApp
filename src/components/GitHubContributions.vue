@@ -174,6 +174,7 @@ onBeforeMount(() => {
 <style scoped>
 h2 {
 	font-weight: bold;
+	user-select: none;
 }
 
 h3 {
